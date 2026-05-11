@@ -1,0 +1,71 @@
+aid: clickfunnels
+name: ClickFunnels
+description: >-
+  ClickFunnels is a sales funnel and online business platform that lets
+  entrepreneurs build landing pages, sales funnels, checkout flows, courses,
+  membership sites, and email marketing campaigns without code. The ClickFunnels
+  2.0 REST API gives developers programmatic access to workspaces, funnels,
+  pages, products, contacts, orders, and subscriptions, authenticated with
+  Bearer tokens or OAuth 2.0.
+type: Index
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - Sales Funnels
+  - Landing Pages
+  - E-commerce
+  - Marketing
+  - Checkout
+  - CRM
+url: >-
+  https://raw.githubusercontent.com/api-evangelist/clickfunnels/refs/heads/main/apis.yml
+created: '2026-05-11'
+modified: '2026-05-11'
+specificationVersion: '0.19'
+apis:
+  - aid: clickfunnels:clickfunnels-api
+    name: ClickFunnels 2.0 API
+    description: >-
+      REST API for managing workspaces, funnels, pages, products, contacts,
+      orders, subscriptions, and courses in ClickFunnels 2.0. Authentication
+      uses an API access token as a Bearer token, or OAuth 2.0 for public
+      integrations.
+    humanURL: https://developers.myclickfunnels.com
+    baseURL: https://accounts.myclickfunnels.com/api/v2
+    tags:
+      - Sales Funnels
+      - Landing Pages
+      - E-commerce
+      - Marketing
+    properties:
+      - type: Documentation
+        url: https://developers.myclickfunnels.com/docs/intro
+      - type: API Reference
+        url: https://developers.myclickfunnels.com
+      - type: Getting Started
+        url: https://developers.myclickfunnels.com/docs/getting-started
+      - type: OpenAPI
+        url: openapi/clickfunnels-openapi.yml
+
+common:
+  - type: Website
+    url: https://www.clickfunnels.com
+  - type: Documentation
+    url: https://developers.myclickfunnels.com
+  - type: API Reference
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: Pricing
+    url: https://www.clickfunnels.com/pricing
+  - type: Sign Up
+    url: https://signup.clickfunnels.com
+  - type: Login
+    url: https://app.myclickfunnels.com/sign_in
+  - type: Authentication
+    url: https://support.myclickfunnels.com/support/solutions/articles/150000156745-accessing-the-clickfunnels-api
+  - type: Support
+    url: https://support.myclickfunnels.com
+  - type: Classic API
+    url: https://apidocs.clickfunnels.com/
+
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
