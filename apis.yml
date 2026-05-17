@@ -39,9 +39,9 @@ apis:
     properties:
       - type: Documentation
         url: https://developers.myclickfunnels.com/docs/intro
-      - type: API Reference
+      - type: APIReference
         url: https://developers.myclickfunnels.com
-      - type: Getting Started
+      - type: GettingStarted
         url: https://developers.myclickfunnels.com/docs/getting-started
       - type: OpenAPI
         url: openapi/clickfunnels-openapi.yml
@@ -51,11 +51,11 @@ common:
     url: https://www.clickfunnels.com
   - type: Documentation
     url: https://developers.myclickfunnels.com
-  - type: API Reference
+  - type: APIReference
     url: https://developers.myclickfunnels.com/docs/intro
   - type: Pricing
     url: https://www.clickfunnels.com/pricing
-  - type: Sign Up
+  - type: SignUp
     url: https://signup.clickfunnels.com
   - type: Login
     url: https://app.myclickfunnels.com/sign_in
