@@ -47,6 +47,10 @@ apis:
         url: openapi/clickfunnels-openapi.yml
 
 common:
+  - type: GitHubOrganization
+    url: https://github.com/clickfunnels2
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/clickfunnels
   - type: Website
     url: https://www.clickfunnels.com
   - type: Documentation
