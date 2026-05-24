@@ -70,6 +70,8 @@ common:
   - type: Classic API
     url: https://apidocs.clickfunnels.com/
 
+  - type: LLMsTxt
+    url: https://developers.myclickfunnels.com/llms.txt
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
