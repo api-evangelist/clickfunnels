@@ -1,0 +1,221 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "ClickFunnels 2.0 API",
+    "version": "2.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Teams",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List teams",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://accounts.myclickfunnels.com/api/v2/teams"
+          },
+          "docs": "List teams accessible to the authenticated API token."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Workspaces",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List workspaces for a team",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://accounts.myclickfunnels.com/api/v2/teams/:team_id/workspaces",
+            "params": [
+              {
+                "name": "team_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List workspaces for a team"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Contacts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List contacts for a workspace",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://accounts.myclickfunnels.com/api/v2/workspaces/:workspace_id/contacts",
+            "params": [
+              {
+                "name": "workspace_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List contacts for a workspace"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Products",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a product",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://accounts.myclickfunnels.com/api/v2/workspaces/:workspace_id/products",
+            "params": [
+              {
+                "name": "workspace_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new product, including variant_properties (e.g., size/color)."
+        },
+        {
+          "info": {
+            "name": "Update a product",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://accounts.myclickfunnels.com/api/v2/products/:product_id",
+            "params": [
+              {
+                "name": "product_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a product"
+        },
+        {
+          "info": {
+            "name": "Create a product variant",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://accounts.myclickfunnels.com/api/v2/products/:product_id/variants",
+            "params": [
+              {
+                "name": "product_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a product variant"
+        },
+        {
+          "info": {
+            "name": "Create a price for a variant",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://accounts.myclickfunnels.com/api/v2/products/:product_id/prices",
+            "params": [
+              {
+                "name": "product_id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a price for a variant"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Fulfillments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a fulfillment location",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://accounts.myclickfunnels.com/api/v2/fulfillments/locations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a fulfillment location"
+        },
+        {
+          "info": {
+            "name": "Create a fulfillment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://accounts.myclickfunnels.com/api/v2/fulfillments",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a fulfillment"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
