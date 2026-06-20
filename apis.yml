@@ -8,7 +8,7 @@ description: >-
   pages, products, contacts, orders, and subscriptions, authenticated with
   Bearer tokens or OAuth 2.0.
 type: Index
-image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
   - Sales Funnels
   - Landing Pages
