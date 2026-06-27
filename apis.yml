@@ -59,7 +59,7 @@ common:
     url: https://developers.myclickfunnels.com/docs/intro
   - type: Pricing
     url: https://www.clickfunnels.com/pricing
-  - type: SignUp
+  - type: Signup
     url: https://signup.clickfunnels.com
   - type: Login
     url: https://app.myclickfunnels.com/sign_in
@@ -70,7 +70,7 @@ common:
   - type: Classic API
     url: https://apidocs.clickfunnels.com/
 
-  - type: LLMsTxt
+  - type: LlmsText
     url: https://developers.myclickfunnels.com/llms.txt
 maintainers:
   - FN: Kin Lane
