@@ -1,0 +1,13 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/clickfunnels-openapi.yml
+summary:
+  types:
+  - http
+schemes:
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  description: ClickFunnels 2.0 API access token issued per team.
+  sources:
+  - openapi/clickfunnels-openapi.yml
