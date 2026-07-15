@@ -47,6 +47,8 @@ apis:
         url: openapi/clickfunnels-openapi.yml
 
 common:
+  - type: AgenticAccess
+    url: agentic-access/clickfunnels-agentic-access.yml
   - type: VulnerabilityDisclosure
     url: security/clickfunnels-vulnerability-disclosure.yml
   - type: DomainSecurity
