@@ -1,0 +1,144 @@
+openapi: 3.1.0
+info:
+  title: ClickFunnels 2.0 Contacts Products API
+  description: 'REST API for managing workspaces, funnels, pages, products, contacts,
+
+    orders, subscriptions, and fulfillments in ClickFunnels 2.0.
+
+    Account-level resources (teams, workspaces) are served from
+
+    https://accounts.myclickfunnels.com. Workspace-scoped resources are served
+
+    from a per-workspace subdomain (https://{workspace}.myclickfunnels.com).
+
+    Authentication uses a Bearer access token; a User-Agent header is required.
+
+    '
+  version: 2.0.0
+  contact:
+    name: ClickFunnels Developers
+    url: https://developers.myclickfunnels.com
+servers:
+- url: https://accounts.myclickfunnels.com
+  description: Account / team-level endpoints
+- url: https://{workspace}.myclickfunnels.com
+  description: Workspace-scoped endpoints
+  variables:
+    workspace:
+      default: myteam
+      description: Workspace subdomain
+security:
+- BearerAuth: []
+tags:
+- name: Products
+paths:
+  /api/v2/workspaces/{workspace_id}/products:
+    post:
+      summary: Create a product
+      description: Create a new product, including variant_properties (e.g., size/color).
+      operationId: createProduct
+      tags:
+      - Products
+      parameters:
+      - in: path
+        name: workspace_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                variant_properties:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '201':
+          description: Product created
+  /api/v2/products/{product_id}:
+    patch:
+      summary: Update a product
+      operationId: updateProduct
+      tags:
+      - Products
+      parameters:
+      - in: path
+        name: product_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Product updated
+  /api/v2/products/{product_id}/variants:
+    post:
+      summary: Create a product variant
+      operationId: createProductVariant
+      tags:
+      - Products
+      parameters:
+      - in: path
+        name: product_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - properties_values
+              - fulfillment_location_ids
+              properties:
+                properties_values:
+                  type: array
+                  items:
+                    type: object
+                fulfillment_location_ids:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Variant created
+  /api/v2/products/{product_id}/prices:
+    post:
+      summary: Create a price for a variant
+      operationId: createPrice
+      tags:
+      - Products
+      parameters:
+      - in: path
+        name: product_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Price created
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: ClickFunnels 2.0 API access token issued per team.
