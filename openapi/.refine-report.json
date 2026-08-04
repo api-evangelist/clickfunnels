@@ -1,0 +1,22 @@
+{
+  "provider": "clickfunnels",
+  "sources": [
+    "clickfunnels-contacts-api-openapi.yml",
+    "clickfunnels-fulfillments-api-openapi.yml",
+    "clickfunnels-products-api-openapi.yml",
+    "clickfunnels-teams-api-openapi.yml",
+    "clickfunnels-workspaces-api-openapi.yml"
+  ],
+  "outputs": [
+    "clickfunnels-contacts-api-openapi.yml",
+    "clickfunnels-fulfillments-api-openapi.yml",
+    "clickfunnels-products-api-openapi.yml",
+    "clickfunnels-teams-api-openapi.yml",
+    "clickfunnels-workspaces-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
