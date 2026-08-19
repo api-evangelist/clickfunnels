@@ -1,0 +1,97 @@
+generated: '2026-08-13'
+method: probed
+source: live GET of /.well-known/* on every ClickFunnels host in apis.yml and in the OpenAPI servers[]
+hosts:
+- https://accounts.myclickfunnels.com
+- https://www.clickfunnels.com
+- https://developers.myclickfunnels.com
+- https://app.myclickfunnels.com
+note: Three real documents are served. The RFC 9727 api-catalog on the developer host is the discovery entry
+  point for the machine-readable contract, and the RFC 8414 authorization-server metadata is the only place
+  ClickFunnels publishes its OAuth scope list. No security.txt and no A2A agent card are served on any host.
+documents:
+- host: https://accounts.myclickfunnels.com
+  path: /.well-known/oauth-authorization-server
+  status: 200
+  file: clickfunnels-oauth-authorization-server.json
+  note: RFC 8414 authorization server metadata; advertises scopes admin/read/write/delete/mcp, PKCE S256, and
+    a dynamic client registration endpoint.
+- host: https://www.clickfunnels.com
+  path: /.well-known/oauth-authorization-server
+  status: 200
+  file: clickfunnels-oauth-authorization-server.json
+  note: Same document, served from the marketing host; issuer is accounts.myclickfunnels.com.
+- host: https://developers.myclickfunnels.com
+  path: /.well-known/api-catalog
+  status: 200
+  file: clickfunnels-api-catalog.json
+  note: RFC 9727 API catalog (application/linkset+json). service-desc points at https://developers.myclickfunnels.com/openapi/clickfunnels-api.json
+    — this is how the real 418-operation OpenAPI was found.
+- host: https://accounts.myclickfunnels.com
+  path: /.well-known/<area>/skill.md
+  status: 200
+  note: 16 provider-published Agent Skills are served under /.well-known/; harvested verbatim into skills/.
+    Indexed at https://accounts.myclickfunnels.com/skill.md.
+- host: https://accounts.myclickfunnels.com
+  path: /.well-known/security.txt
+  status: 404
+- host: https://accounts.myclickfunnels.com
+  path: /.well-known/openid-configuration
+  status: 404
+- host: https://accounts.myclickfunnels.com
+  path: /.well-known/api-catalog
+  status: 404
+- host: https://accounts.myclickfunnels.com
+  path: /.well-known/ai-plugin.json
+  status: 404
+- host: https://accounts.myclickfunnels.com
+  path: /.well-known/oauth-protected-resource
+  status: 404
+- host: https://accounts.myclickfunnels.com
+  path: /.well-known/agent-card.json
+  status: 404
+- host: https://accounts.myclickfunnels.com
+  path: /.well-known/agent.json
+  status: 404
+- host: https://www.clickfunnels.com
+  path: /.well-known/security.txt
+  status: 404
+- host: https://www.clickfunnels.com
+  path: /.well-known/openid-configuration
+  status: 404
+- host: https://www.clickfunnels.com
+  path: /.well-known/api-catalog
+  status: 404
+- host: https://www.clickfunnels.com
+  path: /.well-known/ai-plugin.json
+  status: 404
+- host: https://www.clickfunnels.com
+  path: /.well-known/agent-card.json
+  status: 404
+- host: https://www.clickfunnels.com
+  path: /.well-known/agent.json
+  status: 404
+- host: https://developers.myclickfunnels.com
+  path: /.well-known/security.txt
+  status: 404
+- host: https://developers.myclickfunnels.com
+  path: /.well-known/openid-configuration
+  status: 404
+- host: https://developers.myclickfunnels.com
+  path: /.well-known/oauth-authorization-server
+  status: 404
+- host: https://developers.myclickfunnels.com
+  path: /.well-known/ai-plugin.json
+  status: 404
+- host: https://developers.myclickfunnels.com
+  path: /.well-known/agent-card.json
+  status: 404
+- host: https://developers.myclickfunnels.com
+  path: /.well-known/agent.json
+  status: 404
+- host: https://app.myclickfunnels.com
+  path: /.well-known/oauth-authorization-server
+  status: 404
+- host: https://app.myclickfunnels.com
+  path: /.well-known/oauth-protected-resource
+  status: 404

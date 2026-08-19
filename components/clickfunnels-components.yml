@@ -1,0 +1,56 @@
+generated: '2026-08-13'
+method: searched
+source: https://accounts.myclickfunnels.com/.well-known/sdk/create-external-page/skill.md
+docs:
+- https://accounts.myclickfunnels.com/.well-known/sdk/create-external-page/skill.md
+- https://accounts.myclickfunnels.com/.well-known/sdk/add-checkout/skill.md
+- https://accounts.myclickfunnels.com/.well-known/sdk/migrate-external-page-domain/skill.md
+note: 'ClickFunnels ships a browser SDK that turns a page you host yourself into a ClickFunnels funnel step:
+  it tracks visits, captures opt-ins, carries contact identity across steps, and mounts real gateway payment
+  UI. The markup contract is attribute-driven (data-cf-element) rather than a custom-element library.'
+families:
+- family: ClickFunnels SDK loader
+  type: script
+  loader: https://sdk.myclickfunnels.com/sdk.js
+  embed: <script src="https://sdk.myclickfunnels.com/sdk.js" defer></script>
+  pairing: A cf-page-token meta tag binds the page to a registered external page.
+  note: sdk.js is a small loader that injects the real bundle from the same host; the distribution is unpinned.
+- family: Form / identity elements
+  type: attribute-marked HTML
+  attribute: data-cf-element
+  elements:
+  - email
+  - first-name
+  - last-name
+  - custom-attribute:<name>
+- family: Checkout elements
+  type: attribute-marked HTML
+  attribute: data-cf-element
+  elements:
+  - payment-method
+  - pay
+  - shipping
+  - billing
+  - oto-accept
+  - oto-decline
+  note: Order bumps and one-click one-time offers are configured on the funnel step, not in markup.
+- family: Checkout JavaScript API
+  type: js-api
+  namespace: CfSdk
+  members:
+  - CfSdk.products()
+  - CfSdk.checkout.currentState
+  - CfSdk.checkout.updateState
+  - CfSdk.checkout.setQuantity
+  - CfSdk.checkout.setShipping
+  - CfSdk.checkout.onStateChange
+  - CfSdk.checkout.onPending
+  - CfSdk.checkout.onError
+  - CfSdk.checkout.onOtoOutcome
+- family: Checkout theming
+  type: css-custom-properties
+  prefix: --cfsdk-checkout-*
+  note: Design tokens for styling the hosted payment fields.
+csp:
+  script-src: sdk.myclickfunnels.com
+  note: The SDK skill documents the CSP directives an embedding page needs.

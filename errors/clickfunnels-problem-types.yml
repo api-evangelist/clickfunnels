@@ -1,0 +1,70 @@
+generated: '2026-08-13'
+method: searched
+source: https://developers.myclickfunnels.com/docs/requests-and-responses
+derived_from: openapi/clickfunnels-api-openapi.json
+format: json
+rfc9457: false
+note: ClickFunnels does not use application/problem+json — there is no problem+json media type anywhere in
+  the 418-operation spec. Status codes and their meanings come from the published Requests and Responses table;
+  the per-status operation counts are derived from the spec responses.
+problems:
+- status: 400
+  title: Bad Request
+  description: The request is structured incorrectly — the body or query params are invalid or incorrectly
+    formatted.
+  operations: 107
+- status: 401
+  title: Unauthorized
+  description: Missing or invalid Authorization Bearer token.
+  operations: 412
+- status: 403
+  title: Forbidden
+  description: 'The client lacks the required permissions. The spec also distinguishes two narrower cases:
+    the access token''s scopes do not cover the request, and a third-party platform acting on another team''s
+    workspace without trusted-platform access.'
+  operations: 52
+- status: 404
+  title: Not Found
+  description: The resource for this request is missing. Also returned for a charge that cannot be refunded,
+    and for a retired email sender address.
+  operations: 350
+- status: 409
+  title: Conflict
+  description: The current app state conflicts with the requested action — e.g. the product is already archived,
+    already unarchived, or already cancelled.
+  operations: 3
+- status: 422
+  title: Unprocessable Entity
+  description: Structurally correct but rejected by business logic — validation failure, no target selection
+    supplied, an expired discount whose other fields are frozen, a partial-refund amount, or deleting a discount
+    already attached to an order.
+  operations: 77
+- status: 429
+  title: Too Many Requests
+  description: The dynamic API rate limit has been reached.
+  operations: 0
+  note: Documented in Requests and Responses but not declared on any operation in the spec.
+- status: 503
+  title: Service Unavailable
+  description: A transient dependency was unavailable; retry the request.
+  operations: 1
+success_codes:
+- status: 200
+  title: OK
+  description: Successful GET, PUT and PATCH calls.
+  operations: 282
+- status: 201
+  title: Created
+  description: Successful request that created a record.
+  operations: 81
+- status: 202
+  title: Accepted
+  description: Accepted for later settlement — e.g. a refund that settles through a webhook.
+  operations: 1
+- status: 204
+  title: No Content
+  description: Successful request with no response body, typically DELETE.
+  operations: 58
+support:
+  forum: https://developers.myclickfunnels.com/discuss
+  support: https://support.myclickfunnels.com/support/home

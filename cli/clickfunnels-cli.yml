@@ -1,0 +1,44 @@
+generated: '2026-08-13'
+method: searched
+source: https://github.com/clickfunnels/cli
+name: cf
+description: cf is the first-party ClickFunnels command-line client — manage contacts, orders, products, funnels,
+  courses and the rest of the API from a terminal.
+language: go
+version: v0.1.1
+released: '2026-06-11'
+homepage: https://developers.myclickfunnels.com
+repository: https://github.com/clickfunnels/cli
+install:
+- method: homebrew
+  command: brew install clickfunnels/tap/cf
+- method: go
+  command: GOPRIVATE=github.com/clickfunnels/* go install github.com/clickfunnels/cli/cmd/cf@latest
+- method: source
+  command: git clone https://github.com/clickfunnels/cli && cd cli && make install
+auth:
+  flow: browser OAuth device/redirect login
+  commands:
+  - cf auth login
+  - cf auth status
+  - cf auth logout
+  installation_login: cf auth login --installation issues a persistent workspace-scoped token for service accounts,
+    using the ClickFunnels workspace installation flow rather than a personal login.
+  workspace_selection: -w <subdomain|id|public id>, or the CF_CLI_WORKSPACE environment variable.
+commands:
+- group: auth
+  description: Sign in, list signed-in workspaces, sign out.
+- group: api
+  description: Raw authenticated request against any API path.
+- group: contacts
+  description: List and manage contacts.
+- group: blogs
+  description: Blog and blog-post commands.
+- group: teams
+  description: Team commands.
+- group: generic (spec-driven)
+  description: The remaining command tree is generated from the OpenAPI — cmd/operations.gen.go enumerates
+    262 operations across 68 resource tags, so every generated operation is reachable as a command.
+note: The repo regenerates its typed client and its command tree from the ClickFunnels OpenAPI (Makefile SPEC_SRC
+  -> oapi-codegen). The spec source itself lives in a private Rails repo; the public, served copy is the one
+  in openapi/.

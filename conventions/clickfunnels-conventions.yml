@@ -1,0 +1,111 @@
+generated: '2026-08-13'
+method: searched
+source: https://developers.myclickfunnels.com/docs/requests-and-responses
+docs:
+- https://developers.myclickfunnels.com/docs/requests-and-responses
+- https://developers.myclickfunnels.com/docs/pagination
+- https://developers.myclickfunnels.com/docs/filtering
+- https://developers.myclickfunnels.com/docs/expand
+- https://developers.myclickfunnels.com/docs/authentication
+- https://developers.myclickfunnels.com/docs/rate-limiting
+media_type:
+  request: application/json
+  response: application/json
+  transport: HTTPS only
+required_headers:
+- header: Authorization
+  value: Bearer <access token>
+  required: true
+- header: User-Agent
+  value: YourAppYourOrg
+  required: true
+  note: ClickFunnels' security settings reject requests without a User-Agent. This is unusual and is the most
+    common first-request failure.
+- header: Content-Type
+  value: application/json
+  required: false
+  note: Recommended by the docs for the optimal experience.
+authentication:
+  style: bearer-token
+  default_scope: team
+  note: Default access tokens are issued per team and reach every workspace in that team. OAuth tokens are
+    workspace-scoped and may carry narrower scopes.
+  artifact: authentication/clickfunnels-authentication.yml
+idempotency:
+  supported: false
+  evidence: 'No idempotency key header or parameter appears anywhere in the 418-operation OpenAPI or in the
+    developer docs. The only idempotency guidance ClickFunnels publishes is application-level: the import-external-post
+    skill tells an agent to use the source canonical URL as its own durable idempotency key and to page the
+    destination list first to avoid duplicate posts.'
+  note: Recorded as absent, so no Idempotency pointer is emitted in apis.yml.
+pagination:
+  style: cursor
+  direction_param: sort_order
+  cursor_param: after
+  page_size: 20
+  page_size_configurable: false
+  ordering: ascending by id unless sort_order=desc
+  response_headers:
+  - Pagination-Next
+  - Link (rel="next")
+  exception:
+    operation: GET /api/v2/workspaces/:workspace_id/refine_filters
+    behavior: Unpaginated by default for backward compatibility; send after=0 to opt into paging.
+filtering:
+  style: bracketed filter params
+  form: filter[<attribute>]=<value>
+  multi_value: comma-separated values in one filter param
+  note: Availability is per-endpoint; the reference lists which attributes each list endpoint filters on.
+field_expansion:
+  param: expand[]
+  repeatable: true
+  behavior: An unexpanded field is absent from the response entirely rather than null.
+  known_fields:
+  - resource: Contact
+    field: email_engagement
+  - resource: Funnel
+    field: head_code
+  - resource: Funnel
+    field: footer_code
+  - resource: Page
+    field: head_code
+  - resource: Page
+    field: footer_code
+  - resource: Site
+    field: head_code
+  - resource: Site
+    field: footer_code
+  - resource: Blogs::Post
+    field: markup
+versioning:
+  scheme: uri-path
+  current: v2
+  path_prefix: /api/v2
+  event_versioning: Webhook payloads carry api_version; V1 and V2 payload shapes differ.
+  artifact: lifecycle/clickfunnels-lifecycle.yml
+error_envelope:
+  format: plain JSON (not RFC 9457 problem+json)
+  status_codes:
+  - 200
+  - 201
+  - 204
+  - 400
+  - 401
+  - 403
+  - 404
+  - 409
+  - 422
+  - 429
+  - 503
+  artifact: errors/clickfunnels-problem-types.yml
+rate_limit_signaling:
+  documented_headers: []
+  exhaustion_status: 429
+  note: ClickFunnels documents dynamic rate limiting but publishes no RateLimit/X-RateLimit/Retry-After header
+    contract. See rate-limits/clickfunnels-rate-limits.yml.
+request_tracing:
+  request_id_header: null
+  note: No request-id/correlation header is documented.
+time:
+  format: ISO 8601 UTC timestamps
+  docs: https://developers.myclickfunnels.com/docs/timezones

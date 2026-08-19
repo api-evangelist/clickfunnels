@@ -1,0 +1,20 @@
+generated: '2026-08-13'
+method: searched
+source: https://developers.myclickfunnels.com/docs/rate-limiting
+limit_count: 0
+note: 'ClickFunnels publishes a rate-limiting page but no numbers: "We make use of dynamic rate limiting with
+  a generous quota. The actual rate limit and the approach on how this is handled is subject to change in future
+  releases." No RateLimit-*, X-RateLimit-* or Retry-After header contract is documented, and no 429 response
+  is declared on any of the 418 operations in the spec. An honest zero: the limit exists and is unquantified,
+  so an agent cannot budget against it or read a runtime signal.'
+limits: []
+exhaustion:
+  status: 429
+  title: Too Many Requests
+  documented_at: https://developers.myclickfunnels.com/docs/requests-and-responses
+  response_headers: []
+  retry_after: false
+response_headers: []
+plan_gate:
+  note: Full API and webhook access is a plan feature — the Launch tier does not include it. See plans/clickfunnels-plans-pricing.yml.
+request_channel: The docs invite callers with special request-limit needs to contact ClickFunnels.

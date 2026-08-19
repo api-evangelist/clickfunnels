@@ -1,0 +1,104 @@
+generated: '2026-08-13'
+method: searched
+source: https://www.clickfunnels.com/pricing
+currency: USD
+plan_count: 4
+free_trial: true
+note: 'Prices read from the public pricing page on 2026-08-13. Monthly prices are list; the annual column is
+  the discounted effective monthly rate when billed yearly. API access is gated: "Webhooks/Full API Access"
+  appears on Scale, Optimize and Dominate but NOT on Launch, so the entry tier cannot use the API this profile
+  documents.'
+plans:
+- name: Launch
+  price: 97
+  currency: USD
+  period: month
+  annual_price_per_month: 81
+  annual_savings: 194
+  billing:
+  - monthly
+  - annual
+  api_access: false
+  limits:
+    workspaces: 1
+    team_members: 2
+    contacts: 10000
+    emails_per_month: 50000
+    courses: 3
+    custom_domains: 5
+    funnels: unlimited
+    visitors: unlimited
+    ai_words: 1M
+  support: Standard Support
+- name: Scale
+  price: 197
+  currency: USD
+  period: month
+  annual_price_per_month: 164
+  annual_savings: 394
+  billing:
+  - monthly
+  - annual
+  api_access: true
+  most_popular: true
+  limits:
+    workspaces: 5
+    team_members: 5
+    contacts: 75000
+    emails_per_month: 300000
+    courses: 6
+    custom_domains: unlimited
+    funnels: unlimited
+    visitors: unlimited
+    ai_words: 2M
+  features:
+  - Webhooks/Full API Access
+  - Custom Code Editor
+  support: Priority + Live Chat Support
+- name: Optimize
+  price: 297
+  currency: USD
+  period: month
+  annual_price_per_month: 248
+  annual_savings: 594
+  billing:
+  - monthly
+  - annual
+  api_access: true
+  limits:
+    workspaces: 10
+    team_members: 10
+    contacts: 150000
+    emails_per_month: 750000
+    courses: 10
+    custom_domains: unlimited
+    funnels: unlimited
+    visitors: unlimited
+    ai_words: 5M
+  features:
+  - Webhooks/Full API Access
+  - Custom Code Editor
+  support: Priority + Live Chat Support
+- name: Dominate
+  price: 5997
+  currency: USD
+  period: year
+  billing:
+  - annual
+  api_access: true
+  limits:
+    workspaces: 20
+    team_members: 20
+    contacts: 400000
+    emails_per_month: 1.2M
+    courses: 20
+    custom_domains: unlimited
+    funnels: unlimited
+    visitors: unlimited
+    ai_words: 10M
+  features:
+  - Webhooks/Full API Access
+  - Custom Code Editor
+  - 3H Private Onboarding
+  support: VIP Support
+signup: https://signup.clickfunnels.com

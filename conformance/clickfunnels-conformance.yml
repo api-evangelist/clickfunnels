@@ -1,0 +1,73 @@
+generated: '2026-08-13'
+method: searched
+source: https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server, https://developers.myclickfunnels.com/.well-known/api-catalog
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: openapi/clickfunnels-api-openapi.json declares openapi 3.1.0 with 230 paths / 418 operations /
+    276 component schemas.
+- id: rfc9727-api-catalog
+  conforms: true
+  evidence: https://developers.myclickfunnels.com/.well-known/api-catalog returns application/linkset+json
+    with a service-desc link to the OpenAPI.
+- id: rfc8414-oauth-authorization-server-metadata
+  conforms: true
+  evidence: https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server returns issuer, authorization/token/revocation/registration
+    endpoints and scopes_supported.
+- id: oauth2
+  conforms: true
+  evidence: authorization_code and refresh_token grants; documented at https://developers.myclickfunnels.com/docs/oauth-20.
+- id: oauth2-pkce-rfc7636
+  conforms: true
+  evidence: 'code_challenge_methods_supported: [S256] in the authorization server metadata.'
+- id: rfc7591-dynamic-client-registration
+  conforms: true
+  evidence: registration_endpoint https://accounts.myclickfunnels.com/oauth/register advertised in the metadata.
+- id: rfc7009-token-revocation
+  conforms: true
+  evidence: revocation_endpoint https://accounts.myclickfunnels.com/oauth/revoke advertised in the metadata.
+- id: rfc8707-resource-indicators
+  conforms: true
+  evidence: 'resource_indicators_supported: true in the authorization server metadata.'
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404 on every host. ClickFunnels does publish a separate
+    SSO-by-JWT flow for authenticating contacts, which is not OIDC.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: No application/problem+json media type appears in the spec; errors are plain JSON.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on accounts, www and developers hosts.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No Sunset or Deprecation header contract is documented.
+- id: asyncapi
+  conforms: false
+  evidence: A large webhook catalog is documented but no AsyncAPI document is published.
+- id: a2a-agent-card
+  conforms: false
+  evidence: /.well-known/agent-card.json and /.well-known/agent.json return 404 on every ClickFunnels host.
+- id: agent-skills
+  conforms: true
+  evidence: 16 Markdown Agent Skills served from /.well-known/<area>/skill.md with an index at /skill.md; harvested
+    verbatim into skills/.
+- id: llms-txt
+  conforms: true
+  evidence: https://developers.myclickfunnels.com/llms.txt (full docs index) and https://accounts.myclickfunnels.com/llms.txt
+    (platform overview + skills index).
+- id: webhook-hmac-signature
+  conforms: true
+  evidence: Per-endpoint webhook_secret and a published signature verification procedure.
+- id: cursor-pagination
+  conforms: true
+  evidence: after cursor + Pagination-Next and Link rel="next" response headers.
+- id: idempotency-key
+  conforms: false
+  evidence: No idempotency key header or parameter in the spec or the docs.
+compliance_program:
+  published: false
+  note: Searched for a trust center and a published certification set. trust.clickfunnels.com resolves but
+    returns the ClickFunnels marketing homepage — a soft 200 with no trust content — and www.clickfunnels.com/security
+    and /compliance both 404. No SOC 2 / ISO 27001 / PCI / HIPAA claim was found on a ClickFunnels-controlled
+    page, so no Compliance or TrustCenter pointer is emitted.

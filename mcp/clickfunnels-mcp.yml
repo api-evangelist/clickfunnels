@@ -1,0 +1,45 @@
+generated: '2026-08-13'
+method: probed
+status: none
+source: live probes of every ClickFunnels host on 2026-08-13
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: probed
+note: 'ClickFunnels ships no MCP server that could be reached anonymously, but it is clearly building toward
+  one: its RFC 8414 authorization-server metadata advertises an `mcp` scope alongside admin/read/write/delete,
+  together with dynamic client registration (RFC 7591), PKCE S256 and resource indicators (RFC 8707) — the
+  exact OAuth shape the MCP authorization spec expects. What ClickFunnels ships for agents today is a set of
+  16 Markdown Agent Skills at /.well-known/<area>/skill.md driving the plain REST API. No tools are derived
+  here and no MCPServer pointer is emitted: an agent has nothing to connect to yet.'
+evidence:
+- url: https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server
+  status: 200
+  finding: scopes_supported includes "mcp"
+- url: https://accounts.myclickfunnels.com/mcp
+  status: 404
+- url: https://app.myclickfunnels.com/mcp
+  status: 404
+- url: https://mcp.clickfunnels.com/mcp
+  status: 404
+- url: https://mcp.myclickfunnels.com/mcp
+  status: 404
+- url: https://accounts.myclickfunnels.com/api/v2/mcp
+  status: 404
+- url: https://accounts.myclickfunnels.com/mcp/sse
+  status: 404
+- url: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource
+  status: 404
+- url: https://app.myclickfunnels.com/.well-known/oauth-protected-resource
+  status: 404
+unprobed:
+  pattern: https://{workspace}.myclickfunnels.com/mcp
+  reason: Workspace subdomains are tenant-specific; no host was guessed. If ClickFunnels serves MCP per workspace
+    it would not be visible to an anonymous probe.
+tools: []
+related:
+  agent_skills: skills/_index.yml
+  llms_txt: llms/clickfunnels-llms.txt

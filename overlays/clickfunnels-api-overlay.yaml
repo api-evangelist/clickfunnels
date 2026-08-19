@@ -1,0 +1,44 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for ClickFunnels API
+  version: 1.0.0
+extends: openapi/clickfunnels-api-openapi.json
+actions:
+- target: $.info
+  update:
+    x-apievangelist-slug: clickfunnels
+    x-apievangelist-harvested: '2026-08-13'
+    x-apievangelist-source: https://developers.myclickfunnels.com/openapi/clickfunnels-api.json
+    x-apievangelist-discovery: RFC 9727 api-catalog at https://developers.myclickfunnels.com/.well-known/api-catalog
+    x-apievangelist-agent-skills: https://accounts.myclickfunnels.com/skill.md
+- target: $.info
+  update:
+    x-apievangelist-conventions:
+      pagination: cursor via after; 20 per page; Pagination-Next and Link rel="next" response headers
+      filtering: filter[<attribute>]=<value>, comma-separated for multiple values
+      expansion: expand[] repeated query parameter; unexpanded fields are absent, not null
+      idempotency: not supported — no idempotency key header or parameter exists
+      required_header: User-Agent is mandatory on every request
+- target: $.components.securitySchemes
+  update:
+    OAuth2:
+      type: oauth2
+      description: ClickFunnels platform application OAuth 2.0. Documented at https://developers.myclickfunnels.com/docs/oauth-20
+        and advertised at https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server, but absent
+        from the published spec.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            admin: Administrative access to the authorized workspace
+            read: Read access to the authorized workspace
+            write: Write access to the authorized workspace
+            delete: Delete access to the authorized workspace
+            mcp: Model Context Protocol access (advertised; no reachable endpoint as of 2026-08-13)
+- target: $.servers
+  update:
+  - url: https://accounts.myclickfunnels.com/api/v2
+    description: Account / team-level endpoints (teams, users, workspaces). Added by API Evangelist from the
+      ClickFunnels authentication docs; the published spec lists only the workspace-subdomain server.

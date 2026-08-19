@@ -1,0 +1,207 @@
+# ClickFunnels
+
+> ClickFunnels is a SaaS platform for building sales funnels, landing pages, websites, e-commerce stores, and marketing automation. It enables entrepreneurs and businesses to create complete online sales experiences without coding.
+
+## Company Information
+
+- [ClickFunnels, Inc.](https://www.clickfunnels.com): Founded in 2014 by Russell Brunson and Todd Dickerson
+- [Boise, Idaho, USA](https://www.clickfunnels.com): Headquarters
+- [Support Center](https://support.myclickfunnels.com): Help docs, guides, and tutorials
+- [Privacy Policy](https://www.clickfunnels.com/privacy-policy): ClickFunnels privacy policy
+- [Terms of Service](https://www.clickfunnels.com/terms): ClickFunnels terms of service
+
+## Pricing and Plans
+
+- [Startup](https://www.clickfunnels.com/pricing): Entry-level plan for new entrepreneurs building their first funnels
+- [Pro](https://www.clickfunnels.com/pricing): Mid-tier plan with expanded limits and advanced features
+- [Funnel Hacker](https://www.clickfunnels.com/pricing): Premium plan with unlimited funnels, courses, and priority support
+
+## Core Features
+
+ClickFunnels is an all-in-one platform. Each workspace provides:
+
+- **Funnels**: Multi-step sales flows (opt-in, sales, order, upsell, thank-you pages)
+- **Sites & Landing Pages**: Full websites, blogs, and standalone landing pages
+- **Products & Store**: Digital and physical product management with an e-commerce storefront
+- **Courses**: Online course creation and delivery with student enrollment
+- **Email**: Email marketing — broadcasts, templates, and automated sequences
+- **Automations (Workflows)**: Event-driven workflow automation with triggers and actions
+- **Contacts & CRM**: Customer data management, tagging, and segmentation
+- **Community**: Member community spaces for courses and memberships
+- **Appointments**: Scheduling and booking system
+- **Analytics**: Funnel performance, revenue tracking, and reporting dashboards
+- **Affiliate Center**: Affiliate program management with commission tracking
+- **MessageHub**: Multi-channel messaging (email, SMS, chat)
+- **Payments AI**: Intelligent payment processing and dunning
+- **Countdown Funnels**: Time-limited urgency campaigns
+- **Discounts**: Promotional codes and coupon management
+- **Short Links**: Branded URL shortening
+- **Opportunities**: Sales pipeline management
+- **Survey Workflows**: Survey and feedback collection
+
+## Skills
+
+- [Skills Index](https://accounts.myclickfunnels.com/skill.md): Index of available ClickFunnels skills for AI agents
+- [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md): Reference for PML, the XML-like DSL used to author the `markup` field on pages and blog posts
+- [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md): Create and update funnel/site pages whose body is PML
+- [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md): Create, list, and update blog posts whose body is PML
+- [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md): Define and manage reusable Refine filters consumed by conditional splits and email broadcasts
+- [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md): Funnel workflow APIs — split tests and conditional splits
+
+## Login
+
+- [Sign In](https://accounts.myclickfunnels.com/users/sign_in): User login page for ClickFunnels accounts
+- [Dashboard](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf): Main workspace dashboard after login
+
+## Funnels
+
+Funnels are multi-step sales flows that guide visitors through a sequence of pages — opt-in, sales, order, upsell, and thank-you pages — to convert them into customers.
+
+- [How to Create a New Funnel](https://support.myclickfunnels.com/docs/how-to-create-a-new-funnel): Step-by-step guide for creating funnels
+- [Funnels](https://support.myclickfunnels.com/docs/funnels): Help docs for funnels
+- [Funnels List](https://yoursubdomain.myclickfunnels.com/account/sites/AbCdEf/funnels): View and manage all funnels for a site
+- [Create Funnel from Template](https://yoursubdomain.myclickfunnels.com/account/sites/AbCdEf/funnels/frame): Browse funnel templates and create a new funnel
+- [Smart Funnel Builder](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/smart_funnels/new): AI-powered funnel builder that researches your market and designs a funnel
+- [Funnel Overview](https://yoursubdomain.myclickfunnels.com/account/funnels/AbCdEf): View and manage an individual funnel
+- [Edit Funnel](https://yoursubdomain.myclickfunnels.com/account/funnels/AbCdEf/edit): Edit funnel settings and steps
+- [Funnel Analytics](https://yoursubdomain.myclickfunnels.com/account/funnels/AbCdEf/builder/stats): View funnel performance analytics
+- [Site Overview](https://yoursubdomain.myclickfunnels.com/account/sites/AbCdEf): Site dashboard with funnels, pages, and settings
+
+## Products & Store
+
+Products can be digital (courses, downloads) or physical. The store provides an e-commerce storefront for browsing and purchasing products.
+
+- [Products](https://support.myclickfunnels.com/docs/products): Help docs for products
+- [Store](https://support.myclickfunnels.com/docs/store): Help docs for the storefront
+- [Products List](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/products): View and manage all products
+- [Store Settings](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/store): Manage storefront settings
+
+## Contacts & CRM
+
+Contacts are the people who interact with your funnels and pages. The CRM provides tools for managing customer data, applying tags, and segmenting your audience.
+
+- [Customers](https://support.myclickfunnels.com/docs/customers): Help docs for customer management
+- [Contacts List](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/contacts): View and manage all contacts
+- [Contact Segments](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/segments): Manage contact segments and filters
+
+## Courses
+
+Create and deliver online courses with lessons, modules, and student enrollment. Courses can be sold as products or offered for free.
+
+- [Courses](https://support.myclickfunnels.com/docs/courses): Help docs for courses
+- [Courses List](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/courses): View and manage all courses
+
+## Email Broadcasts
+
+Email broadcasts let you send one-time email campaigns to your contacts. You can create broadcasts from templates, customize content, select recipient segments, and schedule delivery.
+
+- [Create and Send a New Broadcast](https://support.myclickfunnels.com/docs/create-and-send-a-new-broadcast): Guide for creating and sending email broadcasts
+- [Email](https://support.myclickfunnels.com/docs/email): Help docs for email marketing
+- [Broadcasts](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/emails/broadcasts): View and manage email broadcasts
+- [Create Broadcast](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/emails/broadcasts/new): Create a new email broadcast
+- [Email Templates](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/emails/templates?tab=my_templates): Browse and manage email templates
+- [Create Email Template](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/emails/templates/new?build=true): Create a new email template
+- [Email Settings](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/marketing_setting): Configure marketing and email settings (sender name, address, footer)
+
+## Automations (Workflows)
+
+Workflows are event-driven automations that trigger actions based on customer behavior — such as sending emails, applying tags, or adding delays after a purchase or opt-in.
+
+- [Automations](https://support.myclickfunnels.com/docs/automations): Help docs for automations
+- [Workflows List](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/workflows): View and manage all workflows
+- [Workflow Templates](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/workflows/templates): Browse workflow templates
+
+## Landing Pages
+
+Standalone pages not attached to a funnel — used for opt-ins, webinar registrations, coming soon pages, and other single-page experiences.
+
+- [Landing Pages](https://support.myclickfunnels.com/docs/landing-pages): Help docs for landing pages
+
+## Site & Blog
+
+Each workspace has a site that hosts funnels, landing pages, and an optional blog for content marketing.
+
+- [Site](https://support.myclickfunnels.com/docs/site): Help docs for sites
+- [Site Overview](https://yoursubdomain.myclickfunnels.com/account/sites/AbCdEf): Manage your site, pages, and navigation
+
+## Community
+
+Member community spaces for courses and memberships. Create discussion forums, share content, and engage with your audience.
+
+- [Community](https://support.myclickfunnels.com/docs/community): Help docs for community
+
+## Appointments
+
+Scheduling and booking system that lets contacts book time with you. Integrates with calendars and can be embedded in funnels and pages.
+
+- [Appointments](https://support.myclickfunnels.com/docs/appointments): Help docs for appointments
+
+## Analytics
+
+Track funnel performance, revenue, conversion rates, and visitor behavior across your workspace.
+
+- [Analytics](https://support.myclickfunnels.com/docs/analytics): Help docs for analytics
+- [Analytics Dashboard](https://yoursubdomain.myclickfunnels.com/account/workspaces/AbCdEf/analytics): View workspace analytics
+
+## Affiliate Center
+
+Run an affiliate program with commission tracking, payouts, and affiliate management.
+
+- [Affiliate Center](https://support.myclickfunnels.com/docs/affiliate-center): Help docs for the affiliate center
+
+## MessageHub
+
+Multi-channel messaging center for email, SMS, and chat conversations with contacts.
+
+- [MessageHub](https://support.myclickfunnels.com/docs/messagehub): Help docs for MessageHub
+
+## Countdown Funnels
+
+Create time-limited urgency campaigns with countdown timers that drive conversions through scarcity.
+
+- [Countdown Funnels](https://support.myclickfunnels.com/docs/countdown-funnels): Help docs for countdown funnels
+
+## Discounts
+
+Create promotional codes and coupons to offer discounts on products and orders.
+
+- [Discounts](https://support.myclickfunnels.com/docs/discounts): Help docs for discounts
+
+## Short Links
+
+Branded URL shortening for tracking clicks and sharing clean links in marketing campaigns.
+
+- [Short Links](https://support.myclickfunnels.com/docs/short-links): Help docs for short links
+
+## Opportunities
+
+Sales pipeline management for tracking deals and prospects through stages.
+
+- [Opportunities](https://support.myclickfunnels.com/docs/opportunities): Help docs for opportunities
+
+## Survey Workflows
+
+Collect feedback and data from contacts with survey-based automation workflows.
+
+- [Survey Workflows](https://support.myclickfunnels.com/docs/survey-workflows): Help docs for survey workflows
+
+## Payments AI
+
+Intelligent payment processing with smart dunning, retry logic, and recovery for failed payments.
+
+- [Payments AI](https://support.myclickfunnels.com/docs/payments-ai): Help docs for Payments AI
+
+## Workspace Settings
+
+Configure workspace-level settings including domains, integrations, team members, and billing.
+
+- [Workspace Settings](https://support.myclickfunnels.com/docs/workspace-settings): Help docs for workspace settings
+
+## API Docs and Guides
+
+- [Developer Hub](https://developers.myclickfunnels.com): Full API documentation, guides, and reference for the ClickFunnels REST API
+- [Create Funnel (API)](https://developers.myclickfunnels.com/reference/createfunnel): Create funnels programmatically
+- [Create Page (API)](https://developers.myclickfunnels.com/reference/createpage): Create pages programmatically
+- [Apply Page Markup (API)](https://developers.myclickfunnels.com/reference/createpagemarkup): Apply PML markup to a page
+- [Retrieve Page Markup (API)](https://developers.myclickfunnels.com/reference/getpagemarkup): Get PML markup from an existing page
+- [Validate Page Markup (API)](https://developers.myclickfunnels.com/reference/validatepagemarkup): Validate PML markup without saving

@@ -1,0 +1,183 @@
+generated: '2026-08-13'
+method: searched
+source: https://accounts.myclickfunnels.com/skill.md
+note: Provider-published Agent Skills. ClickFunnels serves a skills index at https://accounts.myclickfunnels.com/skill.md
+  and one Markdown skill per product surface under /.well-known/<area>/skill.md. Every file here was fetched
+  verbatim (HTTP 200) on 2026-08-13; nothing in skills/ was authored by API Evangelist. The same files
+  are also served from app.myclickfunnels.com and are linked from the developer hub llms.txt.
+index_file: clickfunnels-skills-index.md
+skill_count: 16
+skills:
+- file: clickfunnels-blogs-import-external-post-skill.md
+  name: clickfunnels-import-external-blog-post
+  title: Import an External Blog Post
+  version: '1.0'
+  description: Copy one or more selected articles from an RSS feed, Atom feed, or public web page into
+    an existing ClickFunnels blog as verified drafts. Use when migrating external blog content while preserving
+    source metadata and avoiding duplicate posts.
+  source: https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md
+  reference_operations:
+  - updatepages
+- file: clickfunnels-blogs-skill.md
+  name: clickfunnels-blogs
+  title: ClickFunnels Blogs Skill
+  version: '1.0'
+  description: Manage ClickFunnels 2.0 blog posts programmatically - create, list, update, and delete
+    posts; manage authors, categories, and tags. The post body is authored in PML (Page Markup Language);
+    the DSL itself lives in the Page Markup Skill. Post writes require trusted platform access only when
+    a third-party platform acts on another team's workspaces; acting on your own account does not.
+  source: https://accounts.myclickfunnels.com/.well-known/blogs/skill.md
+  reference_operations: []
+- file: clickfunnels-courses-skill.md
+  name: clickfunnels-courses
+  title: ClickFunnels Courses Skill
+  version: '1.1'
+  description: Build ClickFunnels 2.0 courses programmatically - create a course, add its sections (modules),
+    and fill each section with lessons whose body is authored in Markdown, then publish the whole content
+    tree in one step. Use this skill when you need to scaffold, populate, or publish course content via
+    the public API. Requires an OAuth application token; course writes are not gated by trusted platform
+    access.
+  source: https://accounts.myclickfunnels.com/.well-known/courses/skill.md
+  reference_operations: []
+- file: clickfunnels-emails-skill.md
+  name: clickfunnels-emails
+  title: ClickFunnels Emails Skill
+  version: '1.0'
+  description: Author and manage marketing email programmatically - email templates (create, update, delete,
+    with html_body/text_body), one-off broadcasts, and the sending domains and addresses they go out from.
+    Use this skill when you need to create an email template via the API, send a broadcast, choose an
+    address whose usable_as_sender flag is true, or attach an inline HTML email body to a workflow send-email
+    step.
+  source: https://accounts.myclickfunnels.com/.well-known/emails/skill.md
+  reference_operations: []
+- file: clickfunnels-funnels-skill.md
+  name: clickfunnels-funnels
+  title: ClickFunnels Funnels Skill
+  version: '1.0'
+  description: Build and modify funnel workflows programmatically - split tests, conditional splits, branch
+    positioning, multi-page branches, and stored-filter wiring. Use this skill when you need to add A/B
+    testing or audience-based routing to a funnel via the public API.
+  source: https://accounts.myclickfunnels.com/.well-known/funnels/skill.md
+  reference_operations: []
+- file: clickfunnels-orders-skill.md
+  name: clickfunnels-orders
+  title: ClickFunnels Orders Skill
+  version: '1.1'
+  description: Manage the lifecycle of an existing ClickFunnels order programmatically - cancel a Payments
+    AI or Stripe subscription so it stops renewing, refund a charge in full, and abandon an unpaid invoice
+    to stop its automatic payment retries. All three are propagated to the payment processor. Use this
+    skill when you need to cancel a customer's subscription, stop a rebill, issue a refund, or halt retry
+    attempts on a failed payment through the API. Reading orders (list/show, invoices, transactions) is
+    covered too.
+  source: https://accounts.myclickfunnels.com/.well-known/orders/skill.md
+  reference_operations: []
+- file: clickfunnels-page-markup-skill.md
+  name: clickfunnels-page-markup
+  title: ClickFunnels Page Markup Language (PML)
+  version: '1.0'
+  description: Reference for PML (Page Markup Language), the XML-like DSL that ClickFunnels 2.0 uses to
+    describe page content. Read this skill when authoring or editing markup for any surface that accepts
+    a `markup` field - currently pages and blog posts. Writing `markup` replaces the entire page and PML
+    covers only a subset of what the ClickFunnels editor can build, so read the approval guardrail before
+    touching a page that already exists. This is a language reference; for the HTTP APIs that consume
+    it, see the Pages Skill (for funnel/site pages) or the Blogs Skill (for blog posts).
+  source: https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md
+  reference_operations: []
+- file: clickfunnels-pages-skill.md
+  name: clickfunnels-pages
+  title: ClickFunnels Pages Skill
+  version: '1.0'
+  description: Create, read, and update ClickFunnels 2.0 pages programmatically - funnel pages, site pages,
+    checkout pages, opt-ins. The page body is authored in PML (Page Markup Language); the DSL itself lives
+    in the Page Markup Skill. Writing pages as a third-party platform on another team's workspaces requires
+    trusted platform access; acting on your own account does not.
+  source: https://accounts.myclickfunnels.com/.well-known/pages/skill.md
+  reference_operations: []
+- file: clickfunnels-products-skill.md
+  name: clickfunnels-products
+  title: ClickFunnels Products & Discounts Skill
+  version: '1.0'
+  description: 'Create and manage sellable products, their prices, and discounts via the public API -
+    products, the implicit default variant, one-time / subscription / payment-plan prices, compare-at
+    (strike-through) pricing, repricing safely once orders exist, discount codes (percentage or fixed
+    amount, workspace-wide or scoped to specific products/variants), and attaching products to funnel
+    pages so a checkout can sell them. Use this skill when setting up something to sell programmatically:
+    a membership, a course offer, an order-form product, a launch discount code, or when changing an existing
+    product''s price.'
+  source: https://accounts.myclickfunnels.com/.well-known/products/skill.md
+  reference_operations: []
+- file: clickfunnels-refine-filters-skill.md
+  name: clickfunnels-refine-filters
+  title: ClickFunnels Refine Filters Skill
+  version: '1.0'
+  description: Generate contact filters from plain English, define and manage reusable contact filters
+    for conditional splits and broadcasts, and apply existing order-filter tokens to the orders list.
+    Use this skill when a CF2 surface takes a `filter_id` or when listing orders through a filter already
+    built in ClickFunnels. Reading and one-time generation require Contacts read access; persisting or
+    modifying a contact filter requires Contacts write access.
+  source: https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md
+  reference_operations: []
+- file: clickfunnels-sdk-add-checkout-skill.md
+  name: clickfunnels-sdk-checkout
+  title: ClickFunnels SDK - Add Checkout to an External Page
+  version: '1.0'
+  description: 'Add checkout to an external page - a page you host yourself that is already registered
+    as a ClickFunnels funnel step with the SDK embedded. Covers attaching products in ClickFunnels, the
+    data-cf-element checkout form (payment-method, pay, shipping, billing), the CfSdk.products() / CfSdk.checkout.*
+    JavaScript API, order bumps, one-click one-time offers (oto-accept / oto-decline), styling the payment
+    fields with --cfsdk-checkout-* design tokens, and testing in test mode. Use this skill when selling
+    products from an externally-hosted page: order forms, upsell pages, and multi-step sales funnels.'
+  source: https://accounts.myclickfunnels.com/.well-known/sdk/add-checkout/skill.md
+  reference_operations: []
+- file: clickfunnels-sdk-create-external-page-skill.md
+  name: clickfunnels-sdk-external-page
+  title: ClickFunnels SDK - Create an External Page
+  version: '1.0'
+  description: 'Add the ClickFunnels SDK to a page you host yourself - your own domain, a static host,
+    a Netlify/Vercel site, or even a local file:// - so it tracks visits, captures opt-ins, and carries
+    contact identity across funnel steps. Use this skill when embedding the SDK into an HTML page: the
+    cf-page-token meta tag, the sdk.js script, and the data-cf-element form markup the SDK reads. The
+    page is registered with ClickFunnels - as a funnel step, or standalone (registered for tracking now,
+    placed in a funnel later).'
+  source: https://accounts.myclickfunnels.com/.well-known/sdk/create-external-page/skill.md
+  reference_operations: []
+- file: clickfunnels-sdk-migrate-external-page-domain-skill.md
+  name: clickfunnels-sdk-migrate-external-page-domain
+  title: ClickFunnels SDK - Migrate an External Page Domain
+  version: '1.0'
+  description: Move existing externally hosted ClickFunnels funnel pages from one web origin to another
+    without replacing their SDK page tokens. Use this skill when changing the domain or host for external
+    funnel pages while preserving every page path, funnel branch, visit tracking, and form submission
+    flow.
+  source: https://accounts.myclickfunnels.com/.well-known/sdk/migrate-external-page-domain/skill.md
+  reference_operations: []
+- file: clickfunnels-stats-skill.md
+  name: clickfunnels-stats
+  title: ClickFunnels Stats Skill
+  version: '1.0'
+  description: Read aggregated funnel and page analytics - views, opt-ins, sales, earnings - over a configurable
+    timerange. Use this skill any time you need to surface performance metrics for a funnel or a single
+    page, including for recurring agent jobs that audit funnels daily and suggest improvements.
+  source: https://accounts.myclickfunnels.com/.well-known/stats/skill.md
+  reference_operations: []
+- file: clickfunnels-subscription-changes-skill.md
+  name: clickfunnels-subscription-changes
+  title: ClickFunnels Subscription Changes Skill
+  version: '1.0'
+  description: Manage existing subscription orders programmatically - discover allowed variant/price upgrade
+    or downgrade targets for a subscription line item, preview the upcoming invoice impact, then commit
+    the change. Use this skill any time you need to move a customer's subscription onto a different plan
+    or billing cadence without cancelling and re-buying. Requires trusted platform access only when a
+    third-party platform acts on another team's workspaces; acting on your own account does not.
+  source: https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md
+  reference_operations: []
+- file: clickfunnels-workflows-skill.md
+  name: clickfunnels-workflows
+  title: ClickFunnels Workflows Skill
+  version: '1.0'
+  description: Build marketing-automation Workflows programmatically - triggers, ordered action steps
+    (email, tagging, attributes, opportunities, course/community access, webhooks, delays), conditional
+    / A-B branching, enabling, and manually enrolling contacts. Use this skill when you need to create
+    or configure an automation (welcome series, lead routing, tagging, onboarding) via the public API.
+  source: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md
+  reference_operations: []

@@ -1,0 +1,25 @@
+generated: '2026-08-13'
+method: searched
+source: https://accounts.myclickfunnels.com/.well-known/sdk/add-checkout/skill.md
+note: ClickFunnels has no separate sandbox environment, no test-vs-live API key prefixes and no test API host
+  — the same tokens and the same /api/v2 hosts serve production. The only test mode ClickFunnels publishes
+  is a checkout test mode that applies while a funnel is not live. No ClickFunnels-published test card numbers
+  exist; the docs defer to the connected payment gateway's own test cards, so none are recorded here.
+environments:
+- name: production
+  base: https://{subdomain}.myclickfunnels.com/api/v2
+  default: true
+key_prefixes: []
+test_mode:
+  name: Checkout test mode
+  trigger: Automatic while the funnel containing the checkout step is not live.
+  behavior: Payments run against the gateway in test mode and the SDK renders a debug overlay badge on the
+    page.
+  test_values: Use the connected gateway's own test cards — ClickFunnels does not publish its own.
+  docs: https://accounts.myclickfunnels.com/.well-known/sdk/add-checkout/skill.md
+test_clocks: false
+fixtures: false
+webhook_testing:
+  note: The signature-verification guide walks through sending a real event to https://webhook.site to exercise
+    the HMAC verification path.
+  docs: https://developers.myclickfunnels.com/docs/signature-verification

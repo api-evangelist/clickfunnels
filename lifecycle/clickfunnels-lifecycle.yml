@@ -1,0 +1,43 @@
+generated: '2026-08-13'
+method: searched
+source: https://developers.myclickfunnels.com/docs/intro
+versioning:
+  scheme: uri-path
+  current: v2
+  path_prefix: /api/v2
+  spec_version: 2.0.0
+  docs: https://developers.myclickfunnels.com/docs/getting-started
+  note: The CF2 API is the current platform API. ClickFunnels Classic runs a separate, older API documented
+    at https://apidocs.clickfunnels.com/.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  note: 'No written deprecation or Sunset/Deprecation-header policy is published. What IS published is concrete
+    deprecation: V1 webhook payloads are called deprecated in the webhook docs and callers are told to move
+    to V2, and the whole ClickFunnels Classic API is a superseded generation. Two operations carry deprecated:
+    true in the OpenAPI.'
+  deprecated_surfaces:
+  - surface: V1 webhook payloads
+    evidence: https://developers.myclickfunnels.com/docs/webhooks
+    status: deprecated
+  - surface: ClickFunnels Classic API
+    evidence: https://apidocs.clickfunnels.com/
+    status: legacy generation, superseded by CF2
+sla:
+  url: null
+  uptime_target: null
+status_page: https://status.myclickfunnels.com
+status_pages:
+- url: https://status.myclickfunnels.com
+  title: ClickFunnels Status
+  platform: Atlassian Statuspage
+  covers: ClickFunnels 2.0
+- url: https://status.clickfunnels.com
+  title: ClickFunnels Classic Status
+  platform: Atlassian Statuspage
+  covers: ClickFunnels Classic
+changelog: https://developers.myclickfunnels.com/changelog
+deprecated_operations: []
+note: deprecated_operations is empty because the two deprecated:true markers in the spec sit on schema properties
+  rather than on operations.

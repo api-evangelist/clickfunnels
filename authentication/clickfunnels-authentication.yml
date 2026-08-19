@@ -1,13 +1,77 @@
-generated: '2026-07-11'
-method: derived
-source: openapi/clickfunnels-openapi.yml
+generated: '2026-08-13'
+method: searched
+source: https://developers.myclickfunnels.com/docs/authentication
+docs:
+- https://developers.myclickfunnels.com/docs/authentication
+- https://developers.myclickfunnels.com/docs/oauth-20
+- https://developers.myclickfunnels.com/docs/getting-started
+- https://developers.myclickfunnels.com/docs/sso
+- https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server
 summary:
   types:
   - http
+  - oauth2
+  http_schemes:
+  - bearer
+  oauth2_flows:
+  - authorizationCode
+  api_key_in: []
+  mtls: false
+  openid_connect: false
 schemes:
 - name: BearerAuth
   type: http
   scheme: bearer
-  description: ClickFunnels 2.0 API access token issued per team.
+  description: ClickFunnels 2.0 API access token. Team-scoped by default — a default token reaches every workspace
+    in the team that issued it.
   sources:
-  - openapi/clickfunnels-openapi.yml
+  - openapi/clickfunnels-api-openapi.json
+  - https://developers.myclickfunnels.com/docs/authentication
+  issued_from: Team settings → the CF2 developer portal in the ClickFunnels UI.
+- name: OAuth2
+  type: oauth2
+  description: Platform application flow — a third party gets a workspace-scoped access token to act on a ClickFunnels
+    customer's behalf. Not present in the OpenAPI securitySchemes; documented in the OAuth guide and in RFC
+    8414 metadata.
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+    tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+    revocationUrl: https://accounts.myclickfunnels.com/oauth/revoke
+    registrationUrl: https://accounts.myclickfunnels.com/oauth/register
+    pkce:
+    - S256
+    scopes:
+    - admin
+    - read
+    - write
+    - delete
+    - mcp
+  sources:
+  - https://developers.myclickfunnels.com/docs/oauth-20
+  - https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server
+  artifact: scopes/clickfunnels-scopes.yml
+required_headers:
+- header: Authorization
+  value: Bearer <token>
+- header: User-Agent
+  value: YourAppYourOrg
+  note: Required — ClickFunnels rejects requests without a User-Agent.
+host_routing:
+  account_level: https://accounts.myclickfunnels.com/api/v2
+  workspace_level: https://{subdomain}.myclickfunnels.com/api/v2
+  note: After an OAuth exchange, prefix workspace-scoped calls with the workspace_url returned in the token
+    response rather than assuming a host.
+token_lifetime:
+  expires: false
+  refresh: refresh_token grant advertised in metadata; the OAuth guide says tokens do not expire and expires_in
+    should be ignored.
+other_flows:
+- name: SSO (JWT)
+  description: Authenticate a ClickFunnels contact from your own platform with a signed JWT.
+  docs: https://developers.myclickfunnels.com/docs/sso
+- name: CLI browser login
+  description: cf auth login runs a browser authorization; cf auth login --installation issues a persistent
+    workspace-scoped installation token for service accounts.
+  docs: https://github.com/clickfunnels/cli
+plan_gate: Full API and webhook access is not included on the Launch plan.

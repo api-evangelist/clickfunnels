@@ -1,0 +1,62 @@
+generated: '2026-08-13'
+method: searched
+source: https://developers.myclickfunnels.com/changelog
+scheme: dated entries typed added|fixed|improved|deprecated|removed
+current_version: v2 (spec info.version 2.0.0)
+versioned_releases: false
+note: The developer hub runs a dated changelog rather than numbered releases. Every recent entry carries an
+  "Agent examples" paragraph and, where one exists, a link to the matching /.well-known/ skill — the changelog
+  is written for agent integrators as much as for humans. Recent window only; the live changelog is the source
+  of truth.
+entry_count: 10
+entries:
+- date: '2026-08-10'
+  type: fixed
+  title: Publishing a course or section now publishes its lessons
+  url: https://developers.myclickfunnels.com/changelog/publishing-a-course-or-section-now-publishes-its-lessons
+  breaking: false
+- date: '2026-08-07'
+  type: added
+  title: Manage discount codes through the API
+  url: https://developers.myclickfunnels.com/changelog/manage-discount-codes-through-the-api
+  breaking: false
+- date: '2026-08-06'
+  type: added
+  title: Refund a specific transaction
+  url: https://developers.myclickfunnels.com/changelog/refund-a-specific-transaction
+  breaking: false
+- date: '2026-08-06'
+  type: added
+  title: Create and manage email sender addresses
+  url: https://developers.myclickfunnels.com/changelog/create-and-manage-email-sender-addresses
+  breaking: false
+- date: '2026-08-05'
+  type: fixed
+  title: Truncated page markup is rejected instead of saved
+  url: https://developers.myclickfunnels.com/changelog/truncated-page-markup-is-rejected-instead-of-saved
+  breaking: false
+- date: '2026-08-05'
+  type: added
+  title: Set order bumps on a checkout page
+  url: https://developers.myclickfunnels.com/changelog/set-order-bumps-on-a-checkout-page
+  breaking: false
+- date: '2026-08-05'
+  type: added
+  title: Provision email sending domains through the API
+  url: https://developers.myclickfunnels.com/changelog/provision-email-sending-domains-through-the-api
+  breaking: false
+- date: '2026-07-27'
+  type: added
+  title: Stop payment retries on a past-due invoice
+  url: https://developers.myclickfunnels.com/changelog/stop-payment-retries-on-a-past-due-invoice
+  breaking: false
+- date: '2026-07-24'
+  type: fixed
+  title: Variant create responses match what you read back
+  url: https://developers.myclickfunnels.com/changelog/variant-create-responses-match-what-you-read-back
+  breaking: false
+- date: '2026-07-23'
+  type: added
+  title: Change a blog's appearance through the API
+  url: https://developers.myclickfunnels.com/changelog/change-a-blogs-appearance-through-the-api
+  breaking: false

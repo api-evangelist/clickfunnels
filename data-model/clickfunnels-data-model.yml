@@ -1,0 +1,1625 @@
+generated: '2026-08-13'
+method: derived
+source: openapi/clickfunnels-api-openapi.json
+note: Entity graph derived from the 276 component schemas in the ClickFunnels OpenAPI. Entities are the *Attributes
+  schemas; belongs_to edges come from *_id reference fields (target_hint is the name implied by the field,
+  not a resolved $ref), has_one/has_many edges come from real $ref links. Every ClickFunnels resource is workspace-scoped
+  beneath a team, and public_id is the obfuscated external identifier that sits alongside the numeric id.
+root:
+  hierarchy:
+  - Team
+  - Workspace
+  - Site/Funnel
+  - Page
+  note: Teams own workspaces; workspaces own everything else. Account-level resources (teams, users, workspaces)
+    are served from accounts.myclickfunnels.com; workspace-scoped resources from the workspace subdomain.
+identifier_convention:
+  primary: id (integer)
+  external: public_id (obfuscated string)
+  note: Most fetch endpoints accept either.
+entity_count: 113
+tag_count: 102
+domains:
+- domain: Communities::Spaces::Post
+  operations: 10
+- domain: Communities::Spaces::Post::Comment
+  operations: 8
+- domain: Page
+  operations: 8
+- domain: Workflow
+  operations: 8
+- domain: Contact
+  operations: 7
+- domain: Forms::Field
+  operations: 6
+- domain: Fulfillment
+  operations: 6
+- domain: Funnel
+  operations: 6
+- domain: Orders::Invoice
+  operations: 6
+- domain: Product
+  operations: 6
+- domain: Blogs::Post
+  operations: 5
+- domain: Contacts::Tag
+  operations: 5
+- domain: Communities::SpaceGroup
+  operations: 5
+- domain: Communities::Space
+  operations: 5
+- domain: Communities::Membership
+  operations: 5
+- domain: Course
+  operations: 5
+- domain: Courses::Section
+  operations: 5
+- domain: Courses::Lesson
+  operations: 5
+- domain: Discount
+  operations: 5
+- domain: Emails::Address
+  operations: 5
+- domain: Emails::Broadcast
+  operations: 5
+- domain: Emails::Template
+  operations: 5
+- domain: Emails::Topic
+  operations: 5
+- domain: Form
+  operations: 5
+- domain: Forms::FieldSet
+  operations: 5
+- domain: Forms::Fields::Option
+  operations: 5
+- domain: Forms::Submission
+  operations: 5
+- domain: Forms::Submissions::Answer
+  operations: 5
+- domain: Fulfillments::Location
+  operations: 5
+- domain: Funnels::SplitTestStep
+  operations: 5
+- domain: Funnels::ConditionalSplitStep
+  operations: 5
+- domain: Funnels::Tag
+  operations: 5
+- domain: Image
+  operations: 5
+- domain: Order
+  operations: 5
+- domain: Orders::Tag
+  operations: 5
+- domain: Products::Tag
+  operations: 5
+- domain: RefineFilter
+  operations: 5
+- domain: Sales::Pipelines::Stage
+  operations: 5
+- domain: Sales::Opportunity
+  operations: 5
+- domain: Sales::Opportunities::Note
+  operations: 5
+- domain: Shipping::Package
+  operations: 5
+- domain: Shipping::Profile
+  operations: 5
+- domain: Shipping::Rate
+  operations: 5
+- domain: Shipping::Zone
+  operations: 5
+- domain: Shipping::Rates::Name
+  operations: 5
+- domain: Store
+  operations: 5
+- domain: Webhooks::Outgoing::Endpoint
+  operations: 5
+- domain: Workflows::Trigger
+  operations: 5
+- domain: Workflows::Step
+  operations: 5
+- domain: Contacts::AppliedTag
+  operations: 4
+- domain: Contacts::TagAction
+  operations: 4
+- domain: Contacts::EnrollAction
+  operations: 4
+- domain: Contacts::RunWorkflowAction
+  operations: 4
+- domain: Contacts::UnsubscribeAction
+  operations: 4
+- domain: Contacts::ExportAction
+  operations: 4
+- domain: Community
+  operations: 4
+- domain: Communities::Spaces::Post::VideoEmbed
+  operations: 4
+- domain: Communities::Ban
+  operations: 4
+- domain: Courses::Enrollment
+  operations: 4
+- domain: Courses::LessonCompletion
+  operations: 4
+- domain: Courses::Sections::PublishAction
+  operations: 4
+- domain: Emails::Broadcasts::SendAction
+  operations: 4
+- domain: Emails::Domain
+  operations: 4
+- domain: Orders::AppliedTag
+  operations: 4
+- domain: Products::Collection
+  operations: 4
+- domain: Products::Price
+  operations: 4
+- domain: Products::Variant
+  operations: 4
+- domain: Sales::Pipeline
+  operations: 4
+- domain: Theme
+  operations: 4
+- domain: Team
+  operations: 3
+- domain: User
+  operations: 3
+- domain: Workspace
+  operations: 3
+- domain: Blog
+  operations: 3
+- domain: Blogs::Tag
+  operations: 3
+- domain: Communities::Spaces::Post::Like
+  operations: 3
+- domain: Communities::Spaces::Post::Comment::Like
+  operations: 3
+- domain: Communities::Memberships::ExportAction
+  operations: 3
+- domain: Communities::Bans::ExportAction
+  operations: 3
+- domain: Orders::Transaction
+  operations: 3
+- domain: Workflows::Run
+  operations: 3
+- domain: Site
+  operations: 2
+- domain: Addresses::Country
+  operations: 2
+- domain: Blogs::Category
+  operations: 2
+- domain: Blogs::Author
+  operations: 2
+- domain: Contacts::Filter
+  operations: 2
+- domain: Communities::Memberships::BanAction
+  operations: 2
+- domain: Communities::Memberships::AddToGroupAction
+  operations: 2
+- domain: Communities::Memberships::RemoveFromGroupAction
+  operations: 2
+- domain: Communities::Bans::UnbanAction
+  operations: 2
+- domain: Domain
+  operations: 2
+- domain: Download
+  operations: 2
+- domain: Emails::Settings
+  operations: 2
+- domain: FormSubmission
+  operations: 2
+- domain: Orders::Invoices::Restock
+  operations: 2
+- domain: Orders::LineItems::Change
+  operations: 2
+- domain: Shipping::LocationGroup
+  operations: 2
+- domain: Webhooks::Outgoing::Event
+  operations: 2
+- domain: Addresses::Region
+  operations: 1
+- domain: Appointments::ScheduledEvent
+  operations: 1
+- domain: Products::Prices::ChangeOption
+  operations: 1
+- domain: Style
+  operations: 1
+- domain: Webhooks::Outgoing::EventType
+  operations: 1
+entities:
+- entity: AddressesCountry
+  schema: AddressesCountryAttributes
+  fields: 5
+- entity: AddressesRegion
+  schema: AddressesRegionAttributes
+  fields: 4
+- entity: AppointmentsScheduledEvent
+  schema: AppointmentsScheduledEventAttributes
+  fields: 14
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: order_id
+    target_hint: Order
+- entity: BillingSubscription
+  schema: BillingSubscriptionAttributes
+  fields: 8
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: team_id
+    target_hint: Team
+  - type: has_many
+    via: included_prices
+    target: BillingSubscriptionIncludedPrice
+- entity: BillingSubscriptionIncludedPrice
+  schema: BillingSubscriptionIncludedPriceAttributes
+  fields: 6
+  identifiers:
+  - id
+  relationships:
+  - type: belongs_to
+    via: subscription_id
+    target_hint: Subscription
+  - type: belongs_to
+    via: price_id
+    target_hint: Price
+- entity: Blog
+  schema: BlogAttributes
+  fields: 17
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: site_id
+    target_hint: Site
+  - type: belongs_to
+    via: theme_id
+    target_hint: Theme
+  - type: belongs_to
+    via: resolved_template_page_id
+    target_hint: ResolvedTemplatePage
+  - type: belongs_to
+    via: resolved_post_template_page_id
+    target_hint: ResolvedPostTemplatePage
+  - type: belongs_to
+    via: resolved_category_template_page_id
+    target_hint: ResolvedCategoryTemplatePage
+  - type: belongs_to
+    via: style_id
+    target_hint: Style
+  - type: belongs_to
+    via: seo_image_id
+    target_hint: SeoImage
+- entity: BlogsAuthor
+  schema: BlogsAuthorAttributes
+  fields: 12
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: blog_id
+    target_hint: Blog
+  - type: belongs_to
+    via: image_id
+    target_hint: Image
+- entity: BlogsCategory
+  schema: BlogsCategoryAttributes
+  fields: 8
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: blog_id
+    target_hint: Blog
+- entity: BlogsPost
+  schema: BlogsPostAttributes
+  fields: 19
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: blog_id
+    target_hint: Blog
+  - type: belongs_to
+    via: image_id
+    target_hint: Image
+- entity: BlogsTag
+  schema: BlogsTagAttributes
+  fields: 6
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: blog_id
+    target_hint: Blog
+- entity: CommunitiesAction
+  schema: CommunitiesActionAttributes
+  fields: 13
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: community_id
+    target_hint: Community
+- entity: CommunitiesBan
+  schema: CommunitiesBanAttributes
+  fields: 10
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: community_id
+    target_hint: Community
+  - type: belongs_to
+    via: bannable_id
+    target_hint: Bannable
+  - type: belongs_to
+    via: banned_by_id
+    target_hint: BannedBy
+- entity: CommunitiesBansExportAction
+  schema: CommunitiesBansExportActionAttributes
+  fields: 0
+- entity: CommunitiesBansUnbanAction
+  schema: CommunitiesBansUnbanActionAttributes
+  fields: 0
+- entity: CommunitiesMembership
+  schema: CommunitiesMembershipAttributes
+  fields: 7
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: community_id
+    target_hint: Community
+- entity: CommunitiesMembershipsAddToGroupAction
+  schema: CommunitiesMembershipsAddToGroupActionAttributes
+  fields: 0
+- entity: CommunitiesMembershipsBanAction
+  schema: CommunitiesMembershipsBanActionAttributes
+  fields: 0
+- entity: CommunitiesMembershipsExportAction
+  schema: CommunitiesMembershipsExportActionAttributes
+  fields: 0
+- entity: CommunitiesMembershipsRemoveFromGroupAction
+  schema: CommunitiesMembershipsRemoveFromGroupActionAttributes
+  fields: 0
+- entity: CommunitiesSpace
+  schema: CommunitiesSpaceAttributes
+  fields: 28
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: space_group_id
+    target_hint: SpaceGroup
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: card_image_id
+    target_hint: CardImage
+  - type: belongs_to
+    via: social_image_id
+    target_hint: SocialImage
+- entity: CommunitiesSpaceGroup
+  schema: CommunitiesSpaceGroupAttributes
+  fields: 24
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: community_id
+    target_hint: Community
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: card_image_id
+    target_hint: CardImage
+- entity: CommunitiesSpacesPost
+  schema: CommunitiesSpacesPostAttributes
+  fields: 11
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: contact_id
+    target_hint: Contact
+- entity: CommunitiesSpacesPostsComment
+  schema: CommunitiesSpacesPostsCommentAttributes
+  fields: 10
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: contact_id
+    target_hint: Contact
+- entity: CommunitiesSpacesPostsCommentsLike
+  schema: CommunitiesSpacesPostsCommentsLikeAttributes
+  fields: 6
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: comment_id
+    target_hint: Comment
+- entity: CommunitiesSpacesPostsLike
+  schema: CommunitiesSpacesPostsLikeAttributes
+  fields: 6
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: post_id
+    target_hint: Post
+- entity: CommunitiesSpacesPostsVideoEmbed
+  schema: CommunitiesSpacesPostsVideoEmbedAttributes
+  fields: 9
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: post_id
+    target_hint: Post
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: Community
+  schema: CommunityAttributes
+  fields: 26
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: site_id
+    target_hint: Site
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: logo_image_id
+    target_hint: LogoImage
+  - type: belongs_to
+    via: social_image_id
+    target_hint: SocialImage
+- entity: ConditionalSplitStep
+  schema: ConditionalSplitStepAttributes
+  fields: 8
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: funnel_id
+    target_hint: Funnel
+  - type: belongs_to
+    via: funnel_public_id
+    target_hint: FunnelPublic
+- entity: Contact
+  schema: ContactAttributes
+  fields: 1
+- entity: ContactBase
+  schema: ContactBaseAttributes
+  fields: 24
+  identifiers:
+  - id
+  - public_id
+  - uuid
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: ContactShort
+  schema: ContactShortAttributes
+  fields: 6
+  identifiers:
+  - id
+  - public_id
+- entity: ContactsAppliedTag
+  schema: ContactsAppliedTagAttributes
+  fields: 8
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: contact_id
+    target_hint: Contact
+  - type: belongs_to
+    via: tag_id
+    target_hint: Tag
+  - type: has_one
+    via: contact
+    target: ContactShort
+- entity: ContactsEnrollAction
+  schema: ContactsEnrollActionAttributes
+  fields: 16
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: filter_id
+    target_hint: Filter
+  - type: belongs_to
+    via: created_by_id
+    target_hint: CreatedBy
+- entity: ContactsExportAction
+  schema: ContactsExportActionAttributes
+  fields: 17
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: filter_id
+    target_hint: Filter
+  - type: belongs_to
+    via: created_by_id
+    target_hint: CreatedBy
+  - type: belongs_to
+    via: approved_by_id
+    target_hint: ApprovedBy
+- entity: ContactsRunWorkflowAction
+  schema: ContactsRunWorkflowActionAttributes
+  fields: 17
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: workflow_id
+    target_hint: Workflow
+  - type: belongs_to
+    via: filter_id
+    target_hint: Filter
+  - type: belongs_to
+    via: created_by_id
+    target_hint: CreatedBy
+  - type: belongs_to
+    via: approved_by_id
+    target_hint: ApprovedBy
+- entity: ContactsTag
+  schema: ContactsTagAttributes
+  fields: 7
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: ContactsTagAction
+  schema: ContactsTagActionAttributes
+  fields: 17
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: filter_id
+    target_hint: Filter
+  - type: belongs_to
+    via: created_by_id
+    target_hint: CreatedBy
+  - type: belongs_to
+    via: approved_by_id
+    target_hint: ApprovedBy
+- entity: ContactsUnsubscribeAction
+  schema: ContactsUnsubscribeActionAttributes
+  fields: 15
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: filter_id
+    target_hint: Filter
+  - type: belongs_to
+    via: created_by_id
+    target_hint: CreatedBy
+  - type: belongs_to
+    via: approved_by_id
+    target_hint: ApprovedBy
+- entity: Course
+  schema: CourseAttributes
+  fields: 17
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: root_section_id
+    target_hint: RootSection
+- entity: CoursesEnrollment
+  schema: CoursesEnrollmentAttributes
+  fields: 12
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: contact_id
+    target_hint: Contact
+  - type: belongs_to
+    via: course_id
+    target_hint: Course
+  - type: belongs_to
+    via: origination_source_id
+    target_hint: OriginationSource
+  - type: has_one
+    via: contact
+    target: ContactShort
+- entity: CoursesLesson
+  schema: CoursesLessonAttributes
+  fields: 10
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: section_id
+    target_hint: Section
+- entity: CoursesLessonCompletion
+  schema: CoursesLessonCompletionAttributes
+  fields: 5
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: enrollment_id
+    target_hint: Enrollment
+  - type: belongs_to
+    via: lesson_id
+    target_hint: Lesson
+- entity: CoursesSection
+  schema: CoursesSectionAttributes
+  fields: 16
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: course_id
+    target_hint: Course
+  - type: belongs_to
+    via: blocker_section_id
+    target_hint: BlockerSection
+  - type: belongs_to
+    via: blocker_lesson_id
+    target_hint: BlockerLesson
+  - type: belongs_to
+    via: parent_id
+    target_hint: Parent
+- entity: CoursesSectionsPublishAction
+  schema: CoursesSectionsPublishActionAttributes
+  fields: 19
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: course_id
+    target_hint: Course
+  - type: belongs_to
+    via: created_by_id
+    target_hint: CreatedBy
+  - type: belongs_to
+    via: approved_by_id
+    target_hint: ApprovedBy
+- entity: Discount
+  schema: DiscountAttributes
+  fields: 26
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: Domain
+  schema: DomainAttributes
+  fields: 8
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: Download
+  schema: DownloadAttributes
+  fields: 7
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: asset_id
+    target_hint: Asset
+- entity: EmailsAddress
+  schema: EmailsAddressAttributes
+  fields: 10
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: EmailsBroadcast
+  schema: EmailsBroadcastAttributes
+  fields: 24
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: origination_channel_id
+    target_hint: OriginationChannel
+  - type: belongs_to
+    via: external_id
+    target_hint: External
+  - type: belongs_to
+    via: filter_id
+    target_hint: Filter
+- entity: EmailsBroadcastsSendAction
+  schema: EmailsBroadcastsSendActionAttributes
+  fields: 15
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: created_by_id
+    target_hint: CreatedBy
+  - type: belongs_to
+    via: approved_by_id
+    target_hint: ApprovedBy
+  - type: belongs_to
+    via: broadcast_id
+    target_hint: Broadcast
+- entity: EmailsDomain
+  schema: EmailsDomainAttributes
+  fields: 19
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: EmailsSettings
+  schema: EmailsSettingsAttributes
+  fields: 7
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: EmailsTemplate
+  schema: EmailsTemplateAttributes
+  fields: 12
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: EmailsTopic
+  schema: EmailsTopicAttributes
+  fields: 7
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: Form
+  schema: FormAttributes
+  fields: 6
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: FormSubmission
+  schema: FormSubmissionAttributes
+  fields: 8
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: contact_id
+    target_hint: Contact
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: page_id
+    target_hint: Page
+- entity: FormsField
+  schema: FormsFieldAttributes
+  fields: 11
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: field_set_id
+    target_hint: FieldSet
+- entity: FormsFieldSet
+  schema: FormsFieldSetAttributes
+  fields: 6
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: form_id
+    target_hint: Form
+- entity: FormsFieldsOption
+  schema: FormsFieldsOptionAttributes
+  fields: 7
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: field_id
+    target_hint: Field
+- entity: FormsSubmission
+  schema: FormsSubmissionAttributes
+  fields: 6
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: form_id
+    target_hint: Form
+  - type: belongs_to
+    via: contact_id
+    target_hint: Contact
+- entity: FormsSubmissionsAnswer
+  schema: FormsSubmissionsAnswerAttributes
+  fields: 9
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: submission_id
+    target_hint: Submission
+  - type: belongs_to
+    via: field_id
+    target_hint: Field
+  - type: belongs_to
+    via: fields_option_id
+    target_hint: FieldsOption
+- entity: Fulfillment
+  schema: FulfillmentAttributes
+  fields: 13
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: contact_id
+    target_hint: Contact
+  - type: belongs_to
+    via: location_id
+    target_hint: Location
+- entity: FulfillmentsLocation
+  schema: FulfillmentsLocationAttributes
+  fields: 13
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: Funnel
+  schema: FunnelAttributes
+  fields: 14
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: domain_id
+    target_hint: Domain
+  - type: belongs_to
+    via: favicon_image_id
+    target_hint: FaviconImage
+- entity: FunnelStats
+  schema: FunnelStatsAttributes
+  fields: 6
+- entity: FunnelsTag
+  schema: FunnelsTagAttributes
+  fields: 7
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: Image
+  schema: ImageAttributes
+  fields: 8
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: Membership
+  schema: MembershipAttributes
+  fields: 14
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: team_id
+    target_hint: Team
+  - type: belongs_to
+    via: user_id
+    target_hint: User
+  - type: belongs_to
+    via: user_profile_photo_id
+    target_hint: UserProfilePhoto
+  - type: belongs_to
+    via: added_by_id
+    target_hint: AddedBy
+  - type: belongs_to
+    via: platform_agent_of_id
+    target_hint: PlatformAgentOf
+  - type: has_one
+    via: user
+    target: User
+- entity: Order
+  schema: OrderAttributes
+  fields: 0
+- entity: OrderBase
+  schema: OrderBaseAttributes
+  fields: 44
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: origination_channel_id
+    target_hint: OriginationChannel
+  - type: belongs_to
+    via: origination_channel_public_id
+    target_hint: OriginationChannelPublic
+- entity: OrderVisits
+  schema: OrderVisitsAttributes
+  fields: 2
+- entity: OrdersAppliedTag
+  schema: OrdersAppliedTagAttributes
+  fields: 6
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: order_id
+    target_hint: Order
+  - type: belongs_to
+    via: tag_id
+    target_hint: Tag
+- entity: OrdersInvoice
+  schema: OrdersInvoiceAttributes
+  fields: 25
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: order_id
+    target_hint: Order
+  - type: belongs_to
+    via: external_id
+    target_hint: External
+  - type: has_many
+    via: line_items
+    target: OrdersInvoicesLineItem
+  - type: has_one
+    via: order
+    target: OrderBase
+- entity: OrdersInvoicesLineItem
+  schema: OrdersInvoicesLineItemAttributes
+  fields: 30
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: invoice_id
+    target_hint: Invoice
+  - type: belongs_to
+    via: external_id
+    target_hint: External
+  - type: belongs_to
+    via: external_product_id
+    target_hint: ExternalProduct
+- entity: OrdersLineItem
+  schema: OrdersLineItemAttributes
+  fields: 10
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: order_id
+    target_hint: Order
+- entity: OrdersTag
+  schema: OrdersTagAttributes
+  fields: 7
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: OrdersTransaction
+  schema: OrdersTransactionAttributes
+  fields: 18
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: order_id
+    target_hint: Order
+  - type: belongs_to
+    via: external_id
+    target_hint: External
+  - type: belongs_to
+    via: adjusted_transaction_id
+    target_hint: AdjustedTransaction
+  - type: belongs_to
+    via: billing_payment_instruction_id
+    target_hint: BillingPaymentInstruction
+- entity: Page
+  schema: PageAttributes
+  fields: 21
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: theme_id
+    target_hint: Theme
+- entity: PageStats
+  schema: PageStatsAttributes
+  fields: 5
+- entity: Product
+  schema: ProductAttributes
+  fields: 23
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: image_id
+    target_hint: Image
+  - type: belongs_to
+    via: seo_image_id
+    target_hint: SeoImage
+  - type: belongs_to
+    via: default_variant_id
+    target_hint: DefaultVariant
+  - type: belongs_to
+    via: redirect_funnel_id
+    target_hint: RedirectFunnel
+- entity: ProductsCollection
+  schema: ProductsCollectionAttributes
+  fields: 18
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: image_id
+    target_hint: Image
+  - type: belongs_to
+    via: social_image_id
+    target_hint: SocialImage
+- entity: ProductsPrice
+  schema: ProductsPriceAttributes
+  fields: 25
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: variant_id
+    target_hint: Variant
+- entity: ProductsTag
+  schema: ProductsTagAttributes
+  fields: 7
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: ProductsVariant
+  schema: ProductsVariantAttributes
+  fields: 36
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: product_id
+    target_hint: Product
+  - type: belongs_to
+    via: tax_category_id
+    target_hint: TaxCategory
+  - type: belongs_to
+    via: country_of_manufacture_id
+    target_hint: CountryOfManufacture
+- entity: RefineFilter
+  schema: RefineFilterAttributes
+  fields: 9
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: SalesOpportunitiesNote
+  schema: SalesOpportunitiesNoteAttributes
+  fields: 7
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: opportunity_id
+    target_hint: Opportunity
+  - type: belongs_to
+    via: created_by_id
+    target_hint: CreatedBy
+- entity: SalesOpportunity
+  schema: SalesOpportunityAttributes
+  fields: 17
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: pipeline_id
+    target_hint: Pipeline
+  - type: belongs_to
+    via: pipelines_stage_id
+    target_hint: PipelinesStage
+  - type: belongs_to
+    via: primary_contact_id
+    target_hint: PrimaryContact
+  - type: belongs_to
+    via: assignee_id
+    target_hint: Assignee
+- entity: SalesPipeline
+  schema: SalesPipelineAttributes
+  fields: 8
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: SalesPipelinesStage
+  schema: SalesPipelinesStageAttributes
+  fields: 12
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: pipeline_id
+    target_hint: Pipeline
+- entity: ShippingLocationGroup
+  schema: ShippingLocationGroupAttributes
+  fields: 7
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: profile_id
+    target_hint: Profile
+- entity: ShippingPackage
+  schema: ShippingPackageAttributes
+  fields: 16
+  identifiers:
+  - id
+  - public_id
+- entity: ShippingProfile
+  schema: ShippingProfileAttributes
+  fields: 6
+  identifiers:
+  - id
+  - public_id
+- entity: ShippingRate
+  schema: ShippingRateAttributes
+  fields: 11
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: zone_id
+    target_hint: Zone
+  - type: belongs_to
+    via: rates_name_id
+    target_hint: RatesName
+- entity: ShippingRatesName
+  schema: ShippingRatesNameAttributes
+  fields: 6
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: ShippingZone
+  schema: ShippingZoneAttributes
+  fields: 10
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: location_group_id
+    target_hint: LocationGroup
+  - type: belongs_to
+    via: address_filter_id
+    target_hint: AddressFilter
+- entity: Site
+  schema: SiteAttributes
+  fields: 12
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: homepage_id
+    target_hint: Homepage
+  - type: belongs_to
+    via: theme_id
+    target_hint: Theme
+  - type: belongs_to
+    via: blog_theme_id
+    target_hint: BlogTheme
+  - type: belongs_to
+    via: store_theme_id
+    target_hint: StoreTheme
+- entity: SplitTestStep
+  schema: SplitTestStepAttributes
+  fields: 6
+  identifiers:
+  - id
+  - public_id
+- entity: Store
+  schema: StoreAttributes
+  fields: 12
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: social_image_id
+    target_hint: SocialImage
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: Style
+  schema: StyleAttributes
+  fields: 7
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: theme_id
+    target_hint: Theme
+- entity: Team
+  schema: TeamAttributes
+  fields: 9
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: has_many
+    via: billing_subscriptions
+    target: BillingSubscription
+  - type: has_many
+    via: memberships
+    target: Membership
+- entity: Theme
+  schema: ThemeAttributes
+  fields: 10
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: current_style_id
+    target_hint: CurrentStyle
+- entity: User
+  schema: UserAttributes
+  fields: 9
+  identifiers:
+  - id
+  - public_id
+- entity: Visit
+  schema: VisitAttributes
+  fields: 17
+  identifiers:
+  - uuid
+- entity: Visits
+  schema: VisitsAttributes
+  fields: 3
+- entity: WebhooksOutgoingEndpoint
+  schema: WebhooksOutgoingEndpointAttributes
+  fields: 11
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: WebhooksOutgoingEvent
+  schema: WebhooksOutgoingEventAttributes
+  fields: 12
+  identifiers:
+  - id
+  - public_id
+  - uuid
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+  - type: belongs_to
+    via: event_type_id
+    target_hint: EventType
+  - type: belongs_to
+    via: subject_id
+    target_hint: Subject
+- entity: WebhooksOutgoingEventType
+  schema: WebhooksOutgoingEventTypeAttributes
+  fields: 2
+  identifiers:
+  - id
+- entity: Workflow
+  schema: WorkflowAttributes
+  fields: 12
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workspace_id
+    target_hint: Workspace
+- entity: WorkflowStructure
+  schema: WorkflowStructureAttributes
+  fields: 3
+- entity: WorkflowsRun
+  schema: WorkflowsRunAttributes
+  fields: 13
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workflow_id
+    target_hint: Workflow
+  - type: belongs_to
+    via: contact_id
+    target_hint: Contact
+  - type: belongs_to
+    via: current_step_id
+    target_hint: CurrentStep
+  - type: belongs_to
+    via: event_id
+    target_hint: Event
+- entity: WorkflowsStep
+  schema: WorkflowsStepAttributes
+  fields: 13
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workflow_id
+    target_hint: Workflow
+  - type: belongs_to
+    via: parent_step_id
+    target_hint: ParentStep
+  - type: belongs_to
+    via: convergence_step_id
+    target_hint: ConvergenceStep
+- entity: WorkflowsTrigger
+  schema: WorkflowsTriggerAttributes
+  fields: 32
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: workflow_id
+    target_hint: Workflow
+  - type: belongs_to
+    via: contacts_tag_id
+    target_hint: ContactsTag
+  - type: belongs_to
+    via: funnel_id
+    target_hint: Funnel
+  - type: belongs_to
+    via: page_id
+    target_hint: Page
+  - type: belongs_to
+    via: product_id
+    target_hint: Product
+  - type: belongs_to
+    via: cancellation_product_id
+    target_hint: CancellationProduct
+  - type: belongs_to
+    via: product_variant_id
+    target_hint: ProductVariant
+  - type: belongs_to
+    via: cancellation_product_variant_id
+    target_hint: CancellationProductVariant
+  - type: belongs_to
+    via: subscription_variant_to_id
+    target_hint: SubscriptionVariantTo
+  - type: belongs_to
+    via: sales_pipelines_id
+    target_hint: SalesPipelines
+  - type: belongs_to
+    via: current_sales_pipelines_stage_id
+    target_hint: CurrentSalesPipelinesStage
+  - type: belongs_to
+    via: appointments_calendar_id
+    target_hint: AppointmentsCalendar
+  - type: belongs_to
+    via: appointments_event_type_id
+    target_hint: AppointmentsEventType
+  - type: belongs_to
+    via: course_id
+    target_hint: Course
+  - type: belongs_to
+    via: courses_lesson_id
+    target_hint: CoursesLesson
+  - type: belongs_to
+    via: courses_section_id
+    target_hint: CoursesSection
+  - type: belongs_to
+    via: community_id
+    target_hint: Community
+  - type: belongs_to
+    via: communities_space_id
+    target_hint: CommunitiesSpace
+  - type: belongs_to
+    via: communities_space_group_id
+    target_hint: CommunitiesSpaceGroup
+  - type: belongs_to
+    via: emails_broadcasts_id
+    target_hint: EmailsBroadcasts
+  - type: belongs_to
+    via: calendar_event_id
+    target_hint: CalendarEvent
+  - type: belongs_to
+    via: survey_workflow_id
+    target_hint: SurveyWorkflow
+  - type: belongs_to
+    via: workflows_step_id
+    target_hint: WorkflowsStep
+- entity: Workspace
+  schema: WorkspaceAttributes
+  fields: 7
+  identifiers:
+  - id
+  - public_id
+  relationships:
+  - type: belongs_to
+    via: team_id
+    target_hint: Team

@@ -1,0 +1,58 @@
+generated: '2026-08-13'
+method: searched
+source: https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server
+docs: https://developers.myclickfunnels.com/docs/oauth-20
+note: The OpenAPI declares only a bearer scheme and no oauth2 securityScheme, so nothing is derivable from
+  the spec. The scope list below is the authoritative one ClickFunnels publishes, in its RFC 8414 authorization-server
+  metadata. The OAuth guide tells integrators "You should not need to specify any scopes" and that the default
+  grant is full access to the authorized workspace; a real token response in the docs shows scope "admin read".
+  The `mcp` scope is advertised but no reachable MCP endpoint was found — see mcp/clickfunnels-mcp.yml.
+schemes:
+- name: OAuth2
+  source: https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+    tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+    revocationUrl: https://accounts.myclickfunnels.com/oauth/revoke
+    registrationUrl: https://accounts.myclickfunnels.com/oauth/register
+    pkce:
+    - S256
+    token_endpoint_auth_methods:
+    - none
+    - client_secret_post
+    - client_secret_basic
+  grant_types:
+  - authorization_code
+  - refresh_token
+scopes:
+- scope: admin
+  description: Administrative access to the authorized workspace. Part of the default grant shown in the OAuth
+    token response example.
+  sources:
+  - /.well-known/oauth-authorization-server
+- scope: read
+  description: Read access to the authorized workspace. Part of the default grant.
+  sources:
+  - /.well-known/oauth-authorization-server
+- scope: write
+  description: Write access to the authorized workspace.
+  sources:
+  - /.well-known/oauth-authorization-server
+- scope: delete
+  description: Delete access to the authorized workspace.
+  sources:
+  - /.well-known/oauth-authorization-server
+- scope: mcp
+  description: Advertised scope for Model Context Protocol access. No reachable MCP endpoint was found on any
+    ClickFunnels host on 2026-08-13.
+  sources:
+  - /.well-known/oauth-authorization-server
+enforcement:
+  error: 403
+  description: The spec declares a 403 variant reading "the access token's scopes do not cover this request"
+    on 5 operations.
+token_lifetime:
+  expires: false
+  note: The OAuth guide states tokens do not expire and there is no refresh-token rotation in practice — ignore
+    the expires_in field. The metadata nonetheless advertises the refresh_token grant.
