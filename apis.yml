@@ -25,6 +25,20 @@ image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/clickfunne
 tags:
 - Sales Funnels
 - Landing Pages
+- E-Commerce
+- Marketing
+- Checkout
+- CRM
+- Email Marketing
+- Online Courses
+- Webhook
+- Website Builder
+- Subscription
+- Marketing Automation
+- Agent Skills
+tags_raw:
+- Sales Funnels
+- Landing Pages
 - E-commerce
 - Marketing
 - Checkout
@@ -52,6 +66,19 @@ apis:
   humanURL: https://developers.myclickfunnels.com/reference
   baseURL: https://{subdomain}.myclickfunnels.com/api/v2
   tags:
+  - Funnels
+  - Pages
+  - Contacts
+  - Order
+  - Product
+  - Courses
+  - Communities
+  - Email
+  - Workflows
+  - Webhook
+  - Blog
+  - Stats
+  tags_raw:
   - Funnels
   - Pages
   - Contacts
