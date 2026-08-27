@@ -55,47 +55,3215 @@ created: '2026-05-11'
 modified: '2026-08-13'
 specificationVersion: '0.23'
 apis:
-- aid: clickfunnels:clickfunnels-api
-  name: ClickFunnels API
-  description: 'The ClickFunnels 2.0 REST API — 418 operations across 230 paths and 102 resource tags,
-    covering the whole platform: teams, users, workspaces, sites, funnels, pages, blogs, communities,
-    courses, contacts and tags, forms, products, variants, prices, collections, discounts, orders, invoices,
-    transactions, fulfillments, email templates/broadcasts/domains/addresses, workflows, stats and outgoing
-    webhooks. Cursor pagination, bracketed filters, expand[] field expansion, and a mandatory User-Agent
-    header.'
+- aid: clickfunnels:clickfunnels-addresses-country-api
+  name: ClickFunnels Addresses::Country API
+  description: >-
+    > Countries are a global reference list used when setting addresses.
+
+
+    The Addresses::Country API provides read-only access to the list of countries, each with its ISO 3166-1
+    alpha-2 code (iso2). Use a country's iso2 as the country_code when setting an address, and as the
+    {country_id} path segment when listing its regions.
   humanURL: https://developers.myclickfunnels.com/reference
   baseURL: https://{subdomain}.myclickfunnels.com/api/v2
   tags:
-  - Funnels
-  - Pages
-  - Contacts
-  - Order
-  - Product
-  - Courses
-  - Communities
-  - Email
-  - Workflows
-  - Webhook
-  - Blog
-  - Stats
-  tags_raw:
-  - Funnels
-  - Pages
-  - Contacts
-  - Orders
-  - Products
-  - Courses
-  - Communities
-  - Email
-  - Workflows
-  - Webhooks
-  - Blogs
-  - Stats
+  - Addresses::Country
   properties:
   - type: OpenAPI
-    url: openapi/clickfunnels-api-openapi.json
-  - type: Overlay
-    url: overlays/clickfunnels-api-overlay.yaml
+    url: openapi/clickfunnels-addresses-country-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-addresses-region-api
+  name: ClickFunnels Addresses::Region API
+  description: >-
+    > Regions are the states/provinces of a country.
+
+
+    The Addresses::Region API provides read-only access to the regions of a country. Use a region's code
+    or name as the address region value. Many countries have no regions.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Addresses::Region
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-addresses-region-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-appointments-scheduledevent-api
+  name: ClickFunnels Appointments::Scheduled Event API
+  description: >-
+    > Scheduled Appointment Events represent set meeting events
+
+
+    The Appointment Scheduled Event represents a scheduled meeting between a ClickFunnels user and a contact
+    on a specific day and time.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Appointments::ScheduledEvent
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-appointments-scheduledevent-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-blog-api
+  name: ClickFunnels Blog API
+  description: >-
+    > Blogs represent a blog resource belonging to a workspace site
+
+
+    A Blog is a top-level container for blog posts, categories, tags, and authors. Each workspace site
+    can have one or more blogs, each with their own SEO settings, theme, and URL path.
+
+
+    See the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md) for the end-to-end
+    guide to creating, reading, and updating blog posts.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Blog
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-blog-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-blogs-author-api
+  name: ClickFunnels Blogs::Author API
+  description: >-
+    Blog Authors. See [Authors (read-only)](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#authors-read-only)
+    in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Blogs::Author
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-blogs-author-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-blogs-category-api
+  name: ClickFunnels Blogs::Category API
+  description: >-
+    Blog Categories. See [Categories (read-only)](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#categories-read-only)
+    in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Blogs::Category
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-blogs-category-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-blogs-post-api
+  name: ClickFunnels Blogs::Post API
+  description: >-
+    > Blog Posts are the individual articles published within a Blog
+
+
+    Blog posts support rich content via PML markup, visibility controls, SEO settings, categories, tags,
+    and authors. Use `expand[]=markup` to retrieve the PML markup for a post's visual content.
+
+
+    See [Creating a blog post](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#creating-a-blog-post)
+    in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md); the `markup`
+    body is authored in PML — see the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md).
+
+
+    To copy posts in from an external RSS/Atom feed or article page, see the [Import External Blog Post
+    Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md), which
+    covers [normalizing external HTML for PML](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#3-normalize-external-html-for-pml),
+    [duplicate checking](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#4-discover-the-destination-and-check-for-duplicates),
+    and [verifying the draft](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#6-verify-the-draft)
+    before publishing.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Blogs::Post
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-blogs-post-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-blogs-tag-api
+  name: ClickFunnels Blogs::Tag API
+  description: >-
+    Blog Tags. See [Tags (list / show / create)](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#tags-list--show--create)
+    in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Blogs::Tag
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-blogs-tag-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-ban-api
+  name: ClickFunnels Communities::Ban API
+  description: >-
+    > Bans prevent a Contact from accessing a Community.
+
+
+    A Ban records which Contact is banned, who issued the ban, the scope of the ban (`bannable_type`/`bannable_id`),
+    and an optional reason. The `banned_by` moderator is set automatically to the acting user — it cannot
+    be set in the request body. Bans have no update operation — delete and recreate to change the reason.
+
+
+    See also: `Communities::Bans::UnbanAction` and `Communities::Bans::ExportAction` for async bulk operations
+    on bans.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Ban
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-ban-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-bans-exportaction-api
+  name: ClickFunnels Communities::Bans::Export Action API
+  description: >-
+    > Async bulk action that exports community ban data to a file in the background.
+
+
+    Creating an ExportAction enqueues a background job and immediately returns an action record. Poll
+    the `show` endpoint using the returned `id` and check the `status` field (`queued` → `processing`
+    → `completed`) to track progress. Use the `index` endpoint to list previous export actions for a community.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Bans::ExportAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-bans-exportaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-bans-unbanaction-api
+  name: ClickFunnels Communities::Bans::Unban Action API
+  description: >-
+    > Async bulk action that unbans multiple contacts from a community in the background.
+
+
+    Creating an UnbanAction enqueues a background job and immediately returns an action record. Poll the
+    `show` endpoint using the returned `id` and check the `status` field (`queued` → `processing` → `completed`)
+    to track progress.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Bans::UnbanAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-bans-unbanaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-membership-api
+  name: ClickFunnels Communities::Membership API
+  description: >-
+    > Memberships represent a Contact's membership in a Community.
+
+
+    A Membership joins a Contact to a Community and tracks whether that member has moderator privileges.
+    Creating or updating a membership also syncs the member's Space memberships to exactly the list of
+    `space_ids` supplied. Deleting a membership removes the contact from all Spaces in the community as
+    well.
+
+
+    See also: `Communities::Memberships::BanAction`, `Communities::Memberships::AddToGroupAction`, `Communities::Memberships::RemoveFromGroupAction`,
+    and `Communities::Memberships::ExportAction` for async bulk operations on memberships.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Membership
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-membership-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-memberships-addtogroupaction-api
+  name: ClickFunnels Communities::Memberships::Add To Group Action API
+  description: >-
+    > Async bulk action that adds multiple members to one or more community spaces (groups) in the background.
+
+
+    Creating an AddToGroupAction enqueues a background job and immediately returns an action record. Poll
+    the `show` endpoint using the returned `id` and check the `status` field (`queued` → `processing`
+    → `completed`) to track progress.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Memberships::AddToGroupAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-memberships-addtogroupaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-memberships-banaction-api
+  name: ClickFunnels Communities::Memberships::Ban Action API
+  description: >-
+    > Async bulk action that bans multiple community members in the background.
+
+
+    Creating a BanAction enqueues a background job and immediately returns an action record. Poll the
+    `show` endpoint using the returned `id` and check the `status` field (`queued` → `processing` → `completed`)
+    to track progress.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Memberships::BanAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-memberships-banaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-memberships-exportaction-api
+  name: ClickFunnels Communities::Memberships::Export Action API
+  description: >-
+    > Async bulk action that exports community membership data to a file in the background.
+
+
+    Creating an ExportAction enqueues a background job and immediately returns an action record. Poll
+    the `show` endpoint using the returned `id` and check the `status` field (`queued` → `processing`
+    → `completed`) to track progress. Use the `index` endpoint to list previous export actions for a community.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Memberships::ExportAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-memberships-exportaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-memberships-removefromgroupaction-api
+  name: ClickFunnels Communities::Memberships::Remove From Group Action API
+  description: >-
+    > Async bulk action that removes multiple members from one or more community spaces (groups) in the
+    background.
+
+
+    Creating a RemoveFromGroupAction enqueues a background job and immediately returns an action record.
+    Poll the `show` endpoint using the returned `id` and check the `status` field (`queued` → `processing`
+    → `completed`) to track progress.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Memberships::RemoveFromGroupAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-memberships-removefromgroupaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-space-api
+  name: ClickFunnels Communities::Space API
+  description: >-
+    > Spaces (Topics) are the individual discussion areas within a Space Group.
+
+
+    A Space is a single discussion channel or topic area within a Space Group. Members post, comment,
+    and interact inside Spaces. Each Space can be configured with its own layout, access controls, sorting,
+    and SEO settings.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Space
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-space-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-spacegroup-api
+  name: ClickFunnels Communities::Space Group API
+  description: >-
+    > Space Groups are named sections within a Community that contain Spaces (Topics).
+
+
+    A Space Group is a logical grouping of Spaces (Topics) within a Community. Use Space Groups to organize
+    community content into sections. Each Space Group can have its own access level, post/comment approval
+    settings, and visibility controls.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::SpaceGroup
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-spacegroup-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-spaces-post-api
+  name: ClickFunnels Communities::Spaces::Post API
+  description: >-
+    > Posts are member-created content items within a Community Space.
+
+
+    A Post belongs to a Space and is authored by a Contact. Posts support rich HTML body content, optional
+    titles, pinning, and cover images. Posts created via the API are auto-approved. Use `Communities::Spaces::Post::Comment`,
+    `Communities::Spaces::Post::Like`, and `Communities::Spaces::Post::VideoEmbed` to manage the sub-resources
+    of a post.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Spaces::Post
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-spaces-post-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-spaces-post-comment-api
+  name: ClickFunnels Communities::Spaces::Post::Comment API
+  description: >-
+    > Comments are member replies on a Community Post.
+
+
+    A Comment belongs to a Post and is authored by a Contact. Comments support rich HTML body content
+    and threaded replies via `parent_comment_id`. Comments created via the API are auto-approved.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Spaces::Post::Comment
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-spaces-post-comment-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-spaces-post-comment-like-api
+  name: ClickFunnels Communities::Spaces::Post::Comment::Like API
+  description: >-
+    > Comment Likes record a Contact's like reaction on a Post Comment.
+
+
+    A Comment Like belongs to a Comment and is authored by a Contact. Likes have no update operation —
+    create one to like, delete it to unlike.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Spaces::Post::Comment::Like
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-spaces-post-comment-like-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-spaces-post-like-api
+  name: ClickFunnels Communities::Spaces::Post::Like API
+  description: >-
+    > Post Likes record a Contact's like reaction on a Community Post.
+
+
+    A Post Like belongs to a Post and is authored by a Contact. Likes have no update operation — create
+    one to like, delete it to unlike.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Spaces::Post::Like
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-spaces-post-like-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-communities-spaces-post-videoembed-api
+  name: ClickFunnels Communities::Spaces::Post::Video Embed API
+  description: >-
+    > Video Embeds attach a hosted video to a Community Post.
+
+
+    A Video Embed belongs to a Post and stores the provider name, source URL, and optional provider-specific
+    metadata. Video Embeds have no update operation.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Communities::Spaces::Post::VideoEmbed
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-communities-spaces-post-videoembed-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-community-api
+  name: ClickFunnels Community API
+  description: >-
+    > Communities are membership-based spaces where contacts can post, interact, and engage.
+
+
+    A Community is the top-level container for community content. It belongs to a workspace site and holds
+    one or more Space Groups, each of which contains Spaces (Topics). Use the `Communities::SpaceGroup`
+    and `Communities::Space` resources to manage the groups and topics within a community.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Community
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-community-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-contact-api
+  name: ClickFunnels Contact API
+  description: Contact
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contact
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contact-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-contacts-appliedtag-api
+  name: ClickFunnels Contacts::Applied Tag API
+  description: >-
+    > Contact Applied Tags
+
+
+    The Contact Applied Tags APIs allow you to list, apply and remove tags associated with a specific
+    contact.
+
+
+    To utilize this, first obtain the Tag IDs for all the Contact Tags for your workspace via the Contacts::Tags
+    API.
+
+
+    You can manage tags for any contact by creating or deleting the corresponding Applied Tags as needed.
+
+
+    Note:
+
+    There is no 'update' method for this API since you should just remove and add a new tag to change
+    them.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contacts::AppliedTag
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contacts-appliedtag-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-contacts-enrollaction-api
+  name: ClickFunnels Contacts::Enroll Action API
+  description: >-
+    > Bulk-enroll contacts into course sections
+
+
+    An Enroll Action enrolls an entire audience of contacts into one or more course sections in a single
+    async operation. Pass `course_ids` to enroll in every section of those courses, or `section_ids` for
+    specific sections (or both).
+
+
+    **Target selection** — supply exactly one of:
+
+    - `stable_id` — a URL-encoded Refine `stable_id` token.
+
+    - `stored_filter_id` — the `id` or `public_id` of a saved `Refine::StoredFilter` (ContactsFilter).
+    Also accepted as `filter_id`.
+
+    - `target_ids` — an explicit array of contact public IDs.
+
+    - `target_all` — `true` to target every contact in the workspace.
+
+
+    **Progress tracking** — after creating an Enroll Action, poll it with `GET /api/v2/contacts/enroll_actions/{id}`.
+    The response reflects async progress via `target_count` and `performed_count`.
+
+
+    See [How a course is structured](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#how-a-course-is-structured)
+    in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for what
+    the `course_ids` and `section_ids` you target refer to and how to list them.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contacts::EnrollAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contacts-enrollaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-contacts-exportaction-api
+  name: ClickFunnels Contacts::Export Action API
+  description: >-
+    > Bulk-export contacts to a CSV file
+
+
+    An Export Action generates a CSV of an audience of contacts in a single async operation. Supply `fields`
+    to control which contact columns appear in the CSV (including custom attribute keys). Once complete,
+    the `file_url` field on the record contains a download URL.
+
+
+    **Target selection** — supply exactly one of:
+
+    - `stable_id` — a URL-encoded Refine `stable_id` token.
+
+    - `stored_filter_id` — the `id` or `public_id` of a saved `Refine::StoredFilter` (ContactsFilter).
+    Also accepted as `filter_id`.
+
+    - `target_ids` — an explicit array of contact public IDs.
+
+    - `target_all` — `true` to target every contact in the workspace.
+
+
+    **Progress tracking** — after creating an Export Action, poll it with `GET /api/v2/contacts/export_actions/{id}`.
+    When complete, `file_url` contains the CSV download URL.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contacts::ExportAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contacts-exportaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-contacts-filter-api
+  name: ClickFunnels Contacts::Filter API
+  description: >-
+    > AI-generated contact filters
+
+
+    Translate a natural-language audience description into a ClickFunnels contact filter using an AI model.
+
+
+    The model can use the full range of contact filter conditions — identity, tags, last activity, email
+
+    engagement, opt-ins, product/variant purchases & ownership, custom attributes, and more — so describe
+    the
+
+    audience however you like (e.g. "buyers of the $99 course who joined in the last 30 days"). Unlike
+    the
+
+    criteria you submit directly to the RefineFilter endpoints, this endpoint is not limited to the public-API
+
+    condition allow-list.
+
+
+    The endpoint always returns a `stable_id` token you can use as the `stable_id` query parameter on
+    the
+
+    contacts index. Keep the token opaque and let the HTTP client encode the complete query parameter
+    value;
+
+    with curl, use `-G --data-urlencode "stable_id=$STABLE_ID"`. Do not decode the token or interpolate
+    it
+
+    directly into a raw URL. When `save: true` is supplied the filter is also persisted as a reusable
+
+    `Refine::StoredFilter` — identical to filters created via the RefineFilter endpoints — and its
+
+    `id`/`public_id` are included in the response so you can reference it later with `stored_filter_id`.
+
+
+    See [Generate a contact filter from plain English](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#generate-a-contact-filter-from-plain-english)
+    in the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md)
+    for the request body, the `save` semantics, and how the returned `stable_id` is applied to the contacts
+    index.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contacts::Filter
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contacts-filter-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-contacts-runworkflowaction-api
+  name: ClickFunnels Contacts::Run Workflow Action API
+  description: >-
+    > Bulk-trigger a workflow across a filtered set of contacts
+
+
+    A Run Workflow Action enqueues an entire audience of contacts into a workflow in a single async operation.
+    Requires a `workflow_id`. Set `force_run: true` to re-run contacts already in the workflow.
+
+
+    **Target selection** — supply exactly one of:
+
+    - `stable_id` — a URL-encoded Refine `stable_id` token.
+
+    - `stored_filter_id` — the `id` or `public_id` of a saved `Refine::StoredFilter` (ContactsFilter).
+    Also accepted as `filter_id`.
+
+    - `target_ids` — an explicit array of contact public IDs.
+
+    - `target_all` — `true` to target every contact in the workspace.
+
+
+    **Progress tracking** — after creating a Run Workflow Action, poll it with `GET /api/v2/contacts/run_workflow_actions/{id}`.
+
+
+    See the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md) for
+    building the workflow this action enrolls contacts into, and [Enabling, disabling](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#enabling-disabling)
+    for taking it live.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contacts::RunWorkflowAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contacts-runworkflowaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-contacts-tag-api
+  name: ClickFunnels Contacts::Tag API
+  description: >-
+    # Contact Tags
+
+
+    Contact Tags are unique to each workspace, allowing for customized organization of your Contacts.
+    Once created, these tags can be applied to any contact within the same workspace using the Contacts::AppliedTag
+    endpoint.
+
+
+    This API allows you to manage the Contact Tags for your workspace.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contacts::Tag
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contacts-tag-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-contacts-tagaction-api
+  name: ClickFunnels Contacts::Tag Action API
+  description: >-
+    > Bulk apply or remove tags across a filtered set of contacts
+
+
+    A Tag Action applies (or removes) one or more Contact Tags across an entire audience in a single async
+    operation. Instead of looping over contacts one by one, submit a Tag Action with a target selection
+    and let ClickFunnels process it in the background.
+
+
+    **Target selection** — supply exactly one of:
+
+    - `stable_id` — a URL-encoded Refine `stable_id` token (e.g. from `POST /api/v2/workspaces/{workspace_id}/contacts/filters`).
+    Pass the token exactly as returned; do not decode or re-encode it. The server persists the decoded
+    filter so the async job can re-derive the audience at perform time.
+
+    - `stored_filter_id` — the `id` of a saved `Refine::StoredFilter` scoped to this workspace (must be
+    a ContactsFilter). Also accepted as `filter_id`.
+
+    - `target_ids` — an explicit array of contact public IDs.
+
+    - `target_all` — `true` to target every contact in the workspace.
+
+
+    **Progress tracking** — after creating a Tag Action, poll it with `GET /api/v2/contacts/tag_actions/{id}`.
+    The response reflects async progress via `target_count` (total contacts to process) and `performed_count`
+    (contacts processed so far).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contacts::TagAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contacts-tagaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-contacts-unsubscribeaction-api
+  name: ClickFunnels Contacts::Unsubscribe Action API
+  description: >-
+    > Bulk-unsubscribe contacts from email
+
+
+    An Unsubscribe Action marks an entire audience of contacts as unsubscribed from email in a single
+    async operation.
+
+
+    **Target selection** — supply exactly one of:
+
+    - `stable_id` — a URL-encoded Refine `stable_id` token.
+
+    - `stored_filter_id` — the `id` or `public_id` of a saved `Refine::StoredFilter` (ContactsFilter).
+    Also accepted as `filter_id`.
+
+    - `target_ids` — an explicit array of contact public IDs.
+
+    - `target_all` — `true` to target every contact in the workspace.
+
+
+    **Progress tracking** — after creating an Unsubscribe Action, poll it with `GET /api/v2/contacts/unsubscribe_actions/{id}`.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contacts::UnsubscribeAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contacts-unsubscribeaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-course-api
+  name: ClickFunnels Course API
+  description: >-
+    > Represents the volume of educational material
+
+
+    The course is the top-level layer of a concept for educational material. It is the _thing_  to be
+    sold
+
+    to a customer. Once a customer purchases or otherwise opts into a course, they will be enrolled into
+
+    the underlying sections and lessons.
+
+
+    You can get a broader understanding of the structure of a course by studying the `Courses::Section`
+
+    and `Courses::Lesson` endpoints.
+
+
+    See the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the
+    end-to-end guide — [creating a course](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#creating-a-course)
+    and building out its sections and lessons.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Course
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-course-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-courses-enrollment-api
+  name: ClickFunnels Courses::Enrollment API
+  description: >-
+    > Controls access to course sections and lessons
+
+
+    By purchasing or otherwise opting into a course, an enrollment record is created. Enrollments
+
+    dictate which sections, sub-sections, and lessons the student can access.
+
+
+    Progress for an enrollment can be tracked for a Course, Section, and Lesson.
+
+
+    To grant course access from an automation instead of creating enrollments directly, see [Step catalog](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#step-catalog)
+    in the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Courses::Enrollment
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-courses-enrollment-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-courses-lesson-api
+  name: ClickFunnels Courses::Lesson API
+  description: >-
+    > Represents the material within a Course
+
+
+    The lesson is the part of the course which teaches the material described within the course. Completing
+
+    lessons can unlock access to other lessons or sections within a course. Completing lessons increases
+    the
+
+    course progress percent.
+
+
+    See [Lessons](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#lessons) in the [Courses
+    Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for creating and updating
+    lessons.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Courses::Lesson
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-courses-lesson-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-courses-lessoncompletion-api
+  name: ClickFunnels Courses::Lesson Completion API
+  description: >-
+    > Marks a lesson as completed for enrollment.
+
+
+    To mark a lesson as completed by an enrollment, create an `Courses::LessonCompletion` record.
+
+    To undo this, the `Courses::LessonCompletion` record must be deleted.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Courses::LessonCompletion
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-courses-lessoncompletion-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-courses-section-api
+  name: ClickFunnels Courses::Section API
+  description: >-
+    > Represents the modules within a Course
+
+
+    The section is the organization layer of a course where the content is accessed and managed for
+
+    a customer. Sections can have sub-sections and will have one or more lessons. Access to sections
+
+    can be managed by the `Courses::Enrollment` and also by the completion of previous sections and lessons.
+
+
+    See [Sections (modules)](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#sections-modules)
+    in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for creating
+    modules and the fields you can set.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Courses::Section
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-courses-section-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-courses-sections-publishaction-api
+  name: ClickFunnels Courses::Sections::Publish Action API
+  description: >-
+    > Publishes course sections (and their lessons) in bulk.
+
+
+    A Publish Action selects one or more course sections — either by explicit `target_ids` (course-section
+    public IDs) or `target_all` — and publishes them along with their lessons. It can optionally grant
+    existing course enrollees access to the newly published sections (`auto_enroll`) and email them (`send_email`).
+    The action runs asynchronously; poll the returned record for `target_count` / `performed_count` progress.
+
+
+    Use `scheduled_for` to defer the publish to a future datetime.
+
+
+    See [Publishing](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#publishing) in the
+    [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the publish
+    paths.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Courses::Sections::PublishAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-courses-sections-publishaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-discount-api
+  name: ClickFunnels Discount API
+  description: >-
+    > A reusable, workspace-scoped discount the checkout applies on top of a price.
+
+
+    A Discount is the right tool for a coupon code, a percentage/amount off, or a
+
+    time-boxed sale - anything you would otherwise fake with a second "sale" price.
+
+    It is one reusable object applied on top of the price, so you can start, scope,
+
+    and expire it without touching the product's prices.
+
+
+    A `code`-type discount (the default) needs a unique `code` that buyers redeem at
+
+    checkout - letters, numbers and hyphens only. `discount_method` decides which amount
+
+    field is required: `percentage` needs `percent` (0.01-100); `fixed` needs a positive
+
+    `amount`. `currency` defaults to the workspace currency and `apply_from` defaults to
+
+    now, so a discount is live immediately unless you schedule it with a future
+
+    `apply_from` and/or expire it with `apply_until`.
+
+
+    By default a discount applies to `all_products`. Set `applies_to` to
+
+    `specific_products` / `specific_variants` / `specific_collections` and pass the
+
+    matching `product_ids` / `variant_ids` / `products_collection_ids` array to scope it.
+
+
+    Two lock-out rules govern the end of a discount's life. Once it has been redeemed on
+
+    an order its money-affecting fields are locked (422 on update) while renaming and
+
+    expiring still work. Once it has actually expired it is frozen completely - every
+
+    update returns 422 - so rename before you expire, not after. A discount attached to
+
+    an order cannot be deleted at all; `redemptions_count` does not predict that, since
+
+    it only counts completed sales.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Discount
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-discount-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-domain-api
+  name: ClickFunnels Domain API
+  description: >-
+    > Domains represent custom domains connected to a workspace.
+
+
+    The Domains API provides read-only access to the domains configured for a workspace. Use this API
+    to look up domain IDs for use with other resources such as Funnels.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Domain
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-domain-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-download-api
+  name: ClickFunnels Download API
+  description: >-
+    > Downloads are workspace files that can be granted through product variants.
+
+
+    Use the Download's `asset_id` when configuring digital-asset access through the `Products::Variant`
+    resource.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Download
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-download-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-emails-address-api
+  name: ClickFunnels Emails::Address API
+  description: >-
+    > Email Addresses
+
+
+    Email Addresses represent sender addresses in your workspace. These are used as "from" and "reply-to"
+    addresses when sending email broadcasts. Select a from-address whose `usable_as_sender` field is true;
+    for a custom domain that means its sending domain is verified and connected to this workspace, while
+    a shared workspace-default address is available only as the fallback.
+
+
+    See [Addresses (pick a usable sender)](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#addresses-pick-a-usable-sender)
+    in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Emails::Address
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-emails-address-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-emails-broadcast-api
+  name: ClickFunnels Emails::Broadcast API
+  description: >-
+    > Email Broadcasts
+
+
+    Email Broadcasts allow you to send one-time email campaigns to your contacts. Broadcasts are created
+    in draft status and can be sent immediately or scheduled for later delivery.
+
+
+    To target a broadcast's audience, set `filter_id` to a contact filter. You can pass the numeric id
+    or the public id of a saved contact filter (a RefineFilter created via the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md)),
+    or a serialized contact filter. The supplied filter is copied onto the broadcast, so editing or deleting
+    the saved filter afterward never changes an existing broadcast's audience. See [Applying filters to
+    email broadcasts](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-email-broadcasts)
+    for the full flow.
+
+
+    See [Broadcasts](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#broadcasts) in the
+    [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Emails::Broadcast
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-emails-broadcast-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-emails-broadcasts-sendaction-api
+  name: ClickFunnels Emails::Broadcasts::Send Action API
+  description: >-
+    > Send Actions trigger the actual delivery of an email broadcast.
+
+
+    A Send Action is the trigger that sends (or schedules) the parent broadcast — the same action the
+    ClickFunnels dashboard fires when you click "Send". Creating a Send Action will immediately dispatch
+    the broadcast (or schedule it for a future date/time if `send_at` is provided).
+
+
+    Before a Send Action can be created, the broadcast must be ready to send: it requires a topic, a from-address
+    whose `usable_as_sender` is `true`, and a complete workspace marketing address. If any of these are
+    missing, the create returns 422 listing what is needed.
+
+
+    The send itself runs asynchronously. Poll the returned Send Action record and compare `performed_count`
+    to `target_count` to track progress. `started_at` and `completed_at` reflect async job progress.
+
+
+    See [Sending or scheduling a broadcast](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#sending-or-scheduling-a-broadcast)
+    in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Emails::Broadcasts::SendAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-emails-broadcasts-sendaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-emails-domain-api
+  name: ClickFunnels Emails::Domain API
+  description: >-
+    > Email Domains represent the sending domains (DKIM/SPF/DMARC) available to a workspace for outbound
+    email.
+
+
+    One domain name has two independent jobs, and sending needs both. This resource covers email transport:
+    `verified` means the name is authenticated for sending (DKIM + SPF + DMARC, or a verified SMTP setting).
+    The other job is proving the workspace owns the name, reported here as `ownership_verified`; that
+    happens by connecting the domain to the workspace as a website/hosting domain inside the ClickFunnels
+    app (a website domain is connected as a subdomain such as `www.example.com`, which confirms ownership
+    of the root sending domain `example.com`), and no call in this API can make it true. Neither substitutes
+    for the other: `ready_for_sending` becomes true only when both are true, and a `200` from verify means
+    the check ran, not that it passed, so always read the booleans back.
+
+
+    Provision the root domain (`example.com`), not a subdomain: ownership is confirmed at the root domain,
+    so a subdomain is rejected with `422` naming the root domain to use instead.
+
+
+    Typical workflow: provision the sending domain (`POST /workspaces/{workspace_id}/emails/domains`),
+    have the customer publish the returned DNS records and connect the same name to the workspace in ClickFunnels,
+    then re-check with `POST /emails/domains/{id}/verify` until `ready_for_sending` is true, following
+    `next_steps` for whatever is still missing. Then create sender addresses via `POST /workspaces/{workspace_id}/emails/addresses`
+    with `emails_domain_id` set to this domain's numeric id.
+
+
+    See [Sending domains](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#sending-domains)
+    in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Emails::Domain
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-emails-domain-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-emails-settings-api
+  name: ClickFunnels Emails::Settings API
+  description: >-
+    > Email Settings
+
+
+    Email Settings represent your workspace's email configuration, including default from and reply-to
+    addresses for system and marketing emails.
+
+
+    See the [Business mailing address prerequisite](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#business-mailing-address-prerequisite)
+    in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Emails::Settings
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-emails-settings-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-emails-template-api
+  name: ClickFunnels Emails::Template API
+  description: >-
+    > Email Templates
+
+
+    Email Templates are reusable email content that can be used with broadcasts.
+
+
+    See [Templates](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#templates) in the
+    [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Emails::Template
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-emails-template-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-emails-topic-api
+  name: ClickFunnels Emails::Topic API
+  description: >-
+    > Email Topics
+
+
+    Email Topics are used for email broadcast categorization and subscriber preferences.
+
+
+    See [Sending or scheduling a broadcast](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#sending-or-scheduling-a-broadcast)
+    in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Emails::Topic
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-emails-topic-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-form-api
+  name: ClickFunnels Form API
+  description: >-
+    > Manage Forms, FieldSets, Fields, Submissions and Answers
+
+
+    The Forms API and it's related resources allow you to manage in detail all parts of your ClickFunnels
+    forms.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Form
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-form-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-forms-field-api
+  name: ClickFunnels Forms::Field API
+  description: Form Fields
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Forms::Field
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-forms-field-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-forms-fields-option-api
+  name: ClickFunnels Forms::Fields::Option API
+  description: Form Field Options
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Forms::Fields::Option
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-forms-fields-option-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-forms-fieldset-api
+  name: ClickFunnels Forms::Field Set API
+  description: Form FieldSets
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Forms::FieldSet
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-forms-fieldset-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-forms-submission-api
+  name: ClickFunnels Forms::Submission API
+  description: >-
+    > Allows to submit and analyze forms programmatically
+
+
+    The `Forms::Submission` resource together with the `Form` and other `Forms::` allows you to create
+
+    form submission programmatically outside of ClickFunnels.
+
+
+    To get the raw submission data, refer to the `FormSubmission` resource.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Forms::Submission
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-forms-submission-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-forms-submissions-answer-api
+  name: ClickFunnels Forms::Submissions::Answer API
+  description: Form Submission Answers
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Forms::Submissions::Answer
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-forms-submissions-answer-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-formsubmission-api
+  name: ClickFunnels Form Submission API
+  description: >-
+    > Presents submitted forms including the detailed data breakdown
+
+
+    The `FormSubmission` resource is a log of all the form submissions that happened for a given workspace.
+    You can retrieve the form submissions including their recorded standard and custom fields data.
+
+
+    Please refer to the `Form` and `Forms::Submission` resources if you would like to submit forms programmatically.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - FormSubmission
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-formsubmission-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-fulfillment-api
+  name: ClickFunnels Fulfillment API
+  description: >-
+    > Fulfillments allow fulfilling orders and managing shipments.
+
+
+    Please refer to [our Fulfillments guide](https://developers.myclickfunnels.com/docs/fulfillments)
+    for more information.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Fulfillment
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-fulfillment-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-fulfillments-location-api
+  name: ClickFunnels Fulfillments::Location API
+  description: Fulfillment Locations
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Fulfillments::Location
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-fulfillments-location-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-funnel-api
+  name: ClickFunnels Funnel API
+  description: >-
+    > The Funnel resource contains relevant metadata about funnels.
+
+
+    Funnel-level analytics are available via the Fetch Funnel Stats endpoint (`GET /funnels/{funnel_id}/stats`);
+    per-page analytics via the Fetch Page Stats endpoint (`GET /pages/{page_id}/stats`).
+
+
+    See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for building
+    and modifying funnel workflows ([split tests](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#split-test-steps),
+    [conditional splits](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#conditional-split-steps),
+    [structure](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#funnel-structure)), and
+    the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for reading funnel
+    and page analytics.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Funnel
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-funnel-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-funnels-conditionalsplitstep-api
+  name: ClickFunnels Funnels::Conditional Split Step API
+  description: >-
+    > Conditional split steps route contacts down a "matched" or "unmatched" branch based on a RefineFilter
+    condition.
+
+
+    Conditional split steps live inside a funnel's workflow. Each step exposes a `condition` (filter +
+    setup state) and a 2-entry `branches` array (`[matched, unmatched]`). See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#conditional-split-steps)
+    for the full surface.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Funnels::ConditionalSplitStep
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-funnels-conditionalsplitstep-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-funnels-splitteststep-api
+  name: ClickFunnels Funnels::Split Test Step API
+  description: >-
+    > Split test steps wrap an existing funnel page in a two-branch A/B split with configurable traffic
+    weights.
+
+
+    Split test steps live inside a funnel's workflow. Each step exposes a 2-entry `variants` array with
+    `page_id` and `weight` per branch. See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#split-test-steps)
+    for the full surface.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Funnels::SplitTestStep
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-funnels-splitteststep-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-funnels-tag-api
+  name: ClickFunnels Funnels::Tag API
+  description: >-
+    > Funnels::Tag are used to distinguish, segment and run additional automations on your funnels and
+    the users who go through them.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Funnels::Tag
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-funnels-tag-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-image-api
+  name: ClickFunnels Image API
+  description: >-
+    > Images can be used in a variety of use cases.
+
+
+    An image can be created or updated from a URL by defining the `upload_source_url` parameter. The response
+    returns
+
+    the hosted `url` and the Image `id`.
+
+
+    For a blog migration, create an Image for each source image, replace the source URL in the post body
+    with the
+
+    returned hosted `url`, and use the Image `id` as the blog post's `image_id` only when it is the featured
+    image.
+
+    Keep a source-to-hosted URL map so repeated images are uploaded once. The same Image IDs can also
+    be assigned to
+
+    Products with the `image_ids` parameter.
+
+
+    > Limitations and Constraints
+
+
+    Images have a file size limit of 10MB and a dimension size limit of 10,000 x 10,000 pixels. Image
+    file types currently supported include:
+
+
+    ```shell
+
+    # IMAGE TYPES
+
+    jpeg, png, webp, x-icon, vnd.microsoft.icon
+
+    # TEXT TYPES
+
+    svg+xml, gif
+
+    ```
+
+
+    Once uploaded, an image will return the following files and sizes
+
+
+    | File Description | Width | Height                                                            |
+
+    |--------------------------------------------------|--------------------|------------------------------------------------------------------------|
+
+    | Thumbnail | 80 | 52 |
+
+    | Small | 300 | 300 |
+
+    | Medium | 600 | 600 |
+
+    | Large | 800 | 800 |
+
+    | X-Large | 2000 | 2000 |
+
+    |--------------------------------------------------|--------------------|------------------------------------------------------------------------|
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Image
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-image-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-order-api
+  name: ClickFunnels Order API
+  description: >-
+    > Orders describe a purchase made by a contact.
+
+
+    Please refer to the [Orders Overview Guide](https://developers.myclickfunnels.com/docs/orders) for
+    more information.
+
+
+    See the [Orders Skill](https://accounts.myclickfunnels.com/.well-known/orders/skill.md) for driving
+    an existing order's lifecycle, including how to [cancel a subscription](https://accounts.myclickfunnels.com/.well-known/orders/skill.md#cancel-a-subscription)
+    so it stops renewing at the payment processor.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Order
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-order-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-orders-appliedtag-api
+  name: ClickFunnels Orders::Applied Tag API
+  description: >-
+    > Order Applied Tags
+
+
+    The Order Applied Tags APIs allow you to list, apply and remove tags associated with a specific order.
+
+
+    To utilize this, first obtain the Tag IDs for all the Order Tags for your workspace via the Orders::Tag
+    API.
+
+
+    You can manage tags for any order by creating or deleting the corresponding Applied Tags as needed.
+
+
+    Note:
+
+    There is no 'update' method for this resource since you should just remove or add a new tag to change
+    them.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Orders::AppliedTag
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-orders-appliedtag-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-orders-invoice-api
+  name: ClickFunnels Orders::Invoice API
+  description: >-
+    > Invoices track payments for orders.
+
+
+    Order Invoices are the invoices issued against Orders. For more information please consult our [Orders
+    Overview guide](https://developers.myclickfunnels.com/docs/orders).
+
+
+    Orders can be fulfilled by fulfilling invoice line items. Please refer to [our Fulfillments guide](https://developers.myclickfunnels.com/docs/fulfillments)
+    to see how this can be done.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Orders::Invoice
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-orders-invoice-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-orders-invoices-restock-api
+  name: ClickFunnels Orders::Invoices::Restock API
+  description: >-
+    > Restocks make it possible to restock in case a priorly issued fulfillment is not going to be fulfilled.
+
+
+    If a customer pays for an invoice that will not get fulfilled (e.g. the invoice may have been refunded),
+    a restock needs to be created so the committed inventory quantity can be returned to available inventory.
+
+
+    A restock can also be cancelled, in which case the inventory quantity will be adjusted back.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Orders::Invoices::Restock
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-orders-invoices-restock-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-orders-lineitems-change-api
+  name: ClickFunnels Orders::Line Items::Change API
+  description: >-
+    > Preview and commit variant/price changes on existing subscription line items.
+
+
+    A self-serve flow for switching the variant or price on a subscription line item. The
+
+    surface has three endpoints — discovery (`Products::Prices::ChangeOption`) tells
+
+    you which targets are allowed; this resource is the actual change. `POST` to `…/changes`
+
+    to preview the upcoming invoice (`preview: true`); `POST` to `…/changes/perform` to commit
+
+    (`preview: false`). The response envelope is identical between preview and commit and only
+
+    the `preview` flag flips.
+
+
+    Allowed transitions are constrained by merchant-configured upgrade/downgrade option rows.
+
+    See the discovery endpoint for sourcing legal `products_price_id` targets.
+
+
+    See the [Subscription Changes Skill](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md)
+    for the full flow — [preview](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-2---preview-the-change)
+    and [commit](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-3---commit-the-change).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Orders::LineItems::Change
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-orders-lineitems-change-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-orders-tag-api
+  name: ClickFunnels Orders::Tag API
+  description: >-
+    > Order Tags
+
+
+    Order Tags are unique to each workspace, allowing for customized organization of your orders. Once
+    created, these tags can be applied to any order within the same workspace.
+
+
+    This API allows you to manage the Order Tags for your workspace.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Orders::Tag
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-orders-tag-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-orders-transaction-api
+  name: ClickFunnels Orders::Transaction API
+  description: Order Transactions
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Orders::Transaction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-orders-transaction-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-page-api
+  name: ClickFunnels Page API
+  description: >-
+    > Page offers extra information about ClickFunnels pages, like those that are part of funnels.
+
+
+    It's the main element that the user modifies when editing a Page in the ClickFunnels editor.
+
+
+    You can also learn how to source Page name and public ID from your ClickFunnels UI
+
+    [here](https://developers.myclickfunnels.com/docs/filtering-by-page).
+
+
+    See the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md) for [building
+    a page](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#building-a-page) and [positioning
+    it within a funnel](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#positioning-a-page-within-a-funnel);
+    the page body is authored in PML — see the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md).
+    For pages you host yourself, see [Create an External Page](https://accounts.myclickfunnels.com/.well-known/sdk/create-external-page/skill.md)
+    and [Add Checkout to an External Page](https://accounts.myclickfunnels.com/.well-known/sdk/add-checkout/skill.md).
+    To move those externally-hosted pages to a new domain, see [Migrate an External Page Domain](https://accounts.myclickfunnels.com/.well-known/sdk/migrate-external-page-domain/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Page
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-page-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-product-api
+  name: ClickFunnels Product API
+  description: >-
+    > Products can be used to create and edit sellable goods.
+
+
+    Products have a few boolean attributes including `archived`, `visible_in_store`, and `visible_in_customer_center`.
+
+
+    Products that are not `archived` are in a `live` state if they are `visible_in_store` or `visible_in_customer_center`
+    or are associated with any live funnels.
+
+
+    `Live` products cannot be archived.
+
+    Products in an `archived` state can always be unarchived.
+
+
+    Each product can have one or more variants expressed as a `Products::Variant`.
+
+    All products have a "default variant" that acts as a parent to any further variants
+
+    the product may have.
+
+
+    When you create a `Product` we will implicitly create a default variant of type `digital`.
+
+    If the product you want to create is actually `physical`, be sure to update the type of it's
+
+    default variant in a subsequent request.
+
+
+    The Product Object will always contain a `default_variant_id` attribute that lets you identify
+
+    the default variant.
+
+
+    If the Product will have variants you should set the `variant_properties` attribute to an array of
+    the properties a variant can have (e.g. "Size", "Color", etc.)
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Product
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-product-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-products-collection-api
+  name: ClickFunnels Products::Collection API
+  description: Product Collections
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Products::Collection
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-products-collection-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-products-price-api
+  name: ClickFunnels Products::Price API
+  description: Product Prices
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Products::Price
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-products-price-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-products-prices-changeoption-api
+  name: ClickFunnels Products::Prices::Change Option API
+  description: >-
+    > Allowed variant/price upgrade and downgrade targets for a source price.
+
+
+    Merchant-configured rows define which variant + price combinations a subscription using a
+
+    given source price may switch to. The discovery endpoint returns these grouped by target
+
+    variant; each group lists the prices on that target variant the subscription may move to.
+
+
+    Use the returned `products_price_id`s as the body's `products_price_id` on
+
+    `POST /orders/line_items/:line_item_id/changes` (preview) or
+
+    `POST /orders/line_items/:line_item_id/changes/perform` (commit).
+
+
+    See [Step 1 - Discover what's allowed](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-1---discover-whats-allowed)
+    in the [Subscription Changes Skill](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Products::Prices::ChangeOption
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-products-prices-changeoption-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-products-tag-api
+  name: ClickFunnels Products::Tag API
+  description: Product Tags
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Products::Tag
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-products-tag-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-products-variant-api
+  name: ClickFunnels Products::Variant API
+  description: >-
+    > Product variants
+
+
+    If there are multiple variants of a product (like when a T-shirt can come in many sizes or colors),
+
+    then these should be created as `Products::Variant` records related to the `Product` record.
+
+
+    When creating a variant it is mandatory to set the `properties_values` so that all the Product's `variant_properties`
+    have a value.
+
+
+    All products have a "default variant". Attributes like the below, if left as `null` on a variant (that
+    is not the default)
+
+    will inherit the value from the default variant:
+
+
+    - `product_type`
+
+    - `sku`
+
+    - `taxable`
+
+    - `tax_category_id`
+
+    - `description`
+
+    - `weight`
+
+    - `weight_unit`
+
+    - `height`
+
+    - `width`
+
+    - `length`
+
+    - `image_id`
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Products::Variant
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-products-variant-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-refinefilter-api
+  name: ClickFunnels Refine Filter API
+  description: >-
+    > Reusable audience filters that scope contacts for conditional splits, email broadcasts, workflow
+    branches, and other ClickFunnels surfaces.
+
+
+    A RefineFilter stores a named, conjunctive set of criteria (attribute + clause + value) scoped to
+    a workspace. Once created, pass its `id` as `condition.filter_id` on a Conditional Split Step, or
+    as `filter_id` on any other surface that accepts one.
+
+
+    See the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md)
+    for a full reference of supported attributes, clauses, and the safe-condition policy.
+
+
+    The public API restricts filter conditions to a [safe whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist);
+    requests outside it return 422 with a pointer to the dev community.
+
+
+    For applying a filter to a Conditional Split Step, see [Applying filters to conditional split steps](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-conditional-split-steps).
+    For email broadcasts, see [Applying filters to email broadcasts](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-email-broadcasts).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - RefineFilter
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-refinefilter-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-sales-opportunities-note-api
+  name: ClickFunnels Sales::Opportunities::Note API
+  description: Sales Opportunity Notes
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Sales::Opportunities::Note
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-sales-opportunities-note-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-sales-opportunity-api
+  name: ClickFunnels Sales::Opportunity API
+  description: >-
+    >  Sales Opportunities
+
+
+    Sales Opportunities are initially created in a specific stage of a Pipeline and can be moved between
+    different stages within that Pipeline.
+
+
+    Each Sales Opportunity requires a name and a reference to a Primary Contact. If the Opportunity is
+    associated with a new Contact, you must first create the Contact using the Contacts API.
+
+
+    The `value` field, which is optional, represents the potential value of the Opportunity in the default
+    currency of the Workspace.
+
+
+    You can assign an Opportunity to a Team Member using the `assignee_id` field. To reassign the Opportunity
+    to a different team member, simply update this value. To remove the assignee, set the `assignee_id`
+    to `null`. The `assignee_id` corresponds to the `membership.id` in the relevant Team, which can be
+    retrieved using the Teams API.
+
+
+    When an Opportunity is moved to a stage with a `close_probability` value of 0 or 100, the `closed_at`
+    timestamp is automatically set. If the Opportunity is later moved to a different stage, the `closed_at`
+    timestamp remains unchanged. You can also manually set the `closed_at` timestamp using the API.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Sales::Opportunity
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-sales-opportunity-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-sales-pipeline-api
+  name: ClickFunnels Sales::Pipeline API
+  description: >-
+    >  Sales Pipelines
+
+
+    Pipelines allow you to organize, track and advance Opportunies between different Stages. A Pipeline
+    consists of multiple Stages.
+
+
+    When creating a Pipeline, you must specify one or more stages by passing them in the `stages_attributes`
+    parameter. The Stages
+
+    will be created in the order in which they are given in the `stages_attributes` parameter.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Sales::Pipeline
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-sales-pipeline-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-sales-pipelines-stage-api
+  name: ClickFunnels Sales::Pipelines::Stage API
+  description: >-
+    >  Sales Pipeline Stages
+
+
+    Stages belong to a Pipeline, and allow you to track and advance Opportunities.
+
+
+    You can re-order Stages in a Pipeline by updating the `sort_order` attribute of a Stage, giving the
+    desired position of the Stage.
+
+    Sort order values are zero-indexed, with 0 being the first stage of a pipeline.
+
+
+    Currently, it's not possible to delete a stage if it's the last one left in the Pipeline.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Sales::Pipelines::Stage
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-sales-pipelines-stage-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-shipping-locationgroup-api
+  name: ClickFunnels Shipping::Location Group API
+  description: Shipping LocationGroup
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Shipping::LocationGroup
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-shipping-locationgroup-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-shipping-package-api
+  name: ClickFunnels Shipping::Package API
+  description: Shipping Package
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Shipping::Package
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-shipping-package-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-shipping-profile-api
+  name: ClickFunnels Shipping::Profile API
+  description: Shipping Profile
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Shipping::Profile
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-shipping-profile-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-shipping-rate-api
+  name: ClickFunnels Shipping::Rate API
+  description: Shipping Rate
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Shipping::Rate
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-shipping-rate-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-shipping-rates-name-api
+  name: ClickFunnels Shipping::Rates::Name API
+  description: Shipping Rate Names
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Shipping::Rates::Name
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-shipping-rates-name-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-shipping-zone-api
+  name: ClickFunnels Shipping::Zone API
+  description: Shipping Zone
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Shipping::Zone
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-shipping-zone-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-site-api
+  name: ClickFunnels Site API
+  description: '> Sites represent a workspace''s website configuration containing global code settings.'
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Site
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-site-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-store-api
+  name: ClickFunnels Store API
+  description: '> Stores'
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Store
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-store-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-style-api
+  name: ClickFunnels Style API
+  description: '> Styles determine some CSS specifics for a theme.'
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Style
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-style-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-team-api
+  name: ClickFunnels Team API
+  description: Teams
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Team
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-team-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-theme-api
+  name: ClickFunnels Theme API
+  description: >-
+    > Themes determine the look of the user-facing ClickFunnels pages.
+
+
+    A theme bundles the relevant site pages, like home page, storefront, course pages, etc.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Theme
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-theme-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-user-api
+  name: ClickFunnels User API
+  description: Users
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - User
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-user-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-webhooks-outgoing-endpoint-api
+  name: ClickFunnels Webhooks::Outgoing::Endpoint API
+  description: Webhook Outgoing Endpoints
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Webhooks::Outgoing::Endpoint
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-webhooks-outgoing-endpoint-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-webhooks-outgoing-event-api
+  name: ClickFunnels Webhooks::Outgoing::Event API
+  description: Webhooks Outgoing Events
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Webhooks::Outgoing::Event
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-webhooks-outgoing-event-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-webhooks-outgoing-eventtype-api
+  name: ClickFunnels Webhooks::Outgoing::Event Type API
+  description: >-
+    The authoritative catalog of webhook event types available for subscription. Use this endpoint to
+    discover the exact string keys to supply in `event_type_ids` when creating or updating a webhook endpoint
+    — do not guess event type identifiers or rely solely on external documentation.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Webhooks::Outgoing::EventType
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-webhooks-outgoing-eventtype-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-workflow-api
+  name: ClickFunnels Workflow API
+  description: >-
+    Standalone automation workflows that enroll contacts and execute a sequence of action steps (send
+    email, apply tag, delay, split, etc.). A workflow is either `draft` (no active triggers), `live` (enabled
+    with at least one active trigger), or `archived`.
+
+
+    Related sub-resources: Workflows::Trigger, Workflows::Step, Workflows::Run.
+
+
+    See the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md) for
+    the end-to-end guide — lifecycle, [creating a workflow](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#creating-a-workflow),
+    [triggers](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#triggers), [steps](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#steps),
+    [branching](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#branching), [enabling/disabling](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#enabling-disabling),
+    and [manual enrollment](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#runs---manual-enrollment).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Workflow
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-workflow-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-workflows-run-api
+  name: ClickFunnels Workflows::Run API
+  description: >-
+    Execution records tracking a contact's progress through a workflow. Status is derived: `active`, `paused`,
+    `completed`, or `canceled`. Runs can be listed/filtered or manually created to enroll a contact immediately.
+
+
+    See [Runs - manual enrollment](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#runs---manual-enrollment)
+    in the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Workflows::Run
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-workflows-run-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-workflows-step-api
+  name: ClickFunnels Workflows::Step API
+  description: >-
+    Action and split steps within a workflow. The step `type` (e.g. `send_email_step`, `delay_step`, `conditional_split_step`)
+    is conveyed via the `step_type_settings` map — the single key in that map is always the step type.
+
+
+    See [Steps](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#steps) and [Branching](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#branching)
+    in the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Workflows::Step
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-workflows-step-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-workflows-trigger-api
+  name: ClickFunnels Workflows::Trigger API
+  description: >-
+    Triggers attached to a workflow. Each trigger specifies an `event_type_key` (e.g. `$contact.tag_applied`)
+    and optional condition FK ids that narrow which events fire the trigger.
+
+
+    See [Triggers](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#triggers) in the
+    [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md).
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Workflows::Trigger
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-workflows-trigger-api-openapi.yml
+  - type: Documentation
+    url: https://developers.myclickfunnels.com/docs/intro
+  - type: APIReference
+    url: https://developers.myclickfunnels.com/reference
+  - type: GettingStarted
+    url: https://developers.myclickfunnels.com/docs/getting-started
+  - type: DataModel
+    url: data-model/clickfunnels-data-model.yml
+  - type: ErrorCatalog
+    url: errors/clickfunnels-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-workspace-api
+  name: ClickFunnels Workspace API
+  description: Workspace
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Workspace
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-workspace-api-openapi.yml
   - type: Documentation
     url: https://developers.myclickfunnels.com/docs/intro
   - type: APIReference
