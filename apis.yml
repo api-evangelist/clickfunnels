@@ -3289,6 +3289,9 @@ apis:
   - type: RateLimits
     url: rate-limits/clickfunnels-rate-limits.yml
 common:
+- type: CapabilityMap
+  url: capabilities/clickfunnels-capability-edges.yml
+  name: ClickFunnels Business Capability Map
 - type: OpenAPI
   url: openapi/_original/clickfunnels-api-openapi-original.json
 - type: AgentSkill

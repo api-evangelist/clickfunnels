@@ -1,0 +1,262 @@
+slug: clickfunnels
+provider: ClickFunnels
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 26
+edges:
+- tag: Sales::Opportunity
+  spec_file: clickfunnels-sales-opportunity-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.95
+  evidence: POST /workspaces/{workspace_id}/sales/opportunities  Create Opportunity
+  reason: Direct CRUD over sales opportunities — opportunity and pipeline management.
+- tag: Sales::Pipeline
+  spec_file: clickfunnels-sales-pipeline-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.9
+  evidence: POST /workspaces/{workspace_id}/sales/pipelines  Create Pipeline
+  reason: Sales pipeline definition and maintenance, part of lead/opportunity/deal lifecycle management.
+- tag: Webhooks::Outgoing::Endpoint
+  spec_file: clickfunnels-webhooks-outgoing-endpoint-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.88
+  evidence: POST /workspaces/{workspace_id}/webhooks/outgoing/endpoints createWebhooksOutgoingEndpoints
+    'Create Endpoint'
+  reason: Full CRUD over outbound webhook endpoint subscriptions, which is exactly Webhook & Event Subscription
+    Management in the developer-platform capability.
+- tag: Contact
+  spec_file: clickfunnels-contact-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.85
+  evidence: POST /workspaces/{workspace_id}/contacts/upsert  Upsert a Contact; DELETE /contacts/{id}/gdpr_destroy  Redact
+    Contact
+  reason: Full CRUD plus upsert and GDPR redaction over contact records with ContactAttributes and visit
+    tracking — this is maintenance of the customer/contact master record, i.e. Customer Data Management.
+    Privacy redaction is a feature of the record store rather than a separate privacy programme, so the
+    customer-data reading is the primary one.
+- tag: Discount
+  spec_file: clickfunnels-discount-api-openapi.yml
+  capability_id: BC-440.30
+  capability_id_l1: BC-440
+  capability_name: Discount & Promotion Management
+  confidence: 0.85
+  evidence: POST /workspaces/{workspace_id}/discounts  createDiscounts  Create Discount
+  reason: CRUD over discount definitions used in checkout offers, which is exactly discount/promotion
+    administration under Pricing Management.
+- tag: Sales::Pipelines::Stage
+  spec_file: clickfunnels-sales-pipelines-stage-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.85
+  evidence: POST /sales/pipelines/{pipeline_id}/stages  Create Stage
+  reason: Pipeline stage configuration is part of opportunity/pipeline management.
+- tag: Emails::Broadcast
+  spec_file: clickfunnels-emails-broadcast-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.82
+  evidence: POST /workspaces/{workspace_id}/emails/broadcasts  createEmailsBroadcast  Create Email Broadcast
+  reason: Lifecycle management of email broadcast campaigns in a platform whose description names 'email
+    marketing campaigns' — email/marketing-automation execution.
+- tag: Fulfillment
+  spec_file: clickfunnels-fulfillment-api-openapi.yml
+  capability_id: BC-520.40
+  capability_id_l1: BC-520
+  capability_name: Order Fulfilment Management
+  confidence: 0.8
+  evidence: POST /fulfillments/{id}/cancel  cancelFulfillments  Cancel a Fulfillment
+  reason: Create, update and cancel fulfillments against orders in the workspace — order fulfilment orchestration
+    for products sold through the platform.
+- tag: Products::Price
+  spec_file: clickfunnels-products-price-api-openapi.yml
+  capability_id: BC-440.20
+  capability_id_l1: BC-440
+  capability_name: Price List Management
+  confidence: 0.8
+  evidence: GET /products/{product_id}/prices  List Prices; PUT /products/prices/{id}  Update Price
+  reason: CRUD over product price records (per product/variant) is price list maintenance — Pricing Management
+    / Price List Management. Not subscription rating since these are product price definitions.
+- tag: Sales::Opportunities::Note
+  spec_file: clickfunnels-sales-opportunities-note-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.8
+  evidence: POST /sales/opportunities/{opportunity_id}/notes  Create Note
+  reason: Notes attached to sales opportunities support the opportunity/deal lifecycle in the CRM sense.
+- tag: Webhooks::Outgoing::Event
+  spec_file: clickfunnels-webhooks-outgoing-event-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.8
+  evidence: GET /workspaces/{workspace_id}/webhooks/outgoing/events listWebhooksOutgoingEvents 'List Events'
+  reason: Inspection of outbound webhook event deliveries, part of the webhook/event subscription lifecycle
+    and delivery reliability surface.
+- tag: Blogs::Post
+  spec_file: clickfunnels-blogs-post-api-openapi.yml
+  capability_id: BC-400.70
+  capability_id_l1: BC-400
+  capability_name: Content Marketing Management
+  confidence: 0.78
+  evidence: POST /blogs/{blog_id}/posts  Create Blog Post; PATCH /blogs/posts/{id}  Update Blog Post
+  reason: Full CRUD over blog posts on a marketing platform is content production and publication — content
+    marketing management.
+- tag: Emails::Broadcasts::SendAction
+  spec_file: clickfunnels-emails-broadcasts-sendaction-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.75
+  evidence: POST /emails/broadcasts/{broadcast_id}/send_actions  createEmailsBroadcastsSendActions  Create
+    Send Action
+  reason: Triggers and tracks the sending of email broadcasts, i.e. execution of email marketing campaigns;
+    slightly lower confidence as it is an action sub-resource.
+- tag: Orders::Invoice
+  spec_file: clickfunnels-orders-invoice-api-openapi.yml
+  capability_id: BC-200.30
+  capability_id_l1: BC-200
+  capability_name: Accounts Receivable Management
+  confidence: 0.75
+  evidence: GET /orders/{order_id}/invoices  listOrdersInvoices  List Invoices; POST /orders/{order_id}/invoices  createOrdersInvoices  Create
+    External Invoice; POST /orders/invoices/{id}/abandon  abandonOrdersInvoices  Abandon Invoice
+  reason: Creation, update and abandonment of customer invoices tied to orders — customer invoicing, i.e.
+    accounts receivable. Some ambiguity as it is checkout-cart oriented rather than finance-ledger oriented.
+- tag: Page
+  spec_file: clickfunnels-page-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.75
+  evidence: POST /workspaces/{workspace_id}/pages  createPage  Create Page; GET /pages/{page_id}/stats  getPageStats  Fetch
+    Page Stats; schema FunnelStepStats
+  reason: Authoring and measuring landing/funnel pages — web page management with performance stats, i.e.
+    digital marketing (web) capability. Could also read as content marketing, hence 0.75.
+- tag: Products::Variant
+  spec_file: clickfunnels-products-variant-api-openapi.yml
+  capability_id: BC-820.40
+  capability_id_l1: BC-820
+  capability_name: Product Configuration & Variant Management
+  confidence: 0.75
+  evidence: GET /products/{product_id}/variants  List Variants; POST /products/{product_id}/variants  Create
+    Variant
+  reason: Managing product variants under a product is product configuration and variant management within
+    product lifecycle.
+- tag: Webhooks::Outgoing::EventType
+  spec_file: clickfunnels-webhooks-outgoing-eventtype-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.75
+  evidence: GET /webhooks/outgoing/event_types listWebhooksOutgoingEventTypes 'List Event Types'
+  reason: Catalogue of outbound webhook event schemas developers can subscribe to; supports webhook &
+    event subscription management, though it is a single read-only lookup.
+- tag: Blog
+  spec_file: clickfunnels-blog-api-openapi.yml
+  capability_id: BC-400.70
+  capability_id_l1: BC-400
+  capability_name: Content Marketing Management
+  confidence: 0.7
+  evidence: GET /workspaces/{workspace_id}/blogs  List Blogs; PATCH /blogs/{id}  Update Blog — vendor
+    covers "landing pages, sales funnels, ... blogs and email marketing campaigns"
+  reason: Blog properties on a marketing/funnel platform are the container for editorial content publishing,
+    i.e. content marketing. Some ambiguity as the operations only manage the blog object itself rather
+    than campaigns.
+- tag: Contacts::AppliedTag
+  spec_file: clickfunnels-contacts-appliedtag-api-openapi.yml
+  capability_id: BC-420
+  capability_id_l1: BC-420
+  capability_name: Customer Relationship Management
+  confidence: 0.7
+  evidence: GET /contacts/{contact_id}/applied_tags  List Applied Tags; schemas ContactsAppliedTagAttributes,
+    ContactShortAttributes
+  reason: Applies and removes tags on contact records in a marketing/CRM platform — contact (customer)
+    data enrichment used for segmentation. Clearly CRM at L1, but ambiguous between customer data management
+    and segmentation, so no L2 asserted.
+- tag: Emails::Template
+  spec_file: clickfunnels-emails-template-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.7
+  evidence: POST /workspaces/{workspace_id}/emails/templates  createEmailsTemplate  Create Email Template
+  reason: Authoring and lifecycle of marketing email templates used by broadcasts, supporting email/marketing-automation
+    content; template CRUD alone keeps confidence moderate.
+- tag: Funnel
+  spec_file: clickfunnels-funnel-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.7
+  evidence: GET /funnels/{funnel_id}/stats  getFunnelStats  Fetch Funnel Stats; FunnelStepStats
+  reason: Creation, structure and performance stats of sales funnels (landing-page sequences) — digital
+    marketing web/funnel asset management and measurement.
+- tag: Order
+  spec_file: clickfunnels-order-api-openapi.yml
+  capability_id: BC-520.40
+  capability_id_l1: BC-520
+  capability_name: Order Fulfilment Management
+  confidence: 0.7
+  evidence: POST /workspaces/{workspace_id}/orders  createOrders  Create External Order; POST /orders/{id}/cancel  cancelOrder  Cancel
+    Order; schemas OrdersLineItemAttributes, ProductsPriceMinimal
+  reason: Full customer order lifecycle (create, update, cancel, line items) for e-commerce checkout —
+    order capture and fulfilment orchestration. Moderate confidence as it sits between order fulfilment
+    and sales order handling.
+- tag: Orders::Transaction
+  spec_file: clickfunnels-orders-transaction-api-openapi.yml
+  capability_id: BC-200.30
+  capability_id_l1: BC-200
+  capability_name: Accounts Receivable Management
+  confidence: 0.7
+  evidence: POST /orders/transactions/{id}/refund  refundOrdersTransactions  Refund Transaction; schema
+    OrdersTransactionParametersRefund
+  reason: Payment transactions against orders with refund issuance — cash collection and receivables handling
+    for customer payments. Payment processing is not a distinct candidate, so AR is the closest honest
+    fit.
+- tag: Product
+  spec_file: clickfunnels-product-api-openapi.yml
+  capability_id: BC-820
+  capability_id_l1: BC-820
+  capability_name: Product Lifecycle Management
+  confidence: 0.7
+  evidence: POST /workspaces/{workspace_id}/products  createProducts  Create Product; POST /products/{id}/archive  archiveProducts  Archive
+    a Product
+  reason: Maintenance of the product catalogue record including archival (end-of-life style) — product
+    master/lifecycle administration. L2 left null since operations span definition and retirement.
+- tag: Shipping::Package
+  spec_file: clickfunnels-shipping-package-api-openapi.yml
+  capability_id: BC-520.50
+  capability_id_l1: BC-520
+  capability_name: Logistics Operations Management
+  confidence: 0.7
+  evidence: POST /workspaces/{workspace_id}/shipping/packages  Create Package
+  reason: Defines shipping package (box/parcel) records used for shipment handling — logistics operations
+    within order fulfilment/shipping.
+- tag: Shipping::Profile
+  spec_file: clickfunnels-shipping-profile-api-openapi.yml
+  capability_id: BC-520.50
+  capability_id_l1: BC-520
+  capability_name: Logistics Operations Management
+  confidence: 0.7
+  evidence: POST /workspaces/{workspace_id}/shipping/profiles  Create Profile
+  reason: Shipping profiles define shipping rates/zones for fulfilment — logistics operations management
+    configuration.
