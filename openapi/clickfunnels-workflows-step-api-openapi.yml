@@ -1,0 +1,914 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Workflows::Step API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Workflows::Step
+  description: 'Action and split steps within a workflow. The step `type` (e.g. `send_email_step`, `delay_step`, `conditional_split_step`) is conveyed via the `step_type_settings` map — the single key in that map is always the step type.
+
+
+    See [Steps](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#steps) and [Branching](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#branching) in the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md).
+
+    '
+paths:
+  /workflows/{workflow_id}/steps:
+    get:
+      tags:
+      - Workflows::Step
+      summary: List Steps
+      description: 'List all visible (displayable) steps for a workflow using standard collection
+
+        sorting. Internal container nodes are not included. `sort_order` is
+
+        container-local and not globally unique; use `GET /workflows/{id}/structure`
+
+        when clients need execution order.
+
+        '
+      operationId: listWorkflowSteps
+      externalDocs:
+        description: Workflows Skill - steps
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#steps
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: workflow_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Integer id or obfuscated public_id of the workflow.
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkflowsStepAttributes'
+              example:
+              - id: 201
+                public_id: StEm01
+                workflow_id: 101
+                step_type: send_email_step
+                name: Send Email
+                sort_order: 0
+                state: active
+                parent_step_id: null
+                branch: null
+                convergence_step_id: null
+                step_type_settings:
+                  send_email_step:
+                    subject: Welcome!
+                    preheadline: We're glad you're here.
+                    template_id: 3001
+                    from_address_id: 4001
+                    reply_to_address_id: null
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-01T00:00:00.000Z'
+              - id: 202
+                public_id: StDl02
+                workflow_id: 101
+                step_type: delay_step
+                name: Wait 3 Days
+                sort_order: 1
+                state: active
+                parent_step_id: null
+                branch: null
+                convergence_step_id: null
+                step_type_settings:
+                  delay_step:
+                    delay_type: relative
+                    duration: 3
+                    interval: days
+                    time_zone: null
+                    use_contact_time_zone: false
+                    use_execution_window: false
+                    day_of_week: null
+                    date_of_month: null
+                    start_time: null
+                    end_time: null
+                    execution_window_days: []
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Workflows::Step
+      summary: Create Step
+      description: 'Add a new step to a workflow. `step_type_settings` must contain exactly one key
+
+        naming the step type.
+
+
+        **Placement:** omit `parent_step_id` to append to the trunk sequence. Set
+
+        `parent_step_id` + `branch` to place inside a split branch. Use `position` (0-based)
+
+        or `after_step_id` to control order within a container.
+
+
+        For `split_test_step`: provide `variants` with exactly 2 entries whose `weight`
+
+        values sum to 100. For `conditional_split_step`: optionally provide
+
+        `condition.filter_id` (integer id or obfuscated RefineFilter public_id).
+
+
+        A `send_email_step` requires a complete business mailing address in the
+
+        workspace''s email settings. Configure it first with
+
+        `PUT /workspaces/{workspace_id}/emails/settings`; an incomplete address returns 422.
+
+        '
+      operationId: createWorkflowStep
+      externalDocs:
+        description: Workflows Skill - steps and branching
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#steps
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: workflow_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Integer id or obfuscated public_id of the workflow.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowsStepParametersCreate'
+            example:
+              workflows_step:
+                name: Send Welcome Email
+                step_type_settings:
+                  send_email_step:
+                    subject: Welcome!
+                    template_id: TmPl01
+                    from_address_id: FrAd01
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowsStepAttributes'
+              example:
+                id: 206
+                public_id: StNw06
+                workflow_id: 101
+                step_type: contact_tag_step
+                name: Apply Tag
+                sort_order: 2
+                state: active
+                parent_step_id: null
+                branch: null
+                convergence_step_id: null
+                step_type_settings:
+                  contact_tag_step:
+                    action: Add Tags
+                    contacts_tag_ids:
+                    - 7002
+                created_at: '2025-06-18T00:00:00.000Z'
+                updated_at: '2025-06-18T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                invalid_step_type_settings:
+                  summary: Invalid step settings map
+                  value:
+                    error: 'Request unprocessable: step_type_settings must contain exactly one step-class key.'
+                incomplete_business_address:
+                  summary: Missing business mailing address for a send-email step
+                  value:
+                    error: 'Request unprocessable: A complete business mailing address is required to create marketing emails. Set it first via the email settings endpoint (GET/PUT /api/v2/workspaces/:workspace_id/emails/settings), providing a name and address, then try again.'
+  /workflows/steps/{id}:
+    get:
+      tags:
+      - Workflows::Step
+      summary: Fetch Step
+      description: 'Retrieve a single workflow step.
+
+        '
+      operationId: getWorkflowStep
+      externalDocs:
+        description: Workflows Skill - steps
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#steps
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowsStepAttributes'
+              example:
+                id: 201
+                public_id: StEm01
+                workflow_id: 101
+                step_type: send_email_step
+                name: Send Email
+                sort_order: 0
+                state: active
+                parent_step_id: null
+                branch: null
+                convergence_step_id: null
+                step_type_settings:
+                  send_email_step:
+                    subject: Welcome!
+                    preheadline: We're glad you're here.
+                    template_id: 3001
+                    from_address_id: 4001
+                    reply_to_address_id: null
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    patch:
+      tags:
+      - Workflows::Step
+      summary: Update Step
+      description: 'Update a workflow step''s `name`, `step_type_settings`, and/or placement.
+
+        Moving split steps (`conditional_split_step`, `split_test_step`) is not supported
+
+        and returns 422. A `send_email_step`''s `template_id` is create-only and cannot be
+
+        changed here (returns 422) — edit the email in place with `html_body`/`text_body`, or
+
+        create a new step to use a different template.
+
+        '
+      operationId: updateWorkflowStep
+      externalDocs:
+        description: Workflows Skill - steps and branching
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#steps
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowsStepParametersUpdate'
+            example:
+              workflows_step:
+                step_type_settings:
+                  delay_step:
+                    delay_type: relative
+                    duration: 7
+                    interval: days
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowsStepAttributes'
+              example:
+                id: 202
+                public_id: StDl02
+                workflow_id: 101
+                step_type: delay_step
+                name: Wait 7 Days
+                sort_order: 1
+                state: active
+                parent_step_id: null
+                branch: null
+                convergence_step_id: null
+                step_type_settings:
+                  delay_step:
+                    delay_type: relative
+                    duration: 7
+                    interval: days
+                    time_zone: null
+                    use_contact_time_zone: false
+                    use_execution_window: false
+                    day_of_week: null
+                    date_of_month: null
+                    start_time: null
+                    end_time: null
+                    execution_window_days: []
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-18T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: send_email_step template_id cannot be changed after creation. Send html_body/text_body to edit this step''s email, or create a new step to use a different template.'
+    delete:
+      tags:
+      - Workflows::Step
+      summary: Delete Step
+      description: 'Delete a step from a workflow. Split steps and their branch contents are removed
+
+        recursively.
+
+        '
+      operationId: deleteWorkflowStep
+      externalDocs:
+        description: Workflows Skill - steps and branching
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#steps
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    WorkflowsStepParametersUpdate:
+      type: object
+      title: Update Workflows::Step
+      description: 'Parameters for updating an existing step. Only `step_type_settings`,
+
+        `name`, and placement fields (`parent_step_id`, `branch`, `position`,
+
+        `after_step_id`) are accepted. All are optional.
+
+
+        Moving split steps is not supported and returns 422.
+
+        '
+      required:
+      - workflows_step
+      properties:
+        workflows_step:
+          type: object
+          properties:
+            name:
+              type: string
+            parent_step_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Move this step into a split branch (sets new container).
+            branch:
+              type: string
+            position:
+              type: integer
+            after_step_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            step_type_settings:
+              type: object
+              description: 'One-key settings map; the key must match the step''s existing type.
+
+
+                A `send_email_step` update **cannot change `template_id`** (it is create-only —
+
+                including it returns `422`); edit the email in place with `html_body`/`text_body`
+
+                instead, or create a new step to use a different template.
+
+
+                **See the `step_type_settings` field on the Workflows::Step response schema
+
+                (`#/components/schemas/WorkflowsStepAttributes`) for the full per-type field
+
+                catalog, the `send_email_step` inline-body rules, and FK id handling.**
+
+                '
+      example:
+        workflows_step:
+          step_type_settings:
+            delay_step:
+              delay_type: relative
+              duration: 7
+              interval: days
+    IntegerOrPublicId:
+      type:
+      - integer
+      - string
+      description: Integer database id or obfuscated public_id.
+    WorkflowsStepAttributes:
+      type: object
+      title: Workflows::Step
+      description: 'A single action or split step within a workflow.
+
+
+        `step_type` equals the single key inside `step_type_settings` and identifies which
+
+        step class this is. The full list of step types, the per-type settings each one
+
+        carries, the write-only `send_email_step` inline-body fields, and how FK ids are
+
+        serialized are all documented on the **`step_type_settings`** field below — that
+
+        field is the single canonical reference, and the Create Step / Update Step request
+
+        bodies point to it.
+
+
+        `parent_step_id` and `branch` report where a step sits when it lives inside a split
+
+        branch; see the Create Step / Update Step schemas for setting placement on write.
+
+        '
+      properties:
+        id:
+          type: integer
+          description: Step ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Obfuscated step ID
+        workflow_id:
+          type: integer
+          description: Integer ID of the parent workflow
+        step_type:
+          type: string
+          description: The step class key (same as the single key in `step_type_settings`).
+        name:
+          type: string
+          description: Human-readable step name.
+        sort_order:
+          type: integer
+          description: 'Zero-based position **within this step''s own container** (the trunk, or a split''s branch/convergence sequence). It is therefore **container-local, not globally unique** — it restarts at 0 for steps after a split. In `/structure`, follow the `steps` array order for execution flow, not `sort_order`.
+
+            '
+        state:
+          type: string
+          enum:
+          - active
+          - notSetup
+          - notDefined
+          description: Setup state of the step.
+        parent_step_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer id of the parent split step when this step lives inside a branch. Null for trunk steps.
+        branch:
+          type:
+          - string
+          - 'null'
+          description: For conditional splits — `matched` or `unmatched`. For split tests — the 0-based variant index as a string. Null for trunk steps.
+        convergence_step_id:
+          type:
+          - integer
+          - 'null'
+          description: 'Id of the step a split''s branches reconverge at — the first step that runs after the split, which every branch continues to. Example: a conditional_split_step (id 203) whose matched/unmatched branches both lead to the same next step (id 206) → convergence_step_id 206. It is null in two cases: a split that ends the flow (nothing follows it), and any non-split step (the field only applies to conditional_split_step / split_test_step). Use step_type to tell them apart — a null on a non-split step just means the field does not apply. When non-null, the referenced step always appears in this response.'
+        step_type_settings:
+          type: object
+          description: 'A single-key map: the one key is the step type (identical to `step_type`) and its
+
+            value carries that type''s settings. **This is the canonical reference for step
+
+            settings — the Create Step and Update Step request bodies point here.**
+
+
+            Available types —
+
+
+            **Action steps** (non-branching):
+
+            `send_email_step`, `send_asset_step`, `send_chat_message_step`, `contact_tag_step`,
+
+            `contact_custom_attribute_step`, `delay_step`, `notify_step`, `deliver_webhook_step`,
+
+            `enroll_step`, `unenroll_contact_step`, `grant_community_access_step`,
+
+            `revoke_community_access_step`, `create_opportunity_step`, `move_step`
+
+
+            **Split steps** (branching): `conditional_split_step`, `split_test_step`
+
+
+            ### Per-type fields
+
+
+            - `send_email_step`: `subject`, `preheadline`, `template_id`, `from_address_id`, `reply_to_address_id`, plus write-only `html_body`/`text_body` (see "send_email_step inline body" below)
+
+            - `send_asset_step`: `asset_id`
+
+            - `send_chat_message_step`: `inbox_key`, `message`, `subject`, `start_new_conversation`
+
+            - `contact_tag_step`: `action` (`"Add Tags"` or `"Remove Tags"`), `contacts_tag_ids` (array of raw integer tag ids)
+
+            - `contact_custom_attribute_step`: `action`, `value`, `field_id` (a Forms::Field id — discoverable via the Forms API)
+
+            - `delay_step`: `delay_type` (`relative`/`day_of_week`/`day_of_month`), `duration`, `interval`, `time_zone`, `use_contact_time_zone`, `use_execution_window`, `day_of_week`, `date_of_month`, `start_time`, `end_time`, `execution_window_days`
+
+            - `notify_step`: `message`, `notify_type` (array), `user_ids` (array of user ids — must be team members; discover via `GET /teams/{team_id}/memberships` → `user_id`. A non-member id is rejected 422.)
+
+            - `deliver_webhook_step`: `webhooks_outgoing_endpoint_id`
+
+            - `enroll_step`: `course_ids` (array), `section_ids` (array). **Enrollment happens per `section_ids`** — provide the section ids to enroll in (discover via `GET /api/v2/courses/{course_id}/sections`). `course_ids` alone is accepted and the step reads `active`, but enrolls nothing at run time.
+
+            - `unenroll_contact_step`: `course_ids` (array), `section_ids` (array). Unenroll honors both `course_ids` and `section_ids`.
+
+            - `grant_community_access_step`: `space_ids` (array)
+
+            - `revoke_community_access_step`: `space_ids` (array)
+
+            - `create_opportunity_step`: `name`, `value`, `assignment_strategy`, `move_existing`, `sales_pipelines_stage_id`, `sales_pipeline_id`, `membership_id`, `membership_ids` (array)
+
+            - `move_step`: `workflow_id`
+
+            - `conditional_split_step`: `condition` object with `filter_id` (raw integer RefineFilter id on read; integer id or public_id on write) and `is_setup` boolean
+
+            - `split_test_step`: `variants` array, each with `weight` (0..100, two entries summing to 100)
+
+
+            ### `send_email_step` — template & inline body
+
+
+            A `send_email_step` always owns its email. On **create**, a provided `template_id`
+
+            is **copied** into a fresh step-owned template (it is never a live reference to the
+
+            original), and an inline `html_body`/`text_body` instead mints a new step-owned
+
+            template. This deliberately mirrors the builder UI, which always makes its own copy
+
+            so edits to a step''s email never touch the source. `template_id` takes precedence
+
+            when both a `template_id` and an inline body are supplied.
+
+
+            Because the step owns its template, `template_id` is **create-only and cannot be
+
+            changed on update** — a `PATCH` that includes `template_id` returns `422`. To change
+
+            an existing step''s email, edit it **in place** by sending `html_body`/`text_body`
+
+            (this patches the step''s own template — no new template is created); to use a
+
+            different template, create a new step. `html_body`/`text_body` are write-only and are
+
+            never returned in `step_type_settings`. For
+
+            `from_address_id`/`reply_to_address_id`, pick an address whose top-level
+
+            `usable_as_sender` is true, not one whose sending domain is merely `verified`.
+
+            See [Inline body on a workflow send-email step](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#inline-body-on-a-workflow-send-email-step) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+
+
+            ### FK id serialization
+
+
+            Response FK values (`*_id`, `*_ids`) are serialized as **raw integers**. On write,
+
+            those same FK fields accept either integer ids or obfuscated public_ids in the same
+
+            workspace/team scope.
+
+            '
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 201
+        public_id: StEm01
+        workflow_id: 101
+        step_type: send_email_step
+        name: Send Email
+        sort_order: 0
+        state: active
+        parent_step_id: null
+        branch: null
+        convergence_step_id: null
+        step_type_settings:
+          send_email_step:
+            subject: Welcome!
+            preheadline: We're glad you're here.
+            template_id: 3001
+            from_address_id: 4001
+            reply_to_address_id: null
+        created_at: '2025-06-01T00:00:00.000Z'
+        updated_at: '2025-06-01T00:00:00.000Z'
+      required:
+      - branch
+      - convergence_step_id
+      - created_at
+      - id
+      - name
+      - parent_step_id
+      - public_id
+      - sort_order
+      - state
+      - step_type
+      - step_type_settings
+      - updated_at
+      - workflow_id
+    WorkflowsStepParametersCreate:
+      type: object
+      title: Create Workflows::Step
+      description: "Parameters for adding a new step to a workflow. `step_type_settings` must contain\nexactly one key naming the step type.\n\n### Placement\n\n- **Trunk (default)**: omit `parent_step_id` and `branch` to append at the end of the main sequence.\n- **Inside a split branch**: set `parent_step_id` to the id (integer or public_id) of the split step, and `branch` to:\n  - `matched` or `unmatched` for a `conditional_split_step` (the legacy `match`/`fallback` aliases are still accepted)\n  - A 0-based variant index string (`\"0\"`, `\"1\"`) for a `split_test_step`\n- **Specific position**: use `position` (0-based integer) or `after_step_id` (id of the preceding step).\n\nSee [Branching](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#branching) in the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md) for where a step with no placement lands relative to a split.\n\nFor `split_test_step`, the `variants` array must have exactly 2 entries with integer weights summing to 100.\nFor `conditional_split_step`, provide `condition.filter_id` (integer id or obfuscated RefineFilter public_id).\n\nCreating a `send_email_step` requires a complete business mailing address in\nthe workspace's email settings. Configure it with\n`PUT /workspaces/{workspace_id}/emails/settings`; otherwise creation returns `422`.\n"
+      required:
+      - workflows_step
+      properties:
+        workflows_step:
+          type: object
+          required:
+          - step_type_settings
+          properties:
+            name:
+              type: string
+              description: Optional human-readable name. Defaults to a titleized version of the step type.
+            parent_step_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Step id or public_id of a split step. Required when placing a step inside a branch.
+            branch:
+              type: string
+              description: Branch selector — `matched`/`unmatched` for conditional splits (legacy `match`/`fallback` still accepted); `"0"`/`"1"` for split tests.
+            position:
+              type: integer
+              description: 0-based position within the container. Mutually exclusive with `after_step_id`.
+            after_step_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Step id or public_id of the step to insert after. Mutually exclusive with `position`.
+            step_type_settings:
+              type: object
+              description: 'Exactly one key naming the step type, with its settings as the value. On a
+
+                `send_email_step` a `template_id` is copied into a new step-owned template, and
+
+                you may instead pass the write-only `html_body`/`text_body` to author one inline.
+
+
+                **See the `step_type_settings` field on the Workflows::Step response schema
+
+                (`#/components/schemas/WorkflowsStepAttributes`) for the full per-type field
+
+                catalog, the `send_email_step` inline-body rules, and FK id handling.**
+
+                '
+      example:
+        workflows_step:
+          name: Send Welcome Email
+          step_type_settings:
+            send_email_step:
+              subject: Welcome!
+              template_id: TmPl01
+              from_address_id: FrAd01
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

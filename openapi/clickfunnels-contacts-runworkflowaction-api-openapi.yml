@@ -1,0 +1,535 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Contacts::Run Workflow Action API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Contacts::RunWorkflowAction
+  description: '> Bulk-trigger a workflow across a filtered set of contacts
+
+
+    A Run Workflow Action enqueues an entire audience of contacts into a workflow in a single async operation. Requires a `workflow_id`. Set `force_run: true` to re-run contacts already in the workflow.
+
+
+    **Target selection** — supply exactly one of:
+
+    - `stable_id` — a URL-encoded Refine `stable_id` token.
+
+    - `stored_filter_id` — the `id` or `public_id` of a saved `Refine::StoredFilter` (ContactsFilter). Also accepted as `filter_id`.
+
+    - `target_ids` — an explicit array of contact public IDs.
+
+    - `target_all` — `true` to target every contact in the workspace.
+
+
+    **Progress tracking** — after creating a Run Workflow Action, poll it with `GET /api/v2/contacts/run_workflow_actions/{id}`.
+
+
+    See the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md) for building the workflow this action enrolls contacts into, and [Enabling, disabling](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#enabling-disabling) for taking it live.
+
+    '
+paths:
+  /workspaces/{workspace_id}/contacts/run_workflow_actions:
+    get:
+      tags:
+      - Contacts::RunWorkflowAction
+      summary: List Run Workflow Actions
+      description: List all Contact Run Workflow Actions for your workspace
+      operationId: listContactsRunWorkflowActions
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactsRunWorkflowActionAttributes'
+              example:
+              - id: 1
+                public_id: bC4dE5
+                workspace_id: 42000
+                workflow_id: 99
+                force_run: false
+                filter_id: 7
+                target_all: false
+                target_ids: []
+                target_count: 500
+                performed_count: 500
+                created_by_id: 5
+                approved_by_id: null
+                scheduled_for: null
+                started_at: '2025-01-01T00:01:00.000Z'
+                completed_at: '2025-01-01T00:03:00.000Z'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:03:00.000Z'
+              - id: 2
+                public_id: fG6hI7
+                workspace_id: 42000
+                workflow_id: 99
+                force_run: true
+                filter_id: null
+                target_all: false
+                target_ids:
+                - cust_abc
+                target_count: 1
+                performed_count: 0
+                created_by_id: 5
+                approved_by_id: null
+                scheduled_for: null
+                started_at: null
+                completed_at: null
+                created_at: '2025-01-02T00:00:00.000Z'
+                updated_at: '2025-01-02T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Contacts::RunWorkflowAction
+      summary: Create Run Workflow Action
+      description: 'Run a workflow against a collection of contacts. Requires `workflow_id`. Set `force_run: true` to re-enqueue contacts already in the workflow. The action runs asynchronously — poll the returned record with `GET /api/v2/contacts/run_workflow_actions/{id}` to track progress via `target_count` and `performed_count`.
+
+        Exactly one target selection must be supplied: `stable_id`, `stored_filter_id` (alias `filter_id`), `target_ids`, or `target_all`. Returns 422 if none is provided or if the supplied value is invalid.
+
+        To enroll a single contact instead of an audience, use `POST /workflows/{workflow_id}/runs` ([manual enrollment](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#runs---manual-enrollment)). See the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md) for building the target workflow and [Enabling, disabling](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#enabling-disabling) for taking it live.'
+      operationId: createContactsRunWorkflowActions
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Run Workflow Action
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contacts_run_workflow_action:
+                  type: object
+                  $ref: '#/components/schemas/ContactsRunWorkflowActionParameters'
+            example:
+              contacts_run_workflow_action:
+                workflow_id: Wf1aB2
+                stored_filter_id: '7'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactsRunWorkflowActionAttributes'
+              example:
+                id: 3
+                public_id: jK8lM9
+                workspace_id: 42000
+                workflow_id: 99
+                force_run: false
+                filter_id: 7
+                target_all: false
+                target_ids: []
+                target_count: null
+                performed_count: 0
+                created_by_id: 5
+                approved_by_id: null
+                scheduled_for: null
+                started_at: null
+                completed_at: null
+                created_at: '2025-01-03T00:00:00.000Z'
+                updated_at: '2025-01-03T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '422':
+          description: Unprocessable Entity — no target selection was supplied; or `stable_id` is not a valid Refine token or not a ContactsFilter; or `stored_filter_id` is unknown, invalid, or belongs to a different workspace.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'provide a selection: stable_id, stored_filter_id, target_ids, or target_all'
+  /contacts/run_workflow_actions/{id}:
+    get:
+      tags:
+      - Contacts::RunWorkflowAction
+      summary: Fetch Run Workflow Action
+      description: Retrieve a single Contact Run Workflow Action and its current async progress
+      operationId: getContactsRunWorkflowActions
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactsRunWorkflowActionAttributes'
+              example:
+                id: 3
+                public_id: jK8lM9
+                workspace_id: 42000
+                workflow_id: 99
+                force_run: false
+                filter_id: 7
+                target_all: false
+                target_ids: []
+                target_count: 500
+                performed_count: 250
+                created_by_id: 5
+                approved_by_id: null
+                scheduled_for: null
+                started_at: '2025-01-03T00:00:30.000Z'
+                completed_at: null
+                created_at: '2025-01-03T00:00:00.000Z'
+                updated_at: '2025-01-03T00:00:30.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    delete:
+      tags:
+      - Contacts::RunWorkflowAction
+      summary: Remove Run Workflow Action
+      description: Delete a Contact Run Workflow Action record
+      operationId: removeContactsRunWorkflowActions
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    ContactsRunWorkflowActionParameters:
+      type: object
+      title: Contacts Run Workflow Actions
+      description: Contacts Run Workflow Actions
+      required:
+      - workflow_id
+      properties:
+        workflow_id:
+          type: string
+          description: The `public_id` of the workflow to run against the targeted contacts. Required.
+        force_run:
+          type: boolean
+          description: When `true`, contacts already enrolled in the workflow are re-enqueued. Defaults to `false`.
+        stable_id:
+          type: string
+          description: A URL-encoded Refine `stable_id` token — the standard gzip+base64 full-state format used by both the `contacts/filters` API endpoint and the server-rendered filter UI, making tokens interoperable. Returned by `POST /api/v2/workspaces/{workspace_id}/contacts/filters` in the `stable_id` field. Pass the token exactly as returned; do not decode or re-encode it. The server persists the decoded filter so the async job can re-derive the audience at perform time. Mutually exclusive with `stored_filter_id`, `target_ids`, and `target_all`.
+        stored_filter_id:
+          type: string
+          description: The `id` (integer) or `public_id` (string) of a saved `Refine::StoredFilter` scoped to this workspace (must be a ContactsFilter). Also accepted as `filter_id`. Mutually exclusive with `stable_id`, `target_ids`, and `target_all`.
+        target_ids:
+          type: array
+          items:
+            type: string
+          description: Explicit list of contacts to run the workflow against, as the `public_id` strings returned by the contacts endpoints. Numeric ids are also accepted. Mutually exclusive with `stable_id`, `stored_filter_id`, and `target_all`.
+        target_all:
+          type: boolean
+          description: Set to `true` to target every contact in the workspace. Use deliberately. Mutually exclusive with `stable_id`, `stored_filter_id`, and `target_ids`.
+        scheduled_for:
+          type: string
+          format: date-time
+          description: Optional ISO 8601 datetime. When supplied the action is deferred until this time. Omit (or pass `null`) to execute immediately.
+      example:
+        contacts_run_workflow_action:
+          workflow_id: Wf1aB2
+          stored_filter_id: '7'
+    ContactsRunWorkflowActionAttributes:
+      type: object
+      title: Contacts Run Workflow Actions
+      description: Bulk workflow-trigger action targeting a collection of contacts
+      properties:
+        id:
+          type: integer
+          description: Run Workflow Action ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Run Workflow Action public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        workflow_id:
+          type: integer
+          description: ID of the workflow to run against the targeted contacts.
+        force_run:
+          type:
+          - boolean
+          - 'null'
+          description: When `true`, contacts already in the workflow are re-enqueued. Defaults to `false`.
+        filter_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of the `Refine::StoredFilter` that drives target selection. Populated automatically when `stable_id` or `stored_filter_id` is supplied on create. `null` when the action targets explicit `target_ids` or `target_all`.
+        target_all:
+          type:
+          - boolean
+          - 'null'
+          description: When `true` the action targets every contact in the workspace. Mutually exclusive with `stable_id`, `stored_filter_id`, and `target_ids`.
+        target_ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+          description: Explicit list of targeted contacts as raw integer IDs. The response echoes the stored integer IDs, not the public IDs passed on create.
+        target_count:
+          type:
+          - integer
+          - 'null'
+          description: Total number of contacts selected for this action. `null` until the async job has resolved the audience size.
+        performed_count:
+          type:
+          - integer
+          - 'null'
+          description: Number of contacts processed so far. Poll this field alongside `target_count` to track async progress.
+        created_by_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of the workspace membership that created this action.
+        approved_by_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of the membership that approved this action (reserved for future use).
+        scheduled_for:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When set, the action will not execute until this datetime. `null` means execute immediately.
+        started_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Datetime the async job began processing contacts. `null` until started.
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Datetime the async job finished. `null` until complete.
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at datetime
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at datetime
+      example:
+        id: 1
+        public_id: bC4dE5
+        workspace_id: 42000
+        workflow_id: 99
+        force_run: false
+        filter_id: 7
+        target_all: false
+        target_ids: []
+        target_count: 500
+        performed_count: 100
+        created_by_id: 5
+        approved_by_id: null
+        scheduled_for: null
+        started_at: '2025-01-01T00:01:00.000Z'
+        completed_at: null
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:01:00.000Z'
+      required:
+      - approved_by_id
+      - completed_at
+      - created_at
+      - created_by_id
+      - filter_id
+      - force_run
+      - id
+      - performed_count
+      - public_id
+      - scheduled_for
+      - started_at
+      - target_all
+      - target_count
+      - target_ids
+      - updated_at
+      - workflow_id
+      - workspace_id
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

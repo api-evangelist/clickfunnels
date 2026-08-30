@@ -1,0 +1,476 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Contacts::Tag API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Contacts::Tag
+  description: '# Contact Tags
+
+
+    Contact Tags are unique to each workspace, allowing for customized organization of your Contacts. Once created, these tags can be applied to any contact within the same workspace using the Contacts::AppliedTag endpoint.
+
+
+    This API allows you to manage the Contact Tags for your workspace.
+
+    '
+paths:
+  /workspaces/{workspace_id}/contacts/tags:
+    get:
+      tags:
+      - Contacts::Tag
+      summary: List Tags
+      description: List all Contact Tags for your workspace
+      operationId: listContactsTags
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      - name: filter
+        in: query
+        description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[id]=value&filter[another_property]=value1,value2`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
+
+          '
+        required: false
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              description: A comma-separated list of tag IDs to filter by.
+              example: 1,42
+            name:
+              type: string
+              description: A comma-separated list of tag names to filter by.
+              example: cool-user,gold
+        style: deepObject
+        explode: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactsTagAttributes'
+              example:
+              - id: 60
+                public_id: rnZVJU
+                workspace_id: 42000
+                name: Example Tag
+                color: '#00FF00'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+              - id: 61
+                public_id: AgQjPt
+                workspace_id: 42000
+                name: Example Tag
+                color: '#00FF00'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Contacts::Tag
+      summary: Create Tag
+      description: Add a new Contact Tag to your Workspace
+      operationId: createContactsTags
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Tag
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contacts_tag:
+                  type: object
+                  $ref: '#/components/schemas/ContactsTagParameters'
+            example:
+              contacts_tag:
+                name: Example Tag
+                color: '#FF5733'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactsTagAttributes'
+              example:
+                id: 63
+                public_id: DxSHCE
+                workspace_id: 42000
+                name: Example Tag
+                color: '#00FF00'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /contacts/tags/{id}:
+    get:
+      tags:
+      - Contacts::Tag
+      summary: Fetch Tag
+      description: Retrieve a single Contact Tag
+      operationId: getContactsTags
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactsTagAttributes'
+              example:
+                id: 62
+                public_id: DOCZao
+                workspace_id: 42000
+                name: Example Tag
+                color: '#00FF00'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Contacts::Tag
+      summary: Update Tag
+      description: Update a Contact Tag
+      operationId: updateContactsTags
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Tag
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contacts_tag:
+                  type: object
+                  $ref: '#/components/schemas/ContactsTagParametersUpdate'
+            example:
+              contacts_tag:
+                name: renamed-tag
+                color: '#FF5733'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactsTagAttributes'
+              example:
+                id: 65
+                public_id: aLwlpM
+                workspace_id: 42000
+                name: Example Tag
+                color: '#00FF00'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    delete:
+      tags:
+      - Contacts::Tag
+      summary: Remove Tag
+      description: Delete a Contact Tag from your workspace
+      operationId: removeContactsTags
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    ContactsTagAttributes:
+      type: object
+      title: Contact Tags
+      description: Contact Tags
+      properties:
+        id:
+          type: integer
+          description: Tag ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Tag public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        name:
+          type: string
+          description: Name
+        color:
+          type: string
+          description: Color
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at datetime
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at datetime
+      example:
+        id: 4
+        public_id: LutgGM
+        workspace_id: 42000
+        name: Example Tag
+        color: '#00FF00'
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - color
+      - created_at
+      - id
+      - name
+      - public_id
+      - updated_at
+      - workspace_id
+    ContactsTagParameters:
+      type: object
+      title: Contact Tags
+      description: Contact Tags
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name
+        color:
+          type: string
+          description: Tag Color
+      example:
+        contacts_tag:
+          name: Example Tag
+          color: '#FF5733'
+    ContactsTagParametersUpdate:
+      type: object
+      title: Contact Tags
+      description: Contact Tags
+      required: []
+      properties:
+        name:
+          type: string
+          description: Tag Name
+        color:
+          type: string
+          description: Tag Color
+      example:
+        contacts_tag:
+          name: renamed-tag
+          color: '#FF5733'
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

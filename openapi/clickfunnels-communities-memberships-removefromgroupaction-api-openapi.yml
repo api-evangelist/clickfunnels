@@ -1,0 +1,341 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Communities::Memberships::Remove From Group Action API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Communities::Memberships::RemoveFromGroupAction
+  description: '> Async bulk action that removes multiple members from one or more community spaces (groups) in the background.
+
+
+    Creating a RemoveFromGroupAction enqueues a background job and immediately returns an action record. Poll the `show` endpoint using the returned `id` and check the `status` field (`queued` → `processing` → `completed`) to track progress.
+
+    '
+paths:
+  /communities/{community_id}/memberships/remove_from_group_actions:
+    post:
+      tags:
+      - Communities::Memberships::RemoveFromGroupAction
+      summary: Create Membership Remove-From-Group Action
+      description: 'Enqueue an async background job to remove one or more community members from one or more spaces (groups). The action record is returned immediately with `status: queued`. Poll `GET /communities/memberships/remove_from_group_actions/{id}` until `status` is `completed`.
+
+        '
+      operationId: createCommunitiesMembershipsRemoveFromGroupActions
+      parameters:
+      - name: community_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Parameters for the remove-from-group action
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                communities_memberships_remove_from_group_action:
+                  type: object
+                  $ref: '#/components/schemas/CommunitiesMembershipsRemoveFromGroupActionParameters'
+            example:
+              communities_memberships_remove_from_group_action:
+                target_all: false
+                target_ids:
+                - AbCdEf
+                - GhIjKl
+                space_ids:
+                - SpAcEa
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunitiesMembershipsRemoveFromGroupActionAttributes'
+              example:
+                id: 503
+                public_id: RmGrP1
+                community_id: 1
+                target_all: false
+                target_ids:
+                - 101
+                - 102
+                failed_ids: []
+                target_count: null
+                performed_count: 0
+                started_at: null
+                completed_at: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                status: queued
+                space_ids:
+                - 10
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Please select at least one topic.
+  /communities/memberships/remove_from_group_actions/{id}:
+    get:
+      tags:
+      - Communities::Memberships::RemoveFromGroupAction
+      summary: Fetch Membership Remove-From-Group Action
+      description: Retrieve the current status of a membership remove-from-group action. Poll this endpoint until `status` is `completed`.
+      operationId: getCommunitiesMembershipsRemoveFromGroupActions
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunitiesMembershipsRemoveFromGroupActionAttributes'
+              example:
+                id: 503
+                public_id: RmGrP1
+                community_id: 1
+                target_all: false
+                target_ids:
+                - 101
+                - 102
+                failed_ids: []
+                target_count: 2
+                performed_count: 2
+                started_at: '2025-01-01T00:01:00.000Z'
+                completed_at: '2025-01-01T00:01:05.000Z'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:01:05.000Z'
+                status: completed
+                space_ids:
+                - 10
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    CommunitiesMembershipsRemoveFromGroupActionAttributes:
+      type: object
+      title: Communities::Memberships::RemoveFromGroupAction
+      description: Communities::Memberships::RemoveFromGroupAction
+      allOf:
+      - $ref: '#/components/schemas/CommunitiesActionAttributes'
+      - type: object
+        properties:
+          space_ids:
+            type: array
+            description: Integer IDs of the spaces (groups) members are removed from
+            items:
+              type: integer
+      example:
+        id: 503
+        public_id: RmGrP1
+        community_id: 1
+        target_all: false
+        target_ids:
+        - 101
+        - 102
+        failed_ids: []
+        target_count: 2
+        performed_count: 2
+        started_at: '2025-01-01T00:01:00.000Z'
+        completed_at: '2025-01-01T00:01:05.000Z'
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:01:05.000Z'
+        status: completed
+        space_ids:
+        - 10
+        - 11
+      required:
+      - community_id
+      - completed_at
+      - created_at
+      - failed_ids
+      - id
+      - performed_count
+      - public_id
+      - space_ids
+      - started_at
+      - status
+      - target_all
+      - target_count
+      - target_ids
+      - updated_at
+    CommunitiesMembershipsRemoveFromGroupActionParameters:
+      type: object
+      title: Communities::Memberships::RemoveFromGroupAction
+      description: Communities::Memberships::RemoveFromGroupAction
+      properties:
+        target_all:
+          type: boolean
+          description: When true, remove all members in the community from the specified spaces (target_ids is ignored)
+        target_ids:
+          type: array
+          description: Array of membership public IDs to remove from the spaces. Required when target_all is false.
+          items:
+            type: string
+        space_ids:
+          type: array
+          description: Array of space public IDs to remove the members from
+          items:
+            type: string
+      example:
+        communities_memberships_remove_from_group_action:
+          target_all: false
+          target_ids:
+          - AbCdEf
+          - GhIjKl
+          space_ids:
+          - SpAcEa
+    CommunitiesActionAttributes:
+      type: object
+      title: Async Action
+      description: 'Base response shape shared by all community async bulk-action resources. The `status` field progresses from `queued` → `processing` → `completed`. Poll the `show` endpoint until `status` is `completed` or `performed_count` equals `target_count`.
+
+        '
+      properties:
+        id:
+          type: integer
+          description: Action ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Action public ID
+        community_id:
+          type: integer
+          description: ID of the Community this action belongs to
+        target_all:
+          type: boolean
+          description: When true the action targets all eligible records in the community rather than the explicit target_ids list
+        target_ids:
+          type: array
+          description: Integer IDs of the targeted records (memberships or bans)
+          items:
+            type: integer
+        failed_ids:
+          type: array
+          description: Integer IDs of records that could not be processed
+          items:
+            type: integer
+        target_count:
+          type:
+          - integer
+          - 'null'
+          description: Total number of records that will be processed
+        performed_count:
+          type:
+          - integer
+          - 'null'
+          description: Number of records processed so far
+        started_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the background job began processing
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the background job finished
+        created_at:
+          type: string
+          format: date-time
+          description: Created at
+        updated_at:
+          type: string
+          format: date-time
+          description: Updated at
+        status:
+          type: string
+          enum:
+          - queued
+          - processing
+          - completed
+          description: 'Current status of the async action. Progresses: queued → processing → completed.'
+      required:
+      - community_id
+      - completed_at
+      - created_at
+      - failed_ids
+      - id
+      - performed_count
+      - public_id
+      - started_at
+      - status
+      - target_all
+      - target_count
+      - target_ids
+      - updated_at
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

@@ -1,0 +1,403 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Emails::Settings API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Emails::Settings
+  description: '> Email Settings
+
+
+    Email Settings represent your workspace''s email configuration, including default from and reply-to addresses for system and marketing emails.
+
+
+    See the [Business mailing address prerequisite](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#business-mailing-address-prerequisite) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+
+    '
+paths:
+  /workspaces/{workspace_id}/emails/settings:
+    get:
+      tags:
+      - Emails::Settings
+      summary: Get Email Settings
+      description: 'Retrieve email settings for a workspace. A workspace that has never configured its email settings has no persisted record yet; this returns `200` with the empty settings shape (`address: null`, `address_complete: false`) rather than a `404`, signalling "not set up yet - PUT to configure".
+
+        Check `address_complete` here before sending marketing email: see the [Business mailing address prerequisite](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#business-mailing-address-prerequisite) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).'
+      operationId: getEmailsSettings
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsSettingsAttributes'
+              example:
+                workspace_id: 42000
+                system_emails_from_address:
+                  email_address: system@example.com
+                  name: System Notifications
+                system_emails_reply_to_address:
+                  email_address: support@example.com
+                  name: Support
+                marketing_emails_from_address:
+                  email_address: marketing@example.com
+                  name: Marketing Team
+                marketing_emails_reply_to_address: null
+                address: null
+                address_complete: false
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Emails::Settings
+      summary: Update Email Settings
+      description: 'Update a workspace''s email/marketing settings. Most importantly, this sets the marketing (business) address, which is the workspace-wide prerequisite for creating broadcasts and workflow send-email steps, and for sending broadcasts. When an `address` is supplied it is validated for completeness, so a 422 here means marketing-email creation and sending remain blocked. A workspace that has never configured its email settings has no persisted record yet; the first PUT builds and persists it, so it succeeds rather than returning a `404`.
+
+        See the [Business mailing address prerequisite](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#business-mailing-address-prerequisite) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md) for the exact body to send.'
+      operationId: updateEmailsSettings
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about updated fields in the email settings
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                marketing_setting:
+                  type: object
+                  $ref: '#/components/schemas/EmailsSettingsParameters'
+            example:
+              marketing_setting:
+                name: Acme Inc.
+                address:
+                  address_one: 123 Main St
+                  city: San Francisco
+                  postal_code: '94105'
+                  country_code: US
+                  region: CA
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsSettingsAttributes'
+              example:
+                workspace_id: 42000
+                system_emails_from_address:
+                  email_address: system@example.com
+                  name: System Notifications
+                system_emails_reply_to_address:
+                  email_address: support@example.com
+                  name: Support
+                marketing_emails_from_address:
+                  email_address: marketing@example.com
+                  name: Marketing Team
+                marketing_emails_reply_to_address: null
+                address:
+                  address_one: 123 Main St
+                  address_two: null
+                  city: San Francisco
+                  postal_code: '94105'
+                  region_name: California
+                  region: CA
+                  country: US
+                address_complete: true
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Address is incomplete
+components:
+  schemas:
+    EmailsSettingsParameters:
+      type: object
+      title: Email Settings
+      description: Email/marketing settings for a workspace
+      required: []
+      properties:
+        name:
+          type: string
+          description: Business/sender name shown on email broadcasts
+        address_single_line:
+          type: boolean
+          description: Render the marketing address on a single line
+        hide_branding:
+          type: boolean
+          description: Hide ClickFunnels branding in the email footer
+        unsubscribe_footer:
+          type: string
+          description: Custom unsubscribe footer text
+        footer_alignment:
+          type: string
+          description: Alignment of the email footer
+        system_emails_from_address_id:
+          type:
+          - integer
+          - 'null'
+          description: An Emails::Address id used as the from address for system emails
+        system_emails_reply_to_address_id:
+          type:
+          - integer
+          - 'null'
+          description: An Emails::Address id used as the reply-to address for system emails
+        marketing_emails_from_address_id:
+          type:
+          - integer
+          - 'null'
+          description: An Emails::Address id used as the from address for marketing emails
+        marketing_emails_reply_to_address_id:
+          type:
+          - integer
+          - 'null'
+          description: An Emails::Address id used as the reply-to address for marketing emails
+        address:
+          type: object
+          description: The marketing (business) address. This workspace-wide prerequisite must be complete before creating a broadcast or workflow send-email step, and before sending a broadcast.
+          properties:
+            address_one:
+              type: string
+              description: Street address line one
+            address_two:
+              type:
+              - string
+              - 'null'
+              description: Street address line two
+            city:
+              type: string
+              description: City
+            postal_code:
+              type: string
+              description: Postal/ZIP code
+            country_code:
+              type: string
+              description: ISO 3166-1 alpha-2 country code, e.g. "US"
+            region:
+              type: string
+              description: State/region by its code (e.g. "CA") or name
+      example:
+        marketing_setting:
+          name: Acme Inc.
+          address:
+            address_one: 123 Main St
+            city: San Francisco
+            postal_code: '94105'
+            country_code: US
+            region: CA
+    EmailsSettingsAttributes:
+      type: object
+      title: Email Settings
+      description: Email Settings
+      properties:
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        system_emails_from_address:
+          type:
+          - object
+          - 'null'
+          properties:
+            email_address:
+              type: string
+              description: Email address
+            name:
+              type:
+              - string
+              - 'null'
+              description: Display name
+          description: From address for system emails
+        system_emails_reply_to_address:
+          type:
+          - object
+          - 'null'
+          properties:
+            email_address:
+              type: string
+              description: Email address
+            name:
+              type:
+              - string
+              - 'null'
+              description: Display name
+          description: Reply-to address for system emails
+        marketing_emails_from_address:
+          type:
+          - object
+          - 'null'
+          properties:
+            email_address:
+              type: string
+              description: Email address
+            name:
+              type:
+              - string
+              - 'null'
+              description: Display name
+          description: From address for marketing emails
+        marketing_emails_reply_to_address:
+          type:
+          - object
+          - 'null'
+          properties:
+            email_address:
+              type: string
+              description: Email address
+            name:
+              type:
+              - string
+              - 'null'
+              description: Display name
+          description: Reply-to address for marketing emails
+        address:
+          type:
+          - object
+          - 'null'
+          properties:
+            address_one:
+              type: string
+              description: Street address line one
+            address_two:
+              type:
+              - string
+              - 'null'
+              description: Street address line two
+            city:
+              type: string
+              description: City
+            postal_code:
+              type: string
+              description: Postal/ZIP code
+            region_name:
+              type:
+              - string
+              - 'null'
+              description: State/region name
+            region:
+              type:
+              - string
+              - 'null'
+              description: State/region code (e.g. "CA")
+            country:
+              type:
+              - string
+              - 'null'
+              description: ISO 3166-1 alpha-2 country code (e.g. "US")
+          description: The marketing (business) address used on email broadcasts
+        address_complete:
+          type: boolean
+          description: True once the marketing address satisfies the email broadcast gate. See the [Business mailing address prerequisite](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#business-mailing-address-prerequisite) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+      example:
+        workspace_id: 42000
+        system_emails_from_address:
+          email_address: system@example.com
+          name: System Notifications
+        system_emails_reply_to_address:
+          email_address: support@example.com
+          name: Support
+        marketing_emails_from_address:
+          email_address: marketing@example.com
+          name: Marketing Team
+        marketing_emails_reply_to_address: null
+        address:
+          address_one: 123 Main St
+          address_two: null
+          city: San Francisco
+          postal_code: '94105'
+          region_name: California
+          region: CA
+          country: US
+        address_complete: true
+      required:
+      - address
+      - address_complete
+      - marketing_emails_from_address
+      - marketing_emails_reply_to_address
+      - system_emails_from_address
+      - system_emails_reply_to_address
+      - workspace_id
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

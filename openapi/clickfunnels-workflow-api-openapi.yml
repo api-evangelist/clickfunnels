@@ -1,0 +1,1113 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Workflow API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Workflow
+  description: 'Standalone automation workflows that enroll contacts and execute a sequence of action steps (send email, apply tag, delay, split, etc.). A workflow is either `draft` (no active triggers), `live` (enabled with at least one active trigger), or `archived`.
+
+
+    Related sub-resources: Workflows::Trigger, Workflows::Step, Workflows::Run.
+
+
+    See the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md) for the end-to-end guide — lifecycle, [creating a workflow](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#creating-a-workflow), [triggers](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#triggers), [steps](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#steps), [branching](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#branching), [enabling/disabling](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#enabling-disabling), and [manual enrollment](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#runs---manual-enrollment).
+
+    '
+paths:
+  /workspaces/{workspace_id}/workflows:
+    get:
+      tags:
+      - Workflow
+      summary: List Workflows
+      description: 'List the standalone automation workflows for a workspace. Supports cursor
+
+        pagination and sort.
+
+        '
+      operationId: listWorkflows
+      externalDocs:
+        description: Workflows Skill - build and configure automations via the API
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkflowAttributes'
+              example:
+              - id: 101
+                public_id: WfAbCd
+                workspace_id: 5001
+                name: New Lead Nurture
+                status: live
+                disabled: false
+                archived: false
+                run_type: asynchronous
+                active_runs_count: 12
+                completed_runs_count: 340
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-10T00:00:00.000Z'
+              - id: 102
+                public_id: WfEfGh
+                workspace_id: 5001
+                name: Post-Purchase Upsell
+                status: draft
+                disabled: true
+                archived: false
+                run_type: asynchronous
+                active_runs_count: 0
+                completed_runs_count: 0
+                created_at: '2025-06-05T00:00:00.000Z'
+                updated_at: '2025-06-05T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden — you are not authorized for this resource. (Reads are never gated by trusted platform access; only a cross-team third-party write is.)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Workflow
+      summary: Create Workflow
+      description: 'Create a new standalone automation workflow. New workflows are created in the
+
+        `draft` state (disabled). Add triggers and steps, then call `POST /workflows/{id}/enable`
+
+        to make it live.
+
+        '
+      operationId: createWorkflow
+      externalDocs:
+        description: Workflows Skill - creating a workflow
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#creating-a-workflow
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowParametersCreate'
+            example:
+              workflow:
+                name: New Lead Nurture
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAttributes'
+              example:
+                id: 103
+                public_id: WfIjKl
+                workspace_id: 5001
+                name: New Lead Nurture
+                status: draft
+                disabled: true
+                archived: false
+                run_type: asynchronous
+                active_runs_count: 0
+                completed_runs_count: 0
+                created_at: '2025-06-18T00:00:00.000Z'
+                updated_at: '2025-06-18T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden — a third-party platform acting on another team's workspace without trusted platform access. First-party / own-account writes are never blocked.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: Name can''t be blank'
+  /workflows/{id}:
+    get:
+      tags:
+      - Workflow
+      summary: Fetch Workflow
+      description: 'Retrieve a single workflow by its integer id or obfuscated public_id.
+
+        '
+      operationId: getWorkflow
+      externalDocs:
+        description: Workflows Skill - build and configure automations via the API
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAttributes'
+              example:
+                id: 101
+                public_id: WfAbCd
+                workspace_id: 5001
+                name: New Lead Nurture
+                status: live
+                disabled: false
+                archived: false
+                run_type: asynchronous
+                active_runs_count: 12
+                completed_runs_count: 340
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-10T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    patch:
+      tags:
+      - Workflow
+      summary: Update Workflow
+      description: 'Update a workflow''s `name` or `archived` flag. `run_type` is server-controlled
+
+        and cannot be changed.
+
+        '
+      operationId: updateWorkflow
+      externalDocs:
+        description: Workflows Skill - lifecycle (draft, live, archived)
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#lifecycle-read-this-first
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowParametersUpdate'
+            example:
+              workflow:
+                name: Updated Nurture Sequence
+                archived: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAttributes'
+              example:
+                id: 101
+                public_id: WfAbCd
+                workspace_id: 5001
+                name: Updated Nurture Sequence
+                status: live
+                disabled: false
+                archived: false
+                run_type: asynchronous
+                active_runs_count: 12
+                completed_runs_count: 340
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-18T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: Name can''t be blank'
+    delete:
+      tags:
+      - Workflow
+      summary: Delete Workflow
+      description: 'Permanently delete a workflow and all its associated triggers, steps, and run records.
+
+        '
+      operationId: deleteWorkflow
+      externalDocs:
+        description: Workflows Skill - lifecycle (draft, live, archived)
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#lifecycle-read-this-first
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /workflows/{id}/structure:
+    get:
+      tags:
+      - Workflow
+      summary: Fetch Workflow Structure
+      description: 'Returns the workflow''s complete tree in a single call: the workflow header,
+
+        its active triggers (summary shape), and the ordered list of visible steps with
+
+        branching inlined. Internal container nodes are spliced out.
+
+
+        Split steps carry their child branches or variants directly in the response:
+
+        - `conditional_split_step`: `branches` — always `[{branch: "matched", steps: [...]}, {branch: "unmatched", steps: [...]}]`
+
+        - `split_test_step`: `variants` — each entry has `weight` and `steps`.
+
+
+        Walk the `steps` array in order to follow execution flow. `sort_order` is
+
+        container-local and is not globally unique across the tree.
+
+        '
+      operationId: getWorkflowStructure
+      externalDocs:
+        description: Workflows Skill - reading the structure
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#reading-the-structure
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowStructureAttributes'
+              example:
+                workflow:
+                  id: 101
+                  public_id: WfAbCd
+                  name: New Lead Nurture
+                  status: live
+                  disabled: false
+                  archived: false
+                  run_type: asynchronous
+                triggers:
+                - id: 11
+                  public_id: TrXxYy
+                  event_type_key: $contact.tag_applied
+                  active: true
+                  allow_anonymous_contacts: false
+                steps:
+                - id: 201
+                  public_id: StEm01
+                  step_type: send_email_step
+                  name: Send Email
+                  sort_order: 0
+                  state: active
+                  step_type_settings:
+                    send_email_step:
+                      subject: Welcome!
+                      preheadline: We're glad you're here.
+                      template_id: 3001
+                      from_address_id: 4001
+                      reply_to_address_id: null
+                - id: 202
+                  public_id: StDl02
+                  step_type: delay_step
+                  name: Wait 3 Days
+                  sort_order: 1
+                  state: active
+                  step_type_settings:
+                    delay_step:
+                      delay_type: relative
+                      duration: 3
+                      interval: days
+                      time_zone: null
+                      use_contact_time_zone: false
+                      use_execution_window: false
+                      day_of_week: null
+                      date_of_month: null
+                      start_time: null
+                      end_time: null
+                      execution_window_days: []
+                - id: 203
+                  public_id: StCs03
+                  step_type: conditional_split_step
+                  name: VIP Check
+                  sort_order: 2
+                  state: active
+                  convergence_step_id: null
+                  step_type_settings:
+                    conditional_split_step:
+                      condition:
+                        filter_id: 6001
+                        is_setup: true
+                  branches:
+                  - branch: matched
+                    steps:
+                    - id: 205
+                      public_id: StTg05
+                      step_type: contact_tag_step
+                      name: Tag VIP
+                      sort_order: 0
+                      state: active
+                      step_type_settings:
+                        contact_tag_step:
+                          action: Add Tags
+                          contacts_tag_ids:
+                          - 7001
+                  - branch: unmatched
+                    steps: []
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /workflows/{id}/enable:
+    post:
+      tags:
+      - Workflow
+      summary: Enable Workflow
+      description: 'Enable a workflow so it can accept new runs. The workflow must have at least one
+
+        active trigger — otherwise returns 422. Returns the updated workflow.
+
+        '
+      operationId: enableWorkflow
+      externalDocs:
+        description: Workflows Skill - enabling, disabling
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#enabling-disabling
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAttributes'
+              example:
+                id: 101
+                public_id: WfAbCd
+                workspace_id: 5001
+                name: New Lead Nurture
+                status: live
+                disabled: false
+                archived: false
+                run_type: asynchronous
+                active_runs_count: 0
+                completed_runs_count: 0
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-18T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: A workflow cannot be enabled without at least one active trigger.'
+  /workflows/{id}/disable:
+    post:
+      tags:
+      - Workflow
+      summary: Disable Workflow
+      description: 'Disable a workflow, stopping new runs from being started. In-progress runs
+
+        are canceled. Returns the updated workflow.
+
+        '
+      operationId: disableWorkflow
+      externalDocs:
+        description: Workflows Skill - enabling, disabling
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#enabling-disabling
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowAttributes'
+              example:
+                id: 101
+                public_id: WfAbCd
+                workspace_id: 5001
+                name: New Lead Nurture
+                status: draft
+                disabled: true
+                archived: false
+                run_type: asynchronous
+                active_runs_count: 0
+                completed_runs_count: 340
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-18T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    WorkflowAttributes:
+      type: object
+      title: Workflow
+      description: A standalone automation workflow.
+      properties:
+        id:
+          type: integer
+          description: Workflow ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Obfuscated workflow ID
+        workspace_id:
+          type: integer
+          description: Integer ID of the workspace that owns this workflow
+        name:
+          type: string
+          description: Human-readable workflow name
+        status:
+          type: string
+          enum:
+          - draft
+          - live
+          - archived
+          description: Derived status. `live` = enabled with at least one active trigger; `archived` = archived; otherwise `draft`.
+        disabled:
+          type: boolean
+          description: True when the workflow is disabled (not executing runs).
+        archived:
+          type: boolean
+          description: True when the workflow has been archived.
+        run_type:
+          type: string
+          enum:
+          - asynchronous
+          - synchronous
+          - one_time
+          description: How the workflow handles concurrent runs for the same contact. Server-controlled — always `asynchronous` for API-created workflows.
+        active_runs_count:
+          type: integer
+          description: Number of currently active (in-progress) runs.
+        completed_runs_count:
+          type: integer
+          description: Cumulative count of completed runs.
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+      example:
+        id: 101
+        public_id: WfAbCd
+        workspace_id: 5001
+        name: New Lead Nurture
+        status: live
+        disabled: false
+        archived: false
+        run_type: asynchronous
+        active_runs_count: 12
+        completed_runs_count: 340
+        created_at: '2025-06-01T00:00:00.000Z'
+        updated_at: '2025-06-10T00:00:00.000Z'
+      required:
+      - active_runs_count
+      - archived
+      - completed_runs_count
+      - created_at
+      - disabled
+      - id
+      - name
+      - public_id
+      - run_type
+      - status
+      - updated_at
+      - workspace_id
+    WorkflowParametersUpdate:
+      type: object
+      title: Update Workflow
+      description: Parameters for updating an existing workflow. All fields are optional.
+      required:
+      - workflow
+      properties:
+        workflow:
+          type: object
+          properties:
+            name:
+              type: string
+              description: New name for the workflow.
+            archived:
+              type: boolean
+              description: Set to `true` to archive the workflow, `false` to unarchive.
+      example:
+        workflow:
+          name: Updated Nurture Sequence
+          archived: false
+    WorkflowParametersCreate:
+      type: object
+      title: Create Workflow
+      description: 'Parameters for creating a new workflow. `run_type` is server-controlled
+
+        (always `asynchronous` for API-created workflows) and is not accepted as a
+
+        request parameter.
+
+        '
+      required:
+      - workflow
+      properties:
+        workflow:
+          type: object
+          required:
+          - name
+          properties:
+            name:
+              type: string
+              description: Human-readable name for the workflow.
+      example:
+        workflow:
+          name: New Lead Nurture
+    WorkflowStructureAttributes:
+      type: object
+      title: Workflow Structure
+      description: 'A complete tree view of a workflow — its header, triggers, and the ordered list
+
+        of visible steps. Internal container nodes (sequence steps, end-step markers) are
+
+        spliced out. Split steps expose their child branches or variants inline.
+
+
+        Step entries share a common shape (`id`, `public_id`, `step_type`, `name`, `sort_order`,
+
+        `state`, `step_type_settings`) and gain type-specific fields:
+
+
+        - **`conditional_split_step`**: `convergence_step_id` + `branches` array (`matched` / `unmatched`), each branch carrying its own `steps`.
+
+        - **`split_test_step`**: `convergence_step_id` + `variants` array (each with `weight` and `steps`).
+
+        - All other step types: no extra branching fields.
+
+        '
+      properties:
+        workflow:
+          type: object
+          description: Summary header of the workflow.
+          properties:
+            id:
+              type: integer
+            public_id:
+              type: string
+            name:
+              type: string
+            status:
+              type: string
+              enum:
+              - draft
+              - live
+              - archived
+            disabled:
+              type: boolean
+            archived:
+              type: boolean
+            run_type:
+              type: string
+        triggers:
+          type: array
+          description: Active triggers attached to the workflow (summary shape).
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              public_id:
+                type: string
+              event_type_key:
+                type: string
+              active:
+                type: boolean
+              allow_anonymous_contacts:
+                type: boolean
+        steps:
+          type: array
+          description: 'Ordered visible steps. Splits are inlined with their child steps.
+
+            Walk this array top-to-bottom to follow the execution order.
+
+            '
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              public_id:
+                type: string
+              step_type:
+                type: string
+                description: The step class key, e.g. `send_email_step`, `delay_step`, `conditional_split_step`.
+              name:
+                type: string
+              sort_order:
+                type: integer
+                description: Position within its own container — not globally unique across the tree.
+              state:
+                type: string
+                enum:
+                - active
+                - notSetup
+                - notDefined
+              step_type_settings:
+                type: object
+                description: One-key map whose key is the step type. See Workflows::Step for the per-type shape.
+              convergence_step_id:
+                type:
+                - integer
+                - 'null'
+                description: 'Split steps only. Id of the step where this split''s branches reconverge — the first step that runs after the split, which every branch continues to. Example: a conditional_split_step (id 203) whose matched/unmatched branches both lead to the same next step (id 206) → convergence_step_id: 206. null when nothing follows the split (it ends the flow). The referenced step always appears in this tree.'
+              branches:
+                type: array
+                description: conditional_split_step only. Always `[matched, unmatched]`.
+                items:
+                  type: object
+                  properties:
+                    branch:
+                      type: string
+                      enum:
+                      - matched
+                      - unmatched
+                    steps:
+                      type: array
+                      items:
+                        type: object
+              variants:
+                type: array
+                description: split_test_step only.
+                items:
+                  type: object
+                  properties:
+                    weight:
+                      type: integer
+                    steps:
+                      type: array
+                      items:
+                        type: object
+      example:
+        workflow:
+          id: 101
+          public_id: WfAbCd
+          name: New Lead Nurture
+          status: live
+          disabled: false
+          archived: false
+          run_type: asynchronous
+        triggers:
+        - id: 11
+          public_id: TrXxYy
+          event_type_key: $contact.tag_applied
+          active: true
+          allow_anonymous_contacts: false
+        steps:
+        - id: 201
+          public_id: StEm01
+          step_type: send_email_step
+          name: Send Email
+          sort_order: 0
+          state: active
+          step_type_settings:
+            send_email_step:
+              subject: Welcome!
+              preheadline: We're glad you're here.
+              template_id: 3001
+              from_address_id: 4001
+              reply_to_address_id: null
+        - id: 202
+          public_id: StDl02
+          step_type: delay_step
+          name: Wait 3 Days
+          sort_order: 1
+          state: active
+          step_type_settings:
+            delay_step:
+              delay_type: relative
+              duration: 3
+              interval: days
+              time_zone: null
+              use_contact_time_zone: false
+              use_execution_window: false
+              day_of_week: null
+              date_of_month: null
+              start_time: null
+              end_time: null
+              execution_window_days: []
+        - id: 203
+          public_id: StCs03
+          step_type: conditional_split_step
+          name: VIP Check
+          sort_order: 2
+          state: active
+          convergence_step_id: null
+          step_type_settings:
+            conditional_split_step:
+              condition:
+                filter_id: 6001
+                is_setup: true
+          branches:
+          - branch: matched
+            steps:
+            - id: 205
+              public_id: StTg05
+              step_type: contact_tag_step
+              name: Tag VIP
+              sort_order: 0
+              state: active
+              step_type_settings:
+                contact_tag_step:
+                  action: Add Tags
+                  contacts_tag_ids:
+                  - 7001
+          - branch: unmatched
+            steps: []
+      required:
+      - steps
+      - triggers
+      - workflow
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

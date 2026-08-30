@@ -1,0 +1,637 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Webhooks::Outgoing::Endpoint API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Webhooks::Outgoing::Endpoint
+  description: Webhook Outgoing Endpoints
+paths:
+  /workspaces/{workspace_id}/webhooks/outgoing/endpoints:
+    get:
+      tags:
+      - Webhooks::Outgoing::Endpoint
+      summary: List Endpoints
+      description: List webhook endpoints for a workspace
+      operationId: listWebhooksOutgoingEndpoints
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WebhooksOutgoingEndpointAttributes'
+              example:
+              - id: 2
+                public_id: oFinTJ
+                workspace_id: 42000
+                url: https://example.com/some-endpoint-url
+                name: Example Endpoint
+                event_type_ids:
+                - contact.identified
+                - one-time-order.completed
+                api_version: 2
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                page_ids: []
+                funnel_ids: []
+              - id: 3
+                public_id: KlIDGN
+                workspace_id: 42000
+                url: https://example.com/some-endpoint-url
+                name: Example Endpoint
+                event_type_ids:
+                - contact.identified
+                - one-time-order.completed
+                api_version: 2
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                page_ids: []
+                funnel_ids: []
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Webhooks::Outgoing::Endpoint
+      summary: Create Endpoint
+      description: Add a new webhook endpoint to a workspace
+      operationId: createWebhooksOutgoingEndpoints
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Endpoint
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                webhooks_outgoing_endpoint:
+                  type: object
+                  $ref: '#/components/schemas/WebhooksOutgoingEndpointParameters'
+            example:
+              webhooks_outgoing_endpoint:
+                url: https://example.com/some-endpoint-url
+                name: Example Endpoint
+                event_type_ids:
+                - contact.identified
+                - one-time-order.completed
+                page_ids: []
+                funnel_ids: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhooksOutgoingEndpointAttributes'
+              example:
+                id: 5
+                public_id: GrVNvI
+                workspace_id: 42000
+                url: https://example.com/some-endpoint-url
+                name: Example Endpoint
+                event_type_ids:
+                - contact.identified
+                - one-time-order.completed
+                api_version: 2
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                page_ids: []
+                funnel_ids: []
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /webhooks/outgoing/endpoints/{id}:
+    get:
+      tags:
+      - Webhooks::Outgoing::Endpoint
+      summary: Fetch Endpoint
+      description: Retrieve a webhook endpoint for a workspace
+      operationId: getWebhooksOutgoingEndpoints
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhooksOutgoingEndpointAttributes'
+              example:
+                id: 4
+                public_id: yGJgsb
+                workspace_id: 42000
+                url: https://example.com/some-endpoint-url
+                name: Example Endpoint
+                event_type_ids:
+                - contact.identified
+                - one-time-order.completed
+                api_version: 2
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                page_ids: []
+                funnel_ids: []
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Webhooks::Outgoing::Endpoint
+      summary: Update Endpoint
+      description: Update a webhook endpoint for a workspace
+      operationId: updateWebhooksOutgoingEndpoints
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Endpoint
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                webhooks_outgoing_endpoint:
+                  type: object
+                  $ref: '#/components/schemas/WebhooksOutgoingEndpointParametersUpdate'
+            example:
+              webhooks_outgoing_endpoint:
+                url: https://example.com/some-endpoint-url
+                name: Example Endpoint
+                event_type_ids:
+                - contact.identified
+                - one-time-order.completed
+                page_ids: []
+                funnel_ids: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhooksOutgoingEndpointAttributes'
+              example:
+                id: 7
+                public_id: esoAND
+                workspace_id: 42000
+                url: https://example.com/some-endpoint-url
+                name: Example Endpoint
+                event_type_ids:
+                - contact.identified
+                - one-time-order.completed
+                api_version: 2
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                page_ids: []
+                funnel_ids: []
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    delete:
+      tags:
+      - Webhooks::Outgoing::Endpoint
+      summary: Remove Endpoint
+      description: Delete a webhook endpoint for a workspace
+      operationId: removeWebhooksOutgoingEndpoints
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    WebhooksOutgoingEndpointAttributes:
+      type: object
+      title: Webhooks
+      description: Webhooks
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the webhook endpoint
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Unique identifier for the webhook endpoint visible in the UI
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        url:
+          type: string
+          description: The URL that ClickFunnels event webhooks will be sent to.
+        name:
+          type: string
+          description: The custom name for the webhook endpoint.
+        event_type_ids:
+          type:
+          - array
+          - 'null'
+          minContains: 0
+          contains:
+            type: string
+          description: 'The event types that the webhook endpoint subscribes to. Each entry is a dotted or slashed string key
+
+            (e.g. `contact.updated`, `order.completed`, `orders/invoice.paid`) — these are NOT numeric IDs.
+
+            Retrieve the full list of valid keys from GET /api/v2/webhooks/outgoing/event_types
+
+            (operationId: `listWebhooksOutgoingEventTypes`). The <a class=''link'' target=''_blank''
+
+            href=''https://developers.myclickfunnels.com/docs/webhook-event-types''>Webhook Event Types guide</a>
+
+            provides supplementary context.
+
+            '
+        api_version:
+          type:
+          - integer
+          - 'null'
+          description: The version of the API that the webhook endpoint is using. Only V2 endpoints can currently be created via the API, but V1 endpoints can be created via the UI. They will be visible when listing endpoints.
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at
+        page_ids:
+          type:
+          - array
+          - 'null'
+          description: 'The IDs of the pages that this endpoint is scoped to. Only events triggered from these pages will be sent to this endpoint.
+
+            Can be null when first created. After an update, it can be null, an empty array or an array of page IDs.
+
+            '
+        funnel_ids:
+          type:
+          - array
+          - 'null'
+          description: 'The IDs of the funnels that this endpoint is scoped to. Only events triggered from these funnels will be sent to this endpoint.
+
+            Can be null when first created. After an update, it can be null, an empty array or an array of page IDs.
+
+            '
+      example:
+        id: 1
+        public_id: RcHPAt
+        workspace_id: 42000
+        url: https://example.com/some-endpoint-url
+        name: Example Endpoint
+        event_type_ids:
+        - contact.identified
+        - one-time-order.completed
+        api_version: 2
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        page_ids: []
+        funnel_ids: []
+      required:
+      - api_version
+      - created_at
+      - event_type_ids
+      - funnel_ids
+      - id
+      - name
+      - page_ids
+      - public_id
+      - updated_at
+      - url
+      - workspace_id
+    WebhooksOutgoingEndpointParametersUpdate:
+      type: object
+      title: Webhooks
+      description: Webhooks
+      required: []
+      properties:
+        url:
+          type: string
+          description: The URL that ClickFunnels event webhooks will be sent to.
+        name:
+          type: string
+          description: The custom name for the webhook endpoint.
+        event_type_ids:
+          type: array
+          description: 'The event type keys to which the webhook endpoint subscribes. Each value is a dotted or slashed string key
+
+            (e.g. `contact.updated`, `order.completed`, `orders/invoice.paid`) — these are NOT numeric IDs.
+
+            Retrieve the full list of valid keys from GET /api/v2/webhooks/outgoing/event_types
+
+            (operationId: `listWebhooksOutgoingEventTypes`). The <a class="link" href="https://developers.myclickfunnels.com/docs/webhook-event-types" target="_blank">Webhook Event Types guide</a> provides supplementary context.
+
+
+            On create, one or more valid `event_type_ids` are required.
+
+
+            To remove one `event_type_id` on update, pass an array of all current `event_type_ids` less the one to be removed.
+
+
+            On update to remove all `event_type_ids` pass an empty array.
+
+            '
+        page_ids:
+          type:
+          - array
+          - 'null'
+          description: 'The pages scope of the webhook, i.e., the endpoint will only subscribe to events triggered by users from the pages with the given IDs.
+
+            If not configured initially (equalling null) or empty, subscribes to events fired from any page in the workspace.
+
+            Updating the array will override existing values. To remove all `page_ids` pass an empty array or null.
+
+            '
+        funnel_ids:
+          type:
+          - array
+          - 'null'
+          description: 'The funnel scope of the webhook, i.e., the endpoint will only subscribe to events triggered by users from the funnels with the given IDs.
+
+            If not configured initially (equalling null) or empty, subscribes to events fired from any funnel in the workspace.
+
+            Updating the array will override existing values. To remove all `funnel_ids` pass an empty array or null.
+
+            '
+      example:
+        webhooks_outgoing_endpoint:
+          url: https://example.com/some-endpoint-url
+          name: Example Endpoint
+          event_type_ids:
+          - contact.identified
+          - one-time-order.completed
+          page_ids: []
+          funnel_ids: []
+    WebhooksOutgoingEndpointParameters:
+      type: object
+      title: Webhooks
+      description: Webhooks
+      required:
+      - url
+      - name
+      properties:
+        url:
+          type: string
+          description: The URL that ClickFunnels event webhooks will be sent to.
+        name:
+          type: string
+          description: The custom name for the webhook endpoint.
+        event_type_ids:
+          type: array
+          description: 'The event type keys to which the webhook endpoint subscribes. Each value is a dotted or slashed string key
+
+            (e.g. `contact.updated`, `order.completed`, `orders/invoice.paid`) — these are NOT numeric IDs.
+
+            Retrieve the full list of valid keys from GET /api/v2/webhooks/outgoing/event_types
+
+            (operationId: `listWebhooksOutgoingEventTypes`). The <a class="link" href="https://developers.myclickfunnels.com/docs/webhook-event-types" target="_blank">Webhook Event Types guide</a> provides supplementary context.
+
+
+            On create, one or more valid `event_type_ids` are required.
+
+
+            To remove one `event_type_id` on update, pass an array of all current `event_type_ids` less the one to be removed.
+
+
+            On update to remove all `event_type_ids` pass an empty array.
+
+            '
+        page_ids:
+          type:
+          - array
+          - 'null'
+          description: 'The pages scope of the webhook, i.e., the endpoint will only subscribe to events triggered by users from the pages with the given IDs.
+
+            If not configured initially (equalling null) or empty, subscribes to events fired from any page in the workspace.
+
+            Updating the array will override existing values. To remove all `page_ids` pass an empty array or null.
+
+            '
+        funnel_ids:
+          type:
+          - array
+          - 'null'
+          description: 'The funnel scope of the webhook, i.e., the endpoint will only subscribe to events triggered by users from the funnels with the given IDs.
+
+            If not configured initially (equalling null) or empty, subscribes to events fired from any funnel in the workspace.
+
+            Updating the array will override existing values. To remove all `funnel_ids` pass an empty array or null.
+
+            '
+      example:
+        webhooks_outgoing_endpoint:
+          url: https://example.com/some-endpoint-url
+          name: Example Endpoint
+          event_type_ids:
+          - contact.identified
+          - one-time-order.completed
+          page_ids: []
+          funnel_ids: []
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

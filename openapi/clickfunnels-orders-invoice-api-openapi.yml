@@ -1,0 +1,3470 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Orders::Invoice API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Orders::Invoice
+  description: '> Invoices track payments for orders.
+
+
+    Order Invoices are the invoices issued against Orders. For more information please consult our [Orders Overview guide](https://developers.myclickfunnels.com/docs/orders).
+
+
+    Orders can be fulfilled by fulfilling invoice line items. Please refer to [our Fulfillments guide](https://developers.myclickfunnels.com/docs/fulfillments) to see how this can be done.
+
+    '
+paths:
+  /orders/{order_id}/invoices:
+    get:
+      tags:
+      - Orders::Invoice
+      summary: List Invoices
+      description: List invoices for a specific order. Please refer to [our Orders Overview guide](https://developers.myclickfunnels.com/docs/orders/invoices) for more information about the different types of invoices and payment processors.
+      operationId: listOrdersInvoices
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      - $ref: '#/components/parameters/InvoiceFilter'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrdersInvoiceAttributes'
+              example:
+              - id: 838
+                public_id: WNrMnJ
+                order_id: 22642
+                status: paid
+                due_amount: '13.00'
+                total_amount: '13.00'
+                subtotal_amount: '3.00'
+                tax_amount: '0.00'
+                shipping_amount: '10.00'
+                discount_amount: '0.00'
+                currency: USD
+                issued_at: '2023-10-01T12:43:55.000Z'
+                due_at: '2023-10-15T00:00:00.000Z'
+                paid_at: '2025-10-10T08:04:02.000Z'
+                invoice_type: one_time_sale
+                invoice_number: '3'
+                fulfillment_status: not_applicable
+                created_at: '2026-01-10T20:16:16.536Z'
+                updated_at: '2026-01-10T20:16:16.536Z'
+                external_id: tffv2w34qv
+                payment_processor: external
+                eligible_for_fulfillment: true
+                line_items:
+                - id: 682
+                  public_id: RegpVj
+                  invoice_id: 838
+                  external_id: null
+                  payment_type: null
+                  description: null
+                  quantity: 1
+                  fulfillment_status: unfulfilled
+                  external_product_id: null
+                  discount_amount: '0.0'
+                  state_tax_amount: '0.0'
+                  county_tax_amount: '0.0'
+                  city_tax_amount: '0.0'
+                  district_tax_amount: '0.0'
+                  state_tax_rate: '0.0'
+                  county_tax_rate: '0.0'
+                  city_tax_rate: '0.0'
+                  district_tax_rate: '0.0'
+                  country_tax_jurisdiction: null
+                  state_tax_jurisdiction: null
+                  county_tax_jurisdiction: null
+                  city_tax_jurisdiction: null
+                  period_start_at: null
+                  period_end_at: null
+                  period_number: null
+                  created_at: '2026-01-10T20:16:16.538Z'
+                  updated_at: '2026-01-10T20:16:16.538Z'
+                  amount: '3.00'
+                  products_price:
+                    id: 22229
+                    public_id: YqEWxY
+                    amount: '198.00'
+                    currency: usd
+                    duration: null
+                    interval: null
+                    interval_count: null
+                  products_variant:
+                    id: 22228
+                    public_id: JdknyN
+                    product_id: 6512
+                    name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+                    description: null
+                    sku: SIYP-BLACK-PREMIUM-001
+                    fulfillment_required: false
+                order:
+                  id: 22642
+                  public_id: JmRRyN
+                  order_number: '#2146'
+                  total_amount: '396.00'
+                  origination_channel_id: 11
+                  origination_channel_type: Platform::Application
+                  notes: For Fulfillment
+                  live_mode: true
+                  in_trial: false
+                  billing_status: paid
+                  service_status: completed
+                  order_type: one-time-order
+                  next_charge_at: null
+                  trial_end_at: null
+                  tag_ids: []
+                  activated_at: null
+                  canceled_at: null
+                  canceled_by: null
+                  cancel_reason: null
+                  cancel_description: null
+                  churned_at: null
+                  shipping_address_first_name: Caroll
+                  shipping_address_last_name: Kirlin
+                  shipping_address_organization_name: Testing, Inc.
+                  shipping_address_phone_number: '+19053871234'
+                  shipping_address_street_one: 3443 W Bavaria St
+                  shipping_address_street_two: ''
+                  shipping_address_city: Eagle
+                  shipping_address_region: ID
+                  shipping_address_country: US
+                  shipping_address_postal_code: '83616'
+                  billing_address_street_one: 3443 W Bavaria St
+                  billing_address_street_two: ''
+                  billing_address_city: Eagle
+                  billing_address_region: ID
+                  billing_address_country: US
+                  billing_address_postal_code: '83616'
+                  recurring_invoices_paid_count: 1
+                  origination_channel_name: Default API Client
+                  origination_channel_public_id: vNWWMb
+                  contact:
+                    id: 24359
+                    public_id: vQxYMj
+                    workspace_id: 4
+                    anonymous: 0
+                    email_address: jane.doe@example.com
+                    first_name: Jane
+                    last_name: Doe
+                    phone_number: '+18005550199'
+                    time_zone: Madrid
+                    uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+                    unsubscribed_at: null
+                    last_notification_email_sent_at: null
+                    email_suppression_reason: null
+                    is_active: true
+                    fb_url: null
+                    twitter_url: null
+                    instagram_url: null
+                    linkedin_url: null
+                    website_url: null
+                    created_at: '2026-01-09T15:27:56.647Z'
+                    updated_at: '2026-01-09T15:28:08.075Z'
+                    tags: []
+                    custom_attributes: {}
+                    visits:
+                      first_visit:
+                        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                        utm_source: google
+                        utm_medium: cpc
+                        utm_campaign: spring_sale
+                        utm_term: running shoes
+                        utm_content: ad_variant_a
+                        ip: 192.168.1.1
+                        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                        referrer: https://www.google.com/search?q=example
+                        referring_domain: google.com
+                        landing_page: https://example.com/products/shoes
+                        browser: Chrome
+                        os: Mac OS X
+                        device_type: desktop
+                        started_at: '2026-01-09T14:23:45.123Z'
+                        created_at: '2026-01-09T14:23:45.123Z'
+                        updated_at: '2026-01-09T14:23:45.123Z'
+                      last_visit: null
+                      last_visit_with_utm:
+                        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                        utm_source: google
+                        utm_medium: cpc
+                        utm_campaign: spring_sale
+                        utm_term: running shoes
+                        utm_content: ad_variant_a
+                        ip: 192.168.1.1
+                        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                        referrer: https://www.google.com/search?q=example
+                        referring_domain: google.com
+                        landing_page: https://example.com/products/shoes
+                        browser: Chrome
+                        os: Mac OS X
+                        device_type: desktop
+                        started_at: '2026-01-09T14:23:45.123Z'
+                        created_at: '2026-01-09T14:23:45.123Z'
+                        updated_at: '2026-01-09T14:23:45.123Z'
+                  affiliate: null
+                  referral_code: null
+                  order_page: null
+                visits:
+                  last_visit:
+                    uuid: 7a3f9c11-2d45-4e23-88d2-1bef9acd44fa
+                    utm_source: null
+                    utm_medium: null
+                    utm_campaign: null
+                    utm_term: null
+                    utm_content: null
+                    ip: 192.168.1.1
+                    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                    referrer: https://www.clickfunnels.com/products
+                    referring_domain: clickfunnels.com
+                    landing_page: https://example.com/checkout
+                    browser: Chrome
+                    os: Mac OS X
+                    device_type: desktop
+                    started_at: '2026-01-10T20:10:15.234Z'
+                    created_at: '2026-01-10T20:10:15.234Z'
+                    updated_at: '2026-01-10T20:10:15.234Z'
+                  last_visit_with_utm:
+                    uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                    utm_source: google
+                    utm_medium: cpc
+                    utm_campaign: spring_sale
+                    utm_term: running shoes
+                    utm_content: ad_variant_a
+                    ip: 192.168.1.1
+                    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                    referrer: https://www.google.com/search?q=example
+                    referring_domain: google.com
+                    landing_page: https://example.com/products/shoes
+                    browser: Chrome
+                    os: Mac OS X
+                    device_type: desktop
+                    started_at: '2026-01-09T14:23:45.123Z'
+                    created_at: '2026-01-09T14:23:45.123Z'
+                    updated_at: '2026-01-09T14:23:45.123Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Orders::Invoice
+      summary: Create External Invoice
+      description: Create an invoice for an external order. This is useful if you process payments outside of ClickFunnels, but still want to make use of ClickFunnels&#39; automations and funnels. Refer to the corresponding guide for more information [here](https://developers.myclickfunnels.com/docs/orders#external-orders).
+      operationId: createOrdersInvoices
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: 'Information about a new external invoice. Only external orders support invoice creation via the API.
+
+          External orders are orders where payments are processed outside of ClickFunnels.
+
+          '
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orders_invoice:
+                  type: object
+                  description: 'The invoice parameters. Only external orders support invoice creation via the API.
+
+                    '
+                  $ref: '#/components/schemas/OrdersInvoiceParameters'
+            example:
+              orders_invoice:
+                external_id: inv-ext-12345
+                status: paid
+                invoice_type: one_time_sale
+                invoice_number: INV-001
+                shipping_amount: '9.99'
+                issued_at: '2025-01-01T00:00:00.000Z'
+                due_at: '2025-01-15T00:00:00.000Z'
+                paid_at: '2025-01-10T00:00:00.000Z'
+                line_items_attributes:
+                - amount: '99.00'
+                  quantity: 1
+                  variant_id: 123
+                  products_price_id: 456
+                  description: Premium Widget
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersInvoiceAttributes'
+              example:
+                id: 838
+                public_id: WNrMnJ
+                order_id: 22642
+                status: paid
+                due_amount: '13.00'
+                total_amount: '13.00'
+                subtotal_amount: '3.00'
+                tax_amount: '0.00'
+                shipping_amount: '10.00'
+                discount_amount: '0.00'
+                currency: USD
+                issued_at: '2023-10-01T12:43:55.000Z'
+                due_at: '2023-10-15T00:00:00.000Z'
+                paid_at: '2025-10-10T08:04:02.000Z'
+                invoice_type: one_time_sale
+                invoice_number: '3'
+                fulfillment_status: not_applicable
+                created_at: '2026-01-10T20:16:16.536Z'
+                updated_at: '2026-01-10T20:16:16.536Z'
+                external_id: tffv2w34qv
+                payment_processor: external
+                eligible_for_fulfillment: true
+                line_items:
+                - id: 682
+                  public_id: RegpVj
+                  invoice_id: 838
+                  external_id: null
+                  payment_type: null
+                  description: null
+                  quantity: 1
+                  fulfillment_status: unfulfilled
+                  external_product_id: null
+                  discount_amount: '0.0'
+                  state_tax_amount: '0.0'
+                  county_tax_amount: '0.0'
+                  city_tax_amount: '0.0'
+                  district_tax_amount: '0.0'
+                  state_tax_rate: '0.0'
+                  county_tax_rate: '0.0'
+                  city_tax_rate: '0.0'
+                  district_tax_rate: '0.0'
+                  country_tax_jurisdiction: null
+                  state_tax_jurisdiction: null
+                  county_tax_jurisdiction: null
+                  city_tax_jurisdiction: null
+                  period_start_at: null
+                  period_end_at: null
+                  period_number: null
+                  created_at: '2026-01-10T20:16:16.538Z'
+                  updated_at: '2026-01-10T20:16:16.538Z'
+                  amount: '3.00'
+                  products_price:
+                    id: 22229
+                    public_id: YqEWxY
+                    amount: '198.00'
+                    currency: usd
+                    duration: null
+                    interval: null
+                    interval_count: null
+                  products_variant:
+                    id: 22228
+                    public_id: JdknyN
+                    product_id: 6512
+                    name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+                    description: null
+                    sku: SIYP-BLACK-PREMIUM-001
+                    fulfillment_required: false
+                order:
+                  id: 22642
+                  public_id: JmRRyN
+                  order_number: '#2146'
+                  total_amount: '396.00'
+                  origination_channel_id: 11
+                  origination_channel_type: Platform::Application
+                  notes: For Fulfillment
+                  live_mode: true
+                  in_trial: false
+                  billing_status: paid
+                  service_status: completed
+                  order_type: one-time-order
+                  next_charge_at: null
+                  trial_end_at: null
+                  tag_ids: []
+                  activated_at: null
+                  canceled_at: null
+                  canceled_by: null
+                  cancel_reason: null
+                  cancel_description: null
+                  churned_at: null
+                  shipping_address_first_name: Caroll
+                  shipping_address_last_name: Kirlin
+                  shipping_address_organization_name: Testing, Inc.
+                  shipping_address_phone_number: '+19053871234'
+                  shipping_address_street_one: 3443 W Bavaria St
+                  shipping_address_street_two: ''
+                  shipping_address_city: Eagle
+                  shipping_address_region: ID
+                  shipping_address_country: US
+                  shipping_address_postal_code: '83616'
+                  billing_address_street_one: 3443 W Bavaria St
+                  billing_address_street_two: ''
+                  billing_address_city: Eagle
+                  billing_address_region: ID
+                  billing_address_country: US
+                  billing_address_postal_code: '83616'
+                  recurring_invoices_paid_count: 1
+                  origination_channel_name: Default API Client
+                  origination_channel_public_id: vNWWMb
+                  contact:
+                    id: 24359
+                    public_id: vQxYMj
+                    workspace_id: 4
+                    anonymous: 0
+                    email_address: jane.doe@example.com
+                    first_name: Jane
+                    last_name: Doe
+                    phone_number: '+18005550199'
+                    time_zone: Madrid
+                    uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+                    unsubscribed_at: null
+                    last_notification_email_sent_at: null
+                    email_suppression_reason: null
+                    is_active: true
+                    fb_url: null
+                    twitter_url: null
+                    instagram_url: null
+                    linkedin_url: null
+                    website_url: null
+                    created_at: '2026-01-09T15:27:56.647Z'
+                    updated_at: '2026-01-09T15:28:08.075Z'
+                    tags: []
+                    custom_attributes: {}
+                    visits:
+                      first_visit:
+                        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                        utm_source: google
+                        utm_medium: cpc
+                        utm_campaign: spring_sale
+                        utm_term: running shoes
+                        utm_content: ad_variant_a
+                        ip: 192.168.1.1
+                        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                        referrer: https://www.google.com/search?q=example
+                        referring_domain: google.com
+                        landing_page: https://example.com/products/shoes
+                        browser: Chrome
+                        os: Mac OS X
+                        device_type: desktop
+                        started_at: '2026-01-09T14:23:45.123Z'
+                        created_at: '2026-01-09T14:23:45.123Z'
+                        updated_at: '2026-01-09T14:23:45.123Z'
+                      last_visit: null
+                      last_visit_with_utm:
+                        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                        utm_source: google
+                        utm_medium: cpc
+                        utm_campaign: spring_sale
+                        utm_term: running shoes
+                        utm_content: ad_variant_a
+                        ip: 192.168.1.1
+                        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                        referrer: https://www.google.com/search?q=example
+                        referring_domain: google.com
+                        landing_page: https://example.com/products/shoes
+                        browser: Chrome
+                        os: Mac OS X
+                        device_type: desktop
+                        started_at: '2026-01-09T14:23:45.123Z'
+                        created_at: '2026-01-09T14:23:45.123Z'
+                        updated_at: '2026-01-09T14:23:45.123Z'
+                  affiliate: null
+                  referral_code: null
+                  order_page: null
+                visits:
+                  last_visit:
+                    uuid: 7a3f9c11-2d45-4e23-88d2-1bef9acd44fa
+                    utm_source: null
+                    utm_medium: null
+                    utm_campaign: null
+                    utm_term: null
+                    utm_content: null
+                    ip: 192.168.1.1
+                    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                    referrer: https://www.clickfunnels.com/products
+                    referring_domain: clickfunnels.com
+                    landing_page: https://example.com/checkout
+                    browser: Chrome
+                    os: Mac OS X
+                    device_type: desktop
+                    started_at: '2026-01-10T20:10:15.234Z'
+                    created_at: '2026-01-10T20:10:15.234Z'
+                    updated_at: '2026-01-10T20:10:15.234Z'
+                  last_visit_with_utm:
+                    uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                    utm_source: google
+                    utm_medium: cpc
+                    utm_campaign: spring_sale
+                    utm_term: running shoes
+                    utm_content: ad_variant_a
+                    ip: 192.168.1.1
+                    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                    referrer: https://www.google.com/search?q=example
+                    referring_domain: google.com
+                    landing_page: https://example.com/products/shoes
+                    browser: Chrome
+                    os: Mac OS X
+                    device_type: desktop
+                    started_at: '2026-01-09T14:23:45.123Z'
+                    created_at: '2026-01-09T14:23:45.123Z'
+                    updated_at: '2026-01-09T14:23:45.123Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /orders/invoices/{id}:
+    get:
+      tags:
+      - Orders::Invoice
+      summary: Fetch Invoice
+      description: Retrieve an invoice for an order. Please refer to [our Orders Overview guide](https://developers.myclickfunnels.com/docs/orders/invoices) for more information about the different types of invoices and payment processors.
+      operationId: getOrdersInvoices
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersInvoiceAttributes'
+              example:
+                id: 838
+                public_id: WNrMnJ
+                order_id: 22642
+                status: paid
+                due_amount: '13.00'
+                total_amount: '13.00'
+                subtotal_amount: '3.00'
+                tax_amount: '0.00'
+                shipping_amount: '10.00'
+                discount_amount: '0.00'
+                currency: USD
+                issued_at: '2023-10-01T12:43:55.000Z'
+                due_at: '2023-10-15T00:00:00.000Z'
+                paid_at: '2025-10-10T08:04:02.000Z'
+                invoice_type: one_time_sale
+                invoice_number: '3'
+                fulfillment_status: not_applicable
+                created_at: '2026-01-10T20:16:16.536Z'
+                updated_at: '2026-01-10T20:16:16.536Z'
+                external_id: tffv2w34qv
+                payment_processor: external
+                eligible_for_fulfillment: true
+                line_items:
+                - id: 682
+                  public_id: RegpVj
+                  invoice_id: 838
+                  external_id: null
+                  payment_type: null
+                  description: null
+                  quantity: 1
+                  fulfillment_status: unfulfilled
+                  external_product_id: null
+                  discount_amount: '0.0'
+                  state_tax_amount: '0.0'
+                  county_tax_amount: '0.0'
+                  city_tax_amount: '0.0'
+                  district_tax_amount: '0.0'
+                  state_tax_rate: '0.0'
+                  county_tax_rate: '0.0'
+                  city_tax_rate: '0.0'
+                  district_tax_rate: '0.0'
+                  country_tax_jurisdiction: null
+                  state_tax_jurisdiction: null
+                  county_tax_jurisdiction: null
+                  city_tax_jurisdiction: null
+                  period_start_at: null
+                  period_end_at: null
+                  period_number: null
+                  created_at: '2026-01-10T20:16:16.538Z'
+                  updated_at: '2026-01-10T20:16:16.538Z'
+                  amount: '3.00'
+                  products_price:
+                    id: 22229
+                    public_id: YqEWxY
+                    amount: '198.00'
+                    currency: usd
+                    duration: null
+                    interval: null
+                    interval_count: null
+                  products_variant:
+                    id: 22228
+                    public_id: JdknyN
+                    product_id: 6512
+                    name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+                    description: null
+                    sku: SIYP-BLACK-PREMIUM-001
+                    fulfillment_required: false
+                order:
+                  id: 22642
+                  public_id: JmRRyN
+                  order_number: '#2146'
+                  total_amount: '396.00'
+                  origination_channel_id: 11
+                  origination_channel_type: Platform::Application
+                  notes: For Fulfillment
+                  live_mode: true
+                  in_trial: false
+                  billing_status: paid
+                  service_status: completed
+                  order_type: one-time-order
+                  next_charge_at: null
+                  trial_end_at: null
+                  tag_ids: []
+                  activated_at: null
+                  canceled_at: null
+                  canceled_by: null
+                  cancel_reason: null
+                  cancel_description: null
+                  churned_at: null
+                  shipping_address_first_name: Caroll
+                  shipping_address_last_name: Kirlin
+                  shipping_address_organization_name: Testing, Inc.
+                  shipping_address_phone_number: '+19053871234'
+                  shipping_address_street_one: 3443 W Bavaria St
+                  shipping_address_street_two: ''
+                  shipping_address_city: Eagle
+                  shipping_address_region: ID
+                  shipping_address_country: US
+                  shipping_address_postal_code: '83616'
+                  billing_address_street_one: 3443 W Bavaria St
+                  billing_address_street_two: ''
+                  billing_address_city: Eagle
+                  billing_address_region: ID
+                  billing_address_country: US
+                  billing_address_postal_code: '83616'
+                  recurring_invoices_paid_count: 1
+                  origination_channel_name: Default API Client
+                  origination_channel_public_id: vNWWMb
+                  contact:
+                    id: 24359
+                    public_id: vQxYMj
+                    workspace_id: 4
+                    anonymous: 0
+                    email_address: jane.doe@example.com
+                    first_name: Jane
+                    last_name: Doe
+                    phone_number: '+18005550199'
+                    time_zone: Madrid
+                    uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+                    unsubscribed_at: null
+                    last_notification_email_sent_at: null
+                    email_suppression_reason: null
+                    is_active: true
+                    fb_url: null
+                    twitter_url: null
+                    instagram_url: null
+                    linkedin_url: null
+                    website_url: null
+                    created_at: '2026-01-09T15:27:56.647Z'
+                    updated_at: '2026-01-09T15:28:08.075Z'
+                    tags: []
+                    custom_attributes: {}
+                    visits:
+                      first_visit:
+                        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                        utm_source: google
+                        utm_medium: cpc
+                        utm_campaign: spring_sale
+                        utm_term: running shoes
+                        utm_content: ad_variant_a
+                        ip: 192.168.1.1
+                        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                        referrer: https://www.google.com/search?q=example
+                        referring_domain: google.com
+                        landing_page: https://example.com/products/shoes
+                        browser: Chrome
+                        os: Mac OS X
+                        device_type: desktop
+                        started_at: '2026-01-09T14:23:45.123Z'
+                        created_at: '2026-01-09T14:23:45.123Z'
+                        updated_at: '2026-01-09T14:23:45.123Z'
+                      last_visit: null
+                      last_visit_with_utm:
+                        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                        utm_source: google
+                        utm_medium: cpc
+                        utm_campaign: spring_sale
+                        utm_term: running shoes
+                        utm_content: ad_variant_a
+                        ip: 192.168.1.1
+                        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                        referrer: https://www.google.com/search?q=example
+                        referring_domain: google.com
+                        landing_page: https://example.com/products/shoes
+                        browser: Chrome
+                        os: Mac OS X
+                        device_type: desktop
+                        started_at: '2026-01-09T14:23:45.123Z'
+                        created_at: '2026-01-09T14:23:45.123Z'
+                        updated_at: '2026-01-09T14:23:45.123Z'
+                  affiliate: null
+                  referral_code: null
+                  order_page: null
+                visits:
+                  last_visit:
+                    uuid: 7a3f9c11-2d45-4e23-88d2-1bef9acd44fa
+                    utm_source: null
+                    utm_medium: null
+                    utm_campaign: null
+                    utm_term: null
+                    utm_content: null
+                    ip: 192.168.1.1
+                    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                    referrer: https://www.clickfunnels.com/products
+                    referring_domain: clickfunnels.com
+                    landing_page: https://example.com/checkout
+                    browser: Chrome
+                    os: Mac OS X
+                    device_type: desktop
+                    started_at: '2026-01-10T20:10:15.234Z'
+                    created_at: '2026-01-10T20:10:15.234Z'
+                    updated_at: '2026-01-10T20:10:15.234Z'
+                  last_visit_with_utm:
+                    uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                    utm_source: google
+                    utm_medium: cpc
+                    utm_campaign: spring_sale
+                    utm_term: running shoes
+                    utm_content: ad_variant_a
+                    ip: 192.168.1.1
+                    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                    referrer: https://www.google.com/search?q=example
+                    referring_domain: google.com
+                    landing_page: https://example.com/products/shoes
+                    browser: Chrome
+                    os: Mac OS X
+                    device_type: desktop
+                    started_at: '2026-01-09T14:23:45.123Z'
+                    created_at: '2026-01-09T14:23:45.123Z'
+                    updated_at: '2026-01-09T14:23:45.123Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Orders::Invoice
+      summary: Update External Invoice
+      description: Update a specific invoice in the current workspace. Currently, only invoices of [external orders](https://developers.myclickfunnels.com/docs/orders#external-orders) can be updated. So, you can&#39;t update invoices of other payment processors, like Payments AI and Stripe.
+      operationId: updateOrdersInvoices
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: 'Information about updated fields in an external invoice. Only external orders support invoice updates via the API.
+
+          The `invoice_type` cannot be changed after creation.
+
+          '
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orders_invoice:
+                  type: object
+                  description: 'The invoice parameters. Only external orders support invoice updates via the API.
+
+                    '
+                  $ref: '#/components/schemas/OrdersInvoiceParametersUpdate'
+            example:
+              orders_invoice:
+                status: paid
+                paid_at: '2025-01-10T00:00:00.000Z'
+                line_items_attributes:
+                - id: 682
+                  amount: '99.00'
+                  quantity: 2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersInvoiceAttributes'
+              example:
+                id: 838
+                public_id: WNrMnJ
+                order_id: 22642
+                status: paid
+                due_amount: '13.00'
+                total_amount: '13.00'
+                subtotal_amount: '3.00'
+                tax_amount: '0.00'
+                shipping_amount: '10.00'
+                discount_amount: '0.00'
+                currency: USD
+                issued_at: '2023-10-01T12:43:55.000Z'
+                due_at: '2023-10-15T00:00:00.000Z'
+                paid_at: '2025-10-10T08:04:02.000Z'
+                invoice_type: one_time_sale
+                invoice_number: '3'
+                fulfillment_status: not_applicable
+                created_at: '2026-01-10T20:16:16.536Z'
+                updated_at: '2026-01-10T20:16:16.536Z'
+                external_id: tffv2w34qv
+                payment_processor: external
+                eligible_for_fulfillment: true
+                line_items:
+                - id: 682
+                  public_id: RegpVj
+                  invoice_id: 838
+                  external_id: null
+                  payment_type: null
+                  description: null
+                  quantity: 1
+                  fulfillment_status: unfulfilled
+                  external_product_id: null
+                  discount_amount: '0.0'
+                  state_tax_amount: '0.0'
+                  county_tax_amount: '0.0'
+                  city_tax_amount: '0.0'
+                  district_tax_amount: '0.0'
+                  state_tax_rate: '0.0'
+                  county_tax_rate: '0.0'
+                  city_tax_rate: '0.0'
+                  district_tax_rate: '0.0'
+                  country_tax_jurisdiction: null
+                  state_tax_jurisdiction: null
+                  county_tax_jurisdiction: null
+                  city_tax_jurisdiction: null
+                  period_start_at: null
+                  period_end_at: null
+                  period_number: null
+                  created_at: '2026-01-10T20:16:16.538Z'
+                  updated_at: '2026-01-10T20:16:16.538Z'
+                  amount: '3.00'
+                  products_price:
+                    id: 22229
+                    public_id: YqEWxY
+                    amount: '198.00'
+                    currency: usd
+                    duration: null
+                    interval: null
+                    interval_count: null
+                  products_variant:
+                    id: 22228
+                    public_id: JdknyN
+                    product_id: 6512
+                    name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+                    description: null
+                    sku: SIYP-BLACK-PREMIUM-001
+                    fulfillment_required: false
+                order:
+                  id: 22642
+                  public_id: JmRRyN
+                  order_number: '#2146'
+                  total_amount: '396.00'
+                  origination_channel_id: 11
+                  origination_channel_type: Platform::Application
+                  notes: For Fulfillment
+                  live_mode: true
+                  in_trial: false
+                  billing_status: paid
+                  service_status: completed
+                  order_type: one-time-order
+                  next_charge_at: null
+                  trial_end_at: null
+                  tag_ids: []
+                  activated_at: null
+                  canceled_at: null
+                  canceled_by: null
+                  cancel_reason: null
+                  cancel_description: null
+                  churned_at: null
+                  shipping_address_first_name: Caroll
+                  shipping_address_last_name: Kirlin
+                  shipping_address_organization_name: Testing, Inc.
+                  shipping_address_phone_number: '+19053871234'
+                  shipping_address_street_one: 3443 W Bavaria St
+                  shipping_address_street_two: ''
+                  shipping_address_city: Eagle
+                  shipping_address_region: ID
+                  shipping_address_country: US
+                  shipping_address_postal_code: '83616'
+                  billing_address_street_one: 3443 W Bavaria St
+                  billing_address_street_two: ''
+                  billing_address_city: Eagle
+                  billing_address_region: ID
+                  billing_address_country: US
+                  billing_address_postal_code: '83616'
+                  recurring_invoices_paid_count: 1
+                  origination_channel_name: Default API Client
+                  origination_channel_public_id: vNWWMb
+                  contact:
+                    id: 24359
+                    public_id: vQxYMj
+                    workspace_id: 4
+                    anonymous: 0
+                    email_address: jane.doe@example.com
+                    first_name: Jane
+                    last_name: Doe
+                    phone_number: '+18005550199'
+                    time_zone: Madrid
+                    uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+                    unsubscribed_at: null
+                    last_notification_email_sent_at: null
+                    email_suppression_reason: null
+                    is_active: true
+                    fb_url: null
+                    twitter_url: null
+                    instagram_url: null
+                    linkedin_url: null
+                    website_url: null
+                    created_at: '2026-01-09T15:27:56.647Z'
+                    updated_at: '2026-01-09T15:28:08.075Z'
+                    tags: []
+                    custom_attributes: {}
+                    visits:
+                      first_visit:
+                        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                        utm_source: google
+                        utm_medium: cpc
+                        utm_campaign: spring_sale
+                        utm_term: running shoes
+                        utm_content: ad_variant_a
+                        ip: 192.168.1.1
+                        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                        referrer: https://www.google.com/search?q=example
+                        referring_domain: google.com
+                        landing_page: https://example.com/products/shoes
+                        browser: Chrome
+                        os: Mac OS X
+                        device_type: desktop
+                        started_at: '2026-01-09T14:23:45.123Z'
+                        created_at: '2026-01-09T14:23:45.123Z'
+                        updated_at: '2026-01-09T14:23:45.123Z'
+                      last_visit: null
+                      last_visit_with_utm:
+                        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                        utm_source: google
+                        utm_medium: cpc
+                        utm_campaign: spring_sale
+                        utm_term: running shoes
+                        utm_content: ad_variant_a
+                        ip: 192.168.1.1
+                        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                        referrer: https://www.google.com/search?q=example
+                        referring_domain: google.com
+                        landing_page: https://example.com/products/shoes
+                        browser: Chrome
+                        os: Mac OS X
+                        device_type: desktop
+                        started_at: '2026-01-09T14:23:45.123Z'
+                        created_at: '2026-01-09T14:23:45.123Z'
+                        updated_at: '2026-01-09T14:23:45.123Z'
+                  affiliate: null
+                  referral_code: null
+                  order_page: null
+                visits:
+                  last_visit:
+                    uuid: 7a3f9c11-2d45-4e23-88d2-1bef9acd44fa
+                    utm_source: null
+                    utm_medium: null
+                    utm_campaign: null
+                    utm_term: null
+                    utm_content: null
+                    ip: 192.168.1.1
+                    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                    referrer: https://www.clickfunnels.com/products
+                    referring_domain: clickfunnels.com
+                    landing_page: https://example.com/checkout
+                    browser: Chrome
+                    os: Mac OS X
+                    device_type: desktop
+                    started_at: '2026-01-10T20:10:15.234Z'
+                    created_at: '2026-01-10T20:10:15.234Z'
+                    updated_at: '2026-01-10T20:10:15.234Z'
+                  last_visit_with_utm:
+                    uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                    utm_source: google
+                    utm_medium: cpc
+                    utm_campaign: spring_sale
+                    utm_term: running shoes
+                    utm_content: ad_variant_a
+                    ip: 192.168.1.1
+                    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                    referrer: https://www.google.com/search?q=example
+                    referring_domain: google.com
+                    landing_page: https://example.com/products/shoes
+                    browser: Chrome
+                    os: Mac OS X
+                    device_type: desktop
+                    started_at: '2026-01-09T14:23:45.123Z'
+                    created_at: '2026-01-09T14:23:45.123Z'
+                    updated_at: '2026-01-09T14:23:45.123Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /orders/invoices/{id}/abandon:
+    post:
+      tags:
+      - Orders::Invoice
+      summary: Abandon Invoice
+      description: 'Abandon an unpaid, draft, or past-due invoice through ClickFunnels'' own abandon path (the
+
+        same path the in-app "Abandon invoice" button uses) so the abandon propagates to the payment
+
+        processor and STOPS its autopay retry (dunning) schedule for this invoice.
+
+
+        Reach for this when the retries themselves are the problem: an insufficient-funds decline
+
+        where the right move is to hold the retry cycle for a few days rather than cancel the
+
+        subscription or refund the customer. Abandoning affects only this invoice - the order and its
+
+        future rebills are untouched.
+
+
+        A direct `PUT /orders/invoices/{id}` write of `status: abandoned` is not an alternative: that
+
+        action is available only for external (self-managed) orders and returns 404 for
+
+        processor-managed ones, because an invoice''s `status` is a mirror ClickFunnels updates only
+
+        after the processor confirms the change.
+
+
+        Only invoices in `unpaid`, `draft`, or `past_due` status can be abandoned. An invoice in any
+
+        other status returns 404 rather than 422, because this API hides records the caller may not
+
+        act on. Please refer to [our Invoices
+
+        guide](https://developers.myclickfunnels.com/docs/orders/invoices) for more information about
+
+        the different types of invoices and payment processors.'
+      operationId: abandonOrdersInvoices
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK - the payment processor accepted the abandon and stopped retrying this invoice. The returned invoice is the latest local snapshot and `status` is the status the processor reported back. The example below is trimmed to the fields that carry the transition; the full invoice shape is documented on `GET /orders/invoices/{id}`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersInvoiceAttributes'
+              example:
+                id: 838
+                public_id: WNrMnJ
+                order_id: 22642
+                status: abandoned
+                due_amount: '13.00'
+                total_amount: '13.00'
+                subtotal_amount: '3.00'
+                tax_amount: '0.00'
+                shipping_amount: '10.00'
+                discount_amount: '0.00'
+                currency: USD
+                issued_at: '2023-10-01T12:43:55.000Z'
+                due_at: '2026-01-08T00:00:00.000Z'
+                paid_at: null
+                invoice_type: renewal
+                invoice_number: '3'
+                fulfillment_status: not_applicable
+                created_at: '2026-01-10T20:16:16.536Z'
+                updated_at: '2026-01-10T20:16:16.536Z'
+                external_id: tffv2w34qv
+                payment_processor: payments_ai
+                eligible_for_fulfillment: false
+                line_items: []
+                order:
+                  id: 22642
+                  public_id: JmRRyN
+                  order_number: '#2146'
+                  total_amount: '396.00'
+                  origination_channel_id: 11
+                  origination_channel_type: Platform::Application
+                  notes: For Fulfillment
+                  live_mode: true
+                  in_trial: false
+                  billing_status: paid
+                  service_status: completed
+                  order_type: one-time-order
+                  next_charge_at: null
+                  trial_end_at: null
+                  tag_ids: []
+                  activated_at: null
+                  canceled_at: null
+                  canceled_by: null
+                  cancel_reason: null
+                  cancel_description: null
+                  churned_at: null
+                  shipping_address_first_name: Caroll
+                  shipping_address_last_name: Kirlin
+                  shipping_address_organization_name: Testing, Inc.
+                  shipping_address_phone_number: '+19053871234'
+                  shipping_address_street_one: 3443 W Bavaria St
+                  shipping_address_street_two: ''
+                  shipping_address_city: Eagle
+                  shipping_address_region: ID
+                  shipping_address_country: US
+                  shipping_address_postal_code: '83616'
+                  billing_address_street_one: 3443 W Bavaria St
+                  billing_address_street_two: ''
+                  billing_address_city: Eagle
+                  billing_address_region: ID
+                  billing_address_country: US
+                  billing_address_postal_code: '83616'
+                  recurring_invoices_paid_count: 1
+                  origination_channel_name: Default API Client
+                  origination_channel_public_id: vNWWMb
+                  contact:
+                    id: 24359
+                    public_id: vQxYMj
+                    workspace_id: 4
+                    anonymous: 0
+                    email_address: jane.doe@example.com
+                    first_name: Jane
+                    last_name: Doe
+                    phone_number: '+18005550199'
+                    time_zone: Madrid
+                    uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+                    unsubscribed_at: null
+                    last_notification_email_sent_at: null
+                    email_suppression_reason: null
+                    is_active: true
+                    fb_url: null
+                    twitter_url: null
+                    instagram_url: null
+                    linkedin_url: null
+                    website_url: null
+                    created_at: '2026-01-09T15:27:56.647Z'
+                    updated_at: '2026-01-09T15:28:08.075Z'
+                    tags: []
+                    custom_attributes: {}
+                    visits:
+                      first_visit:
+                        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                        utm_source: google
+                        utm_medium: cpc
+                        utm_campaign: spring_sale
+                        utm_term: running shoes
+                        utm_content: ad_variant_a
+                        ip: 192.168.1.1
+                        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                        referrer: https://www.google.com/search?q=example
+                        referring_domain: google.com
+                        landing_page: https://example.com/products/shoes
+                        browser: Chrome
+                        os: Mac OS X
+                        device_type: desktop
+                        started_at: '2026-01-09T14:23:45.123Z'
+                        created_at: '2026-01-09T14:23:45.123Z'
+                        updated_at: '2026-01-09T14:23:45.123Z'
+                      last_visit: null
+                      last_visit_with_utm:
+                        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                        utm_source: google
+                        utm_medium: cpc
+                        utm_campaign: spring_sale
+                        utm_term: running shoes
+                        utm_content: ad_variant_a
+                        ip: 192.168.1.1
+                        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                        referrer: https://www.google.com/search?q=example
+                        referring_domain: google.com
+                        landing_page: https://example.com/products/shoes
+                        browser: Chrome
+                        os: Mac OS X
+                        device_type: desktop
+                        started_at: '2026-01-09T14:23:45.123Z'
+                        created_at: '2026-01-09T14:23:45.123Z'
+                        updated_at: '2026-01-09T14:23:45.123Z'
+                  affiliate: null
+                  referral_code: null
+                  order_page: null
+                visits:
+                  first_visit:
+                    uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                    utm_source: google
+                    utm_medium: cpc
+                    utm_campaign: spring_sale
+                    utm_term: running shoes
+                    utm_content: ad_variant_a
+                    ip: 192.168.1.1
+                    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                    referrer: https://www.google.com/search?q=example
+                    referring_domain: google.com
+                    landing_page: https://example.com/products/shoes
+                    browser: Chrome
+                    os: Mac OS X
+                    device_type: desktop
+                    started_at: '2026-01-09T14:23:45.123Z'
+                    created_at: '2026-01-09T14:23:45.123Z'
+                    updated_at: '2026-01-09T14:23:45.123Z'
+                  last_visit: null
+                  last_visit_with_utm:
+                    uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                    utm_source: google
+                    utm_medium: cpc
+                    utm_campaign: spring_sale
+                    utm_term: running shoes
+                    utm_content: ad_variant_a
+                    ip: 192.168.1.1
+                    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                    referrer: https://www.google.com/search?q=example
+                    referring_domain: google.com
+                    landing_page: https://example.com/products/shoes
+                    browser: Chrome
+                    os: Mac OS X
+                    device_type: desktop
+                    started_at: '2026-01-09T14:23:45.123Z'
+                    created_at: '2026-01-09T14:23:45.123Z'
+                    updated_at: '2026-01-09T14:23:45.123Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found - the invoice does not exist, does not belong to a workspace your API key can access, is not in an abandonable status (`unpaid`, `draft`, `past_due`), or belongs to a deleted order. Fetch the invoice first and check `status` to tell these apart.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                not_abandonable_or_inaccessible:
+                  summary: Already paid, or outside the workspaces this key can reach
+                  value:
+                    error: Not found
+                no_such_invoice:
+                  summary: No invoice with that id
+                  value:
+                    error: 'Not found: Record 838 missing'
+        '422':
+          description: Unprocessable Entity - the payment processor rejected the abandon or did not move the invoice to `abandoned`. The invoice keeps its previous status and its retry schedule; safe to retry.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: Invoice abandon status: unpaid'
+  /workspaces/{workspace_id}/orders/invoices:
+    get:
+      tags:
+      - Orders::Invoice
+      summary: List Workspace Invoices
+      description: List all invoices for a specific workspace. Please refer to the [API documentation](https://developers.myclickfunnels.com/docs/orders/invoices) for more information about the different types of invoices and payment processors.
+      operationId: listWorkspaceOrdersInvoices
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      - $ref: '#/components/parameters/InvoiceFilter'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrdersInvoiceAttributes'
+              example:
+                id: 838
+                public_id: WNrMnJ
+                order_id: 22642
+                status: paid
+                due_amount: '13.00'
+                total_amount: '13.00'
+                subtotal_amount: '3.00'
+                tax_amount: '0.00'
+                shipping_amount: '10.00'
+                discount_amount: '0.00'
+                currency: USD
+                issued_at: '2023-10-01T12:43:55.000Z'
+                due_at: '2023-10-15T00:00:00.000Z'
+                paid_at: '2025-10-10T08:04:02.000Z'
+                invoice_type: one_time_sale
+                invoice_number: '3'
+                fulfillment_status: not_applicable
+                created_at: '2026-01-10T20:16:16.536Z'
+                updated_at: '2026-01-10T20:16:16.536Z'
+                external_id: tffv2w34qv
+                payment_processor: external
+                eligible_for_fulfillment: true
+                line_items:
+                - id: 682
+                  public_id: RegpVj
+                  invoice_id: 838
+                  external_id: null
+                  payment_type: null
+                  description: null
+                  quantity: 1
+                  fulfillment_status: unfulfilled
+                  external_product_id: null
+                  discount_amount: '0.0'
+                  state_tax_amount: '0.0'
+                  county_tax_amount: '0.0'
+                  city_tax_amount: '0.0'
+                  district_tax_amount: '0.0'
+                  state_tax_rate: '0.0'
+                  county_tax_rate: '0.0'
+                  city_tax_rate: '0.0'
+                  district_tax_rate: '0.0'
+                  country_tax_jurisdiction: null
+                  state_tax_jurisdiction: null
+                  county_tax_jurisdiction: null
+                  city_tax_jurisdiction: null
+                  period_start_at: null
+                  period_end_at: null
+                  period_number: null
+                  created_at: '2026-01-10T20:16:16.538Z'
+                  updated_at: '2026-01-10T20:16:16.538Z'
+                  amount: '3.00'
+                  products_price:
+                    id: 22229
+                    public_id: YqEWxY
+                    amount: '198.00'
+                    currency: usd
+                    duration: null
+                    interval: null
+                    interval_count: null
+                  products_variant:
+                    id: 22228
+                    public_id: JdknyN
+                    product_id: 6512
+                    name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+                    description: null
+                    sku: SIYP-BLACK-PREMIUM-001
+                    fulfillment_required: false
+                order:
+                  id: 22642
+                  public_id: JmRRyN
+                  order_number: '#2146'
+                  total_amount: '396.00'
+                  origination_channel_id: 11
+                  origination_channel_type: Platform::Application
+                  notes: For Fulfillment
+                  live_mode: true
+                  in_trial: false
+                  billing_status: paid
+                  service_status: completed
+                  order_type: one-time-order
+                  next_charge_at: null
+                  trial_end_at: null
+                  tag_ids: []
+                  activated_at: null
+                  canceled_at: null
+                  canceled_by: null
+                  cancel_reason: null
+                  cancel_description: null
+                  churned_at: null
+                  shipping_address_first_name: Caroll
+                  shipping_address_last_name: Kirlin
+                  shipping_address_organization_name: Testing, Inc.
+                  shipping_address_phone_number: '+19053871234'
+                  shipping_address_street_one: 3443 W Bavaria St
+                  shipping_address_street_two: ''
+                  shipping_address_city: Eagle
+                  shipping_address_region: ID
+                  shipping_address_country: US
+                  shipping_address_postal_code: '83616'
+                  billing_address_street_one: 3443 W Bavaria St
+                  billing_address_street_two: ''
+                  billing_address_city: Eagle
+                  billing_address_region: ID
+                  billing_address_country: US
+                  billing_address_postal_code: '83616'
+                  recurring_invoices_paid_count: 1
+                  origination_channel_name: Default API Client
+                  origination_channel_public_id: vNWWMb
+                  contact:
+                    id: 24359
+                    public_id: vQxYMj
+                    workspace_id: 4
+                    anonymous: 0
+                    email_address: jane.doe@example.com
+                    first_name: Jane
+                    last_name: Doe
+                    phone_number: '+18005550199'
+                    time_zone: Madrid
+                    uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+                    unsubscribed_at: null
+                    last_notification_email_sent_at: null
+                    email_suppression_reason: null
+                    is_active: true
+                    fb_url: null
+                    twitter_url: null
+                    instagram_url: null
+                    linkedin_url: null
+                    website_url: null
+                    created_at: '2026-01-09T15:27:56.647Z'
+                    updated_at: '2026-01-09T15:28:08.075Z'
+                    tags: []
+                    custom_attributes: {}
+                    visits:
+                      first_visit:
+                        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                        utm_source: google
+                        utm_medium: cpc
+                        utm_campaign: spring_sale
+                        utm_term: running shoes
+                        utm_content: ad_variant_a
+                        ip: 192.168.1.1
+                        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                        referrer: https://www.google.com/search?q=example
+                        referring_domain: google.com
+                        landing_page: https://example.com/products/shoes
+                        browser: Chrome
+                        os: Mac OS X
+                        device_type: desktop
+                        started_at: '2026-01-09T14:23:45.123Z'
+                        created_at: '2026-01-09T14:23:45.123Z'
+                        updated_at: '2026-01-09T14:23:45.123Z'
+                      last_visit: null
+                      last_visit_with_utm:
+                        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                        utm_source: google
+                        utm_medium: cpc
+                        utm_campaign: spring_sale
+                        utm_term: running shoes
+                        utm_content: ad_variant_a
+                        ip: 192.168.1.1
+                        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                        referrer: https://www.google.com/search?q=example
+                        referring_domain: google.com
+                        landing_page: https://example.com/products/shoes
+                        browser: Chrome
+                        os: Mac OS X
+                        device_type: desktop
+                        started_at: '2026-01-09T14:23:45.123Z'
+                        created_at: '2026-01-09T14:23:45.123Z'
+                        updated_at: '2026-01-09T14:23:45.123Z'
+                  affiliate: null
+                  referral_code: null
+                  order_page: null
+                visits:
+                  last_visit:
+                    uuid: 7a3f9c11-2d45-4e23-88d2-1bef9acd44fa
+                    utm_source: null
+                    utm_medium: null
+                    utm_campaign: null
+                    utm_term: null
+                    utm_content: null
+                    ip: 192.168.1.1
+                    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                    referrer: https://www.clickfunnels.com/products
+                    referring_domain: clickfunnels.com
+                    landing_page: https://example.com/checkout
+                    browser: Chrome
+                    os: Mac OS X
+                    device_type: desktop
+                    started_at: '2026-01-10T20:10:15.234Z'
+                    created_at: '2026-01-10T20:10:15.234Z'
+                    updated_at: '2026-01-10T20:10:15.234Z'
+                  last_visit_with_utm:
+                    uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                    utm_source: google
+                    utm_medium: cpc
+                    utm_campaign: spring_sale
+                    utm_term: running shoes
+                    utm_content: ad_variant_a
+                    ip: 192.168.1.1
+                    user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                    referrer: https://www.google.com/search?q=example
+                    referring_domain: google.com
+                    landing_page: https://example.com/products/shoes
+                    browser: Chrome
+                    os: Mac OS X
+                    device_type: desktop
+                    started_at: '2026-01-09T14:23:45.123Z'
+                    created_at: '2026-01-09T14:23:45.123Z'
+                    updated_at: '2026-01-09T14:23:45.123Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    InvoiceFilter:
+      name: filter
+      in: query
+      description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[id]=value&filter[another_property]=value1,value2`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
+
+        '
+      required: false
+      schema:
+        type: object
+        properties:
+          id:
+            type: string
+            description: A comma-separated list of Invoice IDs to filter by.
+            example: 1,42
+          status:
+            type: string
+            description: The status of the invoice to filter by.
+            example: pending
+          invoice_type:
+            type: string
+            description: The type of the invoice to filter by.
+            example: one_time_sale
+          invoice_number:
+            type: string
+            description: A comma-separated list of Invoice Numbers to filter by.
+            example: '#1000,#1001'
+          external_id:
+            type: string
+            description: A comma-separated list of External IDs to filter by.
+            example: inv_1234567890,inv_0987654321
+      style: deepObject
+      explode: true
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    OrderBaseAttributes:
+      type: object
+      title: Order (Base)
+      description: 'Base order attributes used in nested responses (e.g., within invoice responses).
+
+        This is a subset of the full OrderAttributes schema.
+
+        '
+      properties:
+        id:
+          type: integer
+          description: ClickFunnels Order ID
+        public_id:
+          type: string
+          description: ClickFunnels Order public ID
+        order_number:
+          type:
+          - string
+          - 'null'
+          description: A sequential number for bookkeeping purposes increased by 1 for each new order in a workspace starting from
+        total_amount:
+          type:
+          - string
+          - 'null'
+          description: The total amount of the order, considering taxes and discounts.
+        origination_channel_id:
+          type: integer
+          description: Origination Channel ID
+        origination_channel_type:
+          type:
+          - string
+          - 'null'
+          description: Origination Channel Type
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Your internal note about the order. This will be visible in ClickFunnels admin orders-related sections.
+        live_mode:
+          type: boolean
+          description: Indicates if the Order will use a live payment gateway and process real credit cards.
+        in_trial:
+          type: boolean
+          description: In Trial
+        billing_status:
+          type: string
+          description: 'The billing status reflects the status of the invoice of an order.
+
+            Billing status can be one of the following for Payments AI and Stripe orders:
+
+            `pending`, `draft`, `paid`, `unpaid`, `partially-refunded`, `refunded`, `voided`, `disputed`, `past-due`.
+
+            For external orders, the billing status can be one of: `pending`, `paid`, `unpaid`, `voided` and `refunded`.
+
+            '
+        service_status:
+          type: string
+          description: 'The service status reflects the activity state of the order.
+
+            For external one-time orders possible service statuses are `pending` or `completed`.
+
+            For external subscription orders possible statuses are `pending`, `active`, `churned`, `canceled`, `completed`, `paused`.
+
+            '
+        order_type:
+          type: string
+          description: Order Type
+        next_charge_at:
+          type:
+          - string
+          - 'null'
+          description: Next Charge At
+        trial_end_at:
+          type:
+          - string
+          - 'null'
+          description: Trial End At
+        tag_ids:
+          type: array
+          items:
+            type: integer
+          description: Order Tags
+        activated_at:
+          type:
+          - string
+          - 'null'
+          description: Date Activated
+        canceled_at:
+          type:
+          - string
+          - 'null'
+          description: Order Canceled At
+        canceled_by:
+          type:
+          - string
+          - 'null'
+          description: Order Canceled By
+        cancel_reason:
+          type:
+          - string
+          - 'null'
+          description: 'The reason code for the cancelation. Possible codes for external orders are:
+
+            `customer_service`, `low_quality`, `missing_features`, `other`, `switched_service`, `too_complex`, `too_expensive`, `unused`
+
+            '
+        cancel_description:
+          type:
+          - string
+          - 'null'
+          description: A free-text description of the cancellation reason.
+        churned_at:
+          type:
+          - string
+          - 'null'
+          description: Churned At
+        shipping_address_first_name:
+          type:
+          - string
+          - 'null'
+          description: The first name of the recipient's shipping address.
+        shipping_address_last_name:
+          type:
+          - string
+          - 'null'
+          description: The last name of the recipient's shipping address.
+        shipping_address_organization_name:
+          type:
+          - string
+          - 'null'
+          description: The organization name of the recipient's shipping address.
+        shipping_address_phone_number:
+          type:
+          - string
+          - 'null'
+          description: The phone number of the recipient's shipping address.
+        shipping_address_street_one:
+          type:
+          - string
+          - 'null'
+          description: The main street information of the shipping address, including the street name and number.
+        shipping_address_street_two:
+          type:
+          - string
+          - 'null'
+          description: Additional street information for the shipping address, like entrance information and apartment numbers.
+        shipping_address_city:
+          type:
+          - string
+          - 'null'
+          description: The city of the shipping address.
+        shipping_address_region:
+          type:
+          - string
+          - 'null'
+          description: The region of the shipping address, like state or province.
+        shipping_address_country:
+          type:
+          - string
+          - 'null'
+          description: The country of the shipping address.
+        shipping_address_postal_code:
+          type:
+          - string
+          - 'null'
+          description: Postal Code
+        billing_address_street_one:
+          type:
+          - string
+          - 'null'
+          description: The main street information of the billing address, including the street name and number.
+        billing_address_street_two:
+          type:
+          - string
+          - 'null'
+          description: Additional street information of the billing address, like entrance information and apartment numbers.
+        billing_address_city:
+          type:
+          - string
+          - 'null'
+          description: The city of the billing address.
+        billing_address_region:
+          type:
+          - string
+          - 'null'
+          description: The region of the billing address, like state or province.
+        billing_address_country:
+          type:
+          - string
+          - 'null'
+          description: The billing address country.
+        billing_address_postal_code:
+          type:
+          - string
+          - 'null'
+          description: Billing address postal (ZIP) code.
+        recurring_invoices_paid_count:
+          type: integer
+          description: The number of paid invoices with recurring charges for this order. Useful for detecting first or renewal payments based on the payload, if you can't use webhooks. E.g., in Zapier, filter by recurring_invoices_paid_count == 1 for first payments.
+        origination_channel_name:
+          type:
+          - string
+          - 'null'
+          description: Origination Channel Name
+        origination_channel_public_id:
+          type:
+          - string
+          - 'null'
+          description: The obfuscated public ID of the origination channel
+        contact:
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/ContactBaseAttributes'
+          description: Customer
+        affiliate:
+          type:
+          - object
+          - 'null'
+          title: Affiliate
+          description: The affiliate who will receive a commission for the order
+          properties:
+            name:
+              type: string
+              description: The name of the affiliate. Can be a combination of first name, last name and the affiliate email.
+            email:
+              type:
+              - string
+              - 'null'
+              description: The email address of the affiliate.
+        referral_code:
+          type:
+          - object
+          - 'null'
+          title: Referral Code
+          description: The referral code used to associate an order with an affiliate.
+          properties:
+            code:
+              type: string
+              description: The referral code value visible by users. It must be unique and can contain only letters, numbers, hyphens, and underscores.
+            default:
+              type:
+              - boolean
+              - 'null'
+              description: Whether this code is the default code for the affiliate.
+        order_page:
+          type:
+          - object
+          - 'null'
+          title: Page
+          description: Page
+          properties:
+            id:
+              type: integer
+              description: Page ID
+            public_id:
+              type: string
+              description: The public identifier of the page
+            name:
+              type: string
+              description: Page name
+      example:
+        id: 22642
+        public_id: JmRRyN
+        order_number: '#2146'
+        total_amount: '396.00'
+        origination_channel_id: 11
+        origination_channel_type: Platform::Application
+        notes: For Fulfillment
+        live_mode: true
+        in_trial: false
+        billing_status: paid
+        service_status: completed
+        order_type: one-time-order
+        next_charge_at: null
+        trial_end_at: null
+        tag_ids: []
+        activated_at: null
+        canceled_at: null
+        canceled_by: null
+        cancel_reason: null
+        cancel_description: null
+        churned_at: null
+        shipping_address_first_name: Caroll
+        shipping_address_last_name: Kirlin
+        shipping_address_organization_name: Testing, Inc.
+        shipping_address_phone_number: '+19053871234'
+        shipping_address_street_one: 3443 W Bavaria St
+        shipping_address_street_two: ''
+        shipping_address_city: Eagle
+        shipping_address_region: ID
+        shipping_address_country: US
+        shipping_address_postal_code: '83616'
+        billing_address_street_one: 3443 W Bavaria St
+        billing_address_street_two: ''
+        billing_address_city: Eagle
+        billing_address_region: ID
+        billing_address_country: US
+        billing_address_postal_code: '83616'
+        recurring_invoices_paid_count: 1
+        origination_channel_name: Default API Client
+        origination_channel_public_id: vNWWMb
+        contact:
+          id: 24359
+          public_id: vQxYMj
+          workspace_id: 4
+          anonymous: 0
+          email_address: jane.doe@example.com
+          first_name: Jane
+          last_name: Doe
+          phone_number: '+18005550199'
+          time_zone: Madrid
+          uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+          unsubscribed_at: null
+          last_notification_email_sent_at: null
+          email_suppression_reason: null
+          is_active: true
+          fb_url: null
+          twitter_url: null
+          instagram_url: null
+          linkedin_url: null
+          website_url: null
+          created_at: '2026-01-09T15:27:56.647Z'
+          updated_at: '2026-01-09T15:28:08.075Z'
+          tags: []
+          custom_attributes: {}
+          visits:
+            first_visit:
+              uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+              utm_source: google
+              utm_medium: cpc
+              utm_campaign: spring_sale
+              utm_term: running shoes
+              utm_content: ad_variant_a
+              ip: 192.168.1.1
+              user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+              referrer: https://www.google.com/search?q=example
+              referring_domain: google.com
+              landing_page: https://example.com/products/shoes
+              browser: Chrome
+              os: Mac OS X
+              device_type: desktop
+              started_at: '2026-01-09T14:23:45.123Z'
+              created_at: '2026-01-09T14:23:45.123Z'
+              updated_at: '2026-01-09T14:23:45.123Z'
+            last_visit: null
+            last_visit_with_utm:
+              uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+              utm_source: google
+              utm_medium: cpc
+              utm_campaign: spring_sale
+              utm_term: running shoes
+              utm_content: ad_variant_a
+              ip: 192.168.1.1
+              user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+              referrer: https://www.google.com/search?q=example
+              referring_domain: google.com
+              landing_page: https://example.com/products/shoes
+              browser: Chrome
+              os: Mac OS X
+              device_type: desktop
+              started_at: '2026-01-09T14:23:45.123Z'
+              created_at: '2026-01-09T14:23:45.123Z'
+              updated_at: '2026-01-09T14:23:45.123Z'
+        affiliate: null
+        referral_code: null
+        order_page: null
+      required:
+      - activated_at
+      - affiliate
+      - billing_address_city
+      - billing_address_country
+      - billing_address_postal_code
+      - billing_address_region
+      - billing_address_street_one
+      - billing_address_street_two
+      - billing_status
+      - cancel_description
+      - cancel_reason
+      - canceled_at
+      - canceled_by
+      - churned_at
+      - contact
+      - id
+      - in_trial
+      - live_mode
+      - next_charge_at
+      - notes
+      - order_number
+      - order_page
+      - order_type
+      - origination_channel_id
+      - origination_channel_name
+      - origination_channel_public_id
+      - origination_channel_type
+      - public_id
+      - recurring_invoices_paid_count
+      - referral_code
+      - service_status
+      - shipping_address_city
+      - shipping_address_country
+      - shipping_address_first_name
+      - shipping_address_last_name
+      - shipping_address_organization_name
+      - shipping_address_phone_number
+      - shipping_address_postal_code
+      - shipping_address_region
+      - shipping_address_street_one
+      - shipping_address_street_two
+      - tag_ids
+      - total_amount
+      - trial_end_at
+    OrdersInvoiceParameters:
+      type: object
+      title: External Invoice
+      description: 'Parameters for creating an external invoice. Only external orders support invoice creation via the API.
+
+        External orders are orders where payments are processed outside of ClickFunnels.
+
+        '
+      required:
+      - external_id
+      - status
+      properties:
+        external_id:
+          type: string
+          description: 'Required. A unique identifier for this invoice in your external system.
+
+            This ID allows you to correlate ClickFunnels invoices with records in your payment processor.
+
+            '
+        status:
+          type: string
+          description: 'Required. The billing status of the invoice.
+
+
+            For external one-time orders, valid statuses are: `unpaid`, `paid`, `voided`, `refunded`, `disputed`, `past-due`.
+
+            For external subscription orders, the same statuses apply.
+
+
+            When creating an invoice with status `paid`, you must also provide `paid_at`.
+
+            A change in status will update the `billing_status` of the parent order.
+
+            If a one-time order''s invoice status is changed to `paid`, the order''s `service_status` will also flip to `completed`.
+
+            '
+          enum:
+          - unpaid
+          - paid
+          - voided
+          - refunded
+          - disputed
+          - past-due
+        invoice_type:
+          type: string
+          description: 'The type of invoice. If not provided, defaults based on the order type:
+
+            - For one-time orders: `one_time_sale`
+
+            - For subscription orders: `initial`
+
+
+            For subscription orders, valid types are: `initial`, `renewal`, `interim`, `cancellation`, `one_time`, `refund`, `charge`.
+
+            For one-time orders, only `one_time_sale` is valid.
+
+            '
+          enum:
+          - initial
+          - renewal
+          - interim
+          - cancellation
+          - one_time
+          - refund
+          - charge
+          - one_time_sale
+        invoice_number:
+          type:
+          - string
+          - 'null'
+          description: 'Optional. A sequential number for bookkeeping purposes.
+
+            If not provided, one will be auto-generated.
+
+            '
+        shipping_amount:
+          type:
+          - string
+          - 'null'
+          description: Invoiced shipping amount. Cannot be negative. Defaults to "0.00".
+        issued_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice was issued.
+        due_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice is due.
+        paid_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: 'The date the invoice was paid. Required when `status` is `paid`.
+
+            '
+        line_items_attributes:
+          type: array
+          description: 'Line items for the invoice. Each line item represents a product/variant being invoiced.
+
+            Required fields for each line item: `amount`, `quantity`, `variant_id`, `products_price_id`.
+
+            '
+          items:
+            type: object
+            required:
+            - amount
+            - quantity
+            - variant_id
+            - products_price_id
+            properties:
+              amount:
+                type: string
+                description: The price amount for this line item.
+              quantity:
+                type: integer
+                description: The quantity of items.
+              variant_id:
+                type: integer
+                description: The product variant ID.
+              products_price_id:
+                type: integer
+                description: The product price ID.
+              description:
+                type:
+                - string
+                - 'null'
+                description: Optional description for the line item.
+      example:
+        orders_invoice:
+          external_id: inv-ext-12345
+          status: paid
+          invoice_type: one_time_sale
+          invoice_number: INV-001
+          shipping_amount: '9.99'
+          issued_at: '2025-01-01T00:00:00.000Z'
+          due_at: '2025-01-15T00:00:00.000Z'
+          paid_at: '2025-01-10T00:00:00.000Z'
+          line_items_attributes:
+          - amount: '99.00'
+            quantity: 1
+            variant_id: 123
+            products_price_id: 456
+            description: Premium Widget
+    VisitAttributes:
+      type: object
+      title: Visit
+      description: Visit tracking information including UTM parameters and device data
+      properties:
+        uuid:
+          type: string
+          description: Unique identifier for the visit
+        utm_source:
+          type:
+          - string
+          - 'null'
+          description: UTM source parameter from the visit URL
+        utm_medium:
+          type:
+          - string
+          - 'null'
+          description: UTM medium parameter from the visit URL
+        utm_campaign:
+          type:
+          - string
+          - 'null'
+          description: UTM campaign parameter from the visit URL
+        utm_term:
+          type:
+          - string
+          - 'null'
+          description: UTM term parameter from the visit URL
+        utm_content:
+          type:
+          - string
+          - 'null'
+          description: UTM content parameter from the visit URL
+        ip:
+          type:
+          - string
+          - 'null'
+          description: IP address of the visitor
+        user_agent:
+          type:
+          - string
+          - 'null'
+          description: User agent string from the visitor's browser
+        referrer:
+          type:
+          - string
+          - 'null'
+          description: HTTP referrer URL
+        referring_domain:
+          type:
+          - string
+          - 'null'
+          description: Domain extracted from the referrer URL
+        landing_page:
+          type:
+          - string
+          - 'null'
+          description: The first page URL visited in this session
+        browser:
+          type:
+          - string
+          - 'null'
+          description: Browser name detected from user agent
+        os:
+          type:
+          - string
+          - 'null'
+          description: Operating system detected from user agent
+        device_type:
+          type:
+          - string
+          - 'null'
+          description: Device type (e.g., desktop, mobile, tablet)
+        started_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the visit session started
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the visit record was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the visit record was last updated
+      example:
+        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+        utm_source: google
+        utm_medium: cpc
+        utm_campaign: spring_sale
+        utm_term: running shoes
+        utm_content: ad_variant_a
+        ip: 192.168.1.1
+        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+        referrer: https://www.google.com/search?q=example
+        referring_domain: google.com
+        landing_page: https://example.com/products/shoes
+        browser: Chrome
+        os: Mac OS X
+        device_type: desktop
+        started_at: '2026-01-09T14:23:45.123Z'
+        created_at: '2026-01-09T14:23:45.123Z'
+        updated_at: '2026-01-09T14:23:45.123Z'
+      required:
+      - browser
+      - created_at
+      - device_type
+      - ip
+      - landing_page
+      - os
+      - referrer
+      - referring_domain
+      - started_at
+      - updated_at
+      - user_agent
+      - utm_campaign
+      - utm_content
+      - utm_medium
+      - utm_source
+      - utm_term
+      - uuid
+    OrderVisitsAttributes:
+      type: object
+      title: Order Visits
+      description: Visit tracking records for orders and invoices. Contains last_visit and last_visit_with_utm only (first_visit belongs to the contact).
+      properties:
+        last_visit:
+          description: The most recent visit associated with this order.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit_with_utm:
+          description: The most recent visit that contains UTM parameters.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+      example:
+        last_visit: null
+        last_visit_with_utm:
+          uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+          utm_source: google
+          utm_medium: cpc
+          utm_campaign: spring_sale
+          utm_term: running shoes
+          utm_content: ad_variant_a
+          ip: 192.168.1.1
+          user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+          referrer: https://www.google.com/search?q=example
+          referring_domain: google.com
+          landing_page: https://example.com/products/shoes
+          browser: Chrome
+          os: Mac OS X
+          device_type: desktop
+          started_at: '2026-01-09T14:23:45.123Z'
+          created_at: '2026-01-09T14:23:45.123Z'
+          updated_at: '2026-01-09T14:23:45.123Z'
+      required:
+      - last_visit
+      - last_visit_with_utm
+    VisitsAttributes:
+      type: object
+      title: Visits
+      description: Collection of visit tracking records for a contact, including first visit, last visit, and last visit with UTM parameters
+      properties:
+        first_visit:
+          description: The first visit associated with this contact.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit:
+          description: The most recent visit. May be null if it is identical to first_visit (to avoid duplication).
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit_with_utm:
+          description: The most recent visit that contains UTM parameters.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+      required:
+      - first_visit
+      - last_visit
+      - last_visit_with_utm
+    OrdersInvoicesLineItemAttributes:
+      type: object
+      title: Line items
+      description: Line items
+      properties:
+        id:
+          type: integer
+          description: Line item ID
+        public_id:
+          type: string
+          description: ClickFunnels line item public ID
+        invoice_id:
+          type: integer
+          description: Invoice ID
+        external_id:
+          type: string
+          description: External
+        payment_type:
+          type:
+          - string
+          - 'null'
+          description: Payment Type
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description
+        quantity:
+          type:
+          - integer
+          - 'null'
+          description: Quantity
+        fulfillment_status:
+          type:
+          - string
+          - 'null'
+          enum:
+          - unfulfilled
+          - partially_fulfilled
+          - complete
+          - ignored
+          - null
+          description: "Represents the current fulfillment status of the line item.\nThis can be one of the following:\n - `unfulfilled` - the line item has not been fully fulfilled (fulfilled quantity is 0)\n - `partially_fulfilled` - the line item is partially fulfilled (fulfilled quantity is less than line item quantity)\n - `complete` - the line item is completely fulfilled (fulfilled quantity is equal to line item quantity)\n - `ignored` - the line item is marked as ignored for fulfillment\n"
+        external_product_id:
+          type:
+          - string
+          - 'null'
+          description: External Product
+        discount_amount:
+          type:
+          - number
+          - 'null'
+          description: Discount Amount
+        state_tax_amount:
+          type:
+          - number
+          - 'null'
+          description: State Tax Amount
+        county_tax_amount:
+          type:
+          - number
+          - 'null'
+          description: County Tax Amount
+        city_tax_amount:
+          type:
+          - number
+          - 'null'
+          description: City Tax Amount
+        district_tax_amount:
+          type:
+          - number
+          - 'null'
+          description: District Tax Amount
+        state_tax_rate:
+          type:
+          - number
+          - 'null'
+          description: State Tax Rate
+        county_tax_rate:
+          type:
+          - number
+          - 'null'
+          description: County Tax Rate
+        city_tax_rate:
+          type:
+          - number
+          - 'null'
+          description: City Tax Rate
+        district_tax_rate:
+          type:
+          - number
+          - 'null'
+          description: District Tax Rate
+        country_tax_jurisdiction:
+          type:
+          - string
+          - 'null'
+          description: Country Tax Jurisdiction
+        state_tax_jurisdiction:
+          type:
+          - string
+          - 'null'
+          description: State Tax Jurisdiction
+        county_tax_jurisdiction:
+          type:
+          - string
+          - 'null'
+          description: County Tax Jurisdiction
+        city_tax_jurisdiction:
+          type:
+          - string
+          - 'null'
+          description: City Tax Jurisdiction
+        period_start_at:
+          type:
+          - string
+          - 'null'
+          description: Period Start At
+        period_end_at:
+          type:
+          - string
+          - 'null'
+          description: Period End At
+        period_number:
+          type:
+          - string
+          - 'null'
+          description: Period Number
+        created_at:
+          type:
+          - string
+          - 'null'
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          description: Updated
+        amount:
+          type:
+          - string
+          - 'null'
+          description: Amount
+        products_price:
+          type:
+          - object
+          - 'null'
+          title: Product Price
+          description: Product Price
+          properties:
+            id:
+              type: integer
+              description: ID
+            public_id:
+              type: string
+              description: Price public ID
+            amount:
+              type: string
+              description: Amount
+            currency:
+              type: string
+              description: Currency
+            duration:
+              type: string
+              description: Duration
+            interval:
+              type: string
+              description: Interval
+            interval_count:
+              type: string
+              description: Interval count
+        products_variant:
+          type:
+          - object
+          - 'null'
+          title: Product Variant
+          description: Product Variant
+          properties:
+            id:
+              type: integer
+              description: ID
+            public_id:
+              type: string
+              description: Variant public ID
+            product_id:
+              type: integer
+              description: Product ID
+            name:
+              type: string
+              description: Name
+            description:
+              type:
+              - string
+              - 'null'
+              description: The description of the variant. The description of the **default variant** is the user-facing description of the `Product`.
+            sku:
+              type:
+              - string
+              - 'null'
+              description: SKU
+            fulfillment_required:
+              type:
+              - boolean
+              - 'null'
+              description: Fulfillment required
+      example:
+        id: 682
+        public_id: RegpVj
+        invoice_id: 838
+        external_id: null
+        payment_type: null
+        description: null
+        quantity: 1
+        fulfillment_status: unfulfilled
+        external_product_id: null
+        discount_amount: '0.0'
+        state_tax_amount: '0.0'
+        county_tax_amount: '0.0'
+        city_tax_amount: '0.0'
+        district_tax_amount: '0.0'
+        state_tax_rate: '0.0'
+        county_tax_rate: '0.0'
+        city_tax_rate: '0.0'
+        district_tax_rate: '0.0'
+        country_tax_jurisdiction: null
+        state_tax_jurisdiction: null
+        county_tax_jurisdiction: null
+        city_tax_jurisdiction: null
+        period_start_at: null
+        period_end_at: null
+        period_number: null
+        created_at: '2026-01-10T20:16:16.538Z'
+        updated_at: '2026-01-10T20:16:16.538Z'
+        amount: '3.00'
+        products_price:
+          id: 22229
+          public_id: YqEWxY
+          amount: '198.00'
+          currency: usd
+          duration: null
+          interval: null
+          interval_count: null
+        products_variant:
+          id: 22228
+          public_id: JdknyN
+          product_id: 6512
+          name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+          description: null
+          sku: SIYP-BLACK-PREMIUM-001
+          fulfillment_required: false
+      required:
+      - amount
+      - city_tax_amount
+      - city_tax_jurisdiction
+      - city_tax_rate
+      - country_tax_jurisdiction
+      - county_tax_amount
+      - county_tax_jurisdiction
+      - county_tax_rate
+      - created_at
+      - description
+      - discount_amount
+      - district_tax_amount
+      - district_tax_rate
+      - external_id
+      - external_product_id
+      - fulfillment_status
+      - id
+      - invoice_id
+      - payment_type
+      - period_end_at
+      - period_number
+      - period_start_at
+      - products_price
+      - products_variant
+      - public_id
+      - quantity
+      - state_tax_amount
+      - state_tax_jurisdiction
+      - state_tax_rate
+      - updated_at
+    ContactBaseAttributes:
+      type: object
+      title: Contacts
+      description: Contacts
+      properties:
+        id:
+          type: integer
+          description: Contact ID
+        public_id:
+          type: string
+          description: Contact public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        anonymous:
+          type:
+          - integer
+          - 'null'
+          description: Anonymous
+        email_address:
+          type:
+          - string
+          - 'null'
+          description: The contact's email address. It is currently not expected to be null and is the main identifier for a contact.
+        first_name:
+          type:
+          - string
+          - 'null'
+          description: First name
+        last_name:
+          type:
+          - string
+          - 'null'
+          description: Last name
+        phone_number:
+          type:
+          - string
+          - 'null'
+          description: Phone number
+        time_zone:
+          type:
+          - string
+          - 'null'
+          description: 'The human-readable time zone, usually set dynamically by the app for the contact, for example, during opt-in.
+
+            Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
+
+            '
+        uuid:
+          type: string
+          description: UUID
+        unsubscribed_at:
+          type:
+          - string
+          - 'null'
+          description: Unsubscribed
+        last_notification_email_sent_at:
+          type:
+          - string
+          - 'null'
+          description: Last notification email sent
+        email_suppression_reason:
+          type:
+          - string
+          - 'null'
+          description: The reason the contact's email address is suppressed from receiving emails. Null when no suppression exists.
+        is_active:
+          type: boolean
+          description: Whether the contact is active. A contact is considered active when they have a valid email address, have not unsubscribed, have not been deleted, and have no email suppression reason.
+        fb_url:
+          type:
+          - string
+          - 'null'
+          description: Facebook URL
+        twitter_url:
+          type:
+          - string
+          - 'null'
+          description: Twitter URL
+        instagram_url:
+          type:
+          - string
+          - 'null'
+          description: Instagram URL
+        linkedin_url:
+          type:
+          - string
+          - 'null'
+          description: LinkedIn URL
+        website_url:
+          type:
+          - string
+          - 'null'
+          description: Website URL
+        created_at:
+          type: string
+          format: date-time
+          description: Date added
+        updated_at:
+          type: string
+          format: date-time
+          description: Last updated
+        tags:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            title: Contact Tags
+            description: Contact Tags
+            properties:
+              id:
+                type: integer
+                description: Tag ID
+              public_id:
+                type: string
+                description: Tag public ID
+              name:
+                type: string
+                description: Name
+              color:
+                type: string
+                description: Color
+              applied_at:
+                type:
+                - string
+                - 'null'
+                description: The datetime the tag was applied by creating a Contacts::AppliedTag that maps the tag to the contact.
+          description: Contact Tags
+        custom_attributes:
+          type: object
+          additionalProperties:
+            type: string
+          description: A dynamic key-value pair object where both the key and value are strings. Custom attributes are usually added to the contact when they submit forms that contain custom contact attributes. But you can also add them via the API using the modifying endpoints like Create/Update/Upsert Contact.
+        visits:
+          allOf:
+          - $ref: '#/components/schemas/VisitsAttributes'
+          description: Visit tracking information for this contact, including first visit, last visit, and last visit with UTM parameters
+      example:
+        id: 24359
+        public_id: vQxYMj
+        workspace_id: 4
+        anonymous: 0
+        email_address: jane.doe@example.com
+        first_name: Jane
+        last_name: Doe
+        phone_number: '+18005550199'
+        time_zone: Madrid
+        uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+        unsubscribed_at: null
+        last_notification_email_sent_at: null
+        email_suppression_reason: null
+        is_active: true
+        fb_url: null
+        twitter_url: null
+        instagram_url: null
+        linkedin_url: null
+        website_url: null
+        created_at: '2026-01-09T15:27:56.647Z'
+        updated_at: '2026-01-09T15:28:08.075Z'
+        tags: []
+        custom_attributes: {}
+        visits:
+          first_visit:
+            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+            utm_source: google
+            utm_medium: cpc
+            utm_campaign: spring_sale
+            utm_term: running shoes
+            utm_content: ad_variant_a
+            ip: 192.168.1.1
+            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+            referrer: https://www.google.com/search?q=example
+            referring_domain: google.com
+            landing_page: https://example.com/products/shoes
+            browser: Chrome
+            os: Mac OS X
+            device_type: desktop
+            started_at: '2026-01-09T14:23:45.123Z'
+            created_at: '2026-01-09T14:23:45.123Z'
+            updated_at: '2026-01-09T14:23:45.123Z'
+          last_visit: null
+          last_visit_with_utm:
+            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+            utm_source: google
+            utm_medium: cpc
+            utm_campaign: spring_sale
+            utm_term: running shoes
+            utm_content: ad_variant_a
+            ip: 192.168.1.1
+            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+            referrer: https://www.google.com/search?q=example
+            referring_domain: google.com
+            landing_page: https://example.com/products/shoes
+            browser: Chrome
+            os: Mac OS X
+            device_type: desktop
+            started_at: '2026-01-09T14:23:45.123Z'
+            created_at: '2026-01-09T14:23:45.123Z'
+            updated_at: '2026-01-09T14:23:45.123Z'
+      required:
+      - anonymous
+      - created_at
+      - custom_attributes
+      - email_address
+      - email_suppression_reason
+      - fb_url
+      - first_name
+      - id
+      - instagram_url
+      - is_active
+      - last_name
+      - last_notification_email_sent_at
+      - linkedin_url
+      - phone_number
+      - public_id
+      - tags
+      - time_zone
+      - twitter_url
+      - unsubscribed_at
+      - updated_at
+      - uuid
+      - visits
+      - website_url
+      - workspace_id
+    OrdersInvoiceAttributes:
+      type: object
+      title: Invoices
+      description: Invoices
+      properties:
+        id:
+          type: integer
+          description: Invoice ID
+        public_id:
+          type: string
+          description: Invoice public ID
+        order_id:
+          type: integer
+          description: Order ID
+        status:
+          type: string
+          description: 'The billing status reflects the status of the invoice''s payment.
+
+            Billing status can be one of the following for Payments AI orders: `draft`, `paid`, `unpaid`, `partially-refunded`, `refunded`, `voided`, `disputed`, `past-due`.
+
+
+            External invoice statuses of external one-time orders can be one of the following: `unpaid`, `paid`, `voided` and `refunded`, `disputed`, `past-due`.
+
+            A change in status will update the `billing_status` of the parent order. If the status of a one-time order is changed to `paid`, the order''s `service_status` will also be flipped to `completed`.
+
+            '
+        due_amount:
+          type:
+          - string
+          - 'null'
+          description: Due Amount
+        total_amount:
+          type:
+          - string
+          - 'null'
+          description: Total Amt
+        subtotal_amount:
+          type:
+          - string
+          - 'null'
+          description: Subtotal Amount
+        tax_amount:
+          type:
+          - string
+          - 'null'
+          description: Tax Amount
+        shipping_amount:
+          type:
+          - string
+          - 'null'
+          description: Invoiced shipping amount. Cannot be negative.
+        discount_amount:
+          type:
+          - string
+          - 'null'
+          description: Discount Amount
+        currency:
+          type:
+          - string
+          - 'null'
+          description: Currency
+        issued_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: 'The date the invoice was issued.
+
+            '
+        due_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice is due.
+        paid_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice was paid.
+        invoice_type:
+          type:
+          - string
+          - 'null'
+          enum:
+          - initial
+          - renewal
+          - interim
+          - cancellation
+          - one_time
+          - refund
+          - charge
+          - one_time_sale
+          - null
+          description: Invoice Type
+        invoice_number:
+          type: string
+          description: The number of the invoice. Usually, this is a sequential number in a certain format to be used for bookkeeping purposes.
+        fulfillment_status:
+          type:
+          - string
+          - 'null'
+          description: "The fulfillment status of the invoice.\nThis can be one of:\n - `not_applicable` - the invoice is not eligible for fulfillment\n - `unfulfilled` - the entire invoice needs to be fulfilled\n - `partial` - some items have been fulfilled, but some are pending or restocked\n - `complete` - all items are fulfilled\n"
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        external_id:
+          type:
+          - string
+          - 'null'
+          description: External ID
+        payment_processor:
+          type:
+          - string
+          - 'null'
+          description: The payment processor of the invoice's order. Currently, it can be one of `payments_ai` and `external`.
+        eligible_for_fulfillment:
+          type:
+          - boolean
+          - 'null'
+          description: Invoice has been paid so is eligible for fulfillment (does not indicate if the invoice has any fulfillable items)
+        line_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrdersInvoicesLineItemAttributes'
+          description: Invoice Line Items
+        order:
+          $ref: '#/components/schemas/OrderBaseAttributes'
+        visits:
+          allOf:
+          - $ref: '#/components/schemas/OrderVisitsAttributes'
+          description: Visit tracking information from the parent order. Contains last_visit and last_visit_with_utm (but not first_visit, which belongs to the contact).
+      example:
+        id: 838
+        public_id: WNrMnJ
+        order_id: 22642
+        status: paid
+        due_amount: '13.00'
+        total_amount: '13.00'
+        subtotal_amount: '3.00'
+        tax_amount: '0.00'
+        shipping_amount: '10.00'
+        discount_amount: '0.00'
+        currency: USD
+        issued_at: '2023-10-01T12:43:55.000Z'
+        due_at: '2023-10-15T00:00:00.000Z'
+        paid_at: '2025-10-10T08:04:02.000Z'
+        invoice_type: one_time_sale
+        invoice_number: '3'
+        fulfillment_status: not_applicable
+        created_at: '2026-01-10T20:16:16.536Z'
+        updated_at: '2026-01-10T20:16:16.536Z'
+        external_id: tffv2w34qv
+        payment_processor: external
+        eligible_for_fulfillment: true
+        line_items:
+        - id: 682
+          public_id: RegpVj
+          invoice_id: 838
+          external_id: null
+          payment_type: null
+          description: null
+          quantity: 1
+          fulfillment_status: unfulfilled
+          external_product_id: null
+          discount_amount: '0.0'
+          state_tax_amount: '0.0'
+          county_tax_amount: '0.0'
+          city_tax_amount: '0.0'
+          district_tax_amount: '0.0'
+          state_tax_rate: '0.0'
+          county_tax_rate: '0.0'
+          city_tax_rate: '0.0'
+          district_tax_rate: '0.0'
+          country_tax_jurisdiction: null
+          state_tax_jurisdiction: null
+          county_tax_jurisdiction: null
+          city_tax_jurisdiction: null
+          period_start_at: null
+          period_end_at: null
+          period_number: null
+          created_at: '2026-01-10T20:16:16.538Z'
+          updated_at: '2026-01-10T20:16:16.538Z'
+          amount: '3.00'
+          products_price:
+            id: 22229
+            public_id: YqEWxY
+            amount: '198.00'
+            currency: usd
+            duration: null
+            interval: null
+            interval_count: null
+          products_variant:
+            id: 22228
+            public_id: JdknyN
+            product_id: 6512
+            name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+            description: null
+            sku: SIYP-BLACK-PREMIUM-001
+            fulfillment_required: false
+        order:
+          id: 22642
+          public_id: JmRRyN
+          order_number: '#2146'
+          total_amount: '396.00'
+          origination_channel_id: 11
+          origination_channel_type: Platform::Application
+          notes: For Fulfillment
+          live_mode: true
+          in_trial: false
+          billing_status: paid
+          service_status: completed
+          order_type: one-time-order
+          next_charge_at: null
+          trial_end_at: null
+          tag_ids: []
+          activated_at: null
+          canceled_at: null
+          canceled_by: null
+          cancel_reason: null
+          cancel_description: null
+          churned_at: null
+          shipping_address_first_name: Caroll
+          shipping_address_last_name: Kirlin
+          shipping_address_organization_name: Testing, Inc.
+          shipping_address_phone_number: '+19053871234'
+          shipping_address_street_one: 3443 W Bavaria St
+          shipping_address_street_two: ''
+          shipping_address_city: Eagle
+          shipping_address_region: ID
+          shipping_address_country: US
+          shipping_address_postal_code: '83616'
+          billing_address_street_one: 3443 W Bavaria St
+          billing_address_street_two: ''
+          billing_address_city: Eagle
+          billing_address_region: ID
+          billing_address_country: US
+          billing_address_postal_code: '83616'
+          recurring_invoices_paid_count: 1
+          origination_channel_name: Default API Client
+          origination_channel_public_id: vNWWMb
+          contact:
+            id: 24359
+            public_id: vQxYMj
+            workspace_id: 4
+            anonymous: 0
+            email_address: jane.doe@example.com
+            first_name: Jane
+            last_name: Doe
+            phone_number: '+18005550199'
+            time_zone: Madrid
+            uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+            unsubscribed_at: null
+            last_notification_email_sent_at: null
+            email_suppression_reason: null
+            is_active: true
+            fb_url: null
+            twitter_url: null
+            instagram_url: null
+            linkedin_url: null
+            website_url: null
+            created_at: '2026-01-09T15:27:56.647Z'
+            updated_at: '2026-01-09T15:28:08.075Z'
+            tags: []
+            custom_attributes: {}
+            visits:
+              first_visit:
+                uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                utm_source: google
+                utm_medium: cpc
+                utm_campaign: spring_sale
+                utm_term: running shoes
+                utm_content: ad_variant_a
+                ip: 192.168.1.1
+                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                referrer: https://www.google.com/search?q=example
+                referring_domain: google.com
+                landing_page: https://example.com/products/shoes
+                browser: Chrome
+                os: Mac OS X
+                device_type: desktop
+                started_at: '2026-01-09T14:23:45.123Z'
+                created_at: '2026-01-09T14:23:45.123Z'
+                updated_at: '2026-01-09T14:23:45.123Z'
+              last_visit: null
+              last_visit_with_utm:
+                uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                utm_source: google
+                utm_medium: cpc
+                utm_campaign: spring_sale
+                utm_term: running shoes
+                utm_content: ad_variant_a
+                ip: 192.168.1.1
+                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                referrer: https://www.google.com/search?q=example
+                referring_domain: google.com
+                landing_page: https://example.com/products/shoes
+                browser: Chrome
+                os: Mac OS X
+                device_type: desktop
+                started_at: '2026-01-09T14:23:45.123Z'
+                created_at: '2026-01-09T14:23:45.123Z'
+                updated_at: '2026-01-09T14:23:45.123Z'
+          affiliate: null
+          referral_code: null
+          order_page: null
+        visits:
+          last_visit:
+            uuid: 7a3f9c11-2d45-4e23-88d2-1bef9acd44fa
+            utm_source: null
+            utm_medium: null
+            utm_campaign: null
+            utm_term: null
+            utm_content: null
+            ip: 192.168.1.1
+            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+            referrer: https://www.clickfunnels.com/products
+            referring_domain: clickfunnels.com
+            landing_page: https://example.com/checkout
+            browser: Chrome
+            os: Mac OS X
+            device_type: desktop
+            started_at: '2026-01-10T20:10:15.234Z'
+            created_at: '2026-01-10T20:10:15.234Z'
+            updated_at: '2026-01-10T20:10:15.234Z'
+          last_visit_with_utm:
+            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+            utm_source: google
+            utm_medium: cpc
+            utm_campaign: spring_sale
+            utm_term: running shoes
+            utm_content: ad_variant_a
+            ip: 192.168.1.1
+            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+            referrer: https://www.google.com/search?q=example
+            referring_domain: google.com
+            landing_page: https://example.com/products/shoes
+            browser: Chrome
+            os: Mac OS X
+            device_type: desktop
+            started_at: '2026-01-09T14:23:45.123Z'
+            created_at: '2026-01-09T14:23:45.123Z'
+            updated_at: '2026-01-09T14:23:45.123Z'
+      required:
+      - created_at
+      - currency
+      - discount_amount
+      - due_amount
+      - due_at
+      - eligible_for_fulfillment
+      - external_id
+      - fulfillment_status
+      - id
+      - invoice_number
+      - invoice_type
+      - issued_at
+      - line_items
+      - order
+      - order_id
+      - paid_at
+      - payment_processor
+      - public_id
+      - shipping_amount
+      - status
+      - subtotal_amount
+      - tax_amount
+      - total_amount
+      - updated_at
+      - visits
+    OrdersInvoiceParametersUpdate:
+      type: object
+      title: External Invoice Update
+      description: 'Parameters for updating an external invoice. Only external orders support invoice updates via the API.
+
+        Note: The `invoice_type` cannot be changed after creation. New line items cannot be added during update;
+
+        only existing line items can be modified by providing their `id`.
+
+        '
+      properties:
+        status:
+          type: string
+          description: 'The billing status of the invoice.
+
+
+            For external orders, valid statuses are: `unpaid`, `paid`, `voided`, `refunded`, `disputed`, `past-due`.
+
+
+            When changing status to `paid`, you must also provide `paid_at`.
+
+            A change in status will update the `billing_status` of the parent order.
+
+            If a one-time order''s invoice status is changed to `paid`, the order''s `service_status` will also flip to `completed`.
+
+            '
+          enum:
+          - unpaid
+          - paid
+          - voided
+          - refunded
+          - disputed
+          - past-due
+        external_id:
+          type: string
+          description: 'The unique identifier for this invoice in your external system.
+
+            This ID allows you to correlate ClickFunnels invoices with records in your payment processor.
+
+            '
+        invoice_number:
+          type:
+          - string
+          - 'null'
+          description: 'A sequential number for bookkeeping purposes.
+
+            '
+        shipping_amount:
+          type:
+          - string
+          - 'null'
+          description: Invoiced shipping amount. Cannot be negative.
+        issued_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice was issued.
+        due_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice is due.
+        paid_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: 'The date the invoice was paid. Required when changing `status` to `paid`.
+
+            '
+        line_items_attributes:
+          type: array
+          description: 'Update existing line items. Only line items with an `id` will be processed;
+
+            new line items (without `id`) are ignored during updates.
+
+            '
+          items:
+            type: object
+            required:
+            - id
+            properties:
+              id:
+                type: integer
+                description: 'Required. The ID of the existing line item to update.
+
+                  Line items without an ID are ignored during updates.
+
+                  '
+              amount:
+                type: string
+                description: The price amount for this line item.
+              quantity:
+                type: integer
+                description: The quantity of items.
+              description:
+                type:
+                - string
+                - 'null'
+                description: Optional description for the line item.
+      example:
+        orders_invoice:
+          status: paid
+          paid_at: '2025-01-10T00:00:00.000Z'
+          line_items_attributes:
+          - id: 682
+            amount: '99.00'
+            quantity: 2
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

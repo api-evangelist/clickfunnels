@@ -1,0 +1,771 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Emails::Domain API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Emails::Domain
+  description: '> Email Domains represent the sending domains (DKIM/SPF/DMARC) available to a workspace for outbound email.
+
+
+    One domain name has two independent jobs, and sending needs both. This resource covers email transport: `verified` means the name is authenticated for sending (DKIM + SPF + DMARC, or a verified SMTP setting). The other job is proving the workspace owns the name, reported here as `ownership_verified`; that happens by connecting the domain to the workspace as a website/hosting domain inside the ClickFunnels app (a website domain is connected as a subdomain such as `www.example.com`, which confirms ownership of the root sending domain `example.com`), and no call in this API can make it true. Neither substitutes for the other: `ready_for_sending` becomes true only when both are true, and a `200` from verify means the check ran, not that it passed, so always read the booleans back.
+
+
+    Provision the root domain (`example.com`), not a subdomain: ownership is confirmed at the root domain, so a subdomain is rejected with `422` naming the root domain to use instead.
+
+
+    Typical workflow: provision the sending domain (`POST /workspaces/{workspace_id}/emails/domains`), have the customer publish the returned DNS records and connect the same name to the workspace in ClickFunnels, then re-check with `POST /emails/domains/{id}/verify` until `ready_for_sending` is true, following `next_steps` for whatever is still missing. Then create sender addresses via `POST /workspaces/{workspace_id}/emails/addresses` with `emails_domain_id` set to this domain''s numeric id.
+
+
+    See [Sending domains](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#sending-domains) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+
+    '
+paths:
+  /workspaces/{workspace_id}/emails/domains:
+    get:
+      tags:
+      - Emails::Domain
+      summary: List Email Domains
+      description: List all email sending domains (DKIM/SPF/DMARC) for a workspace. These are **email sending** domains - for website/hosting domains, see **listDomains**. Each result separates workspace ownership (`ownership_verified`) from email transport (`verified`); addresses on a custom domain can send only when `ready_for_sending` is true. Ownership comes from connecting the domain, as `www.example.com` or another subdomain of it, to this workspace as a website/hosting domain in the ClickFunnels app - no API call makes `ownership_verified` true. Return-path verification is independent of sender readiness. Reads return the stored DNS verification state and never trigger a live DNS lookup (use `verifyEmailsDomains` for that); `ownership_verified` is always current. See [Sending domains](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#sending-domains) in the Emails Skill for the complete agent workflow.
+      operationId: listEmailsDomains
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmailsDomainAttributes'
+              example:
+              - id: 1
+                public_id: QrStUv
+                workspace_id: 42000
+                name: example.com
+                ownership_verified: false
+                verified: false
+                ready_for_sending: false
+                dkim_verified: false
+                spf_verified: false
+                dmarc_verified: false
+                smtp_verified: false
+                return_address_verified: false
+                dkim_record:
+                  type: TXT
+                  name: second._domainkey.example.com
+                  value: v=DKIM1; k=rsa; p=...
+                  ttl: 300
+                  verified: false
+                spf_record:
+                  type: TXT
+                  name: example.com
+                  value: v=spf1 include:mailer.myclickfunnels.com -all
+                  ttl: 300
+                  verified: false
+                dmarc_record:
+                  type: TXT
+                  name: _dmarc.example.com
+                  value: v=DMARC1; p=none;
+                  ttl: 300
+                  verified: false
+                return_address_record:
+                  type: CNAME
+                  name: cf2mail.example.com
+                  value: mailer.myclickfunnels.com
+                  ttl: 300
+                  verified: false
+                next_steps:
+                - Connect example.com to this workspace in ClickFunnels so ownership is confirmed. Addresses on this domain cannot send until it is, even once every record below verifies.
+                - Add dkim_record, spf_record, and dmarc_record at the DNS provider for example.com to authenticate email transport.
+                - 'Recommended for ClickFunnels bounce handling: add return_address_record at the DNS provider.'
+                - DNS changes can take up to 48 hours to propagate. Re-check with POST /api/v2/emails/domains/QrStUv/verify; results are cached for about 10 minutes.
+                - 'Manual setup help: https://support.myclickfunnels.com/docs/email-settings-how-to-verify-email-dns-records'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+              - id: 2
+                public_id: LmNoPq
+                workspace_id: 42000
+                name: verified-example.com
+                ownership_verified: true
+                verified: true
+                ready_for_sending: true
+                dkim_verified: true
+                spf_verified: true
+                dmarc_verified: true
+                smtp_verified: false
+                return_address_verified: false
+                dkim_record:
+                  type: TXT
+                  name: second._domainkey.verified-example.com
+                  value: v=DKIM1; k=rsa; p=...
+                  ttl: 300
+                  verified: true
+                spf_record:
+                  type: TXT
+                  name: verified-example.com
+                  value: v=spf1 include:mailer.myclickfunnels.com -all
+                  ttl: 300
+                  verified: true
+                dmarc_record:
+                  type: TXT
+                  name: _dmarc.verified-example.com
+                  value: v=DMARC1; p=none;
+                  ttl: 300
+                  verified: true
+                return_address_record:
+                  type: CNAME
+                  name: cf2mail.verified-example.com
+                  value: mailer.myclickfunnels.com
+                  ttl: 300
+                  verified: false
+                next_steps:
+                - 'Recommended for ClickFunnels bounce handling: add return_address_record at the DNS provider.'
+                - Ready to send - create addresses on this domain with POST /api/v2/workspaces/42000/emails/addresses (emails_domain_id 2).
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Emails::Domain
+      summary: Create Email Domain
+      description: 'Provision a sending domain for a workspace. Find-or-create: returns `200` with the existing record if a domain with this name already exists for the workspace, or `201` with freshly generated DNS records if it was just created. These are **email sending** domains (DKIM/SPF/DMARC) - for website/hosting domains, see **listDomains**. The response includes the email-transport records; `dkim_record` can be `null` until the DKIM key finishes generating, and POSTing the same name again retries provisioning. Provisioning also creates a `no-reply@<name>` sender address on the new domain. When accessing the API through an OAuth connection from a third-party platform, this endpoint is restricted to trusted developer platforms; with your own API key (or an OAuth app acting on its own team''s workspaces) it always passes. Follow `next_steps`, which distinguishes the required ownership step, the required transport records, and the recommended return-path record; verified SMTP replaces DKIM/SPF/DMARC. Ownership (`ownership_verified`) is proved by connecting the domain, as `www.example.com` or another subdomain of it, to this workspace as a website/hosting domain in the ClickFunnels app, not through this API. Ownership is confirmed at the root domain, so provision `example.com` rather than a subdomain such as `mail.example.com`, which is rejected with `422` naming the root domain to use instead. Then call **verifyEmailsDomains** until `ready_for_sending` is true; a `200` there means the check ran, not that it passed. The top-level `verified` field means transport only; sender readiness requires both ownership and transport. Return-path verification is independent. Once ready, create addresses via `POST /workspaces/{workspace_id}/emails/addresses` with `emails_domain_id` set to this domain''s numeric `id`.'
+      operationId: createEmailsDomains
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about the sending domain to provision
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - emails_domain
+              properties:
+                emails_domain:
+                  type: object
+                  $ref: '#/components/schemas/EmailsDomainParameters'
+            example:
+              emails_domain:
+                name: example.com
+      responses:
+        '200':
+          description: OK - a sending domain with this name already existed for the workspace and is returned as-is.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsDomainAttributes'
+              example:
+                id: 5
+                public_id: LmNoPq
+                workspace_id: 42000
+                name: existing-example.com
+                ownership_verified: false
+                verified: false
+                ready_for_sending: false
+                dkim_verified: false
+                spf_verified: false
+                dmarc_verified: false
+                smtp_verified: false
+                return_address_verified: false
+                dkim_record:
+                  type: TXT
+                  name: second._domainkey.existing-example.com
+                  value: v=DKIM1; k=rsa; p=...
+                  ttl: 300
+                  verified: false
+                spf_record:
+                  type: TXT
+                  name: existing-example.com
+                  value: v=spf1 include:mailer.myclickfunnels.com -all
+                  ttl: 300
+                  verified: false
+                dmarc_record:
+                  type: TXT
+                  name: _dmarc.existing-example.com
+                  value: v=DMARC1; p=none;
+                  ttl: 300
+                  verified: false
+                return_address_record:
+                  type: CNAME
+                  name: cf2mail.existing-example.com
+                  value: mailer.myclickfunnels.com
+                  ttl: 300
+                  verified: false
+                next_steps:
+                - Connect existing-example.com to this workspace in ClickFunnels so ownership is confirmed. Addresses on this domain cannot send until it is, even once every record below verifies.
+                - Add dkim_record, spf_record, and dmarc_record at the DNS provider for existing-example.com to authenticate email transport.
+                - 'Recommended for ClickFunnels bounce handling: add return_address_record at the DNS provider.'
+                - DNS changes can take up to 48 hours to propagate. Re-check with POST /api/v2/emails/domains/LmNoPq/verify; results are cached for about 10 minutes.
+                - 'Manual setup help: https://support.myclickfunnels.com/docs/email-settings-how-to-verify-email-dns-records'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '201':
+          description: Created - a new sending domain was provisioned; its DNS records were just generated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsDomainAttributes'
+              example:
+                id: 6
+                public_id: QrStUv
+                workspace_id: 42000
+                name: example.com
+                ownership_verified: false
+                verified: false
+                ready_for_sending: false
+                dkim_verified: false
+                spf_verified: false
+                dmarc_verified: false
+                smtp_verified: false
+                return_address_verified: false
+                dkim_record:
+                  type: TXT
+                  name: second._domainkey.example.com
+                  value: v=DKIM1; k=rsa; p=...
+                  ttl: 300
+                  verified: false
+                spf_record:
+                  type: TXT
+                  name: example.com
+                  value: v=spf1 include:mailer.myclickfunnels.com -all
+                  ttl: 300
+                  verified: false
+                dmarc_record:
+                  type: TXT
+                  name: _dmarc.example.com
+                  value: v=DMARC1; p=none;
+                  ttl: 300
+                  verified: false
+                return_address_record:
+                  type: CNAME
+                  name: cf2mail.example.com
+                  value: mailer.myclickfunnels.com
+                  ttl: 300
+                  verified: false
+                next_steps:
+                - Connect example.com to this workspace in ClickFunnels so ownership is confirmed. Addresses on this domain cannot send until it is, even once every record below verifies.
+                - Add dkim_record, spf_record, and dmarc_record at the DNS provider for example.com to authenticate email transport.
+                - 'Recommended for ClickFunnels bounce handling: add return_address_record at the DNS provider.'
+                - DNS changes can take up to 48 hours to propagate. Re-check with POST /api/v2/emails/domains/QrStUv/verify; results are cached for about 10 minutes.
+                - 'Manual setup help: https://support.myclickfunnels.com/docs/email-settings-how-to-verify-email-dns-records'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                malformed_name:
+                  value:
+                    error: 'Request unprocessable: Name must be a valid public domain name.'
+                subdomain_name:
+                  value:
+                    error: 'Request unprocessable: Sending domains are set up on the root domain. Use "example.com" instead of "mail.example.com".'
+                trademarked_name:
+                  value:
+                    error: 'Request unprocessable: Name includes a trademarked phrase - please select another domain name'
+  /emails/domains/{id}:
+    get:
+      tags:
+      - Emails::Domain
+      summary: Get Email Domain
+      description: Retrieve a single email sending domain (DKIM/SPF/DMARC), including its ownership, transport, readiness, and return-path flags plus the DNS records to add at the provider. These are **email sending** domains - for website/hosting domains, see **listDomains**. `verified` reports transport only; `ready_for_sending` requires both workspace ownership and transport, while return-path verification is independent. Ownership is confirmed by connecting the domain, as `www.example.com` or another subdomain of it, to this workspace as a website/hosting domain in the ClickFunnels app, not through this API. `dkim_record` is `null` until the DKIM key finishes generating - re-POST the same name to **createEmailsDomains** to retry provisioning. This read returns the stored DNS verification state and never triggers a live DNS lookup (use `verifyEmailsDomains` to re-check), while `ownership_verified` is always current.
+      operationId: getEmailsDomains
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsDomainAttributes'
+              example:
+                id: 1
+                public_id: QrStUv
+                workspace_id: 42000
+                name: example.com
+                ownership_verified: false
+                verified: false
+                ready_for_sending: false
+                dkim_verified: false
+                spf_verified: false
+                dmarc_verified: false
+                smtp_verified: false
+                return_address_verified: false
+                dkim_record:
+                  type: TXT
+                  name: second._domainkey.example.com
+                  value: v=DKIM1; k=rsa; p=...
+                  ttl: 300
+                  verified: false
+                spf_record:
+                  type: TXT
+                  name: example.com
+                  value: v=spf1 include:mailer.myclickfunnels.com -all
+                  ttl: 300
+                  verified: false
+                dmarc_record:
+                  type: TXT
+                  name: _dmarc.example.com
+                  value: v=DMARC1; p=none;
+                  ttl: 300
+                  verified: false
+                return_address_record:
+                  type: CNAME
+                  name: cf2mail.example.com
+                  value: mailer.myclickfunnels.com
+                  ttl: 300
+                  verified: false
+                next_steps:
+                - Connect example.com to this workspace in ClickFunnels so ownership is confirmed. Addresses on this domain cannot send until it is, even once every record below verifies.
+                - Add dkim_record, spf_record, and dmarc_record at the DNS provider for example.com to authenticate email transport.
+                - 'Recommended for ClickFunnels bounce handling: add return_address_record at the DNS provider.'
+                - DNS changes can take up to 48 hours to propagate. Re-check with POST /api/v2/emails/domains/QrStUv/verify; results are cached for about 10 minutes.
+                - 'Manual setup help: https://support.myclickfunnels.com/docs/email-settings-how-to-verify-email-dns-records'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /emails/domains/{id}/verify:
+    post:
+      tags:
+      - Emails::Domain
+      summary: Verify Email Domain
+      description: Re-run the DNS checks for DKIM, SPF, DMARC, and the return path, cached for about 10 minutes, and return the refreshed status together with the current ownership state. A `200` means the check ran, not that it passed, so always read the booleans back. `verified` reports transport only and becomes true when DKIM, SPF, and DMARC are all live, or when a verified SMTP setting exists. `ownership_verified` reports workspace control of the name, which comes from connecting the domain, as `www.example.com` or another subdomain of it, to this workspace as a website/hosting domain in the ClickFunnels app rather than from any API call. `ready_for_sending` becomes true only when both are true. Return-path verification is checked but remains independent and is not required for readiness. DNS changes can take up to 48 hours to propagate.
+      operationId: verifyEmailsDomains
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsDomainAttributes'
+              example:
+                id: 1
+                public_id: QrStUv
+                workspace_id: 42000
+                name: example.com
+                ownership_verified: true
+                verified: true
+                ready_for_sending: true
+                dkim_verified: true
+                spf_verified: true
+                dmarc_verified: true
+                smtp_verified: false
+                return_address_verified: false
+                dkim_record:
+                  type: TXT
+                  name: second._domainkey.example.com
+                  value: v=DKIM1; k=rsa; p=...
+                  ttl: 300
+                  verified: true
+                spf_record:
+                  type: TXT
+                  name: example.com
+                  value: v=spf1 include:mailer.myclickfunnels.com -all
+                  ttl: 300
+                  verified: true
+                dmarc_record:
+                  type: TXT
+                  name: _dmarc.example.com
+                  value: v=DMARC1; p=none;
+                  ttl: 300
+                  verified: true
+                return_address_record:
+                  type: CNAME
+                  name: cf2mail.example.com
+                  value: mailer.myclickfunnels.com
+                  ttl: 300
+                  verified: false
+                next_steps:
+                - 'Recommended for ClickFunnels bounce handling: add return_address_record at the DNS provider.'
+                - Ready to send - create addresses on this domain with POST /api/v2/workspaces/42000/emails/addresses (emails_domain_id 1).
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-06-01T12:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    EmailsDomainParameters:
+      type: object
+      title: Email Domains
+      description: A sending domain to provision for a workspace.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: A valid public bare root domain name to provision as a sending domain (e.g. `example.com`), with no URL scheme, port, path, or whitespace. Ownership is confirmed at the root domain, so a subdomain such as `mail.example.com` is rejected with `422` naming the root domain to use instead. The name is trimmed and lowercased before it is matched or created. If a sending domain with this name already exists for the workspace, it is returned as-is rather than creating a duplicate.
+      example:
+        name: example.com
+    EmailsDomainAttributes:
+      type: object
+      title: Email Domains
+      description: Email Domains
+      properties:
+        id:
+          type: integer
+          description: Email Domain ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Email Domain public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        name:
+          type: string
+          description: The sending domain name (lowercase), e.g. `example.com` - the part after the `@` shared by every email address created on this domain.
+        ownership_verified:
+          type: boolean
+          description: Whether ClickFunnels has confirmed that this workspace owns the domain name. It becomes true when the same name is connected to this workspace as a website/hosting domain whose ownership is verified - done in the ClickFunnels app, not through this API. No API call can make it true; ask the customer to connect the domain.
+        verified:
+          type: boolean
+          description: Whether email transport is verified. True once DKIM, SPF, and DMARC are all verified via DNS, or when a verified SMTP setting exists. This field does not prove domain ownership and is not sufficient by itself to send.
+        ready_for_sending:
+          type: boolean
+          description: Whether addresses on this custom domain can be used as senders. True only when both `ownership_verified` and the transport-only `verified` field are true. The return-path record is independent and does not control this value.
+        dkim_verified:
+          type: boolean
+          description: Whether the domain's DKIM DNS record is verified.
+        spf_verified:
+          type: boolean
+          description: Whether the domain's SPF DNS record is verified.
+        dmarc_verified:
+          type: boolean
+          description: Whether the domain's DMARC DNS record is verified.
+        smtp_verified:
+          type: boolean
+          description: Whether email transport is verified via a verified SMTP setting (an alternative to DKIM/SPF/DMARC verification). When true, `verified` can be true while dkim_verified/spf_verified/dmarc_verified are false; ownership must still be verified before `ready_for_sending` becomes true.
+        return_address_verified:
+          type: boolean
+          description: Whether the domain's return-path CNAME record (used for bounce handling) is verified. This is independent of `verified` and `ready_for_sending` and is not required for either one to become true.
+        dkim_record:
+          description: The DKIM TXT record to add at the registrar. `null` until the DKIM key has been generated, which happens automatically shortly after the domain is created; POST the same name again to retry provisioning if it stays `null`.
+          anyOf:
+          - $ref: '#/components/schemas/DnsRecord'
+          - type: 'null'
+        spf_record:
+          description: The SPF TXT record to add at the registrar.
+          anyOf:
+          - $ref: '#/components/schemas/DnsRecord'
+          - type: 'null'
+        dmarc_record:
+          description: The DMARC TXT record to add at the registrar.
+          anyOf:
+          - $ref: '#/components/schemas/DnsRecord'
+          - type: 'null'
+        return_address_record:
+          description: The return-path CNAME record to add at the registrar (used for bounce handling).
+          anyOf:
+          - $ref: '#/components/schemas/DnsRecord'
+          - type: 'null'
+        next_steps:
+          type: array
+          items:
+            type: string
+          description: Plain-English guidance you can surface to users. It distinguishes the required ownership step (connect the domain to the workspace in ClickFunnels) and the required transport records from the recommended ClickFunnels return path, accounts for verified SMTP, and explains how to re-check readiness.
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at datetime
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at datetime
+      example:
+        id: 1
+        public_id: QrStUv
+        workspace_id: 42000
+        name: example.com
+        ownership_verified: false
+        verified: false
+        ready_for_sending: false
+        dkim_verified: false
+        spf_verified: false
+        dmarc_verified: false
+        smtp_verified: false
+        return_address_verified: false
+        dkim_record:
+          type: TXT
+          name: second._domainkey.example.com
+          value: v=DKIM1; k=rsa; p=...
+          ttl: 300
+          verified: false
+        spf_record:
+          type: TXT
+          name: example.com
+          value: v=spf1 include:mailer.myclickfunnels.com -all
+          ttl: 300
+          verified: false
+        dmarc_record:
+          type: TXT
+          name: _dmarc.example.com
+          value: v=DMARC1; p=none;
+          ttl: 300
+          verified: false
+        return_address_record:
+          type: CNAME
+          name: cf2mail.example.com
+          value: mailer.myclickfunnels.com
+          ttl: 300
+          verified: false
+        next_steps:
+        - Connect example.com to this workspace in ClickFunnels so ownership is confirmed. Addresses on this domain cannot send until it is, even once every record below verifies.
+        - Add dkim_record, spf_record, and dmarc_record at the DNS provider for example.com to authenticate email transport.
+        - 'Recommended for ClickFunnels bounce handling: add return_address_record at the DNS provider.'
+        - DNS changes can take up to 48 hours to propagate. Re-check with POST /api/v2/emails/domains/QrStUv/verify; results are cached for about 10 minutes.
+        - 'Manual setup help: https://support.myclickfunnels.com/docs/email-settings-how-to-verify-email-dns-records'
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - dkim_record
+      - dkim_verified
+      - dmarc_record
+      - dmarc_verified
+      - id
+      - name
+      - next_steps
+      - ownership_verified
+      - public_id
+      - ready_for_sending
+      - return_address_record
+      - return_address_verified
+      - smtp_verified
+      - spf_record
+      - spf_verified
+      - updated_at
+      - verified
+      - workspace_id
+    DnsRecord:
+      type: object
+      title: DNS Record
+      description: A single DNS record to add at the domain's DNS provider to configure email transport (or, for the return path, bounce handling).
+      properties:
+        type:
+          type: string
+          description: The DNS record type (e.g. `TXT`, `CNAME`).
+        name:
+          type: string
+          description: The DNS host/name to create the record on (e.g. `example.com` or `_dmarc.example.com`).
+        value:
+          type: string
+          description: The exact value to paste at the registrar for this record.
+        ttl:
+          type: integer
+          description: Recommended TTL, in seconds, for the record.
+        verified:
+          type: boolean
+          description: Whether this specific record has been confirmed live at the DNS provider. It reflects stored DNS verification state; call `verifyEmailsDomains` to re-check.
+      example:
+        type: TXT
+        name: _dmarc.example.com
+        value: v=DMARC1; p=none;
+        ttl: 300
+        verified: false
+      required:
+      - name
+      - ttl
+      - type
+      - value
+      - verified
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

@@ -1,0 +1,410 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Communities::Spaces::Post::Video Embed API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Communities::Spaces::Post::VideoEmbed
+  description: '> Video Embeds attach a hosted video to a Community Post.
+
+
+    A Video Embed belongs to a Post and stores the provider name, source URL, and optional provider-specific metadata. Video Embeds have no update operation.
+
+    '
+paths:
+  /communities/spaces/posts/{post_id}/video_embeds:
+    get:
+      tags:
+      - Communities::Spaces::Post::VideoEmbed
+      summary: List Video Embeds
+      description: List video embeds for a post
+      operationId: listCommunitiesSpacesPostsVideoEmbeds
+      parameters:
+      - name: post_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommunitiesSpacesPostsVideoEmbedAttributes'
+              example:
+              - id: 501
+                public_id: EfGhIj
+                post_id: 101
+                provider: youtube
+                url: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                data:
+                  video_id: dQw4w9WgXcQ
+                  duration: 212
+                workspace_id: 42
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Communities::Spaces::Post::VideoEmbed
+      summary: Create Video Embed
+      description: Attach a video embed to a post. The `url` field is required.
+      operationId: createCommunitiesSpacesPostsVideoEmbeds
+      parameters:
+      - name: post_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Video Embed
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                communities_spaces_posts_video_embed:
+                  type: object
+                  $ref: '#/components/schemas/CommunitiesSpacesPostsVideoEmbedParameters'
+            example:
+              communities_spaces_posts_video_embed:
+                url: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                provider: youtube
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunitiesSpacesPostsVideoEmbedAttributes'
+              example:
+                id: 501
+                public_id: EfGhIj
+                post_id: 101
+                provider: youtube
+                url: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                data:
+                  video_id: dQw4w9WgXcQ
+                  duration: 212
+                workspace_id: 42
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Url can't be blank
+  /communities/spaces/posts/video_embeds/{id}:
+    get:
+      tags:
+      - Communities::Spaces::Post::VideoEmbed
+      summary: Fetch Video Embed
+      description: Retrieve a video embed
+      operationId: getCommunitiesSpacesPostsVideoEmbeds
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunitiesSpacesPostsVideoEmbedAttributes'
+              example:
+                id: 501
+                public_id: EfGhIj
+                post_id: 101
+                provider: youtube
+                url: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                data:
+                  video_id: dQw4w9WgXcQ
+                  duration: 212
+                workspace_id: 42
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    delete:
+      tags:
+      - Communities::Spaces::Post::VideoEmbed
+      summary: Remove Video Embed
+      description: Delete a video embed from a post
+      operationId: removeCommunitiesSpacesPostsVideoEmbeds
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    CommunitiesSpacesPostsVideoEmbedAttributes:
+      type: object
+      title: Communities::Spaces::Post::VideoEmbed
+      description: Communities::Spaces::Post::VideoEmbed
+      properties:
+        id:
+          type: integer
+          description: Video Embed ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Video Embed public ID
+        post_id:
+          type: integer
+          description: ID of the Post the video is attached to
+        provider:
+          type:
+          - string
+          - 'null'
+          enum:
+          - youtube
+          - vimeo
+          - loom
+          - voomly
+          - null
+          description: Video provider name, auto-detected from the URL. One of youtube, vimeo, loom, voomly.
+        url:
+          type:
+          - string
+          - 'null'
+          description: Source URL of the video
+        data:
+          description: Provider-specific metadata (arbitrary key/value pairs)
+          type:
+          - object
+          - 'null'
+        workspace_id:
+          type:
+          - integer
+          - 'null'
+          description: Workspace ID the post belongs to
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at
+      example:
+        id: 501
+        public_id: EfGhIj
+        post_id: 101
+        provider: youtube
+        url: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+        data:
+          video_id: dQw4w9WgXcQ
+          duration: 212
+        workspace_id: 42
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - data
+      - id
+      - post_id
+      - provider
+      - public_id
+      - updated_at
+      - url
+      - workspace_id
+    CommunitiesSpacesPostsVideoEmbedParameters:
+      type: object
+      title: Communities::Spaces::Post::VideoEmbed
+      description: Communities::Spaces::Post::VideoEmbed
+      required:
+      - url
+      properties:
+        url:
+          type: string
+          description: Source URL of the video
+        provider:
+          type:
+          - string
+          - 'null'
+          enum:
+          - youtube
+          - vimeo
+          - loom
+          - voomly
+          - null
+          description: Video provider name. Optional and effectively ignored — the provider is auto-detected from the URL on save (set_provider before_save). One of youtube, vimeo, loom, voomly.
+        data:
+          description: Provider-specific metadata (arbitrary key/value pairs)
+          type:
+          - object
+          - 'null'
+      example:
+        communities_spaces_posts_video_embed:
+          url: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+          provider: youtube
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

@@ -1,0 +1,122 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Webhooks::Outgoing::Event Type API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Webhooks::Outgoing::EventType
+  description: 'The authoritative catalog of webhook event types available for subscription. Use this endpoint to discover the exact string keys to supply in `event_type_ids` when creating or updating a webhook endpoint — do not guess event type identifiers or rely solely on external documentation.
+
+    '
+paths:
+  /webhooks/outgoing/event_types:
+    get:
+      tags:
+      - Webhooks::Outgoing::EventType
+      summary: List Event Types
+      description: 'Returns the complete, authoritative catalog of webhook event types that a webhook endpoint can subscribe to.
+
+        Each entry''s `id` field is the exact dotted/slashed string key (e.g. `contact.updated`, `order.completed`, `orders/invoice.paid`)
+
+        to supply verbatim in the `event_type_ids` array when creating or updating a webhook endpoint.
+
+        Fetch this list instead of guessing event type identifiers or consulting an external reference — this is the canonical source.
+
+        This endpoint is global (not scoped to a workspace) and requires a valid API token.
+
+        '
+      operationId: listWebhooksOutgoingEventTypes
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WebhooksOutgoingEventTypeAttributes'
+              example:
+              - id: contact.created
+                topic: contact
+              - id: contact.updated
+                topic: contact
+              - id: contact.identified
+                topic: contact
+              - id: order.completed
+                topic: order
+              - id: orders/invoice.paid
+                topic: orders/invoice
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+components:
+  schemas:
+    WebhooksOutgoingEventTypeAttributes:
+      type: object
+      title: Webhooks Outgoing Event Types
+      description: 'An entry in the authoritative catalog of webhook event types that a webhook endpoint can subscribe to.
+
+        The `id` field is the exact dotted/slashed string key (e.g. `contact.updated`, `order.completed`, `orders/invoice.paid`)
+
+        to supply verbatim in the `event_type_ids` array when creating or updating a webhook endpoint.
+
+        Use GET /api/v2/webhooks/outgoing/event_types to retrieve the full list of valid keys.
+
+        '
+      properties:
+        id:
+          type: string
+          description: 'The event type key — a dotted or slashed string such as `contact.updated`, `order.completed`, or `orders/invoice.paid`.
+
+            This is the exact value to use verbatim in the `event_type_ids` array of a webhook endpoint.
+
+            '
+        topic:
+          type: string
+          description: 'The leading segment of the event type `id` (e.g. `contact`, `order`, `orders/invoice`).
+
+            Useful for grouping related event types.
+
+            '
+      example:
+        id: contact.updated
+        topic: contact
+      required:
+      - id
+      - topic
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

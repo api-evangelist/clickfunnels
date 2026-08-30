@@ -1,0 +1,820 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Community API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Community
+  description: '> Communities are membership-based spaces where contacts can post, interact, and engage.
+
+
+    A Community is the top-level container for community content. It belongs to a workspace site and holds one or more Space Groups, each of which contains Spaces (Topics). Use the `Communities::SpaceGroup` and `Communities::Space` resources to manage the groups and topics within a community.
+
+    '
+paths:
+  /workspaces/{workspace_id}/communities:
+    get:
+      tags:
+      - Community
+      summary: List Communities
+      description: List communities for a workspace
+      operationId: listCommunities
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommunityAttributes'
+              example:
+              - id: 1
+                public_id: AbCdEf
+                site_id: 10
+                workspace_id: 42
+                name: My Community
+                status: live
+                private: false
+                current_path: /my-community
+                logo_image_id: 5
+                social_image_id: 6
+                seo_title: My Community
+                seo_description: A great place to connect and learn.
+                seo_indexable: true
+                white_label: false
+                allow_public_signup: false
+                upgrade_url: null
+                send_membership_email: true
+                send_digest_email: false
+                require_post_approvals: false
+                require_comment_approvals: false
+                anyone_can_invite: false
+                invite_only: false
+                enable_block_list: false
+                notifications: essential
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+              - id: 2
+                public_id: GhIjKl
+                site_id: 10
+                workspace_id: 42
+                name: Another Community
+                status: draft
+                private: true
+                current_path: /another-community
+                logo_image_id: null
+                social_image_id: null
+                seo_title: null
+                seo_description: null
+                seo_indexable: true
+                white_label: false
+                allow_public_signup: false
+                upgrade_url: null
+                send_membership_email: true
+                send_digest_email: false
+                require_post_approvals: false
+                require_comment_approvals: false
+                anyone_can_invite: false
+                invite_only: false
+                enable_block_list: false
+                notifications: essential
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Community
+      summary: Create Community
+      description: Create a community for a workspace
+      operationId: createCommunities
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Community
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                community:
+                  type: object
+                  $ref: '#/components/schemas/CommunityParameters'
+            example:
+              community:
+                name: My Community
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityAttributes'
+              example:
+                id: 3
+                public_id: MnOpQr
+                site_id: 10
+                workspace_id: 42
+                name: My Community
+                status: draft
+                private: true
+                current_path: null
+                logo_image_id: null
+                social_image_id: null
+                seo_title: null
+                seo_description: null
+                seo_indexable: true
+                white_label: false
+                allow_public_signup: false
+                upgrade_url: null
+                send_membership_email: true
+                send_digest_email: false
+                require_post_approvals: false
+                require_comment_approvals: false
+                anyone_can_invite: false
+                invite_only: false
+                enable_block_list: false
+                notifications: essential
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Name can't be blank
+  /communities/{id}:
+    get:
+      tags:
+      - Community
+      summary: Fetch Community
+      description: Retrieve a community
+      operationId: getCommunities
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityAttributes'
+              example:
+                id: 1
+                public_id: AbCdEf
+                site_id: 10
+                workspace_id: 42
+                name: My Community
+                status: live
+                private: false
+                current_path: /my-community
+                logo_image_id: 5
+                social_image_id: 6
+                seo_title: My Community
+                seo_description: A great place to connect and learn.
+                seo_indexable: true
+                white_label: false
+                allow_public_signup: false
+                upgrade_url: null
+                send_membership_email: true
+                send_digest_email: false
+                require_post_approvals: false
+                require_comment_approvals: false
+                anyone_can_invite: false
+                invite_only: false
+                enable_block_list: false
+                notifications: essential
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Community
+      summary: Update Community
+      description: Update a community
+      operationId: updateCommunities
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Community
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                community:
+                  type: object
+                  $ref: '#/components/schemas/CommunityParametersUpdate'
+            example:
+              community:
+                name: My Community
+                status: live
+                private: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityAttributes'
+              example:
+                id: 1
+                public_id: AbCdEf
+                site_id: 10
+                workspace_id: 42
+                name: My Community
+                status: live
+                private: false
+                current_path: /my-community
+                logo_image_id: 5
+                social_image_id: 6
+                seo_title: My Community
+                seo_description: A great place to connect and learn.
+                seo_indexable: true
+                white_label: false
+                allow_public_signup: false
+                upgrade_url: null
+                send_membership_email: true
+                send_digest_email: false
+                require_post_approvals: false
+                require_comment_approvals: false
+                anyone_can_invite: false
+                invite_only: false
+                enable_block_list: false
+                notifications: essential
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    CommunityParameters:
+      type: object
+      title: Community
+      description: Community
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Community Name
+        status:
+          type:
+          - string
+          - 'null'
+          description: Status of the community (e.g. live, draft)
+        private:
+          type:
+          - boolean
+          - 'null'
+          description: Make this Community Private?
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current Path
+        logo_image_id:
+          type:
+          - integer
+          - 'null'
+          description: Logo Image ID
+        social_image_id:
+          type:
+          - integer
+          - 'null'
+          description: Social Image ID
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: Seo Title
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: Seo Description
+        seo_indexable:
+          type:
+          - boolean
+          - 'null'
+          description: Seo Indexable?
+        white_label:
+          type:
+          - boolean
+          - 'null'
+          description: Enable White Label
+        allow_public_signup:
+          type:
+          - boolean
+          - 'null'
+          description: Allow Public Sign-Up?
+        upgrade_url:
+          type:
+          - string
+          - 'null'
+          description: Upgrade URL
+        send_membership_email:
+          type:
+          - boolean
+          - 'null'
+          description: Send Membership Email?
+        send_digest_email:
+          type:
+          - boolean
+          - 'null'
+          description: Send Digest Email?
+        require_post_approvals:
+          type:
+          - boolean
+          - 'null'
+          description: Require Post Approvals?
+        require_comment_approvals:
+          type:
+          - boolean
+          - 'null'
+          description: Require Comment Approvals?
+        anyone_can_invite:
+          type:
+          - boolean
+          - 'null'
+          description: Anyone Can Invite?
+        invite_only:
+          type:
+          - boolean
+          - 'null'
+          description: Invite Only?
+        enable_block_list:
+          type:
+          - boolean
+          - 'null'
+          description: Enable Block List?
+        notifications:
+          type:
+          - string
+          - 'null'
+          description: Notification settings (e.g. all, essential, off)
+      example:
+        community:
+          name: My Community
+    CommunityAttributes:
+      type: object
+      title: Community
+      description: Community
+      properties:
+        id:
+          type: integer
+          description: Community ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Community public ID
+        site_id:
+          type: integer
+          description: Site ID the community belongs to
+        workspace_id:
+          type: integer
+          description: Workspace ID the community belongs to
+        name:
+          type:
+          - string
+          - 'null'
+          description: Community Name
+        status:
+          type:
+          - string
+          - 'null'
+          description: Status of the community (e.g. live, draft)
+        private:
+          type: boolean
+          description: Make this Community Private? When true the community is not accessible to visitors; only invited contacts or buyers can view it.
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current Path
+        logo_image_id:
+          type:
+          - integer
+          - 'null'
+          description: Logo Image ID
+        social_image_id:
+          type:
+          - integer
+          - 'null'
+          description: Social Image ID
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: Seo Title
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: Seo Description
+        seo_indexable:
+          type: boolean
+          description: Whether the community is indexed by search engines
+        white_label:
+          type: boolean
+          description: Enable White Label — when enabled members cannot switch between CF communities or participate in the global feed
+        allow_public_signup:
+          type: boolean
+          description: Allow Public Sign-Up? When enabled guests can sign up and join the community when they try to interact.
+        upgrade_url:
+          type:
+          - string
+          - 'null'
+          description: Upgrade URL — sends guests to a page to take action (e.g. Order Page, Funnel). Leave blank to allow free sign-up.
+        send_membership_email:
+          type:
+          - boolean
+          - 'null'
+          description: Send Membership Email? When enabled an email is sent to the contact when they become a member of the community.
+        send_digest_email:
+          type: boolean
+          description: Send Digest Email? When enabled contacts who have opted in receive a daily email of unread community notifications.
+        require_post_approvals:
+          type:
+          - boolean
+          - 'null'
+          description: Require Post Approvals? When enabled all posts require approval before being visible to members.
+        require_comment_approvals:
+          type:
+          - boolean
+          - 'null'
+          description: Require Comment Approvals? When enabled all comments require approval before being visible to members.
+        anyone_can_invite:
+          type: boolean
+          description: Anyone Can Invite? When enabled other members can invite new members to join.
+        invite_only:
+          type: boolean
+          description: Invite Only? Even public communities can disable signups so visitors can view but not sign up without an invitation.
+        enable_block_list:
+          type: boolean
+          description: Enable Block List? When enabled blocks any posts or comments with common profane words.
+        notifications:
+          type:
+          - string
+          - 'null'
+          description: Notification settings (e.g. all, essential, off)
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at
+      example:
+        id: 1
+        public_id: AbCdEf
+        site_id: 10
+        workspace_id: 42
+        name: My Community
+        status: live
+        private: false
+        current_path: /my-community
+        logo_image_id: 5
+        social_image_id: 6
+        seo_title: My Community
+        seo_description: A great place to connect and learn.
+        seo_indexable: true
+        white_label: false
+        allow_public_signup: false
+        upgrade_url: null
+        send_membership_email: true
+        send_digest_email: false
+        require_post_approvals: false
+        require_comment_approvals: false
+        anyone_can_invite: false
+        invite_only: false
+        enable_block_list: false
+        notifications: essential
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - allow_public_signup
+      - anyone_can_invite
+      - created_at
+      - current_path
+      - enable_block_list
+      - id
+      - invite_only
+      - logo_image_id
+      - name
+      - notifications
+      - private
+      - public_id
+      - require_comment_approvals
+      - require_post_approvals
+      - send_digest_email
+      - send_membership_email
+      - seo_description
+      - seo_indexable
+      - seo_title
+      - site_id
+      - social_image_id
+      - status
+      - updated_at
+      - upgrade_url
+      - white_label
+      - workspace_id
+    CommunityParametersUpdate:
+      type: object
+      title: Community
+      description: Community
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: Community Name
+        status:
+          type:
+          - string
+          - 'null'
+          description: Status of the community (e.g. live, draft)
+        private:
+          type:
+          - boolean
+          - 'null'
+          description: Make this Community Private?
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current Path
+        logo_image_id:
+          type:
+          - integer
+          - 'null'
+          description: Logo Image ID
+        social_image_id:
+          type:
+          - integer
+          - 'null'
+          description: Social Image ID
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: Seo Title
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: Seo Description
+        seo_indexable:
+          type:
+          - boolean
+          - 'null'
+          description: Seo Indexable?
+        white_label:
+          type:
+          - boolean
+          - 'null'
+          description: Enable White Label
+        allow_public_signup:
+          type:
+          - boolean
+          - 'null'
+          description: Allow Public Sign-Up?
+        upgrade_url:
+          type:
+          - string
+          - 'null'
+          description: Upgrade URL
+        send_membership_email:
+          type:
+          - boolean
+          - 'null'
+          description: Send Membership Email?
+        send_digest_email:
+          type:
+          - boolean
+          - 'null'
+          description: Send Digest Email?
+        require_post_approvals:
+          type:
+          - boolean
+          - 'null'
+          description: Require Post Approvals?
+        require_comment_approvals:
+          type:
+          - boolean
+          - 'null'
+          description: Require Comment Approvals?
+        anyone_can_invite:
+          type:
+          - boolean
+          - 'null'
+          description: Anyone Can Invite?
+        invite_only:
+          type:
+          - boolean
+          - 'null'
+          description: Invite Only?
+        enable_block_list:
+          type:
+          - boolean
+          - 'null'
+          description: Enable Block List?
+        notifications:
+          type:
+          - string
+          - 'null'
+          description: Notification settings (e.g. all, essential, off)
+      example:
+        community:
+          name: My Community
+          status: live
+          private: false
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

@@ -1,0 +1,307 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Form Submission API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: FormSubmission
+  description: '> Presents submitted forms including the detailed data breakdown
+
+
+    The `FormSubmission` resource is a log of all the form submissions that happened for a given workspace. You can retrieve the form submissions including their recorded standard and custom fields data.
+
+
+    Please refer to the `Form` and `Forms::Submission` resources if you would like to submit forms programmatically.
+
+    '
+paths:
+  /workspaces/{workspace_id}/form_submissions:
+    get:
+      tags:
+      - FormSubmission
+      summary: List Form Submissions
+      description: List form submissions. This is a list of all form submissions for the workspace, including the submitted standard and custom fields. Please refer to the `Form` and `Forms::Submission` resources if you would like to submit forms programmatically.
+      operationId: listFormSubmissions
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      - name: filter
+        in: query
+        description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[id]=value&filter[another_property]=value1,value2`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
+
+          '
+        required: false
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              description: A comma-separated list of form submission IDs to filter by.
+              example: 1,2,3
+            page_id:
+              type: string
+              description: A comma-separated list of page IDs to filter by.
+              example: 32432,5544
+            contact_id:
+              type: string
+              description: A comma-separated list of contact IDs to filter by.
+              example: 1,42
+        style: deepObject
+        explode: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormSubmissionAttributes'
+              example:
+              - id: 2
+                public_id: CoSlPN
+                contact_id: 85
+                workspace_id: 42000
+                page_id: 11
+                created_at: null
+                updated_at: null
+                data:
+                  url: /contact
+                  first_name: John
+                  last_name: Doe
+                  email: john@example.com
+              - id: 3
+                public_id: KeIAly
+                contact_id: 86
+                workspace_id: 42000
+                page_id: 12
+                created_at: null
+                updated_at: null
+                data:
+                  url: /contact
+                  first_name: John
+                  last_name: Doe
+                  email: john@example.com
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+  /form_submissions/{id}:
+    get:
+      tags:
+      - FormSubmission
+      summary: Fetch Form Submission
+      description: Retrieve a form submission. This is a record of a form submission, including the submitted standard and custom fields. Please refer to the `Form` and `Forms::Submission` resources if you would like to submit forms programmatically.
+      operationId: getFormSubmissions
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormSubmissionAttributes'
+              example:
+                id: 4
+                public_id: WXjTzp
+                contact_id: 87
+                workspace_id: 42000
+                page_id: 13
+                created_at: null
+                updated_at: null
+                data:
+                  url: /contact
+                  first_name: John
+                  last_name: Doe
+                  email: john@example.com
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    FormSubmissionAttributes:
+      type: object
+      title: Form submissions
+      description: Form submissions
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the form submission
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: The unique public identifier for the form submission
+        contact_id:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact who submitted the form
+        workspace_id:
+          type: integer
+          description: The unique identifier of the workspace that the form was part of
+        page_id:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the page that the form was on
+        created_at:
+          type:
+          - string
+          - 'null'
+          description: The date and time the form was submitted
+        updated_at:
+          type:
+          - string
+          - 'null'
+          description: The date and time the form submission was last updated
+        data:
+          type: object
+          additionalProperties:
+            type: string
+          description: The dynamic form field data submitted by the user. The HTML form input field names build the keys of this object, and the user's HTML inputs are the values.
+      example:
+        id: 1
+        public_id: LkmpVe
+        contact_id: 7
+        workspace_id: 42000
+        page_id: 1
+        created_at: null
+        updated_at: null
+        data:
+          url: /contact
+          first_name: John
+          last_name: Doe
+          email: john@example.com
+      required:
+      - contact_id
+      - created_at
+      - data
+      - id
+      - page_id
+      - public_id
+      - updated_at
+      - workspace_id
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

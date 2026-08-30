@@ -1,0 +1,472 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Blog API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Blog
+  description: '> Blogs represent a blog resource belonging to a workspace site
+
+
+    A Blog is a top-level container for blog posts, categories, tags, and authors. Each workspace site can have one or more blogs, each with their own SEO settings, theme, and URL path.
+
+
+    See the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md) for the end-to-end guide to creating, reading, and updating blog posts.
+
+    '
+paths:
+  /workspaces/{workspace_id}/blogs:
+    get:
+      tags:
+      - Blog
+      summary: List Blogs
+      description: List blogs for the given workspace.
+      operationId: listBlogs
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlogAttributes'
+              example:
+              - id: 1
+                public_id: aBcDeF
+                workspace_id: 42000
+                site_id: 10
+                name: My Blog
+                current_path: /blog
+                url: https://myworkspace.myclickfunnels.com/blog
+                theme_id: 5
+                resolved_template_page_id: 101
+                resolved_post_template_page_id: 102
+                resolved_category_template_page_id: 103
+                style_id: null
+                seo_image_id: null
+                seo_title: My Blog - Latest Articles
+                seo_description: Read our latest articles and updates.
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+              - id: 2
+                public_id: gHiJkL
+                workspace_id: 42000
+                site_id: 10
+                name: Product Updates
+                current_path: /product-updates
+                url: https://myworkspace.myclickfunnels.com/product-updates
+                theme_id: 5
+                resolved_template_page_id: 101
+                resolved_post_template_page_id: 102
+                resolved_category_template_page_id: 103
+                style_id: null
+                seo_image_id: null
+                seo_title: null
+                seo_description: null
+                created_at: '2025-03-01T00:00:00.000Z'
+                updated_at: '2025-03-15T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+  /blogs/{id}:
+    get:
+      tags:
+      - Blog
+      summary: Fetch Blog
+      description: Retrieve a blog.
+      operationId: getBlog
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogAttributes'
+              example:
+                id: 1
+                public_id: aBcDeF
+                workspace_id: 42000
+                site_id: 10
+                name: My Blog
+                current_path: /blog
+                url: https://myworkspace.myclickfunnels.com/blog
+                theme_id: 5
+                resolved_template_page_id: 101
+                resolved_post_template_page_id: 102
+                resolved_category_template_page_id: 103
+                style_id: null
+                seo_image_id: null
+                seo_title: My Blog - Latest Articles
+                seo_description: Read our latest articles and updates.
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    patch:
+      tags:
+      - Blog
+      summary: Update Blog
+      description: 'Update a blog''s metadata. Permitted fields: `name`, `seo_title`, `seo_description`, `seo_image_id`, `theme_id`.
+
+
+        See [Update blog metadata](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#update-blog-metadata) in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md). For appearance and templates, see [Configure blog appearance with existing Theme and Page APIs](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#configure-blog-appearance-with-existing-theme-and-page-apis).
+
+        '
+      operationId: updateBlog
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Fields to update on the blog
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                blog:
+                  type: object
+                  $ref: '#/components/schemas/BlogParameters'
+            example:
+              blog:
+                name: My Updated Blog
+                seo_title: My Blog - Latest Articles
+                seo_description: Read our latest articles and updates.
+                seo_image_id: null
+                theme_id: 5
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogAttributes'
+              example:
+                id: 1
+                public_id: aBcDeF
+                workspace_id: 42000
+                site_id: 10
+                name: My Updated Blog
+                current_path: /blog
+                url: https://myworkspace.myclickfunnels.com/blog
+                theme_id: 5
+                resolved_template_page_id: 101
+                resolved_post_template_page_id: 102
+                resolved_category_template_page_id: 103
+                style_id: null
+                seo_image_id: null
+                seo_title: My Blog - Latest Articles
+                seo_description: Read our latest articles and updates.
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-06-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Name can't be blank
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    BlogAttributes:
+      type: object
+      title: Blogs
+      description: Blogs
+      properties:
+        id:
+          type: integer
+          description: Blog ID
+        public_id:
+          type: string
+          description: The public identifier of the blog
+        workspace_id:
+          type: integer
+          description: Workspace ID that the blog belongs to
+        site_id:
+          type:
+          - integer
+          - 'null'
+          description: Site ID that the blog belongs to
+        name:
+          type: string
+          description: Name of the blog
+        current_path:
+          type: string
+          description: The URL path for the blog
+        url:
+          type: string
+          description: The full public URL of the blog
+        theme_id:
+          type:
+          - integer
+          - 'null'
+          description: Theme ID for the blog
+        resolved_template_page_id:
+          type:
+          - integer
+          - 'null'
+          description: Effective Page ID used to render the blog index
+        resolved_post_template_page_id:
+          type:
+          - integer
+          - 'null'
+          description: Effective Page ID used to render individual blog posts
+        resolved_category_template_page_id:
+          type:
+          - integer
+          - 'null'
+          description: Effective Page ID used to render blog category archives
+        style_id:
+          type:
+          - integer
+          - 'null'
+          description: Style ID for the blog
+        seo_image_id:
+          type:
+          - integer
+          - 'null'
+          description: Default sharing image ID for the blog
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: Default Blog title for SEO
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: Default Blog description for SEO
+        created_at:
+          type: string
+          format: date-time
+          description: Created at
+        updated_at:
+          type: string
+          format: date-time
+          description: Updated at
+      example:
+        id: 1
+        public_id: aBcDeF
+        workspace_id: 42000
+        site_id: 10
+        name: My Blog
+        current_path: /blog
+        url: https://myworkspace.myclickfunnels.com/blog
+        theme_id: 5
+        resolved_template_page_id: 101
+        resolved_post_template_page_id: 102
+        resolved_category_template_page_id: 103
+        style_id: null
+        seo_image_id: null
+        seo_title: My Blog - Latest Articles
+        seo_description: Read our latest articles and updates.
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - current_path
+      - id
+      - name
+      - public_id
+      - resolved_category_template_page_id
+      - resolved_post_template_page_id
+      - resolved_template_page_id
+      - seo_description
+      - seo_image_id
+      - seo_title
+      - site_id
+      - style_id
+      - theme_id
+      - updated_at
+      - url
+      - workspace_id
+    BlogParameters:
+      type: object
+      title: Blogs
+      description: Blogs
+      properties:
+        name:
+          type: string
+          description: Name of the blog
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: Default Blog title for SEO
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: Default Blog description for SEO
+        seo_image_id:
+          type:
+          - integer
+          - 'null'
+          description: Default sharing image ID
+        theme_id:
+          type:
+          - integer
+          - 'null'
+          description: Theme ID for the blog
+      example:
+        blog:
+          name: My Updated Blog
+          seo_title: My Blog - Latest Articles
+          seo_description: Read our latest articles and updates.
+          seo_image_id: null
+          theme_id: 5
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

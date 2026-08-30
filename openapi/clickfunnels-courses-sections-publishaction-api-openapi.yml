@@ -1,0 +1,598 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Courses::Sections::Publish Action API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Courses::Sections::PublishAction
+  description: '> Publishes course sections (and their lessons) in bulk.
+
+
+    A Publish Action selects one or more course sections — either by explicit `target_ids` (course-section public IDs) or `target_all` — and publishes them along with their lessons. It can optionally grant existing course enrollees access to the newly published sections (`auto_enroll`) and email them (`send_email`). The action runs asynchronously; poll the returned record for `target_count` / `performed_count` progress.
+
+
+    Use `scheduled_for` to defer the publish to a future datetime.
+
+
+    See [Publishing](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#publishing) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the publish paths.
+
+    '
+paths:
+  /courses/{course_id}/sections/publish_actions:
+    get:
+      tags:
+      - Courses::Sections::PublishAction
+      summary: List Publish Actions
+      description: List course-section publish actions for a course
+      operationId: listCoursesSectionsPublishActions
+      parameters:
+      - name: course_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CoursesSectionsPublishActionAttributes'
+              example:
+              - id: 1
+                public_id: aB3cD4
+                course_id: 5
+                target_all: false
+                target_ids:
+                - 8
+                - 9
+                auto_enroll: true
+                send_email: true
+                offer_new_section_via_all_access_products: false
+                target_count: 2
+                performed_count: 2
+                published_lessons_count: 4
+                status: completed
+                scheduled_for: null
+                started_at: '2025-01-01T00:01:00.000Z'
+                completed_at: '2025-01-01T00:01:30.000Z'
+                created_by_id: 3
+                approved_by_id: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:01:30.000Z'
+              - id: 2
+                public_id: eF5gH6
+                course_id: 5
+                target_all: false
+                target_ids:
+                - 10
+                - 11
+                auto_enroll: false
+                send_email: false
+                offer_new_section_via_all_access_products: true
+                target_count: null
+                performed_count: 0
+                published_lessons_count: 0
+                status: scheduled
+                scheduled_for: '2026-09-01T09:00:00.000Z'
+                started_at: null
+                completed_at: null
+                created_by_id: 3
+                approved_by_id: null
+                created_at: '2025-01-02T00:00:00.000Z'
+                updated_at: '2025-01-02T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Courses::Sections::PublishAction
+      summary: Create Publish Action
+      description: 'Publish one or more course sections AND the lessons they contain. Provide exactly one of `target_ids` (a nonempty array of course-section public IDs) or `target_all: true` to publish every unpublished non-root section of the course. Explicit target IDs must identify sections in this course. Targeting the root "Primary module" container (or using `target_all`) expands to every unpublished non-root section. A missing or empty `courses_sections_publish_action` wrapper is a malformed request and returns `400`; a well-formed wrapper with a missing or conflicting selection, or an invalid/cross-course target ID, returns `422`. If a root or `target_all` request has no unpublished content to publish, the response is `200 OK` with a message (not an error).
+
+        The action runs asynchronously — poll with `GET /api/v2/courses/sections/publish_actions/{id}`. The `status` field is `queued`, `scheduled`, or `processing` while work remains and `completed` when it is done. Compare `performed_count` to `target_count` for section progress. `published_lessons_count` reports lesson publish states this action changed, excluding lessons already live.
+
+        Set `auto_enroll: true` to grant existing course enrollees access to the newly published sections. Pair with `send_email: true` to notify them.
+
+        Use `scheduled_for` (ISO 8601, must be a future datetime) to defer the publish.
+
+        See [Publishing](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#publishing) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for when this bulk action is the right choice.'
+      operationId: createCoursesSectionsPublishActions
+      parameters:
+      - name: course_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Publish action parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - courses_sections_publish_action
+              properties:
+                courses_sections_publish_action:
+                  $ref: '#/components/schemas/CoursesSectionsPublishActionParameters'
+            example:
+              courses_sections_publish_action:
+                target_ids:
+                - sSwcZK
+                auto_enroll: true
+                send_email: true
+      responses:
+        '200':
+          description: OK — the request was valid but there was no unpublished content to publish (e.g. the root "Primary module" container was targeted on an empty or fully-published course). Nothing was published; this is not an error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  target_count:
+                    type: integer
+                  performed_count:
+                    type: integer
+                  published_lessons_count:
+                    type: integer
+                  status:
+                    type: string
+                    enum:
+                    - completed
+              example:
+                message: no unpublished course content to publish
+                target_count: 0
+                performed_count: 0
+                published_lessons_count: 0
+                status: completed
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoursesSectionsPublishActionAttributes'
+              example:
+                id: 3
+                public_id: iJ7kL8
+                course_id: 5
+                target_all: false
+                target_ids:
+                - 8
+                auto_enroll: true
+                send_email: false
+                offer_new_section_via_all_access_products: false
+                target_count: null
+                performed_count: 0
+                published_lessons_count: 0
+                status: queued
+                scheduled_for: null
+                started_at: null
+                completed_at: null
+                created_by_id: 3
+                approved_by_id: null
+                created_at: '2025-01-03T00:00:00.000Z'
+                updated_at: '2025-01-03T00:00:00.000Z'
+        '400':
+          description: Bad Request — the required `courses_sections_publish_action` request wrapper is missing or empty.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: param is missing or the value is empty: courses_sections_publish_action'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '422':
+          description: 'Unprocessable Entity — the request did not select exactly one of a nonempty `target_ids` array or `target_all: true`; an explicit target ID was invalid or did not belong to this course; or `scheduled_for` was not a valid future datetime.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: provide target_ids or target_all
+  /courses/sections/publish_actions/{id}:
+    get:
+      tags:
+      - Courses::Sections::PublishAction
+      summary: Fetch Publish Action
+      description: Retrieve a single course-section publish action and its current async progress
+      operationId: getCoursesSectionsPublishActions
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoursesSectionsPublishActionAttributes'
+              example:
+                id: 3
+                public_id: iJ7kL8
+                course_id: 5
+                target_all: false
+                target_ids:
+                - 8
+                auto_enroll: true
+                send_email: false
+                offer_new_section_via_all_access_products: false
+                target_count: 1
+                performed_count: 1
+                published_lessons_count: 2
+                status: completed
+                scheduled_for: null
+                started_at: '2025-01-03T00:00:05.000Z'
+                completed_at: '2025-01-03T00:00:10.000Z'
+                created_by_id: 3
+                approved_by_id: null
+                created_at: '2025-01-03T00:00:00.000Z'
+                updated_at: '2025-01-03T00:00:10.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    delete:
+      tags:
+      - Courses::Sections::PublishAction
+      summary: Remove Publish Action
+      description: Delete a course-section publish action record
+      operationId: removeCoursesSectionsPublishActions
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    CoursesSectionsPublishActionParameters:
+      type: object
+      title: Course Section Publish Actions
+      description: 'Parameters for creating a course-section publish action. Select exactly one of a nonempty `target_ids` array or `target_all: true`.'
+      properties:
+        target_all:
+          type: boolean
+          description: Set to `true` to publish every unpublished non-root section of the course. Mutually exclusive with `target_ids`. Exactly one of `target_all` or `target_ids` must be supplied.
+        target_ids:
+          type: array
+          items:
+            type: string
+          description: Array of course-section public IDs to publish. Mutually exclusive with `target_all`. Exactly one of `target_ids` or `target_all` must be supplied.
+        auto_enroll:
+          type: boolean
+          description: When `true`, existing course enrollees are granted access to the newly published sections automatically.
+        send_email:
+          type: boolean
+          description: 'When `true` (requires `auto_enroll: true`), enrolled contacts receive an email notification about the newly published sections.'
+        offer_new_section_via_all_access_products:
+          type: boolean
+          description: When `true`, products that grant full course access are updated to also include the newly published sections.
+        scheduled_for:
+          type: string
+          format: date-time
+          description: Optional ISO 8601 datetime. The publish is deferred until this time. Must be a future datetime. Omit to publish immediately.
+      example:
+        target_ids:
+        - sSwcZK
+        auto_enroll: true
+        send_email: true
+      oneOf:
+      - title: Publish specific sections
+        required:
+        - target_ids
+        properties:
+          target_ids:
+            minItems: 1
+      - title: Publish all sections
+        required:
+        - target_all
+        properties:
+          target_all:
+            const: true
+    CoursesSectionsPublishActionAttributes:
+      type: object
+      title: Course Section Publish Actions
+      description: Asynchronous action that publishes one or more course sections and their lessons
+      properties:
+        id:
+          type: integer
+          description: Publish Action ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Publish Action public ID
+        course_id:
+          type: integer
+          description: ID of the course whose sections are being published
+        target_all:
+          type:
+          - boolean
+          - 'null'
+          description: When `true`, every unpublished non-root section of the course is targeted for publishing. Mutually exclusive with `target_ids`.
+        target_ids:
+          type:
+          - array
+          - 'null'
+          items:
+            type: integer
+          description: Explicit list of course-section IDs targeted for publishing, always emitted as integers. The create request also accepts public IDs, which are resolved on input. Mutually exclusive with `target_all`.
+        auto_enroll:
+          type:
+          - boolean
+          - 'null'
+          description: When `true`, existing course enrollees are automatically granted access to the newly published sections.
+        send_email:
+          type:
+          - boolean
+          - 'null'
+          description: When `true` (and `auto_enroll` is also `true`), enrolled contacts receive an email notification about the newly published sections.
+        offer_new_section_via_all_access_products:
+          type:
+          - boolean
+          - 'null'
+          description: When `true`, products that grant full course access are updated to also offer the newly published sections.
+        target_count:
+          type:
+          - integer
+          - 'null'
+          description: Total number of sections targeted by this action. `null` until the async job has resolved the count.
+        performed_count:
+          type:
+          - integer
+          - 'null'
+          description: Number of sections processed so far. Poll alongside `target_count` to track async progress.
+        published_lessons_count:
+          type:
+          - integer
+          - 'null'
+          description: Number of lesson publish timestamps this action changed. Immediate actions make those lessons live, including individually scheduled lessons they force-publish; a future one-step course launch assigns its requested future timestamp instead. Lessons already live are excluded. The one-step count is recorded synchronously per section, so it reflects that flow's work rather than `0`.
+        status:
+          type: string
+          enum:
+          - queued
+          - scheduled
+          - processing
+          - completed
+          description: 'Progress of the async receipt: `queued` (saved, not yet started), `scheduled` (deferred to a future `scheduled_for`), `processing` (running), or `completed`. Poll this to tell whether work is still ongoing without inferring it from the timestamps.'
+        scheduled_for:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When set, the action is deferred until this datetime. Must be a future datetime. `null` means execute immediately.
+        started_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Datetime the async job began processing sections. `null` until started.
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Datetime the async job finished. `null` until complete.
+        created_by_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of the workspace membership that created this action.
+        approved_by_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of the membership that approved this action (reserved for future use).
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at datetime
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at datetime
+      example:
+        id: 1
+        public_id: aB3cD4
+        course_id: 5
+        target_all: false
+        target_ids:
+        - 8
+        - 9
+        auto_enroll: true
+        send_email: true
+        offer_new_section_via_all_access_products: false
+        target_count: 2
+        performed_count: 1
+        published_lessons_count: 4
+        status: processing
+        scheduled_for: null
+        started_at: '2025-01-01T00:01:00.000Z'
+        completed_at: null
+        created_by_id: 3
+        approved_by_id: null
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:01:00.000Z'
+      required:
+      - approved_by_id
+      - auto_enroll
+      - completed_at
+      - course_id
+      - created_at
+      - created_by_id
+      - id
+      - offer_new_section_via_all_access_products
+      - performed_count
+      - public_id
+      - published_lessons_count
+      - scheduled_for
+      - send_email
+      - started_at
+      - status
+      - target_all
+      - target_count
+      - target_ids
+      - updated_at
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

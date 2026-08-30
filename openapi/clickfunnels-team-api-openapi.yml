@@ -1,0 +1,806 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Team API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Team
+  description: Teams
+paths:
+  /teams:
+    get:
+      tags:
+      - Team
+      summary: List Teams
+      description: List all teams for the current account
+      operationId: listTeams
+      parameters:
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamAttributes'
+              example:
+              - id: 42000
+                public_id: LAPeMn
+                name: Example Team
+                time_zone: Pacific Time (US & Canada)
+                locale: en
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                memberships:
+                - id: 5000
+                  public_id: MbRcfK
+                  team_id: 42000
+                  user_id: 1
+                  user_first_name: Lili
+                  user_last_name: Stiedemann
+                  user_profile_photo_id: null
+                  user_email: test@email.com
+                  added_by_id: null
+                  platform_agent_of_id: null
+                  role_ids:
+                  - admin
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+                  user:
+                    id: 1
+                    public_id: prbtEx
+                    email: test@email.com
+                    first_name: Lili
+                    last_name: Stiedemann
+                    time_zone: Pacific Time (US & Canada)
+                    locale: en
+                    created_at: '2025-01-01T00:00:00.000Z'
+                    updated_at: '2025-01-01T00:00:00.000Z'
+              - id: 42000
+                public_id: fJAxwk
+                name: Example Team
+                time_zone: Pacific Time (US & Canada)
+                locale: en
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                memberships:
+                - id: 5000
+                  public_id: MbRcfK
+                  team_id: 42000
+                  user_id: 1
+                  user_first_name: Lili
+                  user_last_name: Stiedemann
+                  user_profile_photo_id: null
+                  user_email: test@email.com
+                  added_by_id: null
+                  platform_agent_of_id: null
+                  role_ids:
+                  - admin
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+                  user:
+                    id: 1
+                    public_id: prbtEx
+                    email: test@email.com
+                    first_name: Lili
+                    last_name: Stiedemann
+                    time_zone: Pacific Time (US & Canada)
+                    locale: en
+                    created_at: '2025-01-01T00:00:00.000Z'
+                    updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /teams/{id}:
+    get:
+      tags:
+      - Team
+      summary: Fetch Team
+      description: Retrieve a single team
+      operationId: fetchTeam
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamAttributes'
+              example:
+                id: 42000
+                public_id: ErCxdM
+                name: Example Team
+                time_zone: Pacific Time (US & Canada)
+                locale: en
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                memberships:
+                - id: 5000
+                  public_id: MbRcfK
+                  team_id: 42000
+                  user_id: 1
+                  user_first_name: Lili
+                  user_last_name: Stiedemann
+                  user_profile_photo_id: null
+                  user_email: test@email.com
+                  added_by_id: null
+                  platform_agent_of_id: null
+                  role_ids:
+                  - admin
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+                  user:
+                    id: 1
+                    public_id: prbtEx
+                    email: test@email.com
+                    first_name: Lili
+                    last_name: Stiedemann
+                    time_zone: Pacific Time (US & Canada)
+                    locale: en
+                    created_at: '2025-01-01T00:00:00.000Z'
+                    updated_at: '2025-01-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Team
+      summary: Update Team
+      description: List all teams for the current account
+      operationId: updateTeam
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Team
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                team:
+                  type: object
+                  $ref: '#/components/schemas/TeamParametersUpdate'
+            example:
+              team:
+                name: Example Team
+                time_zone: Pacific Time (US & Canada)
+                locale: en
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamAttributes'
+              example:
+                id: 42000
+                public_id: aztNQC
+                name: Example Team
+                time_zone: Pacific Time (US & Canada)
+                locale: en
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                memberships:
+                - id: 5000
+                  public_id: MbRcfK
+                  team_id: 42000
+                  user_id: 1
+                  user_first_name: Lili
+                  user_last_name: Stiedemann
+                  user_profile_photo_id: null
+                  user_email: test@email.com
+                  added_by_id: null
+                  platform_agent_of_id: null
+                  role_ids:
+                  - admin
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+                  user:
+                    id: 1
+                    public_id: prbtEx
+                    email: test@email.com
+                    first_name: Lili
+                    last_name: Stiedemann
+                    time_zone: Pacific Time (US & Canada)
+                    locale: en
+                    created_at: '2025-01-01T00:00:00.000Z'
+                    updated_at: '2025-01-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+components:
+  schemas:
+    BillingSubscriptionAttributes:
+      type: object
+      title: Billing Subscriptions
+      description: A billing subscription for a team. Embedded in the `Team` resource's `billing_subscriptions` array.
+      properties:
+        id:
+          type: integer
+          description: Billing subscription ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Billing subscription public ID
+        team_id:
+          type: integer
+          description: The ID of the team the subscription belongs to
+        status:
+          type:
+          - string
+          - 'null'
+          description: The subscription's current status (e.g. `active`, `canceled`, `delinquent`)
+        cycle_ends_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the current billing cycle ends
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        included_prices:
+          type: array
+          description: The prices included in the subscription
+          items:
+            $ref: '#/components/schemas/BillingSubscriptionIncludedPriceAttributes'
+      example:
+        id: 8000
+        public_id: SbTcfQ
+        team_id: 42000
+        status: active
+        cycle_ends_at: '2025-02-01T00:00:00.000Z'
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        included_prices:
+        - id: 9000
+          subscription_id: 8000
+          price_id: price_basic_monthly
+          quantity: 1
+          created_at: '2025-01-01T00:00:00.000Z'
+          updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - cycle_ends_at
+      - id
+      - included_prices
+      - public_id
+      - status
+      - team_id
+      - updated_at
+    TeamAttributes:
+      type: object
+      title: Teams
+      description: Teams
+      properties:
+        id:
+          type: integer
+          description: Team ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Team public ID
+        name:
+          type: string
+          description: The name of your Team
+        time_zone:
+          type:
+          - string
+          - 'null'
+          description: 'The human-readable time zone set manually by a ClickFunnels user or dynamically by the app.
+
+            Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
+
+            '
+        locale:
+          type: string
+          description: The main language used to create a new website.
+          enum:
+          - en
+          - ja
+          - pt
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        billing_subscriptions:
+          type: array
+          description: The team's billing subscriptions. Present only when the team has at least one subscription (omitted entirely otherwise).
+          items:
+            $ref: '#/components/schemas/BillingSubscriptionAttributes'
+        memberships:
+          type: array
+          description: The team's non-platform (human) memberships. Platform-agent / bot memberships (such as the API client the request authenticates as) are excluded from this list.
+          items:
+            $ref: '#/components/schemas/MembershipAttributes'
+      example:
+        id: 42000
+        public_id: ClNcfI
+        name: Example Team
+        time_zone: Pacific Time (US & Canada)
+        locale: en
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        billing_subscriptions:
+        - id: 8000
+          public_id: SbTcfQ
+          team_id: 42000
+          status: active
+          cycle_ends_at: '2025-02-01T00:00:00.000Z'
+          created_at: '2025-01-01T00:00:00.000Z'
+          updated_at: '2025-01-01T00:00:00.000Z'
+          included_prices:
+          - id: 9000
+            subscription_id: 8000
+            price_id: price_basic_monthly
+            quantity: 1
+            created_at: '2025-01-01T00:00:00.000Z'
+            updated_at: '2025-01-01T00:00:00.000Z'
+        memberships:
+        - id: 5000
+          public_id: MbRcfK
+          team_id: 42000
+          user_id: 1
+          user_first_name: Lili
+          user_last_name: Stiedemann
+          user_profile_photo_id: null
+          user_email: test@email.com
+          added_by_id: null
+          platform_agent_of_id: null
+          role_ids:
+          - admin
+          created_at: '2025-01-01T00:00:00.000Z'
+          updated_at: '2025-01-01T00:00:00.000Z'
+          user:
+            id: 1
+            public_id: prbtEx
+            email: test@email.com
+            first_name: Lili
+            last_name: Stiedemann
+            time_zone: Pacific Time (US & Canada)
+            locale: en
+            created_at: '2025-01-01T00:00:00.000Z'
+            updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - id
+      - locale
+      - name
+      - public_id
+      - time_zone
+      - updated_at
+    TeamParametersUpdate:
+      type: object
+      title: Teams
+      description: Teams
+      required: []
+      properties:
+        name:
+          type: string
+          description: The name of your Team
+        time_zone:
+          type:
+          - string
+          - 'null'
+          description: 'The human-readable time zone set manually by a ClickFunnels user or dynamically by the app.
+
+            Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
+
+            '
+        locale:
+          type: string
+          description: The main language used to create a new website.
+          enum:
+          - en
+          - ja
+          - pt
+          default: en
+      example:
+        team:
+          name: Example Team
+          time_zone: Pacific Time (US & Canada)
+          locale: en
+    MembershipAttributes:
+      type: object
+      title: Memberships
+      description: A membership joins a user to a team. Embedded in the `Team` resource's `memberships` array (platform-agent / bot memberships are excluded there).
+      properties:
+        id:
+          type: integer
+          description: Membership ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Membership public ID
+        team_id:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the team the member belongs to
+        user_id:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the member's user record
+        user_first_name:
+          type:
+          - string
+          - 'null'
+          description: The member's first name
+        user_last_name:
+          type:
+          - string
+          - 'null'
+          description: The member's last name
+        user_profile_photo_id:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the member's profile photo attachment
+        user_email:
+          type:
+          - string
+          - 'null'
+          description: The member's email address
+        added_by_id:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the user who added this member
+        platform_agent_of_id:
+          type:
+          - integer
+          - 'null'
+          description: When present, the membership represents a platform agent acting on behalf of the referenced application.
+        role_ids:
+          type:
+          - array
+          - 'null'
+          description: The role identifiers granted to the member on the team
+          items:
+            type: string
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        user:
+          description: The member's user profile. Present when the membership has a linked user.
+          $ref: '#/components/schemas/UserAttributes'
+      example:
+        id: 5000
+        public_id: MbRcfK
+        team_id: 42000
+        user_id: 1
+        user_first_name: Lili
+        user_last_name: Stiedemann
+        user_profile_photo_id: null
+        user_email: test@email.com
+        added_by_id: null
+        platform_agent_of_id: null
+        role_ids:
+        - admin
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        user:
+          id: 1
+          public_id: prbtEx
+          email: test@email.com
+          first_name: Lili
+          last_name: Stiedemann
+          time_zone: Pacific Time (US & Canada)
+          locale: en
+          created_at: '2025-01-01T00:00:00.000Z'
+          updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - added_by_id
+      - created_at
+      - id
+      - platform_agent_of_id
+      - public_id
+      - role_ids
+      - team_id
+      - updated_at
+      - user_email
+      - user_first_name
+      - user_id
+      - user_last_name
+      - user_profile_photo_id
+    UserAttributes:
+      type: object
+      title: Profile
+      description: 'A user profile. This includes **platform-agent** users — the synthetic user an OAuth/API
+
+        client authenticates as (e.g. "Default API Client") — as well as human users. Workflow
+
+        `notify_step` targets exclude platform agents (they resolve against non-platform team
+
+        members); discover those via `GET /api/v2/teams/{team_id}/memberships`.
+
+        '
+      properties:
+        id:
+          type: integer
+          description: User ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: User public ID
+        email:
+          type: string
+          description: Email Address
+        first_name:
+          type: string
+          description: First Name
+        last_name:
+          type: string
+          description: Last Name
+        time_zone:
+          type:
+          - string
+          - 'null'
+          description: Your Time Zone
+        locale:
+          type:
+          - string
+          - 'null'
+          description: Language
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Signed up
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+      example:
+        id: 1
+        public_id: prbtEx
+        email: test@email.com
+        first_name: Lili
+        last_name: Stiedemann
+        time_zone: Pacific Time (US & Canada)
+        locale: en
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - email
+      - first_name
+      - id
+      - last_name
+      - locale
+      - public_id
+      - time_zone
+      - updated_at
+    BillingSubscriptionIncludedPriceAttributes:
+      type: object
+      title: Billing Subscription Included Prices
+      description: A price included in a billing subscription.
+      properties:
+        id:
+          type: integer
+          description: Included price ID
+        subscription_id:
+          type: integer
+          description: The ID of the billing subscription this price belongs to
+        price_id:
+          type: string
+          description: The identifier of the underlying price
+        quantity:
+          type:
+          - integer
+          - 'null'
+          description: The quantity of the price included in the subscription
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+      example:
+        id: 9000
+        subscription_id: 8000
+        price_id: price_basic_monthly
+        quantity: 1
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - id
+      - price_id
+      - quantity
+      - subscription_id
+      - updated_at
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

@@ -1,0 +1,548 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Workflows::Run API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Workflows::Run
+  description: 'Execution records tracking a contact''s progress through a workflow. Status is derived: `active`, `paused`, `completed`, or `canceled`. Runs can be listed/filtered or manually created to enroll a contact immediately.
+
+
+    See [Runs - manual enrollment](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#runs---manual-enrollment) in the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md).
+
+    '
+paths:
+  /workflows/{workflow_id}/runs:
+    get:
+      tags:
+      - Workflows::Run
+      summary: List Runs
+      description: 'List automation runs for a workflow. Supports filtering by `contact_id` and `status`.
+
+        Only standard automation runs are returned (survey runs excluded).
+
+        '
+      operationId: listWorkflowRuns
+      externalDocs:
+        description: Workflows Skill - runs, manual enrollment
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#runs---manual-enrollment
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: workflow_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Integer id or obfuscated public_id of the workflow.
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      - name: filter
+        in: query
+        required: false
+        description: 'Filter runs by `contact_id` (integer id or obfuscated public_id of the contact) and/or
+
+          `status` (`active`, `paused`, `completed`, or `canceled`).
+
+          An invalid `status` value returns 422.
+
+          '
+        schema:
+          type: object
+          properties:
+            contact_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Contact id or public_id to filter runs by.
+              example: CtAbcd
+            status:
+              type: string
+              enum:
+              - active
+              - paused
+              - completed
+              - canceled
+              description: Filter by derived run status.
+              example: completed
+        style: deepObject
+        explode: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkflowsRunAttributes'
+              example:
+              - id: 501
+                public_id: RnXxYz
+                workflow_id: 101
+                contact_id: 9001
+                current_step_id: null
+                event_id: null
+                type: null
+                status: completed
+                skip_communication: false
+                completed_at: '2025-06-02T10:30:00.000Z'
+                paused_at: null
+                created_at: '2025-06-01T09:00:00.000Z'
+                updated_at: '2025-06-02T10:30:00.000Z'
+              - id: 502
+                public_id: RnQrSt
+                workflow_id: 101
+                contact_id: 9002
+                current_step_id: 202
+                event_id: null
+                type: null
+                status: paused
+                skip_communication: false
+                completed_at: null
+                paused_at: '2025-06-15T08:00:00.000Z'
+                created_at: '2025-06-15T07:55:00.000Z'
+                updated_at: '2025-06-15T08:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: status must be one of: active, paused, completed, canceled'
+    post:
+      tags:
+      - Workflows::Run
+      summary: Enroll Contact (Create Run)
+      description: 'Manually enroll a contact into a workflow, starting a new run immediately.
+
+        The workflow must be enabled (`status: live`) — an unenabled workflow returns 422.
+
+        The contact must belong to the same workspace.
+
+
+        Some step types are skipped at enrollment rather than executed — notably page
+
+        (`show_page_step`) and internal sequence/plumbing steps, which only make sense
+
+        inside a funnel. This list is non-exhaustive; standalone automations run the
+
+        action and split steps documented under Workflows::Step.
+
+        '
+      operationId: createWorkflowRun
+      externalDocs:
+        description: Workflows Skill - runs, manual enrollment
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#runs---manual-enrollment
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: workflow_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Integer id or obfuscated public_id of the workflow.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowsRunParametersCreate'
+            example:
+              run:
+                contact_id: CtAbcd
+                skip_communication: false
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowsRunAttributes'
+              example:
+                id: 503
+                public_id: RnUvWx
+                workflow_id: 101
+                contact_id: 9001
+                current_step_id: 201
+                event_id: null
+                type: null
+                status: active
+                skip_communication: false
+                completed_at: null
+                paused_at: null
+                created_at: '2025-06-18T12:00:00.000Z'
+                updated_at: '2025-06-18T12:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: Workflow is not enabled; enable it before starting a run.'
+  /workflows/runs/{id}:
+    get:
+      tags:
+      - Workflows::Run
+      summary: Fetch Run
+      description: 'Retrieve a single workflow run by its id or obfuscated public_id.
+
+        '
+      operationId: getWorkflowRun
+      externalDocs:
+        description: Workflows Skill - runs, manual enrollment
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#runs---manual-enrollment
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowsRunAttributes'
+              example:
+                id: 501
+                public_id: RnXxYz
+                workflow_id: 101
+                contact_id: 9001
+                current_step_id: null
+                event_id: null
+                type: null
+                status: completed
+                skip_communication: false
+                completed_at: '2025-06-02T10:30:00.000Z'
+                paused_at: null
+                created_at: '2025-06-01T09:00:00.000Z'
+                updated_at: '2025-06-02T10:30:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    IntegerOrPublicId:
+      type:
+      - integer
+      - string
+      description: Integer database id or obfuscated public_id.
+    WorkflowsRunAttributes:
+      type: object
+      title: Workflows::Run
+      description: 'An execution record tracking a contact''s progress through a workflow.
+
+
+        `status` is derived:
+
+        - `canceled` — the run was explicitly canceled.
+
+        - `completed` — the run finished normally.
+
+        - `paused` — the run is waiting at a delay or hold step.
+
+        - `active` — none of the above; currently in-progress.
+
+
+        The list endpoint returns only standard automation runs (`type: null`);
+
+        survey/STI run subtypes are excluded.
+
+        '
+      properties:
+        id:
+          type: integer
+          description: Run ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Obfuscated run ID
+        workflow_id:
+          type: integer
+          description: Integer ID of the parent workflow
+        contact_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer ID of the enrolled contact
+        current_step_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer ID of the step the run is currently at. Null when not at a step.
+        event_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer ID of the triggering event that started this run, if any.
+        type:
+          type:
+          - string
+          - 'null'
+          description: STI type column. Always `null` for standard automation runs (the only subtype the list endpoint returns).
+        status:
+          type: string
+          enum:
+          - active
+          - paused
+          - completed
+          - canceled
+          description: Derived execution status.
+        skip_communication:
+          type: boolean
+          description: When true, communication steps (send email, etc.) are skipped for this run.
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the run completed. Null if still in progress.
+        paused_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the run was last paused. Null if never paused.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 501
+        public_id: RnXxYz
+        workflow_id: 101
+        contact_id: 9001
+        current_step_id: null
+        event_id: null
+        type: null
+        status: completed
+        skip_communication: false
+        completed_at: '2025-06-02T10:30:00.000Z'
+        paused_at: null
+        created_at: '2025-06-01T09:00:00.000Z'
+        updated_at: '2025-06-02T10:30:00.000Z'
+      required:
+      - completed_at
+      - contact_id
+      - created_at
+      - current_step_id
+      - event_id
+      - id
+      - paused_at
+      - public_id
+      - skip_communication
+      - status
+      - type
+      - updated_at
+      - workflow_id
+    WorkflowsRunParametersCreate:
+      type: object
+      title: Create Workflows::Run (manual enroll)
+      description: 'Parameters for manually enrolling a contact into a workflow. The workflow
+
+        must be enabled (status `live`) — otherwise returns 422.
+
+        '
+      required:
+      - run
+      properties:
+        run:
+          type: object
+          required:
+          - contact_id
+          properties:
+            contact_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Integer id or obfuscated public_id of the contact to enroll. Must belong to the same workspace.
+            skip_communication:
+              type: boolean
+              description: When true, communication steps (send email, chat message, etc.) are skipped for this run. Defaults to false.
+      example:
+        run:
+          contact_id: CtAbcd
+          skip_communication: false
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

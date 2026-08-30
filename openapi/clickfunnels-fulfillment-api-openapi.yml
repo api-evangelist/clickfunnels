@@ -1,0 +1,692 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Fulfillment API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Fulfillment
+  description: '> Fulfillments allow fulfilling orders and managing shipments.
+
+
+    Please refer to [our Fulfillments guide](https://developers.myclickfunnels.com/docs/fulfillments) for more information.
+
+    '
+paths:
+  /workspaces/{workspace_id}/fulfillments:
+    get:
+      tags:
+      - Fulfillment
+      summary: List Fulfillments
+      description: List all fulfillments for your workspace. You will find detailed information about fulfilling orders is in [our Fulfillments guide](https://developers.myclickfunnels.com/docs/fulfillments).
+      operationId: listFulfillments
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FulfillmentAttributes'
+              example:
+              - id: 2
+                public_id: DhLZfz
+                workspace_id: 42000
+                contact_id: 94
+                status: fulfilled
+                tracking_url: https://usps.com/track/1234567890
+                shipping_provider: USPS
+                tracking_code: '1234567890'
+                location_id: 3
+                fulfillment_number: 2
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                included_invoices_line_items:
+                - id: 2
+                  public_id: OYMAYq
+                  fulfillment_id: 2
+                  quantity: 1
+                  invoices_line_item_id: 126
+              - id: 3
+                public_id: VyJdGW
+                workspace_id: 42000
+                contact_id: 96
+                status: fulfilled
+                tracking_url: https://usps.com/track/1234567890
+                shipping_provider: USPS
+                tracking_code: '1234567890'
+                location_id: 4
+                fulfillment_number: 3
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                included_invoices_line_items:
+                - id: 3
+                  public_id: fYmGhF
+                  fulfillment_id: 3
+                  quantity: 1
+                  invoices_line_item_id: 9
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Fulfillment
+      summary: Create Fulfillment
+      description: Fulfill an order or a part of an order. More information in [our Fulfillments guide](https://developers.myclickfunnels.com/docs/fulfillments).
+      operationId: createFulfillments
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Fulfillment
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fulfillment:
+                  type: object
+                  $ref: '#/components/schemas/FulfillmentParameters'
+            example:
+              fulfillment:
+                contact_id: 8
+                tracking_url: https://usps.com/track/1234567890
+                shipping_provider: USPS
+                tracking_code: '1234567890'
+                location_id: 1
+                ignore_out_of_stock: true
+                notify_customer: true
+                included_orders_invoices_line_items_attributes:
+                - invoices_line_item_id: 1
+                  quantity: 1
+                - invoices_line_item_id: 2
+                  quantity: 2
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FulfillmentAttributes'
+              example:
+                id: 5
+                public_id: skKpBz
+                workspace_id: 42000
+                contact_id: 100
+                status: fulfilled
+                tracking_url: https://usps.com/track/1234567890
+                shipping_provider: USPS
+                tracking_code: '1234567890'
+                location_id: 6
+                fulfillment_number: 5
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                included_invoices_line_items:
+                - id: 5
+                  public_id: ELzmHF
+                  fulfillment_id: 5
+                  quantity: 1
+                  invoices_line_item_id: 13
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /fulfillments/{id}:
+    get:
+      tags:
+      - Fulfillment
+      summary: Fetch Fulfillment
+      description: Retrieve a specific fulfillment in the current workspace
+      operationId: getFulfillments
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FulfillmentAttributes'
+              example:
+                id: 4
+                public_id: hBjJrH
+                workspace_id: 42000
+                contact_id: 98
+                status: fulfilled
+                tracking_url: https://usps.com/track/1234567890
+                shipping_provider: USPS
+                tracking_code: '1234567890'
+                location_id: 5
+                fulfillment_number: 4
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                included_invoices_line_items:
+                - id: 4
+                  public_id: IVZNRO
+                  fulfillment_id: 4
+                  quantity: 1
+                  invoices_line_item_id: 11
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Fulfillment
+      summary: Update Fulfillment
+      description: Update a specific fulfillment.
+      operationId: updateFulfillments
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Fulfillment
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fulfillment:
+                  type: object
+                  $ref: '#/components/schemas/FulfillmentParametersUpdate'
+            example:
+              fulfillment:
+                tracking_url: https://usps.com/track/1234567890
+                shipping_provider: USPS
+                tracking_code: '1234567890'
+                notify_customer: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FulfillmentAttributes'
+              example:
+                id: 6
+                public_id: ewrCzq
+                workspace_id: 42000
+                contact_id: 102
+                status: fulfilled
+                tracking_url: https://usps.com/track/1234567890
+                shipping_provider: USPS
+                tracking_code: '1234567890'
+                location_id: 7
+                fulfillment_number: 6
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                included_invoices_line_items:
+                - id: 6
+                  public_id: iUkCru
+                  fulfillment_id: 6
+                  quantity: 1
+                  invoices_line_item_id: 15
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    delete:
+      tags:
+      - Fulfillment
+      summary: Remove Fulfillment
+      description: Remove Fulfillment
+      operationId: removeFulfillments
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /fulfillments/{id}/cancel:
+    post:
+      tags:
+      - Fulfillment
+      summary: Cancel a Fulfillment
+      description: This will cancel a Fulfillment. A Fulfillment can only be cancelled when it&#39;s in a &quot;fulfilled&quot; state. The &quot;cancelled&quot; state is final.
+      operationId: cancelFulfillments
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FulfillmentAttributes'
+              example:
+                id: 1
+                public_id: dcbmDy
+                workspace_id: 42000
+                contact_id: 8
+                status: cancelled
+                tracking_url: https://usps.com/track/1234567890
+                shipping_provider: USPS
+                tracking_code: '1234567890'
+                location_id: 1
+                fulfillment_number: 1
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                included_invoices_line_items:
+                - id: 1
+                  public_id: PYvAJe
+                  fulfillment_id: 1
+                  quantity: 1
+                  invoices_line_item_id: 125
+        '404':
+          description: Not Found
+        '409':
+          description: Conflict - occurs if product is already cancelled.
+        '422':
+          description: Unprocessable Entity
+components:
+  schemas:
+    FulfillmentParameters:
+      type: object
+      title: Fulfillments
+      description: Fulfillments
+      required:
+      - contact_id
+      - location_id
+      - included_orders_invoices_line_items_attributes
+      properties:
+        contact_id:
+          type: integer
+          description: The contact that made the order that is being fulfilled.
+        tracking_url:
+          type:
+          - string
+          - 'null'
+          description: Tracking URL
+        shipping_provider:
+          type:
+          - string
+          - 'null'
+          description: Shipping Provider
+        tracking_code:
+          type:
+          - string
+          - 'null'
+          description: Tracking Code
+        location_id:
+          type: integer
+          description: The location that the fulfillment is being fulfilled from
+        ignore_out_of_stock:
+          type: boolean
+          description: Create a fulfillment despite the item being out of stock.
+        notify_customer:
+          type: boolean
+          description: Send an email to the customer when the fulfillment is created. Will use workspace default behavior if left unset.
+        included_orders_invoices_line_items_attributes:
+          type: array
+          description: The orders invoices line items to fulfill as part of this fulfillment.
+          items:
+            type: object
+            properties:
+              invoices_line_item_id:
+                type: integer
+                description: The orders invoice line item to fulfill
+              quantity:
+                type: integer
+                description: The quantity to fulfill
+      example:
+        fulfillment:
+          contact_id: 8
+          tracking_url: https://usps.com/track/1234567890
+          shipping_provider: USPS
+          tracking_code: '1234567890'
+          location_id: 1
+          ignore_out_of_stock: true
+          notify_customer: true
+          included_orders_invoices_line_items_attributes:
+          - invoices_line_item_id: 1
+            quantity: 1
+          - invoices_line_item_id: 2
+            quantity: 2
+    FulfillmentAttributes:
+      type: object
+      title: Fulfillments
+      description: Fulfillments
+      properties:
+        id:
+          type: integer
+          description: Fulfillment ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: The fulfillment ID that would be visible to the customer within the CF app
+        workspace_id:
+          type: integer
+          description: The workspace that the fulfillment belongs to
+        contact_id:
+          type: integer
+          description: The contact that made the order that is being fulfilled.
+        status:
+          type: string
+          enum:
+          - cancelled
+          - fulfilled
+          - restocked
+          description: The status of the fulfillment
+        tracking_url:
+          type:
+          - string
+          - 'null'
+          description: Tracking URL
+        shipping_provider:
+          type:
+          - string
+          - 'null'
+          description: Shipping Provider
+        tracking_code:
+          type:
+          - string
+          - 'null'
+          description: Tracking Code
+        location_id:
+          type: integer
+          description: The location that the fulfillment is being fulfilled from
+        fulfillment_number:
+          type:
+          - integer
+          - 'null'
+          description: An auto-generated number of the fulfillment
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        included_invoices_line_items:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            title: Included orders invoices line item
+            description: The orders invoice line item to fulfill as part of this fulfillment
+            properties:
+              id:
+                type: integer
+                description: Included orders line item ID
+              public_id:
+                type:
+                - string
+                - 'null'
+                description: The public ID of the included order invoices line item
+              fulfillment_id:
+                type: integer
+                description: Fulfillment ID
+              quantity:
+                type: integer
+                description: The quantity of the invoices line item subject that is part of this fulfillment. Your stock must have enough quantity for a successful fulfillment.
+              invoices_line_item_id:
+                type: integer
+                description: The invoice line item of an order that is part of this fulfillment.
+          description: Line items that are included in your fulfillment. They reference invoice line items of one or more orders and have extra data about the line item that is being fulfilled like the quantity that is part of this fulfillment.
+      example:
+        id: 1
+        public_id: dcbmDy
+        workspace_id: 42000
+        contact_id: 8
+        status: fulfilled
+        tracking_url: https://usps.com/track/1234567890
+        shipping_provider: USPS
+        tracking_code: '1234567890'
+        location_id: 1
+        fulfillment_number: 1
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        included_invoices_line_items:
+        - id: 1
+          public_id: PYvAJe
+          fulfillment_id: 1
+          quantity: 1
+          invoices_line_item_id: 125
+      required:
+      - contact_id
+      - created_at
+      - fulfillment_number
+      - id
+      - included_invoices_line_items
+      - location_id
+      - public_id
+      - shipping_provider
+      - status
+      - tracking_code
+      - tracking_url
+      - updated_at
+      - workspace_id
+    FulfillmentParametersUpdate:
+      type: object
+      title: Fulfillments
+      description: Fulfillments
+      required: []
+      properties:
+        tracking_url:
+          type:
+          - string
+          - 'null'
+          description: Tracking URL
+        shipping_provider:
+          type:
+          - string
+          - 'null'
+          description: Shipping Provider
+        tracking_code:
+          type:
+          - string
+          - 'null'
+          description: Tracking Code
+        notify_customer:
+          type: boolean
+          description: Send an email to the customer when the fulfillment is updated. Will use workspace default behavior if left unset
+      example:
+        fulfillment:
+          tracking_url: https://usps.com/track/1234567890
+          shipping_provider: USPS
+          tracking_code: '1234567890'
+          notify_customer: true
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

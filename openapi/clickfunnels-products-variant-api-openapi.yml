@@ -1,0 +1,1391 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Products::Variant API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Products::Variant
+  description: '> Product variants
+
+
+    If there are multiple variants of a product (like when a T-shirt can come in many sizes or colors),
+
+    then these should be created as `Products::Variant` records related to the `Product` record.
+
+
+    When creating a variant it is mandatory to set the `properties_values` so that all the Product''s `variant_properties` have a value.
+
+
+    All products have a "default variant". Attributes like the below, if left as `null` on a variant (that is not the default)
+
+    will inherit the value from the default variant:
+
+
+    - `product_type`
+
+    - `sku`
+
+    - `taxable`
+
+    - `tax_category_id`
+
+    - `description`
+
+    - `weight`
+
+    - `weight_unit`
+
+    - `height`
+
+    - `width`
+
+    - `length`
+
+    - `image_id`
+
+    '
+paths:
+  /products/{product_id}/variants:
+    get:
+      tags:
+      - Products::Variant
+      summary: List Variants
+      description: List variants for a product
+      operationId: listProductsVariants
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      - name: filter
+        in: query
+        description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[id]=value&filter[another_property]=value1,value2`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
+
+          '
+        required: false
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              description: A comma-separated list of variant IDs to filter by.
+              example: 1,2,3
+            visible:
+              type: boolean
+              description: Filter variants by visibility in the online store.
+              example: true
+              enum:
+              - true
+              - false
+            archived:
+              type: boolean
+              description: Filter variants by archived state.
+              example: true
+              enum:
+              - true
+              - false
+            fulfillment_required:
+              type: boolean
+              description: Filter variants by fulfillment required state.
+              example: true
+              enum:
+              - true
+              - false
+        style: deepObject
+        explode: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductsVariantAttributes'
+              example:
+              - id: 80
+                public_id: TMYhZe
+                product_id: 135
+                name: Intelligent Paper Bench variant 0648
+                description: Tempora aut at necessitatibus.
+                sku: bDhKDtQsJbGalOey
+                product_type: physical
+                properties_value_ids:
+                - null
+                out_of_stock_sales: null
+                weight: '17.0'
+                weight_unit: lb
+                height: '28.0'
+                width: '703.0'
+                length: '43.0'
+                dimensions_unit: inches
+                quantity: 0
+                tag_ids:
+                - 216
+                tax_category_id: null
+                asset_ids:
+                - 904
+                has_access_to_all_valid_assets: false
+                included_courses:
+                - id: 310
+                  course_id: 42
+                  full_access: true
+                  included_section_ids:
+                  - 301
+                  - 302
+                included_space_groups:
+                - id: 190
+                  communities_space_group_id: 8
+                  spaces_mode: all
+                  included_space_ids: []
+                taxable: null
+                track_quantity: false
+                archived: false
+                visible: true
+                price_ids: []
+                fulfillment_required: false
+                country_of_manufacture_id: null
+                image_ids: []
+                fulfillments_location_ids: []
+                created_at: '2025-08-11T19:15:04.339Z'
+                updated_at: '2025-08-11T19:15:04.339Z'
+                default: false
+                properties_values:
+                - property_id: 80
+                  value: Red
+                created_by_platform_application: null
+              - id: 81
+                public_id: bkPQjv
+                product_id: 136
+                name: Small Concrete Chair variant 6ee6
+                description: Est debitis velit voluptas.
+                sku: Qf87oVPv71pM6QDa
+                product_type: physical
+                properties_value_ids:
+                - null
+                out_of_stock_sales: null
+                weight: '80.0'
+                weight_unit: lb
+                height: '53.0'
+                width: '712.0'
+                length: '51.0'
+                dimensions_unit: inches
+                quantity: 0
+                tag_ids:
+                - 218
+                tax_category_id: null
+                asset_ids: []
+                has_access_to_all_valid_assets: true
+                included_courses: []
+                included_space_groups: []
+                taxable: null
+                track_quantity: false
+                archived: false
+                visible: true
+                price_ids: []
+                fulfillment_required: false
+                country_of_manufacture_id: null
+                image_ids: []
+                fulfillments_location_ids: []
+                created_at: '2025-08-11T19:15:04.359Z'
+                updated_at: '2025-08-11T19:15:04.359Z'
+                default: false
+                properties_values:
+                - property_id: 81
+                  value: Red
+                created_by_platform_application: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Products::Variant
+      summary: Create Variant
+      description: Create a new variant for a product
+      operationId: createProductsVariants
+      parameters:
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Variant
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                products_variant:
+                  type: object
+                  $ref: '#/components/schemas/ProductsVariantParameters'
+            example:
+              products_variant:
+                name: Small Aluminum Gloves variant 393f
+                description: Dolore provident unde quas.
+                sku: LxbnGP0kqyqzQDTK
+                product_type: physical
+                out_of_stock_sales: true
+                weight: '24.0'
+                weight_unit: lb
+                height: '96.0'
+                width: '418.0'
+                length: '66.0'
+                dimensions_unit: inches
+                tax_category_id: null
+                taxable: null
+                track_quantity: false
+                archived: false
+                visible: true
+                fulfillment_required: false
+                country_of_manufacture_id: null
+                image_ids: []
+                fulfillments_location_ids: []
+                properties_values: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsVariantAttributes'
+              example:
+                id: 83
+                public_id: wbMmJc
+                product_id: 138
+                name: Sleek Copper Coat variant da19
+                description: Qui maiores voluptas rerum.
+                sku: 3XCTSoc6kjVOUj1c
+                product_type: physical
+                properties_value_ids:
+                - null
+                out_of_stock_sales: null
+                weight: '43.0'
+                weight_unit: lb
+                height: '34.0'
+                width: '543.0'
+                length: '93.0'
+                dimensions_unit: inches
+                quantity: 0
+                tag_ids:
+                - 222
+                tax_category_id: null
+                asset_ids:
+                - 904
+                has_access_to_all_valid_assets: false
+                included_courses:
+                - id: 311
+                  course_id: 42
+                  full_access: true
+                  included_section_ids:
+                  - 301
+                  - 302
+                included_space_groups:
+                - id: 191
+                  communities_space_group_id: 8
+                  spaces_mode: all
+                  included_space_ids: []
+                taxable: null
+                track_quantity: false
+                archived: false
+                visible: true
+                price_ids: []
+                fulfillment_required: false
+                country_of_manufacture_id: null
+                image_ids: []
+                fulfillments_location_ids: []
+                created_at: '2025-08-11T19:15:04.428Z'
+                updated_at: '2025-08-11T19:15:04.428Z'
+                default: false
+                properties_values:
+                - property_id: 83
+                  value: Red
+                created_by_platform_application: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /products/variants/{id}:
+    get:
+      tags:
+      - Products::Variant
+      summary: Fetch Variant
+      description: Retrieve a single variant
+      operationId: getProductsVariants
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsVariantAttributes'
+              example:
+                id: 82
+                public_id: EwUjhH
+                product_id: 137
+                name: Heavy Duty Aluminum Table variant d514
+                description: Et dolorem voluptatem modi.
+                sku: iz6gZfAANGMsBvcM
+                product_type: physical
+                properties_value_ids:
+                - null
+                out_of_stock_sales: null
+                weight: '95.0'
+                weight_unit: lb
+                height: '50.0'
+                width: '858.0'
+                length: '33.0'
+                dimensions_unit: inches
+                quantity: 0
+                tag_ids:
+                - 220
+                tax_category_id: null
+                asset_ids:
+                - 904
+                has_access_to_all_valid_assets: false
+                included_courses:
+                - id: 312
+                  course_id: 42
+                  full_access: false
+                  included_section_ids:
+                  - 301
+                included_space_groups:
+                - id: 192
+                  communities_space_group_id: 8
+                  spaces_mode: all
+                  included_space_ids: []
+                taxable: null
+                track_quantity: false
+                archived: false
+                visible: true
+                price_ids: []
+                fulfillment_required: false
+                country_of_manufacture_id: null
+                image_ids: []
+                fulfillments_location_ids: []
+                created_at: '2025-08-11T19:15:04.395Z'
+                updated_at: '2025-08-11T19:15:04.395Z'
+                default: false
+                properties_values:
+                - property_id: 82
+                  value: Red
+                created_by_platform_application: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Products::Variant
+      summary: Update Variant
+      description: Update a single variant
+      operationId: updateProductsVariants
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Variant
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                products_variant:
+                  type: object
+                  $ref: '#/components/schemas/ProductsVariantParametersUpdate'
+            example:
+              products_variant:
+                name: Heavy Duty Steel variant
+                description: Dolore provident unde quas.
+                sku: LxbnGP0kqyqzQDTK
+                product_type: physical
+                out_of_stock_sales: true
+                weight: '24.0'
+                weight_unit: lb
+                height: '96.0'
+                width: '418.0'
+                length: '66.0'
+                dimensions_unit: inches
+                tax_category_id: null
+                taxable: null
+                track_quantity: false
+                archived: false
+                visible: true
+                fulfillment_required: false
+                country_of_manufacture_id: null
+                image_ids: []
+                fulfillments_location_ids: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsVariantAttributes'
+              example:
+                id: 85
+                public_id: QWtFxE
+                product_id: 140
+                name: Awesome Concrete Bag variant d60e
+                description: Minus alias nemo non.
+                sku: 77ITJ9D2nZKZntcC
+                product_type: physical
+                properties_value_ids:
+                - null
+                out_of_stock_sales: null
+                weight: '78.0'
+                weight_unit: lb
+                height: '99.0'
+                width: '532.0'
+                length: '94.0'
+                dimensions_unit: inches
+                quantity: 0
+                tag_ids:
+                - 226
+                tax_category_id: null
+                asset_ids:
+                - 904
+                has_access_to_all_valid_assets: false
+                included_courses:
+                - id: 313
+                  course_id: 42
+                  full_access: false
+                  included_section_ids:
+                  - 301
+                included_space_groups: []
+                taxable: null
+                track_quantity: false
+                archived: false
+                visible: true
+                price_ids: []
+                fulfillment_required: false
+                country_of_manufacture_id: null
+                image_ids: []
+                fulfillments_location_ids: []
+                created_at: '2025-08-11T19:15:04.494Z'
+                updated_at: '2025-08-11T19:15:04.494Z'
+                default: false
+                properties_values:
+                - property_id: 85
+                  value: Red
+                created_by_platform_application: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  schemas:
+    ProductsVariantParametersUpdate:
+      type: object
+      title: Variants
+      description: Variants
+      required: []
+      properties:
+        name:
+          type: string
+          description: Variant name
+        description:
+          type:
+          - string
+          - 'null'
+          description: The description of the variant. The description of the **default variant** is the user-facing description of the `Product`.
+        sku:
+          type:
+          - string
+          - 'null'
+          description: SKU
+        product_type:
+          type: string
+          description: Product type
+        out_of_stock_sales:
+          type:
+          - boolean
+          - 'null'
+          description: Out of stock sales
+        weight:
+          type:
+          - number
+          - 'null'
+          description: Weight
+        weight_unit:
+          type: string
+          description: Weight unit
+        height:
+          type:
+          - number
+          - 'null'
+          description: Height
+        width:
+          type:
+          - number
+          - 'null'
+          description: Width
+        length:
+          type:
+          - number
+          - 'null'
+          description: Length
+        dimensions_unit:
+          type:
+          - string
+          - 'null'
+          description: Dimensions unit
+        tax_category_id:
+          type:
+          - string
+          - 'null'
+          description: Tax category ID
+        taxable:
+          type:
+          - string
+          - 'null'
+          description: Taxable
+        track_quantity:
+          type:
+          - boolean
+          - 'null'
+          description: Track Quantity
+        archived:
+          type:
+          - boolean
+          - 'null'
+          description: Archived
+        visible:
+          type:
+          - boolean
+          - 'null'
+          description: Is visible
+        fulfillment_required:
+          type:
+          - boolean
+          - 'null'
+          description: Fulfillment required
+        country_of_manufacture_id:
+          type:
+          - string
+          - 'null'
+          description: Country of manufacture
+        image_ids:
+          type:
+          - array
+          - 'null'
+          description: The images for the variant.
+        fulfillments_location_ids:
+          type:
+          - array
+          - 'null'
+          description: The fulfillment locations for the variant.
+        properties_values:
+          type: array
+          description: The property values of the Variant. e.g. 'Large', 'Red' etc.
+          items:
+            type: object
+            properties:
+              property_id:
+                type: integer
+                description: The ID of the property
+              value:
+                type: string
+                description: The value
+        has_access_to_all_valid_assets:
+          type:
+          - boolean
+          - 'null'
+          description: All-or-nothing digital-asset access. When true, a purchase grants access to every valid Asset. Set false and pass `asset_ids` to grant only specific ones.
+        asset_ids:
+          type:
+          - array
+          - 'null'
+          description: Digital-asset access. The IDs of workspace Assets a purchase of this variant should grant access to. Pair with `has_access_to_all_valid_assets` (set it false to grant only these). This replaces the current set.
+          items:
+            type: integer
+        included_courses_attributes:
+          type: array
+          description: Course access to grant. Each entry links a Course by `course_id`; a purchase grants access to it. When creating a grant, omit `included_sections_attributes` for FULL-course access, or list specific sections for PARTIAL access. On an existing grant, omitting sections does NOT convert partial access to full; manage sections explicitly (add via `courses_section_id`, remove via `id` + `_destroy`). To revoke the whole grant, pass its `id` with `_destroy` set to true.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Existing grant ID (for update/removal).
+              _destroy:
+                type: boolean
+                description: Pass true (with id) to revoke the grant.
+              course_id:
+                type: integer
+                description: The ID of the Course to grant access to.
+              included_sections_attributes:
+                type: array
+                description: Specific sections for partial-course access.
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Existing included-section ID (for update/removal).
+                    _destroy:
+                      type: boolean
+                      description: Pass true (with id) to remove the section grant.
+                    courses_section_id:
+                      type: integer
+                      description: The ID of the course section to grant.
+        included_space_groups_attributes:
+          type: array
+          description: Community access to grant. Each entry links a Community Space Group by `communities_space_group_id`; a purchase grants access to the whole group. To revoke, pass the grant's `id` with `_destroy` set to true.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Existing grant ID (for update/removal).
+              _destroy:
+                type: boolean
+                description: Pass true (with id) to revoke the grant.
+              communities_space_group_id:
+                type: integer
+                description: The ID of the Community Space Group to grant access to.
+      example:
+        products_variant:
+          name: Heavy Duty Steel variant
+          description: Dolore provident unde quas.
+          sku: LxbnGP0kqyqzQDTK
+          product_type: physical
+          out_of_stock_sales: true
+          weight: '24.0'
+          weight_unit: lb
+          height: '96.0'
+          width: '418.0'
+          length: '66.0'
+          dimensions_unit: inches
+          tax_category_id: null
+          has_access_to_all_valid_assets: false
+          asset_ids:
+          - 904
+          included_courses_attributes:
+          - id: 31
+            course_id: 42
+            included_sections_attributes:
+            - courses_section_id: 301
+          included_space_groups_attributes:
+          - id: 19
+            _destroy: true
+          taxable: null
+          track_quantity: false
+          archived: false
+          visible: true
+          fulfillment_required: false
+          country_of_manufacture_id: null
+          image_ids: []
+          fulfillments_location_ids: []
+    ProductsVariantParameters:
+      type: object
+      title: Variants
+      description: Variants
+      required:
+      - name
+      - product_type
+      - weight_unit
+      - properties_values
+      properties:
+        name:
+          type: string
+          description: Name
+        description:
+          type:
+          - string
+          - 'null'
+          description: The description of the variant. The description of the **default variant** is the user-facing description of the `Product`.
+        sku:
+          type:
+          - string
+          - 'null'
+          description: SKU
+        product_type:
+          type: string
+          description: '`physical` or `digital`. Drives checkout behavior: a physical variant makes checkout collect a shipping address (and shipping options); a digital variant skips both. Unset behaves like digital at checkout, so set it to match the real-world goods.
+
+            '
+          enum:
+          - physical
+          - digital
+        out_of_stock_sales:
+          type:
+          - boolean
+          - 'null'
+          description: Out of stock sales
+        weight:
+          type:
+          - number
+          - 'null'
+          description: Weight
+        weight_unit:
+          type: string
+          description: Weight unit
+        height:
+          type:
+          - number
+          - 'null'
+          description: Height
+        width:
+          type:
+          - number
+          - 'null'
+          description: Width
+        length:
+          type:
+          - number
+          - 'null'
+          description: Length
+        dimensions_unit:
+          type:
+          - string
+          - 'null'
+          description: Dimensions unit
+        tax_category_id:
+          type:
+          - string
+          - 'null'
+          description: Tax category ID
+        taxable:
+          type:
+          - string
+          - 'null'
+          description: Taxable
+        track_quantity:
+          type:
+          - boolean
+          - 'null'
+          description: Track Quantity
+        archived:
+          type:
+          - boolean
+          - 'null'
+          description: Archived
+        visible:
+          type:
+          - boolean
+          - 'null'
+          description: Is visible
+        fulfillment_required:
+          type:
+          - boolean
+          - 'null'
+          description: Fulfillment required
+        country_of_manufacture_id:
+          type:
+          - string
+          - 'null'
+          description: Country of manufacture
+        image_ids:
+          type:
+          - array
+          - 'null'
+          description: The images for the variant.
+        fulfillments_location_ids:
+          type:
+          - array
+          - 'null'
+          description: The fulfillment locations for the variant.
+        properties_values:
+          type: array
+          description: The property values of the Variant. e.g. 'Large', 'Red' etc.
+          items:
+            type: object
+            properties:
+              property_id:
+                type: integer
+                description: The ID of the property
+              value:
+                type: string
+                description: The value
+        has_access_to_all_valid_assets:
+          type:
+          - boolean
+          - 'null'
+          description: All-or-nothing digital-asset access. When true, a purchase grants access to every valid Asset. Set false and pass `asset_ids` to grant only specific ones.
+        asset_ids:
+          type:
+          - array
+          - 'null'
+          description: Digital-asset access. The IDs of workspace Assets a purchase of this variant should grant access to. Pair with `has_access_to_all_valid_assets` (set it false to grant only these). On update this replaces the current set.
+          items:
+            type: integer
+        included_courses_attributes:
+          type: array
+          description: Course access to grant. Each entry links a Course by `course_id`; a purchase grants access to it. When creating a grant, omit `included_sections_attributes` for FULL-course access, or list specific sections for PARTIAL access. On an existing grant, omitting sections does NOT convert partial access to full; manage sections explicitly (add via `courses_section_id`, remove via `id` + `_destroy`). To revoke the whole grant, pass its `id` with `_destroy` set to true.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Existing grant ID (for update/removal).
+              _destroy:
+                type: boolean
+                description: Pass true (with id) to revoke the grant.
+              course_id:
+                type: integer
+                description: The ID of the Course to grant access to.
+              included_sections_attributes:
+                type: array
+                description: Specific sections for partial-course access.
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Existing included-section ID (for update/removal).
+                    _destroy:
+                      type: boolean
+                      description: Pass true (with id) to remove the section grant.
+                    courses_section_id:
+                      type: integer
+                      description: The ID of the course section to grant.
+        included_space_groups_attributes:
+          type: array
+          description: Community access to grant. Each entry links a Community Space Group by `communities_space_group_id`; a purchase grants access to the whole group. To revoke, pass the grant's `id` with `_destroy` set to true.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Existing grant ID (for update/removal).
+              _destroy:
+                type: boolean
+                description: Pass true (with id) to revoke the grant.
+              communities_space_group_id:
+                type: integer
+                description: The ID of the Community Space Group to grant access to.
+      example:
+        products_variant:
+          name: Small Aluminum Gloves variant 393f
+          description: Dolore provident unde quas.
+          sku: LxbnGP0kqyqzQDTK
+          product_type: physical
+          out_of_stock_sales: true
+          weight: '24.0'
+          weight_unit: lb
+          height: '96.0'
+          width: '418.0'
+          length: '66.0'
+          dimensions_unit: inches
+          tax_category_id: null
+          has_access_to_all_valid_assets: false
+          asset_ids:
+          - 904
+          included_courses_attributes:
+          - course_id: 42
+          included_space_groups_attributes:
+          - communities_space_group_id: 8
+          taxable: null
+          track_quantity: false
+          archived: false
+          visible: true
+          fulfillment_required: false
+          country_of_manufacture_id: null
+          image_ids: []
+          fulfillments_location_ids: []
+    ProductsVariantAttributes:
+      type: object
+      title: Variants
+      description: Variants
+      properties:
+        id:
+          type: integer
+          description: ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Variant public ID
+        product_id:
+          type: integer
+          description: Product ID
+        name:
+          type: string
+          description: Name
+        description:
+          type:
+          - string
+          - 'null'
+          description: The description of the variant. The description of the **default variant** is the user-facing description of the `Product`.
+        sku:
+          type:
+          - string
+          - 'null'
+          description: SKU
+        product_type:
+          type: string
+          description: '`physical` or `digital`. Drives checkout behavior: a physical variant makes checkout collect a shipping address (and shipping options); a digital variant skips both. Unset behaves like digital at checkout, so set it to match the real-world goods.
+
+            '
+          enum:
+          - physical
+          - digital
+        properties_value_ids:
+          type:
+          - array
+          - 'null'
+          minContains: 0
+          contains:
+            type: string
+          description: Properties values
+        out_of_stock_sales:
+          type:
+          - string
+          - 'null'
+          description: Out of stock sales
+        weight:
+          type:
+          - number
+          - 'null'
+          description: Weight
+        weight_unit:
+          type: string
+          description: Weight unit
+        height:
+          type:
+          - number
+          - 'null'
+          description: Height
+        width:
+          type:
+          - number
+          - 'null'
+          description: Width
+        length:
+          type:
+          - number
+          - 'null'
+          description: Length
+        dimensions_unit:
+          type:
+          - string
+          - 'null'
+          description: Dimensions unit
+        quantity:
+          type:
+          - integer
+          - 'null'
+          description: Quantity
+        tag_ids:
+          type:
+          - array
+          - 'null'
+          minContains: 0
+          contains:
+            type: integer
+          description: Tags
+        tax_category_id:
+          type:
+          - string
+          - 'null'
+          description: Tax category ID
+        asset_ids:
+          type:
+          - array
+          - 'null'
+          description: Digital-asset access. The IDs of the workspace Assets a purchase of this variant grants access to. See also `has_access_to_all_valid_assets`.
+          items:
+            type: integer
+        has_access_to_all_valid_assets:
+          type:
+          - boolean
+          - 'null'
+          description: When true, a purchase grants access to every valid Asset (rather than only the specific `asset_ids`).
+        included_courses:
+          type:
+          - array
+          - 'null'
+          description: Course grants configured directly on this variant. This array excludes effective grants inherited from the product's default variant. Each entry links a Course; `full_access` is true for the whole course, otherwise `included_section_ids` lists the specific sections (partial access).
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: The included-course grant ID (pass with _destroy to revoke).
+              course_id:
+                type: integer
+                description: The ID of the granted Course.
+              full_access:
+                type: boolean
+                description: Whether the whole course is granted (vs. specific sections).
+              included_section_ids:
+                type: array
+                description: The granted course section IDs. Always present; for full access it lists every non-root section, for partial access only the granted ones.
+                items:
+                  type: integer
+        included_space_groups:
+          type:
+          - array
+          - 'null'
+          description: Community Space Group grants configured directly on this variant. This array excludes effective grants inherited from the product's default variant. `spaces_mode` is "all" (the whole group) or "specified"; when specified, `included_space_ids` lists the spaces.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: The included-space-group grant ID (pass with _destroy to revoke).
+              communities_space_group_id:
+                type: integer
+                description: The ID of the granted Community Space Group.
+              spaces_mode:
+                type: string
+                description: '"all" (whole group) or "specified" (specific spaces).'
+              included_space_ids:
+                type: array
+                description: The granted community space IDs when spaces_mode is "specified".
+                items:
+                  type: integer
+        taxable:
+          type:
+          - string
+          - 'null'
+          description: Taxable
+        track_quantity:
+          type:
+          - boolean
+          - 'null'
+          description: Track Quantity
+        archived:
+          type:
+          - boolean
+          - 'null'
+          description: Archived
+        visible:
+          type:
+          - boolean
+          - 'null'
+          description: Is visible
+        price_ids:
+          type:
+          - array
+          - 'null'
+          description: Price IDs
+        fulfillment_required:
+          type:
+          - boolean
+          - 'null'
+          description: Fulfillment required
+        country_of_manufacture_id:
+          type:
+          - string
+          - 'null'
+          description: Country of manufacture
+        image_ids:
+          type:
+          - array
+          - 'null'
+          description: The images for the variant.
+        fulfillments_location_ids:
+          type:
+          - array
+          - 'null'
+          description: The fulfillment locations for the variant.
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        default:
+          type:
+          - boolean
+          - 'null'
+          description: Identifies if the variant is the default variant for the product.
+        properties_values:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            title: Properties Values
+            description: Properties Values
+            properties:
+              property_id:
+                type:
+                - integer
+                - 'null'
+                description: The ID of the property
+              value:
+                type:
+                - string
+                - 'null'
+                description: The value
+          description: The property values of the Variant. e.g. 'Large', 'Red' etc.
+        created_by_platform_application:
+          type: object
+          description: The platform application that created the variant
+          properties:
+            public_id:
+              type: string
+              description: The public ID of the platform application
+            trusted_skus:
+              type: array
+              description: Array of third party sources for which the SKUs can be relied on
+              items:
+                type: string
+      example:
+        id: 15
+        public_id: NRBUIp
+        product_id: 24
+        name: Small Aluminum Gloves variant 393f
+        description: Dolore provident unde quas.
+        sku: LxbnGP0kqyqzQDTK
+        product_type: physical
+        properties_value_ids:
+        - null
+        out_of_stock_sales: null
+        weight: '24.0'
+        weight_unit: lb
+        height: '96.0'
+        width: '418.0'
+        length: '66.0'
+        dimensions_unit: inches
+        quantity: 0
+        tag_ids:
+        - 39
+        tax_category_id: null
+        asset_ids:
+        - 904
+        has_access_to_all_valid_assets: false
+        included_courses:
+        - id: 31
+          course_id: 42
+          full_access: true
+          included_section_ids:
+          - 301
+          - 302
+        included_space_groups:
+        - id: 19
+          communities_space_group_id: 8
+          spaces_mode: all
+          included_space_ids: []
+        taxable: null
+        track_quantity: false
+        archived: false
+        visible: true
+        price_ids: []
+        fulfillment_required: false
+        country_of_manufacture_id: null
+        image_ids: []
+        fulfillments_location_ids: []
+        created_at: '2025-08-11T19:14:39.799Z'
+        updated_at: '2025-08-11T19:14:39.799Z'
+        default: false
+        properties_values:
+        - property_id: 15
+          value: Red
+        created_by_platform_application: null
+      required:
+      - archived
+      - asset_ids
+      - country_of_manufacture_id
+      - created_at
+      - created_by_platform_application
+      - default
+      - description
+      - dimensions_unit
+      - fulfillment_required
+      - fulfillments_location_ids
+      - has_access_to_all_valid_assets
+      - height
+      - id
+      - image_ids
+      - included_courses
+      - included_space_groups
+      - length
+      - name
+      - out_of_stock_sales
+      - price_ids
+      - product_id
+      - product_type
+      - properties_value_ids
+      - properties_values
+      - public_id
+      - quantity
+      - sku
+      - tag_ids
+      - tax_category_id
+      - taxable
+      - track_quantity
+      - updated_at
+      - visible
+      - weight
+      - weight_unit
+      - width
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

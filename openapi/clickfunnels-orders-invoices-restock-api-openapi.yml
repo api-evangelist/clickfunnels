@@ -1,0 +1,362 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Orders::Invoices::Restock API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Orders::Invoices::Restock
+  description: '> Restocks make it possible to restock in case a priorly issued fulfillment is not going to be fulfilled.
+
+
+    If a customer pays for an invoice that will not get fulfilled (e.g. the invoice may have been refunded), a restock needs to be created so the committed inventory quantity can be returned to available inventory.
+
+
+    A restock can also be cancelled, in which case the inventory quantity will be adjusted back.
+
+    '
+paths:
+  /workspaces/{workspace_id}/orders/invoices/restocks:
+    get:
+      tags:
+      - Orders::Invoices::Restock
+      summary: List Restocks
+      description: List Restocks
+      operationId: listRestocks
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  title: Restocks
+                  description: Restocks
+                  properties:
+                    id:
+                      type: integer
+                      description: Restock ID
+                    public_id:
+                      type:
+                      - string
+                      - 'null'
+                      description: Public Restock ID
+                    workspace_id:
+                      type: integer
+                      description: Workspace ID
+                    contact_id:
+                      type: integer
+                      description: Contact ID
+                    status:
+                      type: string
+                      enum:
+                      - cancelled
+                      - restocked
+                      description: Status
+                    created_at:
+                      type:
+                      - string
+                      - 'null'
+                      format: date-time
+                      description: Created At Date
+                    updated_at:
+                      type:
+                      - string
+                      - 'null'
+                      format: date-time
+                      description: Updated At Date
+                    included_invoices_line_items:
+                      type:
+                      - array
+                      - 'null'
+                      items:
+                        type: object
+                        title: Included Orders Invoices Line Items
+                        description: Included Orders Invoices Line Item
+                        properties:
+                          id:
+                            type: integer
+                            description: Included Orders Line Item ID
+                          public_id:
+                            type:
+                            - string
+                            - 'null'
+                            description: Public ID
+                          fulfillment_id:
+                            type: integer
+                            description: Restock ID
+                          quantity:
+                            type: integer
+                            description: Quantity
+                          invoices_line_item_id:
+                            type: integer
+                            description: Invoices Line Item
+                      description: Included order invoices line items
+                  example:
+                    id: 1
+                    public_id: lDUzwt
+                    workspace_id: 42
+                    contact_id: 6
+                    status: restocked
+                    created_at: '2024-02-07T13:24:59.204Z'
+                    updated_at: '2024-02-07T13:24:59.204Z'
+                    included_invoices_line_items:
+                    - id: 1
+                      public_id: BegDsZ
+                      fulfillment_id: 1
+                      quantity: 1
+                      invoices_line_item_id: 2
+              example:
+              - id: 1
+                public_id: lDUzwt
+                workspace_id: 42
+                contact_id: 6
+                status: restocked
+                created_at: '2024-02-07T13:24:59.204Z'
+                updated_at: '2024-02-07T13:24:59.204Z'
+                included_invoices_line_items:
+                - id: 1
+                  public_id: BegDsZ
+                  quantity: 1
+                  invoices_line_item_id: 2
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+  /orders/invoices/restocks/{id}:
+    get:
+      tags:
+      - Orders::Invoices::Restock
+      summary: Fetch Restock
+      description: Fetch Restock
+      operationId: getRestock
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Restock
+                description: Restock
+                properties:
+                  id:
+                    type: integer
+                    description: Restock
+                  public_id:
+                    type:
+                    - string
+                    - 'null'
+                    description: Public Restock ID
+                  workspace_id:
+                    type: integer
+                    description: Workspace ID
+                  contact_id:
+                    type: integer
+                    description: Contact ID
+                  status:
+                    type: string
+                    enum:
+                    - cancelled
+                    - restocked
+                    description: Status
+                  created_at:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: Created At Date
+                  updated_at:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: Updated At Date
+                  included_invoices_line_items:
+                    type:
+                    - array
+                    - 'null'
+                    items:
+                      type: object
+                      title: Included Orders Invoices Line Items
+                      description: Included Orders Invoices Line Item
+                      properties:
+                        id:
+                          type: integer
+                          description: Included Orders Line Item ID
+                        public_id:
+                          type:
+                          - string
+                          - 'null'
+                          description: Public ID
+                        fulfillment_id:
+                          type: integer
+                          description: Restock ID
+                        quantity:
+                          type: integer
+                          description: Quantity
+                        invoices_line_item_id:
+                          type: integer
+                          description: Invoices Line Item
+                    description: Included Order Invoices Line Items
+                example:
+                  id: 1
+                  public_id: lDUzwt
+                  workspace_id: 42
+                  contact_id: 6
+                  status: restocked
+                  created_at: '2024-02-07T13:24:59.204Z'
+                  updated_at: '2024-02-07T13:24:59.204Z'
+                  included_invoices_line_items:
+                  - id: 1
+                    public_id: BegDsZ
+                    fulfillment_id: 1
+                    quantity: 1
+                    invoices_line_item_id: 2
+              example:
+                id: 1
+                public_id: lDUzwt
+                workspace_id: 42
+                contact_id: 6
+                status: restocked
+                created_at: '2024-02-07T13:24:59.204Z'
+                updated_at: '2024-02-07T13:24:59.204Z'
+                included_invoices_line_items:
+                - id: 1
+                  public_id: BegDsZ
+                  fulfillment_id: 1
+                  quantity: 1
+                  invoices_line_item_id: 2
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

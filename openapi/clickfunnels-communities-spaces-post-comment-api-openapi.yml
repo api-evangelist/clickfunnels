@@ -1,0 +1,836 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Communities::Spaces::Post::Comment API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Communities::Spaces::Post::Comment
+  description: '> Comments are member replies on a Community Post.
+
+
+    A Comment belongs to a Post and is authored by a Contact. Comments support rich HTML body content and threaded replies via `parent_comment_id`. Comments created via the API are auto-approved.
+
+    '
+paths:
+  /communities/spaces/posts/{post_id}/comments:
+    get:
+      tags:
+      - Communities::Spaces::Post::Comment
+      summary: List Comments
+      description: List comments for a post
+      operationId: listCommunitiesSpacesPostsComments
+      parameters:
+      - name: post_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommunitiesSpacesPostsCommentAttributes'
+              example:
+              - id: 202
+                public_id: MnOpQr
+                contact_id: 55
+                body: Great post, thanks for sharing!
+                url: https://example.myclickfunnels.com/communities/posts/AbCdEf/comments/MnOpQr
+                contact:
+                  id: 55
+                  public_id: GhIjKl
+                  email_address: jane@example.com
+                  first_name: Jane
+                  last_name: Doe
+                  phone_number: null
+                group:
+                  id: 1
+                  public_id: BcDeFg
+                  name: General
+                post:
+                  id: 101
+                  public_id: AbCdEf
+                  title: Welcome to the community!
+                  url: https://example.myclickfunnels.com/communities/posts/AbCdEf
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Communities::Spaces::Post::Comment
+      summary: Create Comment
+      description: Create a comment on a post. Comments created via the API are auto-approved. The `contact_id` is optional and defaults to the connected user's own contact. Use `parent_comment_id` for threaded replies.
+      operationId: createCommunitiesSpacesPostsComments
+      parameters:
+      - name: post_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Comment
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                communities_spaces_posts_comment:
+                  type: object
+                  $ref: '#/components/schemas/CommunitiesSpacesPostsCommentParameters'
+            example:
+              communities_spaces_posts_comment:
+                body: <p>Great post, thanks for sharing!</p>
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunitiesSpacesPostsCommentAttributes'
+              example:
+                id: 202
+                public_id: MnOpQr
+                contact_id: 55
+                body: Great post, thanks for sharing!
+                url: https://example.myclickfunnels.com/communities/posts/AbCdEf/comments/MnOpQr
+                contact:
+                  id: 55
+                  public_id: GhIjKl
+                  email_address: jane@example.com
+                  first_name: Jane
+                  last_name: Doe
+                  phone_number: null
+                group:
+                  id: 1
+                  public_id: BcDeFg
+                  name: General
+                post:
+                  id: 101
+                  public_id: AbCdEf
+                  title: Welcome to the community!
+                  url: https://example.myclickfunnels.com/communities/posts/AbCdEf
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Body can't be blank
+  /communities/spaces/posts/comments/{id}/approve:
+    post:
+      tags:
+      - Communities::Spaces::Post::Comment
+      summary: Approve Comment
+      description: Approve a comment. Sets `approved_at` to the current time and applies any pending draft edit to the live body.
+      operationId: approveCommunitiesSpacesPostsComment
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunitiesSpacesPostsCommentAttributes'
+              example:
+                id: 202
+                public_id: MnOpQr
+                contact_id: 55
+                body: Great post, thanks for sharing!
+                url: https://example.myclickfunnels.com/communities/posts/AbCdEf/comments/MnOpQr
+                contact:
+                  id: 55
+                  public_id: GhIjKl
+                  email_address: jane@example.com
+                  first_name: Jane
+                  last_name: Doe
+                  phone_number: null
+                group:
+                  id: 1
+                  public_id: BcDeFg
+                  name: General
+                post:
+                  id: 101
+                  public_id: AbCdEf
+                  title: Welcome to the community!
+                  url: https://example.myclickfunnels.com/communities/posts/AbCdEf
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Forbidden
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /communities/spaces/posts/comments/{id}/decline:
+    post:
+      tags:
+      - Communities::Spaces::Post::Comment
+      summary: Decline Comment
+      description: Decline a comment. Sets `declined_at` to the current time, marking it as rejected.
+      operationId: declineCommunitiesSpacesPostsComment
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunitiesSpacesPostsCommentAttributes'
+              example:
+                id: 202
+                public_id: MnOpQr
+                contact_id: 55
+                body: Great post, thanks for sharing!
+                url: https://example.myclickfunnels.com/communities/posts/AbCdEf/comments/MnOpQr
+                contact:
+                  id: 55
+                  public_id: GhIjKl
+                  email_address: jane@example.com
+                  first_name: Jane
+                  last_name: Doe
+                  phone_number: null
+                group:
+                  id: 1
+                  public_id: BcDeFg
+                  name: General
+                post:
+                  id: 101
+                  public_id: AbCdEf
+                  title: Welcome to the community!
+                  url: https://example.myclickfunnels.com/communities/posts/AbCdEf
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Forbidden
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /communities/spaces/posts/comments/{id}/dismiss_reports:
+    post:
+      tags:
+      - Communities::Spaces::Post::Comment
+      summary: Dismiss Comment Reports
+      description: Clear the comment's report flags (reported_at, report_count, report_type) and approve it.
+      operationId: dismissReportsCommunitiesSpacesPostsComment
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunitiesSpacesPostsCommentAttributes'
+              example:
+                id: 202
+                public_id: MnOpQr
+                contact_id: 55
+                body: Great post, thanks for sharing!
+                url: https://example.myclickfunnels.com/communities/posts/AbCdEf/comments/MnOpQr
+                contact:
+                  id: 55
+                  public_id: GhIjKl
+                  email_address: jane@example.com
+                  first_name: Jane
+                  last_name: Doe
+                  phone_number: null
+                group:
+                  id: 1
+                  public_id: BcDeFg
+                  name: General
+                post:
+                  id: 101
+                  public_id: AbCdEf
+                  title: Welcome to the community!
+                  url: https://example.myclickfunnels.com/communities/posts/AbCdEf
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Forbidden
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /communities/spaces/posts/comments/{id}:
+    get:
+      tags:
+      - Communities::Spaces::Post::Comment
+      summary: Fetch Comment
+      description: Retrieve a comment
+      operationId: getCommunitiesSpacesPostsComments
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunitiesSpacesPostsCommentAttributes'
+              example:
+                id: 202
+                public_id: MnOpQr
+                contact_id: 55
+                body: Great post, thanks for sharing!
+                url: https://example.myclickfunnels.com/communities/posts/AbCdEf/comments/MnOpQr
+                contact:
+                  id: 55
+                  public_id: GhIjKl
+                  email_address: jane@example.com
+                  first_name: Jane
+                  last_name: Doe
+                  phone_number: null
+                group:
+                  id: 1
+                  public_id: BcDeFg
+                  name: General
+                post:
+                  id: 101
+                  public_id: AbCdEf
+                  title: Welcome to the community!
+                  url: https://example.myclickfunnels.com/communities/posts/AbCdEf
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Communities::Spaces::Post::Comment
+      summary: Update Comment
+      description: Update a comment. The `contact_id` and `parent_comment_id` fields are ignored on update.
+      operationId: updateCommunitiesSpacesPostsComments
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Comment
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                communities_spaces_posts_comment:
+                  type: object
+                  $ref: '#/components/schemas/CommunitiesSpacesPostsCommentParametersUpdate'
+            example:
+              communities_spaces_posts_comment:
+                body: <p>Updated comment text.</p>
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunitiesSpacesPostsCommentAttributes'
+              example:
+                id: 202
+                public_id: MnOpQr
+                contact_id: 55
+                body: Updated comment text.
+                url: https://example.myclickfunnels.com/communities/posts/AbCdEf/comments/MnOpQr
+                contact:
+                  id: 55
+                  public_id: GhIjKl
+                  email_address: jane@example.com
+                  first_name: Jane
+                  last_name: Doe
+                  phone_number: null
+                group:
+                  id: 1
+                  public_id: BcDeFg
+                  name: General
+                post:
+                  id: 101
+                  public_id: AbCdEf
+                  title: Welcome to the community!
+                  url: https://example.myclickfunnels.com/communities/posts/AbCdEf
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    delete:
+      tags:
+      - Communities::Spaces::Post::Comment
+      summary: Remove Comment
+      description: Delete a comment
+      operationId: removeCommunitiesSpacesPostsComments
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    CommunitiesSpacesPostsCommentAttributes:
+      type: object
+      title: Communities::Spaces::Post::Comment
+      description: Communities::Spaces::Post::Comment
+      properties:
+        id:
+          type: integer
+          description: Comment ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Comment public ID
+        contact_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of the Contact who authored the comment
+        body:
+          type:
+          - string
+          - 'null'
+          description: Comment body as plain text
+        url:
+          type:
+          - string
+          - 'null'
+          description: Canonical URL of the comment
+        contact:
+          description: Short representation of the authoring Contact, or null if the contact has been deleted
+          type:
+          - object
+          - 'null'
+          properties:
+            id:
+              type: integer
+              description: Contact ID
+            public_id:
+              type: string
+              description: Contact public ID
+            email_address:
+              type:
+              - string
+              - 'null'
+              description: Contact email address
+            first_name:
+              type:
+              - string
+              - 'null'
+              description: Contact first name
+            last_name:
+              type:
+              - string
+              - 'null'
+              description: Contact last name
+            phone_number:
+              type:
+              - string
+              - 'null'
+              description: Contact phone number
+        group:
+          description: The Space Group the parent post belongs to
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Space Group ID
+            public_id:
+              type:
+              - string
+              - 'null'
+              description: Space Group public ID
+            name:
+              type:
+              - string
+              - 'null'
+              description: Space Group name
+        post:
+          description: The Post this comment belongs to
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Post ID
+            public_id:
+              type:
+              - string
+              - 'null'
+              description: Post public ID
+            title:
+              type:
+              - string
+              - 'null'
+              description: Post title
+            url:
+              type:
+              - string
+              - 'null'
+              description: Post canonical URL
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at
+      example:
+        id: 202
+        public_id: MnOpQr
+        contact_id: 55
+        body: Great post, thanks for sharing!
+        url: https://example.myclickfunnels.com/communities/posts/AbCdEf/comments/MnOpQr
+        contact:
+          id: 55
+          public_id: GhIjKl
+          email_address: jane@example.com
+          first_name: Jane
+          last_name: Doe
+          phone_number: null
+        group:
+          id: 1
+          public_id: BcDeFg
+          name: General
+        post:
+          id: 101
+          public_id: AbCdEf
+          title: Welcome to the community!
+          url: https://example.myclickfunnels.com/communities/posts/AbCdEf
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - body
+      - contact
+      - contact_id
+      - created_at
+      - group
+      - id
+      - post
+      - public_id
+      - updated_at
+      - url
+    CommunitiesSpacesPostsCommentParametersUpdate:
+      type: object
+      title: Communities::Spaces::Post::Comment
+      description: Communities::Spaces::Post::Comment
+      properties:
+        body:
+          type:
+          - string
+          - 'null'
+          description: Comment body as rich HTML
+        skip_notifications:
+          type:
+          - boolean
+          - 'null'
+          description: When true, suppresses email/push notifications for this comment
+      example:
+        communities_spaces_posts_comment:
+          body: <p>Updated comment text.</p>
+    CommunitiesSpacesPostsCommentParameters:
+      type: object
+      title: Communities::Spaces::Post::Comment
+      description: Communities::Spaces::Post::Comment
+      required:
+      - body
+      properties:
+        body:
+          type: string
+          description: Comment body as rich HTML
+        contact_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of the Contact to author the comment. Optional — defaults to the connected user's own contact.
+        parent_comment_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of the parent comment for threaded replies. Must be a comment on the same post.
+        skip_notifications:
+          type:
+          - boolean
+          - 'null'
+          description: When true, suppresses email/push notifications for this comment
+      example:
+        communities_spaces_posts_comment:
+          body: <p>Great post, thanks for sharing!</p>
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

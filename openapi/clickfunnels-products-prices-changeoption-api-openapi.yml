@@ -1,0 +1,340 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Products::Prices::Change Option API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Products::Prices::ChangeOption
+  description: '> Allowed variant/price upgrade and downgrade targets for a source price.
+
+
+    Merchant-configured rows define which variant + price combinations a subscription using a
+
+    given source price may switch to. The discovery endpoint returns these grouped by target
+
+    variant; each group lists the prices on that target variant the subscription may move to.
+
+
+    Use the returned `products_price_id`s as the body''s `products_price_id` on
+
+    `POST /orders/line_items/:line_item_id/changes` (preview) or
+
+    `POST /orders/line_items/:line_item_id/changes/perform` (commit).
+
+
+    See [Step 1 - Discover what''s allowed](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-1---discover-whats-allowed) in the [Subscription Changes Skill](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md).
+
+    '
+paths:
+  /products/prices/{price_id}/change_options:
+    get:
+      tags:
+      - Products::Prices::ChangeOption
+      summary: List Upgrade/Downgrade Options
+      description: 'Returns the allowed upgrade and downgrade target variants for a price, grouped by
+
+        target variant. Each group lists the prices on the target variant that a subscription
+
+        using this source price may switch to. Use this to render dynamic upgrade pricing
+
+        pages, or to source target `products_price_id` values for the line item change
+
+        endpoints: `POST /orders/line_items/{line_item_id}/changes` (preview) and
+
+        `POST /orders/line_items/{line_item_id}/changes/perform` (commit).
+
+
+        See [Step 1 - Discover what''s allowed](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-1---discover-whats-allowed) in the [Subscription Changes Skill](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md)
+
+        for the response shape and how to treat an empty result.
+
+        '
+      operationId: listProductsPricesChangeOptions
+      parameters:
+      - name: price_id
+        in: path
+        required: true
+        description: 'The source price for which to look up allowed upgrade/downgrade targets.
+
+          Accepts either the integer database id or the obfuscated `public_id` string.
+
+          '
+        schema:
+          oneOf:
+          - type: integer
+          - type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsPricesChangeOptionsResponse'
+              example:
+                products_prices_change_options:
+                  upgrade:
+                  - products_variant:
+                      id: 124
+                      public_id: k7xQzR
+                      name: Pro
+                      product_id: 88
+                      prices:
+                      - id: 456
+                        public_id: aBcDeF
+                        name: Pro Monthly
+                        key: pro_monthly_2024
+                        amount: '20.00'
+                        currency: USD
+                        duration: null
+                        interval: months
+                        interval_count: 1
+                      - id: 457
+                        public_id: gHiJkL
+                        name: Pro Annual
+                        key: pro_annual_2024
+                        amount: '200.00'
+                        currency: USD
+                        duration: null
+                        interval: years
+                        interval_count: 1
+                  downgrade:
+                  - products_variant:
+                      id: 125
+                      public_id: m2qYpA
+                      name: Basic
+                      product_id: 88
+                      prices:
+                      - id: 789
+                        public_id: sTuVwX
+                        name: Basic Monthly
+                        key: basic_monthly_2024
+                        amount: '5.00'
+                        currency: USD
+                        duration: null
+                        interval: months
+                        interval_count: 1
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    ProductsPricesChangeOptionsResponse:
+      type: object
+      title: Price Change Options
+      description: 'Allowed upgrade and downgrade target variants for a source price.
+
+        Each group lists a target variant alongside the prices on that variant
+
+        a subscription using this source price may switch to.
+
+        '
+      properties:
+        products_prices_change_options:
+          type: object
+          properties:
+            upgrade:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductsPricesChangeOptionsVariantGroup'
+            downgrade:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductsPricesChangeOptionsVariantGroup'
+      example:
+        products_prices_change_options:
+          upgrade:
+          - products_variant:
+              id: 124
+              public_id: k7xQzR
+              name: Pro
+              product_id: 88
+              prices:
+              - id: 456
+                public_id: aBcDeF
+                name: Pro Monthly
+                key: pro_monthly_2024
+                amount: '20.00'
+                currency: USD
+                duration: null
+                interval: months
+                interval_count: 1
+              - id: 457
+                public_id: gHiJkL
+                name: Pro Annual
+                key: pro_annual_2024
+                amount: '200.00'
+                currency: USD
+                duration: null
+                interval: years
+                interval_count: 1
+          downgrade:
+          - products_variant:
+              id: 125
+              public_id: m2qYpA
+              name: Basic
+              product_id: 88
+              prices:
+              - id: 789
+                public_id: sTuVwX
+                name: Basic Monthly
+                key: basic_monthly_2024
+                amount: '5.00'
+                currency: USD
+                duration: null
+                interval: months
+                interval_count: 1
+    ProductsPricesChangeOptionsVariantGroup:
+      type: object
+      title: Variant Group of Upgrade/Downgrade Prices
+      description: 'A target variant and the prices on that variant the source price may switch to.
+
+        Multiple prices can share the same target variant when the underlying
+
+        upgrade/downgrade configuration allows several billing options on the new variant.
+
+        '
+      properties:
+        products_variant:
+          type: object
+          properties:
+            id:
+              type: integer
+            public_id:
+              type:
+              - string
+              - 'null'
+            name:
+              type:
+              - string
+              - 'null'
+            product_id:
+              type:
+              - integer
+              - 'null'
+            prices:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductsPriceMinimal'
+      example:
+        products_variant:
+          id: 124
+          public_id: k7xQzR
+          name: Pro
+          product_id: 88
+          prices:
+          - id: 456
+            public_id: aBcDeF
+            name: Pro Monthly
+            key: pro_monthly_2024
+            amount: '20.00'
+            currency: USD
+            duration: null
+            interval: months
+            interval_count: 1
+          - id: 457
+            public_id: gHiJkL
+            name: Pro Annual
+            key: pro_annual_2024
+            amount: '200.00'
+            currency: USD
+            duration: null
+            interval: years
+            interval_count: 1
+    ProductsPriceMinimal:
+      type: object
+      title: Products Price (Minimal)
+      description: 'Minimal price representation used wherever a price appears as a nested
+
+        attribute (line items, upgrade/downgrade discovery).
+
+        '
+      properties:
+        id:
+          type: integer
+        public_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        key:
+          type:
+          - string
+          - 'null'
+        amount:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        duration:
+          type:
+          - integer
+          - 'null'
+        interval:
+          type:
+          - string
+          - 'null'
+        interval_count:
+          type:
+          - integer
+          - 'null'
+      example:
+        id: 24
+        public_id: aBcDeF
+        name: Pro Monthly
+        key: pro_monthly_2024
+        amount: '20.00'
+        currency: USD
+        duration: null
+        interval: months
+        interval_count: 1
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

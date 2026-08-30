@@ -1,0 +1,1004 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Discount API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Discount
+  description: '> A reusable, workspace-scoped discount the checkout applies on top of a price.
+
+
+    A Discount is the right tool for a coupon code, a percentage/amount off, or a
+
+    time-boxed sale - anything you would otherwise fake with a second "sale" price.
+
+    It is one reusable object applied on top of the price, so you can start, scope,
+
+    and expire it without touching the product''s prices.
+
+
+    A `code`-type discount (the default) needs a unique `code` that buyers redeem at
+
+    checkout - letters, numbers and hyphens only. `discount_method` decides which amount
+
+    field is required: `percentage` needs `percent` (0.01-100); `fixed` needs a positive
+
+    `amount`. `currency` defaults to the workspace currency and `apply_from` defaults to
+
+    now, so a discount is live immediately unless you schedule it with a future
+
+    `apply_from` and/or expire it with `apply_until`.
+
+
+    By default a discount applies to `all_products`. Set `applies_to` to
+
+    `specific_products` / `specific_variants` / `specific_collections` and pass the
+
+    matching `product_ids` / `variant_ids` / `products_collection_ids` array to scope it.
+
+
+    Two lock-out rules govern the end of a discount''s life. Once it has been redeemed on
+
+    an order its money-affecting fields are locked (422 on update) while renaming and
+
+    expiring still work. Once it has actually expired it is frozen completely - every
+
+    update returns 422 - so rename before you expire, not after. A discount attached to
+
+    an order cannot be deleted at all; `redemptions_count` does not predict that, since
+
+    it only counts completed sales.
+
+    '
+paths:
+  /workspaces/{workspace_id}/discounts:
+    get:
+      tags:
+      - Discount
+      summary: List Discounts
+      description: List the discounts in a workspace.
+      operationId: listDiscounts
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      - name: filter
+        in: query
+        description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[id]=value&filter[another_property]=value1,value2`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
+
+          '
+        required: false
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              description: A comma-separated list of discount IDs to filter by.
+              example: 1,2,3
+            code:
+              type: string
+              description: Filter by discount code (exact match).
+            discount_type:
+              type: string
+              description: Filter by discount type (`code`, `automatic`, `sale`).
+            discount_method:
+              type: string
+              description: Filter by discount method (`percentage`, `fixed`, `shipping`, `bogo`).
+            applies_to:
+              type: string
+              description: Filter by scope (`all_products`, `specific_products`, `specific_variants`, `specific_collections`).
+        style: deepObject
+        explode: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DiscountAttributes'
+              example:
+              - id: 771
+                public_id: gBEDMo
+                workspace_id: 42000
+                name: Launch 20
+                code: LAUNCH20
+                discount_type: code
+                discount_method: percentage
+                amount: null
+                percent: '20.0'
+                currency: usd
+                applies_to: all_products
+                apply_from: '2025-01-01T00:00:00.000Z'
+                apply_until: null
+                limit_1_per_customer: false
+                require_minimum_spend: false
+                require_minimum_spend_amount: null
+                discounts_per_redemption: null
+                redemptions_count: 0
+                product_ids: []
+                variant_ids: []
+                products_collection_ids: []
+                active: true
+                expired: false
+                scheduled: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+              - id: 772
+                public_id: qBEDNp
+                workspace_id: 42000
+                name: Bundle 10 off
+                code: BUNDLE10
+                discount_type: code
+                discount_method: fixed
+                amount: '10.0'
+                percent: null
+                currency: usd
+                applies_to: specific_products
+                apply_from: '2025-01-01T00:00:00.000Z'
+                apply_until: '2025-02-01T00:00:00.000Z'
+                limit_1_per_customer: true
+                require_minimum_spend: true
+                require_minimum_spend_amount: 50
+                discounts_per_redemption: 1
+                redemptions_count: 3
+                product_ids:
+                - 126
+                variant_ids: []
+                products_collection_ids: []
+                active: true
+                expired: false
+                scheduled: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden - the access token's scopes do not cover this request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This access token''s scopes do not grant read access to Store. Granted scopes: contacts:read.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Discount
+      summary: Create Discount
+      description: 'Create a discount in a workspace. A `code`-type discount (the default) needs a unique `code`; a `percentage` discount needs `percent`; a `fixed` discount needs a positive `amount`.
+
+
+        Creating a discount publishes the code; it does not attach it to anything. The link between an order and a discount is a separate applied-discount record, written when a buyer redeems the code at checkout or when a ClickFunnels user applies it in the admin UI - which is why `POST /api/v2/workspaces/{workspace_id}/orders` takes no discount field and the `discount_ids` on an order are read-only. Writing applied discounts is not part of this API yet, and when it lands it will be that record you create rather than a discount field on the order. Until then an integration creates, reads, updates, expires and deletes discounts, and reads back which orders ended up carrying them.
+
+        '
+      operationId: createDiscounts
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Discount
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discount:
+                  type: object
+                  $ref: '#/components/schemas/DiscountParameters'
+            example:
+              discount:
+                name: Launch 20
+                code: LAUNCH20
+                discount_type: code
+                discount_method: percentage
+                percent: '20.0'
+                applies_to: all_products
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscountAttributes'
+              example:
+                id: 771
+                public_id: gBEDMo
+                workspace_id: 42000
+                name: Launch 20
+                code: LAUNCH20
+                discount_type: code
+                discount_method: percentage
+                amount: null
+                percent: '20.0'
+                currency: usd
+                applies_to: all_products
+                apply_from: '2025-01-01T00:00:00.000Z'
+                apply_until: null
+                limit_1_per_customer: false
+                require_minimum_spend: false
+                require_minimum_spend_amount: null
+                discounts_per_redemption: null
+                redemptions_count: 0
+                product_ids: []
+                variant_ids: []
+                products_collection_ids: []
+                active: true
+                expired: false
+                scheduled: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden - the access token's scopes do not cover this request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This access token''s scopes do not grant write access to Store. Granted scopes: store:read.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity - validation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                code_taken:
+                  summary: code already in use
+                  value:
+                    error: 'Request unprocessable: Coupon Code is already being used in another Discount or Coupon'
+                missing_percent:
+                  summary: percentage method with no percent
+                  value:
+                    error: 'Request unprocessable: Percent must be greater than 0'
+                code_characters:
+                  summary: code contains characters other than letters, numbers and hyphens
+                  value:
+                    error: 'Request unprocessable: Coupon Code only allows letters, numbers, and hyphens'
+                expired_on_create:
+                  summary: '`expired` sent on create, at any value including `false`'
+                  value:
+                    error: 'Request unprocessable: `expired` is not a create field. Create the discount, then expire it with `PATCH { "discount": { "expired": true } }`.'
+                unknown_enum_value:
+                  summary: a value outside an enum field's list
+                  value:
+                    error: 'Request unprocessable: `discount_type` must be one of: code, automatic, sale.'
+  /discounts/{id}:
+    get:
+      tags:
+      - Discount
+      summary: Fetch Discount
+      description: Retrieve a single discount.
+      operationId: getDiscounts
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscountAttributes'
+              example:
+                id: 771
+                public_id: gBEDMo
+                workspace_id: 42000
+                name: Launch 20
+                code: LAUNCH20
+                discount_type: code
+                discount_method: percentage
+                amount: null
+                percent: '20.0'
+                currency: usd
+                applies_to: all_products
+                apply_from: '2025-01-01T00:00:00.000Z'
+                apply_until: null
+                limit_1_per_customer: false
+                require_minimum_spend: false
+                require_minimum_spend_amount: null
+                discounts_per_redemption: null
+                redemptions_count: 0
+                product_ids: []
+                variant_ids: []
+                products_collection_ids: []
+                active: true
+                expired: false
+                scheduled: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden - the access token's scopes do not cover this request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This access token''s scopes do not grant read access to Store. Granted scopes: contacts:read.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    patch:
+      tags:
+      - Discount
+      summary: Update Discount
+      description: 'Update a discount. Money-affecting fields are locked once the discount has been redeemed and return 422, while renaming and expiring still work. A discount that is already expired freezes its other fields and returns 422, a rename included - lift the expiry with `expired: false` (the API side of Remove Expiration in the app) or push `apply_until` into the future, then make the change and expire it again.
+
+        '
+      operationId: updateDiscounts
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Discount
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discount:
+                  type: object
+                  $ref: '#/components/schemas/DiscountParametersUpdate'
+            example:
+              discount:
+                expired: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscountAttributes'
+              example:
+                id: 771
+                public_id: gBEDMo
+                workspace_id: 42000
+                name: Launch 20
+                code: LAUNCH20
+                discount_type: code
+                discount_method: percentage
+                amount: null
+                percent: '20.0'
+                currency: usd
+                applies_to: all_products
+                apply_from: '2025-01-01T00:00:00.000Z'
+                apply_until: '2025-01-15T09:30:00.000Z'
+                limit_1_per_customer: false
+                require_minimum_spend: false
+                require_minimum_spend_amount: null
+                discounts_per_redemption: null
+                redemptions_count: 0
+                product_ids: []
+                variant_ids: []
+                products_collection_ids: []
+                active: false
+                expired: true
+                scheduled: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-15T09:30:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden - the access token's scopes do not cover this request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This access token''s scopes do not grant write access to Store. Granted scopes: store:read.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity - validation failed, the discount is locked after redemption, or the discount is expired
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                money_field_locked_after_redemption:
+                  summary: a money-affecting field on a redeemed discount
+                  value:
+                    error: 'Request unprocessable: Percent cannot be changed because it has already been applied'
+                already_expired:
+                  summary: 'a frozen field on an already-expired discount, including one sent alongside `expired: true`'
+                  value:
+                    error: 'Request unprocessable: Discount cannot be changed because it has expired'
+                cannot_unexpire_redeemed:
+                  summary: '`expired: false` on a discount that has been redeemed'
+                  value:
+                    error: 'Request unprocessable: Apply until cannot be removed after it has been redeemed'
+                expired_not_boolean:
+                  summary: an `expired` value that is neither true nor false
+                  value:
+                    error: 'Request unprocessable: `expired` must be true or false.'
+                unknown_enum_value:
+                  summary: a value outside an enum field's list
+                  value:
+                    error: 'Request unprocessable: `discount_type` must be one of: code, automatic, sale.'
+                end_before_start:
+                  summary: 'apply_until earlier than apply_from - use `expired: true` to expire now'
+                  value:
+                    error: 'Request unprocessable: Apply until scheduled end date must be after the scheduled start date'
+    delete:
+      tags:
+      - Discount
+      summary: Remove Discount
+      description: 'Hard-delete a discount. Only a discount that has NOT been applied to an order can be deleted; a used discount returns 422 (expire it with `expired: true` instead, to preserve its order history).
+
+
+        A discount enters that state through an applied-discount record, written when a buyer redeems the code at checkout or when a ClickFunnels user applies it in the admin UI. A code an integration created and never published carries none of those records, so it is always deletable.
+
+        '
+      operationId: removeDiscounts
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden - the access token's scopes do not cover this request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This access token''s scopes do not grant write access to Store. Granted scopes: store:read.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity - the discount is attached to an order and cannot be deleted. `redemptions_count` does not predict this - it only counts completed sales, so a discount reporting zero redemptions can still be undeletable.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: Cannot delete a discount that has been applied to an order. Expire it instead with `expired: true`.'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    DiscountParameters:
+      type: object
+      title: Discount
+      description: Fields accepted when creating a discount.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Internal name for the discount.
+        code:
+          type: string
+          pattern: ^[a-zA-Z0-9-]+$
+          description: Required for a `code`-type discount. Letters, numbers and hyphens only - spaces, underscores and punctuation return 422. Uppercased on save; must be unique within the workspace (it cannot collide with a coupon code either).
+        discount_type:
+          type: string
+          enum:
+          - code
+          - automatic
+          - sale
+          description: Defaults to `code`.
+        discount_method:
+          type: string
+          enum:
+          - percentage
+          - fixed
+          - shipping
+          - bogo
+          description: Defaults to `percentage`. `percentage` requires `percent`; `fixed` requires a positive `amount`.
+        percent:
+          type: string
+          description: Percentage off (0.01-100). Required when `discount_method` is `percentage`.
+        amount:
+          type: string
+          description: Fixed amount off as a decimal string. Required when `discount_method` is `fixed`.
+        currency:
+          type: string
+          description: ISO currency code. Defaults to the workspace currency.
+        applies_to:
+          type: string
+          enum:
+          - all_products
+          - specific_products
+          - specific_variants
+          - specific_collections
+          description: Defaults to `all_products`.
+        apply_from:
+          type: string
+          format: date-time
+          description: When the discount becomes active. Defaults to now. Set in the future to schedule it.
+        apply_until:
+          type: string
+          format: date-time
+          description: 'When the discount expires. Omit for no expiry. There is no `expired` create field - sending one returns 422 whatever its value, including `false`, because expiring on create can never succeed (it would set `apply_until` to now, and `apply_from` then defaults to a hair later). Create the discount first, then expire it with `PATCH { "discount": { "expired": true } }`.'
+        limit_1_per_customer:
+          type: boolean
+        require_minimum_spend:
+          type: boolean
+        require_minimum_spend_amount:
+          type: integer
+          description: Minimum order subtotal, in whole currency units rather than cents - `50` on a `usd` discount means $50. Must be positive when `require_minimum_spend` is true.
+        discounts_per_redemption:
+          type: integer
+        product_ids:
+          type: array
+          items:
+            type: integer
+          description: Product ids to scope to, when `applies_to` is `specific_products`.
+        variant_ids:
+          type: array
+          items:
+            type: integer
+          description: Variant ids to scope to, when `applies_to` is `specific_variants`.
+        products_collection_ids:
+          type: array
+          items:
+            type: integer
+          description: Collection ids to scope to, when `applies_to` is `specific_collections`.
+      example:
+        name: Launch 20
+        code: LAUNCH20
+        discount_type: code
+        discount_method: percentage
+        percent: '20.0'
+        applies_to: all_products
+    DiscountParametersUpdate:
+      type: object
+      title: Discount
+      description: 'Fields accepted when updating a discount. Two lock-out rules apply, in this order: once the discount has been redeemed on an order its money-affecting fields (amount, percent, discount_method, applies_to, apply_from, the scoping arrays, limit_1_per_customer, discounts_per_redemption) are locked and return 422, while renaming and expiring still work; a discount that is already expired freezes its other fields and returns 422 (`Discount cannot be changed because it has expired`). Expiring is reversible - `expired: false` clears the end date and a future `apply_until` pushes it out, either of which makes the discount live again - so editing an expired discount means lifting the expiry first. Expiring a discount and renaming it in the same request is fine; it is a rename sent to a discount that is already expired that gets refused.'
+      required: []
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+          pattern: ^[a-zA-Z0-9-]+$
+          description: Letters, numbers and hyphens only. Uppercased on save; must be unique within the workspace.
+        discount_type:
+          type: string
+          enum:
+          - code
+          - automatic
+          - sale
+          description: '`code` is a redeemable coupon code. `automatic` and `sale` are deprecated.'
+        discount_method:
+          type: string
+          enum:
+          - percentage
+          - fixed
+          - shipping
+          - bogo
+        percent:
+          type: string
+        amount:
+          type: string
+        currency:
+          type: string
+          description: ISO currency code. Locked once the discount has been applied to an order.
+        applies_to:
+          type: string
+          enum:
+          - all_products
+          - specific_products
+          - specific_variants
+          - specific_collections
+        apply_from:
+          type: string
+          format: date-time
+        apply_until:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: 'Schedule a future end date. Must be after `apply_from`; a past date returns 422. To expire a live discount now, use `expired: true` instead.'
+        expired:
+          type: boolean
+          description: 'Virtual switch over `apply_until`, accepted on update only (sending it on create returns 422). `true` expires the discount immediately by setting `apply_until` to now; `false` lifts an expiry by clearing `apply_until`, the same as Remove Expiration in the app. It ends a discount that has not started yet (`scheduled: true`) as well, discarding the future `apply_from`, since nothing can end before it starts. A discount that has been redeemed cannot be un-expired and returns 422. Sending the state the discount is already in changes nothing and returns 200 without moving `apply_until`, so echoing a serialized discount back in a routine update cannot clear a scheduled end date - to remove a future end date, PATCH `apply_until` to null instead. Only `true` and `false` are accepted; any other value returns 422 rather than being read as "expire it".'
+        limit_1_per_customer:
+          type: boolean
+        require_minimum_spend:
+          type: boolean
+        require_minimum_spend_amount:
+          type: integer
+          description: Minimum order subtotal, in whole currency units rather than cents - `50` on a `usd` discount means $50.
+        discounts_per_redemption:
+          type: integer
+        product_ids:
+          type: array
+          items:
+            type: integer
+        variant_ids:
+          type: array
+          items:
+            type: integer
+        products_collection_ids:
+          type: array
+          items:
+            type: integer
+      example:
+        expired: true
+    DiscountAttributes:
+      type: object
+      title: Discount
+      description: A reusable, workspace-scoped discount applied on top of a price.
+      properties:
+        id:
+          type: integer
+          description: Discount ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Discount public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        name:
+          type: string
+          description: Internal name for the discount.
+        code:
+          type: string
+          description: The code a buyer redeems at checkout. Uppercased on save; unique within the workspace (cannot collide with a coupon code).
+        discount_type:
+          type: string
+          enum:
+          - code
+          - automatic
+          - sale
+          description: '`code` (the default) is a redeemable coupon code. `automatic` and `sale` are deprecated.'
+        discount_method:
+          type: string
+          enum:
+          - percentage
+          - fixed
+          - shipping
+          - bogo
+          description: How the discount is calculated. `percentage` uses `percent`; `fixed` uses `amount`. `shipping` and `bogo` exist but are outside the simple flow.
+        amount:
+          type:
+          - string
+          - 'null'
+          description: Fixed amount off, as a decimal string (e.g. "10.00"). `null` for a percentage discount.
+        percent:
+          type:
+          - string
+          - 'null'
+          description: Percentage off between 0.01 and 100 (e.g. "20.0"). `null` for a fixed discount.
+        currency:
+          type: string
+          description: ISO currency code, lowercased. Defaults to the workspace currency.
+        applies_to:
+          type: string
+          enum:
+          - all_products
+          - specific_products
+          - specific_variants
+          - specific_collections
+          description: Scope of the discount. `all_products` (the default) applies workspace-wide; the `specific_*` values restrict it to the ids passed in `product_ids` / `variant_ids` / `products_collection_ids`.
+        apply_from:
+          type: string
+          format: date-time
+          description: When the discount becomes active. Defaults to the creation time.
+        apply_until:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the discount expires. `null` means it never expires.
+        limit_1_per_customer:
+          type: boolean
+          description: When true, each contact can redeem the discount only once.
+        require_minimum_spend:
+          type: boolean
+          description: When true, the order must meet `require_minimum_spend_amount` for the discount to apply.
+        require_minimum_spend_amount:
+          type:
+          - integer
+          - 'null'
+          description: Minimum order subtotal required, when `require_minimum_spend` is true. In whole currency units, not cents - `50` on a `usd` discount means $50.
+        discounts_per_redemption:
+          type:
+          - integer
+          - 'null'
+          description: Optional cap on how many line items a single redemption discounts.
+        redemptions_count:
+          type: integer
+          description: How many times the discount has been redeemed on a completed sale. This is not a deletability signal - a discount can report zero redemptions and still return 422 on DELETE because it is attached to an order.
+        product_ids:
+          type: array
+          items:
+            type: integer
+          description: The products the discount is scoped to (empty unless `applies_to` is `specific_products`).
+        variant_ids:
+          type: array
+          items:
+            type: integer
+          description: The variants the discount is scoped to (empty unless `applies_to` is `specific_variants`).
+        products_collection_ids:
+          type: array
+          items:
+            type: integer
+          description: The collections the discount is scoped to (empty unless `applies_to` is `specific_collections`).
+        active:
+          type: boolean
+          description: Derived - true when the discount is neither scheduled for the future nor expired.
+        expired:
+          type: boolean
+          description: Derived - true when `apply_until` is in the past. An expired discount is frozen - every further update returns 422, so rename before you expire.
+        scheduled:
+          type: boolean
+          description: Derived - true when `apply_from` is in the future.
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+      example:
+        id: 771
+        public_id: gBEDMo
+        workspace_id: 42000
+        name: Launch 20
+        code: LAUNCH20
+        discount_type: code
+        discount_method: percentage
+        amount: null
+        percent: '20.0'
+        currency: usd
+        applies_to: all_products
+        apply_from: '2025-01-01T00:00:00.000Z'
+        apply_until: null
+        limit_1_per_customer: false
+        require_minimum_spend: false
+        require_minimum_spend_amount: null
+        discounts_per_redemption: null
+        redemptions_count: 0
+        product_ids: []
+        variant_ids: []
+        products_collection_ids: []
+        active: true
+        expired: false
+        scheduled: false
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - active
+      - amount
+      - applies_to
+      - apply_from
+      - apply_until
+      - code
+      - created_at
+      - currency
+      - discount_method
+      - discount_type
+      - discounts_per_redemption
+      - expired
+      - id
+      - limit_1_per_customer
+      - name
+      - percent
+      - product_ids
+      - products_collection_ids
+      - public_id
+      - redemptions_count
+      - require_minimum_spend
+      - require_minimum_spend_amount
+      - scheduled
+      - updated_at
+      - variant_ids
+      - workspace_id
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

@@ -1,0 +1,815 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Orders::Line Items::Change API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Orders::LineItems::Change
+  description: '> Preview and commit variant/price changes on existing subscription line items.
+
+
+    A self-serve flow for switching the variant or price on a subscription line item. The
+
+    surface has three endpoints — discovery (`Products::Prices::ChangeOption`) tells
+
+    you which targets are allowed; this resource is the actual change. `POST` to `…/changes`
+
+    to preview the upcoming invoice (`preview: true`); `POST` to `…/changes/perform` to commit
+
+    (`preview: false`). The response envelope is identical between preview and commit and only
+
+    the `preview` flag flips.
+
+
+    Allowed transitions are constrained by merchant-configured upgrade/downgrade option rows.
+
+    See the discovery endpoint for sourcing legal `products_price_id` targets.
+
+
+    See the [Subscription Changes Skill](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md) for the full flow — [preview](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-2---preview-the-change) and [commit](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-3---commit-the-change).
+
+    '
+paths:
+  /orders/line_items/{line_item_id}/changes:
+    post:
+      tags:
+      - Orders::LineItems::Change
+      summary: Preview Variant/Price Change
+      description: 'Returns a non-destructive preview of changing the variant and price of a subscription
+
+        line item, including proration math, the next charge amount, and the effective date.
+
+        Follows the same upgrade/downgrade rules as the in-app self-serve flow.
+
+
+        When accessing the API through an OAuth connection from a third-party platform acting on
+
+        another team''s workspaces, this endpoint requires trusted platform access and returns
+
+        403 without it. This trusted-access check does not apply when acting on your own account
+
+        (your own API key, or an OAuth app within its own team). Option discovery via
+
+        change_options is a read and is never gated.
+
+
+        Source allowed `products_price_id` targets from `GET /products/prices/{price_id}/change_options`.
+
+        After previewing, call `POST /orders/line_items/{line_item_id}/changes/perform` with the
+
+        same body to commit. The response envelope is identical between preview and commit and
+
+        only the `preview` flag flips.
+
+
+        On commit, the `previous_line_item` block reflects the line item''s pre-change state for
+
+        `products_price`, `products_variant`, `original_product`, and `prorated`. Other scalar
+
+        attributes (`created_at`, `updated_at`, `quantity`) reflect the post-commit state on the
+
+        underlying record.
+
+
+        See [Step 2 - Preview the change](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-2---preview-the-change) in the [Subscription Changes Skill](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md),
+
+        and [Step 1 - Discover what''s allowed](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-1---discover-whats-allowed) for sourcing a legal target.
+
+        '
+      operationId: previewOrdersLineItemsChange
+      parameters:
+      - $ref: '#/components/parameters/line_item_id'
+      requestBody:
+        description: Variant and price target for the preview
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrdersLineItemsChangeRequest'
+            example:
+              orders_line_items_change:
+                products_price_id: 24
+                prorate: true
+                effective_time: now
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersLineItemsChangeResponse'
+              example:
+                orders_line_items_change:
+                  preview: true
+                  upcoming_invoice:
+                    total_amount: '35.83'
+                    subtotal_amount: '35.83'
+                    tax_amount: '0.00'
+                    shipping_amount: '0.00'
+                    discount_amount: '0.00'
+                    currency: USD
+                    next_invoice_date: '2026-05-14T03:49:45Z'
+                  previous_line_item:
+                    id: 9
+                    public_id: yZaBcD
+                    order_id: 7
+                    quantity: 1
+                    prorated: null
+                    created_at: '2025-01-01T00:00:00.000Z'
+                    updated_at: '2025-01-01T00:00:00.000Z'
+                    original_product: {}
+                    products_price:
+                      id: 24
+                      public_id: aBcDeF
+                      name: Pro Monthly
+                      key: pro_monthly_2024
+                      amount: '20.00'
+                      currency: USD
+                      duration: null
+                      interval: months
+                      interval_count: 1
+                    products_variant: null
+                  new_line_item:
+                    id: 9
+                    public_id: yZaBcD
+                    order_id: 7
+                    quantity: 1
+                    prorated: null
+                    created_at: '2025-01-01T00:00:00.000Z'
+                    updated_at: '2025-01-01T00:00:00.000Z'
+                    original_product: {}
+                    products_price:
+                      id: 24
+                      public_id: aBcDeF
+                      name: Pro Monthly
+                      key: pro_monthly_2024
+                      amount: '20.00'
+                      currency: USD
+                      duration: null
+                      interval: months
+                      interval_count: 1
+                    products_variant: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden - a third-party platform acting on another team's workspace without trusted platform access. This check does not apply to first-party or own-account writes.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: The target variant and price combination is not an allowed upgrade or downgrade for this subscription.
+  /orders/line_items/{line_item_id}/changes/perform:
+    post:
+      tags:
+      - Orders::LineItems::Change
+      summary: Change Variant/Price
+      description: 'Commits a variant/price change for a subscription line item. The change must be
+
+        configured as an allowed upgrade or downgrade option on the source variant. By default,
+
+        upgrades take effect immediately and are prorated; downgrades take effect at the next
+
+        renewal and are not prorated. Both behaviours can be overridden via `prorate` and
+
+        `effective_time`.
+
+
+        When accessing the API through an OAuth connection from a third-party platform acting on
+
+        another team''s workspaces, this endpoint requires trusted platform access and returns
+
+        403 without it. This trusted-access check does not apply when acting on your own account
+
+        (your own API key, or an OAuth app within its own team).
+
+
+        Source allowed `products_price_id` targets from `GET /products/prices/{price_id}/change_options`,
+
+        and preview the impact via `POST /orders/line_items/{line_item_id}/changes` before
+
+        committing here. The response envelope is the same as preview, with `preview: false` —
+
+        the amount fields and `next_invoice_date` carry the upstream invoice quote snapshotted
+
+        just before the commit was applied.
+
+
+        The `previous_line_item` block reflects the line item''s pre-change state for
+
+        `products_price`, `products_variant`, `original_product`, and `prorated`. Other scalar
+
+        attributes (`created_at`, `updated_at`, `quantity`) reflect the post-commit state on the
+
+        underlying record.
+
+
+        See [Step 3 - Commit the change](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-3---commit-the-change) in the [Subscription Changes Skill](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md),
+
+        plus [Eligibility](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#eligibility) for which orders can be changed this way.
+
+        '
+      operationId: performOrdersLineItemsChange
+      parameters:
+      - $ref: '#/components/parameters/line_item_id'
+      requestBody:
+        description: Target variant and price plus optional proration and timing overrides
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrdersLineItemsChangeRequest'
+            example:
+              orders_line_items_change:
+                products_price_id: 24
+                prorate: true
+                effective_time: now
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersLineItemsChangeResponse'
+              example:
+                orders_line_items_change:
+                  preview: true
+                  upcoming_invoice:
+                    total_amount: '35.83'
+                    subtotal_amount: '35.83'
+                    tax_amount: '0.00'
+                    shipping_amount: '0.00'
+                    discount_amount: '0.00'
+                    currency: USD
+                    next_invoice_date: '2026-05-14T03:49:45Z'
+                  previous_line_item:
+                    id: 9
+                    public_id: yZaBcD
+                    order_id: 7
+                    quantity: 1
+                    prorated: null
+                    created_at: '2025-01-01T00:00:00.000Z'
+                    updated_at: '2025-01-01T00:00:00.000Z'
+                    original_product:
+                      id: 15
+                      public_id: AbC123
+                      name: Sample Product
+                    products_price:
+                      id: 24
+                      public_id: aBcDeF
+                      name: Pro Monthly
+                      key: pro_monthly_2024
+                      amount: '20.00'
+                      currency: USD
+                      duration: null
+                      interval: months
+                      interval_count: 1
+                    products_variant: null
+                  new_line_item:
+                    id: 9
+                    public_id: yZaBcD
+                    order_id: 7
+                    quantity: 1
+                    prorated: null
+                    created_at: '2025-01-01T00:00:00.000Z'
+                    updated_at: '2025-01-01T00:00:00.000Z'
+                    original_product:
+                      id: 15
+                      public_id: AbC123
+                      name: Sample Product
+                    products_price:
+                      id: 24
+                      public_id: aBcDeF
+                      name: Pro Monthly
+                      key: pro_monthly_2024
+                      amount: '20.00'
+                      currency: USD
+                      duration: null
+                      interval: months
+                      interval_count: 1
+                    products_variant: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden - a third-party platform acting on another team's workspace without trusted platform access. This check does not apply to first-party or own-account writes.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: The target variant and price combination is not an allowed upgrade or downgrade for this subscription.
+components:
+  schemas:
+    OrdersLineItemsChangeRequest:
+      type: object
+      title: Line Item Change Request
+      description: Parameters to preview or commit a subscription line item variant/price change
+      required:
+      - orders_line_items_change
+      properties:
+        orders_line_items_change:
+          type: object
+          required:
+          - products_price_id
+          properties:
+            products_price_id:
+              oneOf:
+              - type: integer
+              - type: string
+              description: 'Target price. Accepts either the integer database id or the obfuscated
+
+                `public_id` string returned by the discovery endpoint. The target variant is
+
+                derived from the price''s `variant` association.
+
+                '
+            prorate:
+              type:
+              - boolean
+              - 'null'
+              description: 'Optional override for proration. Accepts `true`, `false`, `"true"`, `"false"`,
+
+                `"1"`, `"0"`, `1`, or `0`. When omitted, the in-app default is used:
+
+                upgrades are prorated and applied immediately; downgrades are not prorated and
+
+                take effect at the end of the current billing cycle. Forced to `false` for
+
+                physical line items regardless of the value sent. Any other value returns 422.
+
+                '
+            effective_time:
+              type:
+              - string
+              - 'null'
+              enum:
+              - now
+              - next_renewal
+              - null
+              description: 'Optional override for when the change takes effect. When omitted (or `null`,
+
+                or an empty string), the in-app default is used: upgrades take effect now,
+
+                downgrades at the next renewal. Any other value (e.g. `end_of_period` or a
+
+                literal timestamp) returns 422.
+
+                '
+      example:
+        orders_line_items_change:
+          products_price_id: 24
+          prorate: true
+          effective_time: now
+    OrdersLineItemsChangeResponse:
+      type: object
+      title: Line Item Change
+      description: 'Result of a subscription line item variant/price change. The same envelope is returned
+
+        for both preview and commit endpoints — the `preview` flag indicates which.
+
+
+        `upcoming_invoice` is a snapshot of the upcoming-invoice impact of the change as quoted
+
+        by the upstream payment platform. It is **informational** — the line item is mutated
+
+        regardless of whether the quote succeeds. On commit, the quote is snapshotted just
+
+        before the change is applied so consumers don''t need a separate preview round-trip
+
+        to know what their customer will be charged. Individual amount fields may be `null`
+
+        if the upstream quote returned no data; `currency` and `next_invoice_date` fall back
+
+        to the order''s stored currency and renewal date in that case.
+
+        '
+      properties:
+        orders_line_items_change:
+          type: object
+          properties:
+            preview:
+              type: boolean
+              description: '`true` for the preview endpoint, `false` for the commit endpoint. The remainder
+
+                of the envelope is shaped identically; the flag lets clients render the same UI
+
+                or write the same parsing code for both calls.
+
+                '
+            upcoming_invoice:
+              type: object
+              description: 'Snapshot of the upcoming-invoice impact of the change as quoted by the upstream
+
+                payment platform. Populated on both preview and commit (commit snapshots a quote
+
+                inside the change transaction so the response carries the same fields as preview).
+
+                Informational only — the line item change is committed regardless of whether the
+
+                quote succeeds.
+
+                '
+              properties:
+                total_amount:
+                  type:
+                  - string
+                  - 'null'
+                  description: Upcoming invoice total quoted by the payment platform. `null` if the quote returned no data.
+                subtotal_amount:
+                  type:
+                  - string
+                  - 'null'
+                  description: Upcoming invoice subtotal quoted by the payment platform. `null` if the quote returned no data.
+                tax_amount:
+                  type:
+                  - string
+                  - 'null'
+                  description: Upcoming invoice tax quoted by the payment platform. `null` if the quote returned no data.
+                shipping_amount:
+                  type:
+                  - string
+                  - 'null'
+                  description: Upcoming invoice shipping quoted by the payment platform. `null` if the quote returned no data.
+                discount_amount:
+                  type:
+                  - string
+                  - 'null'
+                  description: Upcoming invoice discount quoted by the payment platform. `null` if the quote returned no data.
+                currency:
+                  type:
+                  - string
+                  - 'null'
+                  description: 'Currency of the upcoming invoice quote. Falls back to the order''s stored
+
+                    currency if the quote returned no data.
+
+                    '
+                next_invoice_date:
+                  type:
+                  - string
+                  - 'null'
+                  format: date-time
+                  description: 'Upcoming invoice date as quoted by the payment platform. Falls back to the
+
+                    order''s stored renewal date if the quote returned no data.
+
+                    '
+            previous_line_item:
+              allOf:
+              - $ref: '#/components/schemas/OrdersLineItemAttributes'
+              description: 'The line item as it was before the change — same `id` as the current line item,
+
+                but with `products_price` and `products_variant` reflecting the pre-change
+
+                target.
+
+                '
+            new_line_item:
+              allOf:
+              - $ref: '#/components/schemas/OrdersLineItemAttributes'
+              description: 'The line item as it would be after the change (preview) or as it now is after
+
+                the change (commit) — same `id` as the current line item, with `products_price`
+
+                and `products_variant` reflecting the target.
+
+                '
+      example:
+        orders_line_items_change:
+          preview: true
+          upcoming_invoice:
+            total_amount: '35.83'
+            subtotal_amount: '35.83'
+            tax_amount: '0.00'
+            shipping_amount: '0.00'
+            discount_amount: '0.00'
+            currency: USD
+            next_invoice_date: '2026-05-14T03:49:45Z'
+          previous_line_item:
+            id: 9
+            public_id: yZaBcD
+            order_id: 7
+            quantity: 1
+            prorated: null
+            created_at: '2025-01-01T00:00:00.000Z'
+            updated_at: '2025-01-01T00:00:00.000Z'
+            original_product:
+              id: 15
+              public_id: AbC123
+              name: Sample Product
+            products_price:
+              id: 24
+              public_id: aBcDeF
+              name: Pro Monthly
+              key: pro_monthly_2024
+              amount: '20.00'
+              currency: USD
+              duration: null
+              interval: months
+              interval_count: 1
+            products_variant: null
+          new_line_item:
+            id: 9
+            public_id: yZaBcD
+            order_id: 7
+            quantity: 1
+            prorated: null
+            created_at: '2025-01-01T00:00:00.000Z'
+            updated_at: '2025-01-01T00:00:00.000Z'
+            original_product:
+              id: 15
+              public_id: AbC123
+              name: Sample Product
+            products_price:
+              id: 24
+              public_id: aBcDeF
+              name: Pro Monthly
+              key: pro_monthly_2024
+              amount: '20.00'
+              currency: USD
+              duration: null
+              interval: months
+              interval_count: 1
+            products_variant: null
+    OrdersLineItemAttributes:
+      type: object
+      title: Line items
+      description: Line items
+      properties:
+        id:
+          type: integer
+          description: Line item ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Line item public ID
+        order_id:
+          type: integer
+          description: Order ID
+        quantity:
+          type:
+          - integer
+          - 'null'
+          description: Quantity
+        prorated:
+          type:
+          - string
+          - 'null'
+          description: Prorate invoice
+        created_at:
+          type:
+          - string
+          - 'null'
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          description: Updated
+        original_product:
+          type: object
+          title: Product
+          description: Product
+          properties:
+            id:
+              type: integer
+              description: ID
+            public_id:
+              type:
+              - string
+              - 'null'
+              description: Product public ID
+            name:
+              type: string
+              description: Product name
+        products_price:
+          $ref: '#/components/schemas/ProductsPriceMinimal'
+        products_variant:
+          type:
+          - object
+          - 'null'
+          title: Product Variant
+          description: Product Variant
+          properties:
+            id:
+              type: integer
+              description: ID
+            public_id:
+              type:
+              - string
+              - 'null'
+              description: Variant public ID
+            name:
+              type: string
+              description: Name
+            description:
+              type:
+              - string
+              - 'null'
+              description: The description of the variant. The description of the **default variant** is the user-facing description of the `Product`.
+            sku:
+              type:
+              - string
+              - 'null'
+              description: SKU
+      example:
+        id: 674
+        public_id: GjPVnN
+        order_id: 22642
+        quantity: 2
+        prorated: null
+        created_at: '2026-01-10T20:15:01.536Z'
+        updated_at: '2026-01-10T20:15:01.536Z'
+        original_product:
+          id: 6512
+          public_id: YRnzRY
+          name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+        products_price:
+          id: 22229
+          public_id: YqEWxY
+          name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+          key: null
+          amount: '198.00'
+          currency: usd
+          duration: null
+          interval: null
+          interval_count: null
+        products_variant:
+          id: 22228
+          public_id: JdknyN
+          name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+          description: null
+          sku: SIYP-BLACK-PREMIUM-001
+      required:
+      - created_at
+      - id
+      - order_id
+      - original_product
+      - products_price
+      - products_variant
+      - prorated
+      - public_id
+      - quantity
+      - updated_at
+    ProductsPriceMinimal:
+      type: object
+      title: Products Price (Minimal)
+      description: 'Minimal price representation used wherever a price appears as a nested
+
+        attribute (line items, upgrade/downgrade discovery).
+
+        '
+      properties:
+        id:
+          type: integer
+        public_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        key:
+          type:
+          - string
+          - 'null'
+        amount:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        duration:
+          type:
+          - integer
+          - 'null'
+        interval:
+          type:
+          - string
+          - 'null'
+        interval_count:
+          type:
+          - integer
+          - 'null'
+      example:
+        id: 24
+        public_id: aBcDeF
+        name: Pro Monthly
+        key: pro_monthly_2024
+        amount: '20.00'
+        currency: USD
+        duration: null
+        interval: months
+        interval_count: 1
+  parameters:
+    line_item_id:
+      name: line_item_id
+      in: path
+      required: true
+      description: 'The id of the subscription line item. Accepts either the integer database
+
+        id or the obfuscated `public_id` string returned by line-item endpoints.
+
+        '
+      schema:
+        oneOf:
+        - type: integer
+        - type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

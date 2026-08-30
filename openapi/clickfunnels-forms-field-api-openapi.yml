@@ -1,0 +1,607 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Forms::Field API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Forms::Field
+  description: Form Fields
+paths:
+  /forms/field_sets/{field_set_id}/fields:
+    get:
+      tags:
+      - Forms::Field
+      summary: List Fields
+      description: List fields for a field set
+      operationId: listFormsFields
+      parameters:
+      - name: field_set_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - name: sort_property
+        in: query
+        description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+          If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+          '
+        required: false
+        schema:
+          type: string
+          enum:
+          - id
+          - updated_at
+          - sort_order
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormsFieldAttributes'
+              example:
+              - id: 141
+                public_id: CrPZSu
+                field_set_id: 151
+                label: MyString
+                field_type: MyString
+                allow_multiple: false
+                key: CustomKey
+                hidden: false
+                sort_order: 0
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+              - id: 142
+                public_id: XlnBiR
+                field_set_id: 152
+                label: MyString
+                field_type: MyString
+                allow_multiple: false
+                key: CustomKey
+                hidden: false
+                sort_order: 1
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Forms::Field
+      summary: Create Field
+      description: Add a new field
+      operationId: createFormsFields
+      parameters:
+      - name: field_set_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Field
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forms_field:
+                  type: object
+                  $ref: '#/components/schemas/FormsFieldParameters'
+            example:
+              forms_field:
+                label: MyString
+                field_type: MyString
+                allow_multiple: false
+                key: CustomKey
+                hidden: false
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormsFieldAttributes'
+              example:
+                id: 144
+                public_id: RzoDgE
+                field_set_id: 154
+                label: MyString
+                field_type: MyString
+                allow_multiple: false
+                key: CustomKey
+                hidden: false
+                sort_order: 0
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /forms/fields/{id}:
+    get:
+      tags:
+      - Forms::Field
+      summary: Fetch Field
+      description: Retrieve a field
+      operationId: getFormsFields
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormsFieldAttributes'
+              example:
+                id: 143
+                public_id: enmBWo
+                field_set_id: 153
+                label: MyString
+                field_type: MyString
+                allow_multiple: false
+                key: CustomKey
+                hidden: false
+                sort_order: 0
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Forms::Field
+      summary: Update Field
+      description: Update a field
+      operationId: updateFormsFields
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Field
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forms_field:
+                  type: object
+                  $ref: '#/components/schemas/FormsFieldParametersUpdate'
+            example:
+              forms_field:
+                label: Example Field
+                field_type: MyString
+                allow_multiple: false
+                key: CustomKey
+                hidden: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormsFieldAttributes'
+              example:
+                id: 145
+                public_id: XvLIcZ
+                field_set_id: 155
+                label: MyString
+                field_type: MyString
+                allow_multiple: false
+                key: CustomKey
+                hidden: false
+                sort_order: 0
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    delete:
+      tags:
+      - Forms::Field
+      summary: Remove Field
+      description: Delete a field
+      operationId: removeFormsFields
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /forms/field_sets/{field_set_id}/fields/reorder:
+    post:
+      tags:
+      - Forms::Field
+      summary: Reorder Fields
+      description: Reorders the fields of a field set.
+      operationId: reorderFormsFields
+      parameters:
+      - name: field_set_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ordered_field_ids:
+                    type: array
+                    items:
+                      type: string
+                    description: An array of field IDs in the desired order.
+              example:
+                ordered_field_ids:
+                - 5
+                - 4
+                - 3
+                - 2
+                - 1
+        '404':
+          description: Not Found
+      requestBody:
+        description: 'Reordering
+
+
+
+          The reordering endpoint expects an array of IDs in the desired order to be passed to the `ids_in_order` parameter. For example, `{ids_in_order: [1,2,3,4,5]}`.
+
+          '
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids_in_order:
+                  type: array
+                  items:
+                    type: integer
+                  description: An array of field IDs in the desired order.
+              example:
+                ids_in_order:
+                - 5
+                - 4
+                - 3
+                - 2
+                - 1
+            example:
+              ids_in_order:
+              - 5
+              - 4
+              - 3
+              - 2
+              - 1
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    FormsFieldAttributes:
+      type: object
+      title: Fields
+      description: Fields
+      properties:
+        id:
+          type: integer
+          description: Field ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Field public ID
+        field_set_id:
+          type: integer
+          description: Field set ID
+        label:
+          type: string
+          description: Label
+        field_type:
+          type:
+          - string
+          - 'null'
+          description: Field Type
+        allow_multiple:
+          type:
+          - boolean
+          - 'null'
+          description: Allow Multiple
+        key:
+          type: string
+          description: Key
+        hidden:
+          type:
+          - boolean
+          - 'null'
+          description: Hidden
+        sort_order:
+          type:
+          - integer
+          - 'null'
+          description: Sort order
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+      example:
+        id: 9
+        public_id: eQlJiT
+        field_set_id: 10
+        label: MyString
+        field_type: MyString
+        allow_multiple: false
+        key: CustomKey
+        hidden: false
+        sort_order: 0
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - allow_multiple
+      - created_at
+      - field_set_id
+      - field_type
+      - hidden
+      - id
+      - key
+      - label
+      - public_id
+      - sort_order
+      - updated_at
+    FormsFieldParameters:
+      type: object
+      title: Fields
+      description: Fields
+      required:
+      - label
+      - key
+      properties:
+        label:
+          type: string
+          description: Label
+        field_type:
+          type:
+          - string
+          - 'null'
+          description: Field Type
+        allow_multiple:
+          type:
+          - boolean
+          - 'null'
+          description: Allow Multiple
+        key:
+          type: string
+          description: Key
+        hidden:
+          type:
+          - boolean
+          - 'null'
+          description: Hidden
+      example:
+        forms_field:
+          label: MyString
+          field_type: MyString
+          allow_multiple: false
+          key: CustomKey
+          hidden: false
+    FormsFieldParametersUpdate:
+      type: object
+      title: Fields
+      description: Fields
+      required: []
+      properties:
+        label:
+          type: string
+          description: Label
+        field_type:
+          type:
+          - string
+          - 'null'
+          description: Field Type
+        allow_multiple:
+          type:
+          - boolean
+          - 'null'
+          description: Allow Multiple
+        key:
+          type: string
+          description: Key
+        hidden:
+          type:
+          - boolean
+          - 'null'
+          description: Hidden
+      example:
+        forms_field:
+          label: Example Field
+          field_type: MyString
+          allow_multiple: false
+          key: CustomKey
+          hidden: false
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

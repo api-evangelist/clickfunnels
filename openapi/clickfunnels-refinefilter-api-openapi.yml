@@ -1,0 +1,816 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Refine Filter API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: RefineFilter
+  description: '> Reusable audience filters that scope contacts for conditional splits, email broadcasts, workflow branches, and other ClickFunnels surfaces.
+
+
+    A RefineFilter stores a named, conjunctive set of criteria (attribute + clause + value) scoped to a workspace. Once created, pass its `id` as `condition.filter_id` on a Conditional Split Step, or as `filter_id` on any other surface that accepts one.
+
+
+    See the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for a full reference of supported attributes, clauses, and the safe-condition policy.
+
+
+    The public API restricts filter conditions to a [safe whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist); requests outside it return 422 with a pointer to the dev community.
+
+
+    For applying a filter to a Conditional Split Step, see [Applying filters to conditional split steps](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-conditional-split-steps). For email broadcasts, see [Applying filters to email broadcasts](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-email-broadcasts).
+
+    '
+paths:
+  /workspaces/{workspace_id}/refine_filters:
+    get:
+      tags:
+      - RefineFilter
+      summary: List Refine Filters
+      description: List saved filters in a workspace, ordered by id ascending. `after` is the switch between two modes. For backwards compatibility, omitting it returns the complete registry in one payload with no `Pagination-Next` header. Sending it returns bounded pages. For that bounded walk, pass `after=0` on the first request, then pass each `Pagination-Next` value on the next request until the header is absent, which marks the last page. `after=0` is the opt-in itself rather than a row id (real ids start at 1), and it means "start at the beginning" in whichever direction `sort_order` asks for, so it also bootstraps a `sort_order=desc` walk. An `after` value that is neither `0` nor a `Pagination-Next` cursor is not a real position and pages nothing. Results can include every filter class saved in the workspace, not only the ones this API authors; inspect `filter_class` before using the `id` or `public_id` as a resource's `stored_filter_id`. Treat returned order filters as read-only here and edit them in the ClickFunnels Orders UI. Create and update operations on this public endpoint author contact filters only. See [Applying existing order filters](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-existing-order-filters) in the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for passing an order filter to the orders list.
+      operationId: listWorkspaceRefineFilters
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - name: filter
+        in: query
+        description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[name]=value`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
+
+          '
+        required: false
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Exact-match filter on the saved filter's name (unique per workspace), to resolve a saved filter by name instead of id.
+              example: VIP newsletter audience
+        style: deepObject
+        explode: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refine_filters:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RefineFilterAttributes'
+              example:
+                refine_filters:
+                - id: 42
+                  public_id: AbCdEf
+                  workspace_id: 5
+                  name: VIP newsletter audience
+                  filter_class: ContactsFilter
+                  conjunction: and
+                  criteria:
+                  - attribute: tags.id
+                    clause: in
+                    value:
+                    - tag-pub-id-1
+                  created_at: '2026-04-01T12:00:00.000Z'
+                  updated_at: '2026-04-01T12:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - RefineFilter
+      summary: Create Refine Filter
+      description: 'Create a new contact RefineFilter in the workspace. This endpoint does not create order filters.
+
+        The `criteria` array must contain at
+
+        least one entry. Criteria are validated against the
+
+        [safe-condition whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist) —
+
+        unsupported attributes/clauses return 422 with a pointer to the dev community.
+
+        See the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md)
+
+        for the full reference (attributes, clauses, worked examples).
+
+        '
+      operationId: createWorkspaceRefineFilter
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefineFilterParametersCreate'
+            example:
+              refine_filter:
+                name: VIP newsletter audience
+                filter_class: ContactsFilter
+                conjunction: and
+                criteria:
+                - attribute: tags.id
+                  clause: in
+                  value:
+                  - tag-pub-id-1
+                  - tag-pub-id-2
+                - attribute: purchased_products.id
+                  clause: equals
+                  value: prod-pub-id
+                - attribute: created_at
+                  clause: gte
+                  value: '2026-01-01T00:00:00Z'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefineFilterAttributes'
+              example:
+                id: 42
+                public_id: AbCdEf
+                workspace_id: 5
+                name: VIP newsletter audience
+                filter_class: ContactsFilter
+                conjunction: and
+                criteria:
+                - attribute: tags.id
+                  clause: in
+                  value:
+                  - tag-pub-id-1
+                  - tag-pub-id-2
+                - attribute: purchased_products.id
+                  clause: equals
+                  value: prod-pub-id
+                - attribute: created_at
+                  clause: gte
+                  value: '2026-01-01'
+                created_at: '2026-04-01T12:00:00.000Z'
+                updated_at: '2026-04-01T12:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: criteria must contain at least one entry
+  /refine_filters/{id}:
+    get:
+      tags:
+      - RefineFilter
+      summary: Fetch Refine Filter
+      description: Fetch a single saved filter by its public id. Inspect `filter_class` before applying it to contacts or orders. Treat order filters as read-only here and edit them in the ClickFunnels Orders UI; create and update operations on this public endpoint author contact filters only.
+      operationId: getRefineFilter
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Public id of the RefineFilter (e.g. `AbCdEf`).
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefineFilterAttributes'
+              example:
+                id: 42
+                public_id: AbCdEf
+                workspace_id: 5
+                name: VIP newsletter audience
+                filter_class: ContactsFilter
+                conjunction: and
+                criteria:
+                - attribute: tags.id
+                  clause: in
+                  value:
+                  - tag-pub-id-1
+                - attribute: created_at
+                  clause: gte
+                  value: '2026-01-01'
+                created_at: '2026-04-01T12:00:00.000Z'
+                updated_at: '2026-04-01T12:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    patch:
+      tags:
+      - RefineFilter
+      summary: Update Refine Filter
+      description: 'Update an existing RefineFilter. All fields are optional — only provided fields are
+
+        updated. When `criteria` is supplied it replaces the entire criteria set (must contain
+
+        at least one entry). 422 covers shape errors and
+
+        [safe-condition policy](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist) violations.
+
+        '
+      operationId: updateRefineFilter
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Public id of the RefineFilter to update.
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefineFilterParametersUpdate'
+            example:
+              refine_filter:
+                conjunction: and
+                criteria:
+                - attribute: tags.id
+                  clause: in
+                  value:
+                  - tag-pub-id-1
+                - attribute: created_at
+                  clause: gte
+                  value: '2026-01-01'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefineFilterAttributes'
+              example:
+                id: 42
+                public_id: AbCdEf
+                workspace_id: 5
+                name: VIP newsletter audience
+                filter_class: ContactsFilter
+                conjunction: and
+                criteria:
+                - attribute: tags.id
+                  clause: in
+                  value:
+                  - tag-pub-id-1
+                - attribute: created_at
+                  clause: gte
+                  value: '2026-01-01'
+                created_at: '2026-04-01T12:00:00.000Z'
+                updated_at: '2026-04-02T09:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: criteria must contain at least one entry
+    delete:
+      tags:
+      - RefineFilter
+      summary: Destroy Refine Filter
+      description: 'Delete a RefineFilter. Note that deleting a filter that is currently attached to a
+
+        conditional split step or other surface will leave those surfaces without a filter
+
+        (`condition.filter_id` will remain but the filter record will no longer exist).
+
+        Detach the filter from all consumers before deleting.
+
+        See [Applying filters to consumers](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-consumers) in the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for the surfaces that hold a filter id.
+
+        '
+      operationId: destroyRefineFilter
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Public id of the RefineFilter to delete.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    RefineFilterAttributes:
+      type: object
+      title: Refine Filter
+      description: 'A reusable workspace-scoped audience filter composed of one or more criteria joined by a single conjunction.
+
+
+        Public API requests are validated against a [safe-condition whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist); criteria outside the whitelist return 422 with a pointer to the developer community.
+
+        '
+      externalDocs:
+        description: Refine Filters Skill - attributes, clauses, and worked examples
+        url: https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md
+      properties:
+        id:
+          type: integer
+          description: Refine Filter ID
+        public_id:
+          type: string
+          description: Obfuscated Refine Filter ID
+        workspace_id:
+          type: integer
+          description: ID of the workspace this filter belongs to
+        name:
+          type:
+          - string
+          - 'null'
+          description: Optional human-readable name for the filter. Must be unique within the workspace when set.
+        filter_class:
+          type:
+          - string
+          - 'null'
+          description: 'The filter class recorded on the saved filter. This API authors `ContactsFilter` and applies `ContactsFilter` and `OrdersFilter`, but the list returns every saved filter in the workspace, and other ClickFunnels surfaces save their own classes here — `ContactsSegmentsFilter`, `ProductsFilter`, `FunnelsFilter` and `ContactUpsellsFilter` all appear in real workspaces. Treat this as an open set: match on the class you want rather than assuming the rest are absent. `null` for a legacy row whose stored state can no longer be decoded (such rows also return empty `criteria`; they can still be deleted).'
+          example: ContactsFilter
+        conjunction:
+          type: string
+          enum:
+          - and
+          - or
+          description: How the criteria are joined — `and` (all must match) or `or` (any must match).
+        criteria:
+          type: array
+          description: Ordered list of filter criteria.
+          items:
+            $ref: '#/components/schemas/RefineFilterCriterion'
+        created_at:
+          type: string
+          format: date-time
+          description: Created at
+        updated_at:
+          type: string
+          format: date-time
+          description: Updated at
+      example:
+        id: 42
+        public_id: AbCdEf
+        workspace_id: 5
+        name: VIP newsletter audience
+        filter_class: ContactsFilter
+        conjunction: and
+        criteria:
+        - attribute: tags.id
+          clause: in
+          value:
+          - tag-pub-id-1
+        - attribute: created_at
+          clause: gte
+          value: '2026-01-01'
+        created_at: '2026-04-01T12:00:00.000Z'
+        updated_at: '2026-04-01T12:00:00.000Z'
+      required:
+      - conjunction
+      - created_at
+      - criteria
+      - filter_class
+      - id
+      - name
+      - public_id
+      - updated_at
+      - workspace_id
+    RefineFilterCriterion:
+      type: object
+      title: Refine Filter Criterion
+      description: A single filter criterion consisting of an attribute, a comparison clause, and a value.
+      properties:
+        attribute:
+          type: string
+          description: 'The contact attribute to filter on (e.g. `tags.id`, `created_at`, `email_address`).
+
+            The public API restricts attributes to a [safe whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist) — see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for the full reference.
+
+            '
+          example: tags.id
+        clause:
+          type: string
+          description: 'The comparison operator for this criterion (e.g. `in`, `eq`, `gte`, `lte`, `st`, `nst`).
+
+            Allowed clauses depend on the attribute. Text attributes (`email_address`, `first_name`, `last_name`) only accept `eq` and `sw` on the public API; see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist).
+
+            '
+          example: in
+        value:
+          description: "The comparison value. Type depends on the attribute and clause:\n- **Option conditions** (tags, products, etc.): a single opaque public id string, or an array of public id strings.\n- **Date/datetime conditions**: an ISO 8601 date string (`\"2026-01-01\"`) or datetime string (`\"2026-01-01T00:00:00Z\"`).\n  For `between`/`not_between` clauses supply an array of exactly two date strings.\n  For relative `gt`, `lt`, or `exct` clauses supply an object with `days` and a `modifier` of `ago` or `from_now`.\n- **Text/numeric conditions**: a plain string or number.\n- **Set/not-set clauses**: omit `value` entirely.\n"
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+          - type: object
+            required:
+            - days
+            - modifier
+            properties:
+              days:
+                oneOf:
+                - type: string
+                - type: integer
+                description: Number of days used by a relative date clause.
+              modifier:
+                type: string
+                enum:
+                - ago
+                - from_now
+          example:
+          - tag-pub-id-1
+          - tag-pub-id-2
+    RefineFilterParametersUpdate:
+      type: object
+      title: Update Refine Filter
+      description: 'Parameters for updating an existing RefineFilter. All fields are optional — only provided
+
+        fields are updated. When `criteria` is supplied it **replaces** the entire criteria set.
+
+
+        Replacement criteria must satisfy the same safe-condition whitelist enforced on create.
+
+        See [Safe condition whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist) for the full reference.
+
+        '
+      required:
+      - refine_filter
+      properties:
+        refine_filter:
+          type: object
+          properties:
+            name:
+              type: string
+              description: New name for the filter. Must be unique within the workspace.
+            conjunction:
+              type: string
+              enum:
+              - and
+              - or
+              description: Replacement join operator for all criteria.
+            criteria:
+              type: array
+              minItems: 1
+              description: Replacement criteria array. Must contain at least one entry.
+              items:
+                type: object
+                required:
+                - attribute
+                - clause
+                properties:
+                  attribute:
+                    type: string
+                  clause:
+                    type: string
+                  value:
+                    description: Comparison value. Relative date clauses use an object with `days` and `modifier`. Omit for set/not-set clauses.
+                    oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                    - type: object
+                      required:
+                      - days
+                      - modifier
+                      properties:
+                        days:
+                          oneOf:
+                          - type: string
+                          - type: integer
+                        modifier:
+                          type: string
+                          enum:
+                          - ago
+                          - from_now
+      example:
+        refine_filter:
+          conjunction: and
+          criteria:
+          - attribute: tags.id
+            clause: in
+            value:
+            - tag-pub-id-1
+          - attribute: created_at
+            clause: gte
+            value: '2026-01-01'
+    RefineFilterParametersCreate:
+      type: object
+      title: Create Refine Filter
+      description: 'Parameters for creating a new RefineFilter. The `criteria` array must contain at least one entry.
+
+        Each criterion requires `attribute` and `clause`; `value` may be omitted for set/not-set clauses.
+
+
+        ### Supported conditions (public API)
+
+
+        The public API restricts criteria to the safe whitelist below. Requests
+
+        outside this set return 422 with a pointer to the dev community for
+
+        new-condition requests.
+
+
+        | Condition                                                                        | Allowed clauses                                                  | Notes                                                              |
+
+        |----------------------------------------------------------------------------------|-------------------------------------------------------------------|--------------------------------------------------------------------|
+
+        | `email_address`, `first_name`, `last_name`                                       | `eq`, `sw`                                                        | Text — equals & starts_with only.                                  |
+
+        | `anonymous`                                                                      | `eq`, `dne`                                                       | Boolean-style option.                                              |
+
+        | `created_at`, `unsubscribed_at`, `last_activity`                                | All standard date clauses                                         | Indexed datetime columns.                                          |
+
+        | `tags.id`                                                                        | `eq`, `dne`, `in`, `nin`                                          | Tag membership — must reference workspace-owned tag ids.           |
+
+        | `has_affiliate_attribution`, `has_active_affiliate_attribution`, `referred_by_affiliate` | All standard clauses                                  | Affiliate attribution lookups.                                     |
+
+        | `email_suppression`                                                              | `st`, `nst`, `eq`, `in`                                           | Email suppression set/not-set or membership.                       |
+
+        | `received_broadcast`, `opened_broadcast`, `clicked_broadcast`                   | `eq`, `in`                                                        | **Must include a specific broadcast id.**                          |
+
+        | `opted_in_funnel_step`, `opted_in_funnel_at`, `opted_in_on_standalone_page`     | `eq`, `in`                                                        | **Must include a specific funnel/step/page id.**                   |
+
+
+        Conjunction is restricted to `and`. See the full reference at the
+
+        [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist).
+
+        '
+      required:
+      - refine_filter
+      properties:
+        refine_filter:
+          type: object
+          required:
+          - criteria
+          properties:
+            name:
+              type: string
+              description: Optional human-readable name. Must be unique within the workspace when provided.
+            filter_class:
+              type: string
+              description: Filter class. Defaults to `ContactsFilter` (the only supported class).
+              default: ContactsFilter
+            conjunction:
+              type: string
+              enum:
+              - and
+              - or
+              description: Join operator for all criteria. Defaults to `and`.
+              default: and
+            criteria:
+              type: array
+              minItems: 1
+              description: Non-empty array of filter criteria.
+              items:
+                type: object
+                required:
+                - attribute
+                - clause
+                properties:
+                  attribute:
+                    type: string
+                    description: Contact attribute to filter on (e.g. `tags.id`, `created_at`, `email`).
+                  clause:
+                    type: string
+                    description: Comparison operator (e.g. `in`, `equals`, `gte`, `set`).
+                  value:
+                    description: Comparison value. Relative date clauses use an object with `days` and `modifier`. Omit for set/not-set clauses.
+                    oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                    - type: object
+                      required:
+                      - days
+                      - modifier
+                      properties:
+                        days:
+                          oneOf:
+                          - type: string
+                          - type: integer
+                        modifier:
+                          type: string
+                          enum:
+                          - ago
+                          - from_now
+      example:
+        refine_filter:
+          name: VIP newsletter audience
+          filter_class: ContactsFilter
+          conjunction: and
+          criteria:
+          - attribute: tags.id
+            clause: in
+            value:
+            - tag-pub-id-1
+            - tag-pub-id-2
+          - attribute: purchased_products.id
+            clause: equals
+            value: prod-pub-id
+          - attribute: created_at
+            clause: gte
+            value: '2026-01-01T00:00:00Z'
+  parameters:
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

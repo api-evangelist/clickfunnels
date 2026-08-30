@@ -1,0 +1,256 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Download API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Download
+  description: '> Downloads are workspace files that can be granted through product variants.
+
+
+    Use the Download''s `asset_id` when configuring digital-asset access through the `Products::Variant` resource.
+
+    '
+paths:
+  /workspaces/{workspace_id}/downloads:
+    get:
+      tags:
+      - Download
+      summary: List Downloads
+      description: List downloads for a workspace. Use each download's `asset_id` when configuring a product variant's digital-asset access.
+      operationId: listDownloads
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DownloadAttributes'
+              example:
+              - id: 73
+                public_id: VpQLxN
+                workspace_id: 42000
+                asset_id: 904
+                name: Conversion Checklist.pdf
+                created_at: '2026-07-20T09:30:00.000Z'
+                updated_at: '2026-07-21T14:45:00.000Z'
+              - id: 74
+                public_id: qRzKTy
+                workspace_id: 42000
+                asset_id: 905
+                name: Launch Planning Workbook.xlsx
+                created_at: '2026-07-21T11:00:00.000Z'
+                updated_at: '2026-07-21T11:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /downloads/{id}:
+    get:
+      tags:
+      - Download
+      summary: Fetch Download
+      description: Fetch a single download by ID, including the Asset ID used to configure product-variant access.
+      operationId: getDownloads
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadAttributes'
+              example:
+                id: 73
+                public_id: VpQLxN
+                workspace_id: 42000
+                asset_id: 904
+                name: Conversion Checklist.pdf
+                created_at: '2026-07-20T09:30:00.000Z'
+                updated_at: '2026-07-21T14:45:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  schemas:
+    DownloadAttributes:
+      type: object
+      title: Downloads
+      description: Downloads
+      properties:
+        id:
+          type: integer
+          description: Download ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Download public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        asset_id:
+          type:
+          - integer
+          - 'null'
+          description: The Asset ID to pass in `product_variant.asset_ids` when granting this download through a product variant.
+        name:
+          type:
+          - string
+          - 'null'
+          description: Download name
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+      example:
+        id: 73
+        public_id: VpQLxN
+        workspace_id: 42000
+        asset_id: 904
+        name: Conversion Checklist.pdf
+        created_at: '2026-07-20T09:30:00.000Z'
+        updated_at: '2026-07-21T14:45:00.000Z'
+      required:
+      - asset_id
+      - created_at
+      - id
+      - name
+      - public_id
+      - updated_at
+      - workspace_id
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

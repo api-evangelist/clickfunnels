@@ -1,0 +1,700 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Funnels::Split Test Step API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Funnels::SplitTestStep
+  description: '> Split test steps wrap an existing funnel page in a two-branch A/B split with configurable traffic weights.
+
+
+    Split test steps live inside a funnel''s workflow. Each step exposes a 2-entry `variants` array with `page_id` and `weight` per branch. See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#split-test-steps) for the full surface.
+
+    '
+paths:
+  /funnels/{funnel_id}/split_test_steps:
+    get:
+      tags:
+      - Funnels::SplitTestStep
+      summary: List Split Test Steps
+      description: 'List all split test steps in a funnel. Each split test wraps an existing page in a
+
+        two-branch split and optionally attaches a second page.
+
+
+        See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#split-test-steps) for the full split-test surface.
+
+        '
+      operationId: listFunnelSplitTestSteps
+      parameters:
+      - name: funnel_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  split_test_steps:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SplitTestStepAttributes'
+              example:
+                split_test_steps:
+                - id: 1234
+                  public_id: AbCdEf
+                  funnel:
+                    id: 42
+                    public_id: xYz123
+                    name: My Funnel
+                  variants:
+                  - show_page_step:
+                      id: 100
+                      public_id: ShPgId
+                      name: Squeeze Page step
+                      current_path: /squeeze
+                    page:
+                      id: 500
+                      public_id: PageId
+                      name: Squeeze Page
+                    weight: 100
+                  - show_page_step: null
+                    page: null
+                    weight: 0
+                  created_at: '2026-04-24T00:00:00.000Z'
+                  updated_at: '2026-04-24T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Funnels::SplitTestStep
+      summary: Create Split Test Step
+      description: 'Wrap an existing page in a new split test. Provide one variant to wrap a single page
+
+        (the second branch starts empty and can be attached later via PATCH), or two variants
+
+        to wrap a page and attach a fresh page as the second branch. The API never clones
+
+        pages — the second variant''s page must not already be used by any funnel step.
+
+
+        See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#split-test-steps) for the full split-test surface.
+
+        '
+      operationId: createFunnelSplitTestStep
+      externalDocs:
+        description: Funnels Skill - split test steps
+        url: https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#split-test-steps
+      parameters:
+      - name: funnel_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SplitTestStepParametersCreate'
+            example:
+              split_test_step:
+                variants:
+                - page_id: 500
+                  weight: 60
+                - page_id: 501
+                  weight: 40
+                show_page_step_id: 100
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SplitTestStepAttributes'
+              example:
+                id: 1234
+                public_id: AbCdEf
+                funnel:
+                  id: 42
+                  public_id: xYz123
+                  name: My Funnel
+                variants:
+                - show_page_step:
+                    id: 100
+                    public_id: ShPgId
+                    name: Squeeze Page step
+                    current_path: /squeeze
+                  page:
+                    id: 500
+                    public_id: PageId
+                    name: Squeeze Page
+                  weight: 100
+                - show_page_step: null
+                  page: null
+                  weight: 0
+                created_at: '2026-04-24T00:00:00.000Z'
+                updated_at: '2026-04-24T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: split_test_step.variants[0].page_id does not belong to this funnel'
+  /funnels/{funnel_id}/split_test_steps/{id}:
+    get:
+      tags:
+      - Funnels::SplitTestStep
+      summary: Fetch Split Test Step
+      description: Fetch a single split test step with its variants and weights.
+      operationId: getFunnelSplitTestStep
+      parameters:
+      - name: funnel_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SplitTestStepAttributes'
+              example:
+                id: 1234
+                public_id: AbCdEf
+                funnel:
+                  id: 42
+                  public_id: xYz123
+                  name: My Funnel
+                variants:
+                - show_page_step:
+                    id: 100
+                    public_id: ShPgId
+                    name: Squeeze Page step
+                    current_path: /squeeze
+                  page:
+                    id: 500
+                    public_id: PageId
+                    name: Squeeze Page
+                  weight: 100
+                - show_page_step: null
+                  page: null
+                  weight: 0
+                created_at: '2026-04-24T00:00:00.000Z'
+                updated_at: '2026-04-24T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    patch:
+      tags:
+      - Funnels::SplitTestStep
+      summary: Update Split Test Step
+      description: "Update a split test's variants: attach a page to an empty branch, swap an existing\nvariant's page, or adjust the weights. The `variants` array length must equal the\nnumber of branches in the split test (2 for the standard binary case).\n\n- Weight rules: if *any* variant provides `weight`, all variants must provide it and\n  the values must be integers 0..100 summing to 100. If *none* provide weight, weights\n  stay unchanged.\n- Page-id rules per variant:\n  - Equal to current `page_id` → no-op.\n  - Branch currently empty + new `page_id` provided → attach.\n  - Branch currently has a page + new different `page_id` → swap (old step destroyed).\n  - `page_id: null` or blank is rejected (detach is out of scope — use DELETE with\n    `branch` parameter instead).\n- Any page being attached/swapped-in must: (a) be in the same workspace, (b) be a\n  `user_page`, and (c) have no existing `ShowPageStep` anywhere in any funnel.\n"
+      operationId: updateFunnelSplitTestStep
+      externalDocs:
+        description: Funnels Skill - split test steps
+        url: https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#split-test-steps
+      parameters:
+      - name: funnel_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SplitTestStepParametersUpdate'
+            example:
+              split_test_step:
+                variants:
+                - page_id: 500
+                  weight: 70
+                - page_id: 501
+                  weight: 30
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SplitTestStepAttributes'
+              example:
+                id: 1234
+                public_id: AbCdEf
+                funnel:
+                  id: 42
+                  public_id: xYz123
+                  name: My Funnel
+                variants:
+                - show_page_step:
+                    id: 100
+                    public_id: ShPgId
+                    name: Squeeze Page step
+                    current_path: /squeeze
+                  page:
+                    id: 500
+                    public_id: PageId
+                    name: Squeeze Page
+                  weight: 100
+                - show_page_step: null
+                  page: null
+                  weight: 0
+                created_at: '2026-04-24T00:00:00.000Z'
+                updated_at: '2026-04-24T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: split_test_step.variants[1].page_id is already used by another funnel step'
+    delete:
+      tags:
+      - Funnels::SplitTestStep
+      summary: Destroy Split Test Step
+      description: "Remove a split test from the funnel.\n\n**A 1-branch split test is not a supported state**, so any value of\n`branch` collapses the entire split:\n\n- `DELETE /funnels/{funnel_id}/split_test_steps/{id}` (default `branch=both`)\n  → removes the entire split test, both branches discarded.\n- `DELETE /funnels/{funnel_id}/split_test_steps/{id}?branch=left` → removes\n  the entire split test; the **right** branch's pages are promoted up\n  under the split's parent so they remain attached to the funnel's main\n  workflow.\n- `DELETE /funnels/{funnel_id}/split_test_steps/{id}?branch=right` →\n  removes the entire split test; the **left** branch's pages are\n  promoted up under the split's parent.\n\nSee [Destroying a split test](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#destroying-a-split-test) in the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for how the collapse fits into the rest of the split-test surface.\n"
+      operationId: destroyFunnelSplitTestStep
+      parameters:
+      - name: funnel_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: branch
+        in: query
+        required: false
+        description: Optional branch to remove. One of `left`, `right`, or `both` (default).
+        schema:
+          type: string
+          enum:
+          - left
+          - right
+          - both
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    SplitTestStepParametersUpdate:
+      type: object
+      title: Update Split Test Step
+      description: 'Parameters for updating a split test''s variants. The `variants` array length must
+
+        equal the current number of branches (2 for the standard binary case). Each entry may
+
+        provide any subset of `{ page_id, weight }`.
+
+        '
+      required:
+      - split_test_step
+      properties:
+        split_test_step:
+          type: object
+          required:
+          - variants
+          properties:
+            variants:
+              type: array
+              minItems: 2
+              maxItems: 2
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  page_id:
+                    type: integer
+                    description: New page to attach/swap to this branch. Must be a fresh page (no existing ShowPageStep).
+                  weight:
+                    type: integer
+                    description: Traffic weight (0..100). If any variant provides weight, all must — and they must sum to 100.
+      example:
+        split_test_step:
+          variants:
+          - page_id: 500
+            weight: 70
+          - page_id: 501
+            weight: 30
+    SplitTestStepAttributes:
+      type: object
+      title: Split Test Step
+      description: 'A split test step wraps an existing page in a funnel in a two-branch split. Each
+
+        variant carries the `show_page_step` + `page` attached to that branch (both `null`
+
+        when the branch is empty), plus the branch''s traffic `weight` (0..100).
+
+        '
+      properties:
+        id:
+          type: integer
+          description: Split test step ID
+        public_id:
+          type: string
+          description: Obfuscated split test step ID
+        funnel:
+          type: object
+          description: The funnel containing this split test.
+          properties:
+            id:
+              type: integer
+              description: Funnel ID
+            public_id:
+              type: string
+              description: Obfuscated funnel ID
+            name:
+              type: string
+              description: Funnel name
+        variants:
+          type: array
+          description: Ordered variants. Binary split tests always have 2 entries.
+          items:
+            type: object
+            properties:
+              show_page_step:
+                type:
+                - object
+                - 'null'
+                description: The ShowPageStep function attached to this branch, or null if empty.
+                properties:
+                  id:
+                    type: integer
+                  public_id:
+                    type: string
+                  name:
+                    type: string
+                  current_path:
+                    type: string
+              page:
+                type:
+                - object
+                - 'null'
+                description: The page attached to this branch, or null if empty.
+                properties:
+                  id:
+                    type: integer
+                  public_id:
+                    type: string
+                  name:
+                    type: string
+              weight:
+                type: integer
+                description: Percentage of traffic sent to this branch (0..100). Branches must sum to 100.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 1234
+        public_id: AbCdEf
+        funnel:
+          id: 42
+          public_id: xYz123
+          name: My Funnel
+        variants:
+        - show_page_step:
+            id: 100
+            public_id: ShPgId
+            name: Squeeze Page step
+            current_path: /squeeze
+          page:
+            id: 500
+            public_id: PageId
+            name: Squeeze Page
+          weight: 100
+        - show_page_step: null
+          page: null
+          weight: 0
+        created_at: '2026-04-24T00:00:00.000Z'
+        updated_at: '2026-04-24T00:00:00.000Z'
+      required:
+      - created_at
+      - funnel
+      - id
+      - public_id
+      - updated_at
+      - variants
+    SplitTestStepParametersCreate:
+      type: object
+      title: Create Split Test Step
+      description: 'Parameters for wrapping an existing page in a new split test. Provide 1 or 2 variants.
+
+        The first variant''s `page_id` must already be attached to a step in this funnel''s
+
+        workflow (that page gets wrapped). The second variant''s `page_id` must be a fresh page
+
+        (not already used by any step anywhere). No cloning occurs.
+
+
+        ### Positioning the split
+
+
+        By default (no `show_page_step_id`), the split lands at the funnel entry —
+
+        `sort_order 0` under the workflow root — with all surviving steps moved into a
+
+        `Root Step after Sequence End` convergence sequence positioned right after the split.
+
+
+        When `show_page_step_id` references an existing show-page step in this funnel, the
+
+        split is inserted **after that step** under the same parent, and steps
+
+        N+1...end are migrated under the convergence sequence. This is the "split between
+
+        step N and step N+1" shape.
+
+
+        See [Positioning the split](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#positioning-the-split) in the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for picking a safe anchor step, and [Placing an external (SDK) page in a branch](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#placing-an-external-sdk-page-in-a-branch) to use a page you host yourself as a variant.
+
+        '
+      required:
+      - split_test_step
+      properties:
+        split_test_step:
+          type: object
+          required:
+          - variants
+          properties:
+            variants:
+              type: array
+              description: 1 or 2 variant entries.
+              minItems: 1
+              maxItems: 2
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  page_id:
+                    type: integer
+                    description: Page ID (required on the first variant; optional on the second).
+                  weight:
+                    type: integer
+                    description: Traffic weight (0..100). Either omit on both variants (defaults 100/0 for 1 variant or 50/50 for 2) or provide on both.
+            show_page_step_id:
+              type:
+              - integer
+              - string
+              description: 'Optional. Insert the new split AFTER the workflow step that wraps this
+
+                `show_page_step`. Accepts a numeric `Workflows::Steps::ShowPageStep` id
+
+                or its obfuscated public id (you can read either off any page response).
+
+                When omitted, the split lands at funnel entry.
+
+                Caution: creating a split moves the wrapped step inside a branch sequence,
+
+                so an id fetched earlier may no longer sit where you think — read the
+
+                funnel structure immediately before creating, and note that anchoring on
+
+                a step inside another split''s branch nests the new split in that branch.
+
+                '
+      example:
+        split_test_step:
+          variants:
+          - page_id: 500
+            weight: 60
+          - page_id: 501
+            weight: 40
+          show_page_step_id: 100
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

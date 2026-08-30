@@ -1,0 +1,227 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Domain API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Domain
+  description: '> Domains represent custom domains connected to a workspace.
+
+
+    The Domains API provides read-only access to the domains configured for a workspace. Use this API to look up domain IDs for use with other resources such as Funnels.
+
+    '
+paths:
+  /workspaces/{workspace_id}/domains:
+    get:
+      tags:
+      - Domain
+      summary: List Domains
+      description: List all domains for a workspace. Use this endpoint to retrieve domain IDs for use with other resources such as Funnels. These are **website hosting** domains (ownership + hosting CNAME + SSL). To manage **email sending** domains (DKIM/SPF/DMARC), see the Email Domains endpoints (listEmailsDomains / createEmailsDomains).
+      operationId: listDomains
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DomainAttributes'
+              example:
+              - id: 1
+                public_id: aBcDeF
+                workspace_id: 42000
+                name: example.com
+                status: secured
+                connected: true
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+              - id: 2
+                public_id: gHiJkL
+                workspace_id: 42000
+                name: shop.example.com
+                status: connecting
+                connected: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /domains/{id}:
+    get:
+      tags:
+      - Domain
+      summary: Fetch Domain
+      description: Fetch a single domain by ID.
+      operationId: getDomain
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainAttributes'
+              example:
+                id: 1
+                public_id: aBcDeF
+                workspace_id: 42000
+                name: example.com
+                status: secured
+                connected: true
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    DomainAttributes:
+      type: object
+      title: Domains
+      description: Domains
+      properties:
+        id:
+          type: integer
+          description: Domain ID
+        public_id:
+          type: string
+          description: The public identifier of the domain
+        workspace_id:
+          type: integer
+          description: The ID of the workspace that the domain belongs to
+        name:
+          type: string
+          description: The domain name (e.g. example.com)
+        status:
+          type: string
+          enum:
+          - initialized
+          - connecting
+          - ownership_verified
+          - securing
+          - secured
+          - removing
+          description: The current connection status of the domain
+        connected:
+          type: boolean
+          description: Whether the domain is fully connected and active
+        created_at:
+          type: string
+          format: date-time
+          description: Created at
+        updated_at:
+          type: string
+          format: date-time
+          description: Updated at
+      example:
+        id: 1
+        public_id: aBcDeF
+        workspace_id: 42000
+        name: example.com
+        status: secured
+        connected: true
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - connected
+      - created_at
+      - id
+      - name
+      - public_id
+      - status
+      - updated_at
+      - workspace_id
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

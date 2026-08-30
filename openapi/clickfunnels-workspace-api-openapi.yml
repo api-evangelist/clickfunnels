@@ -1,0 +1,334 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Workspace API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Workspace
+  description: Workspace
+paths:
+  /teams/{team_id}/workspaces:
+    get:
+      tags:
+      - Workspace
+      summary: List Workspaces
+      description: List workspaces for a team
+      operationId: listWorkspaces
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - name: sort_property
+        in: query
+        description: 'Sort property of the workspace list. Defaults to `id`; `updated_at`
+
+          and `name` are also supported.
+
+          '
+        required: false
+        schema:
+          type: string
+          enum:
+          - id
+          - updated_at
+          - name
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkspaceAttributes'
+              example:
+              - id: 42000
+                public_id: EYNOMX
+                team_id: 42000
+                name: Example Workspace
+                subdomain: example
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+              - id: 42000
+                public_id: SuvKfc
+                team_id: 42000
+                name: Example Workspace
+                subdomain: example
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+  /workspaces/{id}:
+    get:
+      tags:
+      - Workspace
+      summary: Fetch Workspace
+      description: Retrieve a workspace
+      operationId: getWorkspaces
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceAttributes'
+              example:
+                id: 42000
+                public_id: ouGIxn
+                team_id: 42000
+                name: Example Workspace
+                subdomain: example
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Workspace
+      summary: Update Workspace
+      description: Update a workspace
+      operationId: updateWorkspaces
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Workspace
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspace:
+                  type: object
+                  $ref: '#/components/schemas/WorkspaceParametersUpdate'
+            example:
+              workspace:
+                name: My Workspace
+                subdomain: mysubdomain
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceAttributes'
+              example:
+                id: 42000
+                public_id: JgaPjc
+                team_id: 42000
+                name: Example Workspace
+                subdomain: example
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    WorkspaceAttributes:
+      type: object
+      title: Workspaces
+      description: Workspaces
+      properties:
+        id:
+          type: integer
+          description: Workspace ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Workspace public ID
+        team_id:
+          type: integer
+          description: Team ID
+        name:
+          type: string
+          description: Workspace Name
+        subdomain:
+          type: string
+          description: Subdomain
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+      example:
+        id: 42000
+        public_id: CblaAF
+        team_id: 42000
+        name: Example Workspace
+        subdomain: example
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - id
+      - name
+      - public_id
+      - subdomain
+      - team_id
+      - updated_at
+    WorkspaceParametersUpdate:
+      type: object
+      title: Workspaces
+      description: Workspaces
+      required: []
+      properties:
+        name:
+          type: string
+          description: Workspace Name
+        subdomain:
+          type: string
+          description: The subdomain can currently only be changed in rare cases right after the creation of your new workspace.
+      example:
+        workspace:
+          name: My Workspace
+          subdomain: mysubdomain
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

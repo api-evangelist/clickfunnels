@@ -1,0 +1,323 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Site API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Site
+  description: '> Sites represent a workspace''s website configuration containing global code settings.
+
+    '
+paths:
+  /workspaces/{workspace_id}/site:
+    get:
+      tags:
+      - Site
+      summary: Fetch Site
+      description: 'Fetch the site for a workspace. Sites contain global code settings that apply to all pages and funnels.
+
+        '
+      operationId: getSite
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/ExpandCodeFields'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteAttributes'
+              example:
+                id: 1
+                public_id: aBcDeF
+                workspace_id: 42000
+                name: My Website
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                blog_theme_id: null
+                homepage_id: null
+                store_theme_id: null
+                theme_id: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Site
+      summary: Update Site
+      description: 'Update the site for a workspace.
+
+
+        You can use head_code and footer_code parameters to inject custom code. Use head_code_mode and footer_code_mode to control whether code is appended or replaced.
+
+        '
+      operationId: updateSite
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/ExpandCodeFields'
+      requestBody:
+        description: Information about updated fields in Site
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                site:
+                  type: object
+                  $ref: '#/components/schemas/SiteParametersUpdate'
+            example:
+              site:
+                name: My Updated Website
+                head_code: <script>console.log('site');</script>
+                head_code_mode: append
+                homepage_id: RcHPAt
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteAttributes'
+              example:
+                id: 1
+                public_id: aBcDeF
+                workspace_id: 42000
+                name: My Updated Website
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                blog_theme_id: null
+                homepage_id: null
+                store_theme_id: null
+                theme_id: null
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: Invalid code mode ''invalid''. Must be ''append'' or ''replace''.'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Validation failed
+components:
+  schemas:
+    SiteAttributes:
+      type: object
+      title: Sites
+      description: Sites represent a workspace's website configuration containing global code settings.
+      properties:
+        id:
+          type: integer
+          description: Site ID
+        public_id:
+          type: string
+          description: The public identifier of the site
+        workspace_id:
+          type: integer
+          description: Workspace ID that the site belongs to.
+        name:
+          type: string
+          description: Name of the site.
+        created_at:
+          type: string
+          format: date-time
+          description: Created at
+        updated_at:
+          type: string
+          format: date-time
+          description: Updated at
+        head_code:
+          type:
+          - string
+          - 'null'
+          description: '**Expandable** Custom HTML/JavaScript code injected into the site head section. Only returned when expand[]=head_code is provided. Note: expanding may add latency, especially on list endpoints. Use sparingly.'
+        footer_code:
+          type:
+          - string
+          - 'null'
+          description: '**Expandable** Custom HTML/JavaScript code injected before the closing body tag. Only returned when expand[]=footer_code is provided. Note: expanding may add latency, especially on list endpoints. Use sparingly.'
+        homepage_id:
+          type:
+          - string
+          - 'null'
+          description: The public id of the page served at the site's root path ("/"). Null when no homepage is configured.
+        theme_id:
+          type:
+          - string
+          - 'null'
+          description: Public id of the site's active theme.
+        blog_theme_id:
+          type:
+          - string
+          - 'null'
+          description: Public id of the site's blog theme.
+        store_theme_id:
+          type:
+          - string
+          - 'null'
+          description: Public id of the site's store theme.
+      example:
+        id: 1
+        public_id: aBcDeF
+        workspace_id: 42000
+        name: My Website
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        homepage_id: RcHPAt
+        theme_id: dkGlMT
+        blog_theme_id: null
+        store_theme_id: null
+      required:
+      - blog_theme_id
+      - created_at
+      - homepage_id
+      - id
+      - name
+      - public_id
+      - store_theme_id
+      - theme_id
+      - updated_at
+      - workspace_id
+    SiteParametersUpdate:
+      type: object
+      title: Sites
+      description: Sites
+      required: []
+      properties:
+        name:
+          type: string
+          description: Name of the site.
+        head_code:
+          type:
+          - string
+          - 'null'
+          description: Custom code to inject into the site's <head> section. Content should be wrapped in appropriate HTML tags such as <script>, <link>, <meta>, or <style>. Set to null to clear existing code.
+        head_code_mode:
+          type: string
+          enum:
+          - append
+          - replace
+          description: How to handle head_code. 'append' adds to existing code (default), 'replace' overwrites.
+        footer_code:
+          type:
+          - string
+          - 'null'
+          description: Custom code to inject before the closing </body> tag. JavaScript should be wrapped in <script> tags. Set to null to clear existing code.
+        footer_code_mode:
+          type: string
+          enum:
+          - append
+          - replace
+          description: How to handle footer_code. 'append' adds to existing code (default), 'replace' overwrites.
+        homepage_id:
+          type: string
+          description: 'Set which page is served at the site''s root path ("/"). Pass the page''s public id, or an empty string to clear the homepage. Important: a page cannot become the homepage by setting its own path to "/" — this parameter is the only way to designate a page as the homepage. The theme_id, blog_theme_id, and store_theme_id fields are read-only in this endpoint; to change the default theme, use the theme set_default action.'
+      example:
+        site:
+          name: My Updated Website
+          head_code: <script>console.log('site');</script>
+          head_code_mode: append
+          homepage_id: RcHPAt
+  parameters:
+    ExpandCodeFields:
+      name: expand[]
+      in: query
+      description: Expand additional data in the response. Use `expand[]=field_name` to include optional fields (e.g., `expand[]=head_code&expand[]=footer_code`). See the [Expanding guide](https://developers.myclickfunnels.com/docs/expand) for available fields and examples.
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - head_code
+          - footer_code
+          - markup
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

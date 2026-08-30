@@ -1,0 +1,586 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Sales::Pipelines::Stage API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Sales::Pipelines::Stage
+  description: '>  Sales Pipeline Stages
+
+
+    Stages belong to a Pipeline, and allow you to track and advance Opportunities.
+
+
+    You can re-order Stages in a Pipeline by updating the `sort_order` attribute of a Stage, giving the desired position of the Stage.
+
+    Sort order values are zero-indexed, with 0 being the first stage of a pipeline.
+
+
+    Currently, it''s not possible to delete a stage if it''s the last one left in the Pipeline.
+
+    '
+paths:
+  /sales/pipelines/{pipeline_id}/stages:
+    get:
+      tags:
+      - Sales::Pipelines::Stage
+      summary: List Stages
+      description: List Stages
+      operationId: listSalesPipelinesStages
+      parameters:
+      - name: pipeline_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - name: sort_property
+        in: query
+        description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+          If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+          '
+        required: false
+        schema:
+          type: string
+          enum:
+          - id
+          - updated_at
+          - sort_order
+      - name: filter
+        in: query
+        description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[id]=value&filter[another_property]=value1,value2`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
+
+          '
+        required: false
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              description: A comma-separated list of stage IDs to filter by (within the scope of the pipeline).
+              example: 1,42
+        style: deepObject
+        explode: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SalesPipelinesStageAttributes'
+              example:
+              - id: 66
+                public_id: fJDyLu
+                workspace_id: 17
+                pipeline_id: 14
+                name: Example Stage
+                sort_order: 32
+                close_probability: 20
+                opportunity_ids:
+                - 65
+                - 66
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                total_value: 0
+                weighted_value: 0
+              - id: 69
+                public_id: TpgUQq
+                workspace_id: 18
+                pipeline_id: 15
+                name: Example Stage
+                sort_order: 35
+                close_probability: 20
+                opportunity_ids:
+                - 71
+                - 72
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                total_value: 0
+                weighted_value: 0
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Sales::Pipelines::Stage
+      summary: Create Stage
+      description: Create Stage
+      operationId: createSalesPipelinesStages
+      parameters:
+      - name: pipeline_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Stage
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sales_pipelines_stage:
+                  type: object
+                  $ref: '#/components/schemas/SalesPipelinesStageParameters'
+            example:
+              sales_pipelines_stage:
+                name: Example Stage
+                sort_order: 5
+                close_probability: 20
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesPipelinesStageAttributes'
+              example:
+                id: 75
+                public_id: hDurGw
+                workspace_id: 20
+                pipeline_id: 17
+                name: Example Stage
+                sort_order: 41
+                close_probability: 20
+                opportunity_ids:
+                - 83
+                - 84
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                total_value: 0
+                weighted_value: 0
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /sales/pipelines/stages/{id}:
+    get:
+      tags:
+      - Sales::Pipelines::Stage
+      summary: Fetch Stage
+      description: Fetch Stage
+      operationId: getSalesPipelinesStages
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesPipelinesStageAttributes'
+              example:
+                id: 72
+                public_id: RApgVt
+                workspace_id: 19
+                pipeline_id: 16
+                name: Example Stage
+                sort_order: 38
+                close_probability: 20
+                opportunity_ids:
+                - 77
+                - 78
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                total_value: 0
+                weighted_value: 0
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Sales::Pipelines::Stage
+      summary: Update Stage
+      description: Update Stage
+      operationId: updateSalesPipelinesStages
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Stage
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sales_pipelines_stage:
+                  type: object
+                  $ref: '#/components/schemas/SalesPipelinesStageParametersUpdate'
+            example:
+              sales_pipelines_stage:
+                name: Example Stage
+                sort_order: 5
+                close_probability: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesPipelinesStageAttributes'
+              example:
+                id: 81
+                public_id: jFSCAf
+                workspace_id: 22
+                pipeline_id: 19
+                name: Example Stage
+                sort_order: 47
+                close_probability: 20
+                opportunity_ids:
+                - 95
+                - 96
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                total_value: 0
+                weighted_value: 0
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    delete:
+      tags:
+      - Sales::Pipelines::Stage
+      summary: Remove Stage
+      description: Remove Stage
+      operationId: removeSalesPipelinesStages
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    SalesPipelinesStageParameters:
+      type: object
+      title: Stages
+      description: Stages
+      required:
+      - name
+      - close_probability
+      properties:
+        name:
+          type: string
+          description: Stage name
+        sort_order:
+          type:
+          - integer
+          - 'null'
+          description: 'The position of the stage in the pipeline. The stages are ordered by the sort order attribute, starting at zero.
+
+            If not provided, the stage will be added at the end of the pipeline.
+
+            If provided, the stage will be inserted at the specified position, and the sort order of the subsequent stages will be incremented by one.
+
+            '
+        close_probability:
+          type: number
+          description: Close probability of the opportunities in this stage
+      example:
+        sales_pipelines_stage:
+          name: Example Stage
+          sort_order: 5
+          close_probability: 20
+    SalesPipelinesStageParametersUpdate:
+      type: object
+      title: Stages
+      description: Stages
+      required: []
+      properties:
+        name:
+          type: string
+          description: Stage name
+        sort_order:
+          type:
+          - integer
+          - 'null'
+          description: 'The position of the stage in the pipeline. The stages are ordered by the sort order attribute, starting at zero.
+
+            If not provided, the stage will be added at the end of the pipeline.
+
+            If provided, the stage will be inserted at the specified position, and the sort order of the subsequent stages will be incremented by one.
+
+            '
+        close_probability:
+          type:
+          - number
+          - 'null'
+          description: Close probability of the opportunities in this stage
+      example:
+        sales_pipelines_stage:
+          name: Example Stage
+          sort_order: 5
+          close_probability: 20
+    SalesPipelinesStageAttributes:
+      type: object
+      title: Stages
+      description: Stages
+      properties:
+        id:
+          type: integer
+          description: Stage ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Stage public ID
+        workspace_id:
+          type:
+          - integer
+          - 'null'
+          description: Workspace ID
+        pipeline_id:
+          type: integer
+          description: Pipeline ID
+        name:
+          type: string
+          description: Stage name
+        sort_order:
+          type:
+          - integer
+          - 'null'
+          description: 'The position of the stage in the pipeline. The stages are ordered by the sort order attribute, starting at zero.
+
+            If not provided, the stage will be added at the end of the pipeline.
+
+            If provided, the stage will be inserted at the specified position, and the sort order of the subsequent stages will be incremented by one.
+
+            '
+        close_probability:
+          type: number
+          description: Close probability of the opportunities in this stage
+        opportunity_ids:
+          type:
+          - array
+          - 'null'
+          minContains: 0
+          contains:
+            type: integer
+          description: Opportunity IDs of all opportunities currently belonging to this stage
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at
+        total_value:
+          type:
+          - integer
+          - 'null'
+          description: Total value of all opportunities in this stage
+        weighted_value:
+          type:
+          - number
+          - 'null'
+          description: A calculation of the weighted value of all opportunities in this stage
+      example:
+        id: 39
+        public_id: bGXvFU
+        workspace_id: 3
+        pipeline_id: 2
+        name: Example Stage
+        sort_order: 5
+        close_probability: 20
+        opportunity_ids:
+        - 9
+        - 10
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        total_value: 0
+        weighted_value: 0
+      required:
+      - close_probability
+      - created_at
+      - id
+      - name
+      - opportunity_ids
+      - pipeline_id
+      - public_id
+      - sort_order
+      - total_value
+      - updated_at
+      - weighted_value
+      - workspace_id
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

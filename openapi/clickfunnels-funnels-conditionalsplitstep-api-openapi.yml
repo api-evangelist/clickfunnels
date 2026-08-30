@@ -1,0 +1,930 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Funnels::Conditional Split Step API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Funnels::ConditionalSplitStep
+  description: '> Conditional split steps route contacts down a "matched" or "unmatched" branch based on a RefineFilter condition.
+
+
+    Conditional split steps live inside a funnel''s workflow. Each step exposes a `condition` (filter + setup state) and a 2-entry `branches` array (`[matched, unmatched]`). See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#conditional-split-steps) for the full surface.
+
+    '
+paths:
+  /funnels/{funnel_id}/conditional_split_steps:
+    get:
+      tags:
+      - Funnels::ConditionalSplitStep
+      summary: List Conditional Split Steps
+      description: 'List all conditional split steps in a funnel. Each entry exposes its `condition`
+
+        (filter_id + is_setup) and 2-entry `branches` array (`[matched, unmatched]`).
+
+
+        Pass `expand[]=filter` to include the full RefineFilter object nested under
+
+        `condition.filter` for each step. On the show endpoint (`GET /{id}`) the filter is
+
+        always included without needing the expand param.
+
+
+        See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#conditional-split-steps) for the full conditional-split surface.
+
+        '
+      operationId: listFunnelConditionalSplitSteps
+      parameters:
+      - name: funnel_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: expand[]
+        in: query
+        required: false
+        description: Pass `filter` to include the full RefineFilter object in `condition.filter` for each step.
+        schema:
+          type: string
+          enum:
+          - filter
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conditional_split_steps:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConditionalSplitStepAttributes'
+              example:
+                conditional_split_steps:
+                - id: 9876
+                  public_id: CsXyZ1
+                  funnel_id: 42
+                  funnel_public_id: xYz123
+                  condition:
+                    filter_id: AbCdEf
+                    is_setup: true
+                    filter:
+                      id: 42
+                      public_id: AbCdEf
+                      workspace_id: 5
+                      name: VIP newsletter audience
+                      filter_class: ContactsFilter
+                      conjunction: and
+                      criteria:
+                      - attribute: tags.id
+                        clause: in
+                        value:
+                        - tag-pub-id-1
+                      created_at: '2026-04-01T12:00:00.000Z'
+                      updated_at: '2026-04-01T12:00:00.000Z'
+                  branches:
+                  - show_page_step:
+                      id: 200
+                      public_id: ShPgMa
+                      name: Matched Page step
+                      current_path: /matched
+                    page:
+                      id: 600
+                      public_id: PgMatch
+                      name: Matched Page
+                  - show_page_step: null
+                    page: null
+                  created_at: '2026-05-01T00:00:00.000Z'
+                  updated_at: '2026-05-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Funnels::ConditionalSplitStep
+      summary: Create Conditional Split Step
+      description: 'Add a new conditional split step to a funnel. All fields are optional — providing
+
+        none creates an empty unconfigured split. Provide `condition` to set the contact
+
+        filter, `branches` to attach pages to one or both branches, and/or
+
+        `show_page_step_id` to position the split in the workflow.
+
+
+        See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#conditional-split-steps) for the full surface.
+
+        '
+      operationId: createFunnelConditionalSplitStep
+      externalDocs:
+        description: Funnels Skill - conditional split steps
+        url: https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#conditional-split-steps
+      parameters:
+      - name: funnel_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConditionalSplitStepParametersCreate'
+            example:
+              conditional_split_step:
+                condition:
+                  filter_id: AbCdEf
+                branches:
+                - page_ids:
+                  - 600
+                  - 601
+                  - 602
+                - page_ids:
+                  - 603
+                show_page_step_id: 100
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConditionalSplitStepAttributes'
+              example:
+                id: 9876
+                public_id: CsXyZ1
+                funnel_id: 42
+                funnel_public_id: xYz123
+                condition:
+                  filter_id: AbCdEf
+                  is_setup: true
+                  filter:
+                    id: 42
+                    public_id: AbCdEf
+                    workspace_id: 5
+                    name: VIP newsletter audience
+                    filter_class: ContactsFilter
+                    conjunction: and
+                    criteria:
+                    - attribute: tags.id
+                      clause: in
+                      value:
+                      - tag-pub-id-1
+                    created_at: '2026-04-01T12:00:00.000Z'
+                    updated_at: '2026-04-01T12:00:00.000Z'
+                branches:
+                - show_page_step:
+                    id: 200
+                    public_id: ShPgMa
+                    name: Matched Page step
+                    current_path: /matched
+                  page:
+                    id: 600
+                    public_id: PgMatch
+                    name: Matched Page
+                - show_page_step: null
+                  page: null
+                created_at: '2026-05-01T00:00:00.000Z'
+                updated_at: '2026-05-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: condition.filter_id must be a stable identifier, not a raw numeric id'
+  /funnels/{funnel_id}/conditional_split_steps/{id}:
+    get:
+      tags:
+      - Funnels::ConditionalSplitStep
+      summary: Fetch Conditional Split Step
+      description: Fetch a single conditional split step with its branches and condition.
+      operationId: getFunnelConditionalSplitStep
+      parameters:
+      - name: funnel_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConditionalSplitStepAttributes'
+              example:
+                id: 9876
+                public_id: CsXyZ1
+                funnel_id: 42
+                funnel_public_id: xYz123
+                condition:
+                  filter_id: AbCdEf
+                  is_setup: true
+                  filter:
+                    id: 42
+                    public_id: AbCdEf
+                    workspace_id: 5
+                    name: VIP newsletter audience
+                    filter_class: ContactsFilter
+                    conjunction: and
+                    criteria:
+                    - attribute: tags.id
+                      clause: in
+                      value:
+                      - tag-pub-id-1
+                    created_at: '2026-04-01T12:00:00.000Z'
+                    updated_at: '2026-04-01T12:00:00.000Z'
+                branches:
+                - show_page_step:
+                    id: 200
+                    public_id: ShPgMa
+                    name: Matched Page step
+                    current_path: /matched
+                  page:
+                    id: 600
+                    public_id: PgMatch
+                    name: Matched Page
+                - show_page_step: null
+                  page: null
+                created_at: '2026-05-01T00:00:00.000Z'
+                updated_at: '2026-05-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    patch:
+      tags:
+      - Funnels::ConditionalSplitStep
+      summary: Update Conditional Split Step
+      description: "Update the `condition` and/or attach pages to existing `branches`. At least one of\nthe two must be provided.\n\n- `condition.filter_id` is the public id of a RefineFilter in the same workspace.\n- Branches array must have 2 entries (matched, unmatched). Each entry may carry a\n  `page_id` to attach (currently empty branch) or swap (currently populated branch).\n  Any page being attached / swapped-in must be a fresh `user_page` in the same\n  workspace with no existing `ShowPageStep`.\n"
+      operationId: updateFunnelConditionalSplitStep
+      externalDocs:
+        description: Funnels Skill - conditional split steps
+        url: https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#conditional-split-steps
+      parameters:
+      - name: funnel_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConditionalSplitStepParametersUpdate'
+            example:
+              conditional_split_step:
+                condition:
+                  filter_id: AbCdEf
+                branches:
+                - page_ids:
+                  - 600
+                  - 601
+                  - 602
+                - page_id: 603
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConditionalSplitStepAttributes'
+              example:
+                id: 9876
+                public_id: CsXyZ1
+                funnel_id: 42
+                funnel_public_id: xYz123
+                condition:
+                  filter_id: AbCdEf
+                  is_setup: true
+                  filter:
+                    id: 42
+                    public_id: AbCdEf
+                    workspace_id: 5
+                    name: VIP newsletter audience
+                    filter_class: ContactsFilter
+                    conjunction: and
+                    criteria:
+                    - attribute: tags.id
+                      clause: in
+                      value:
+                      - tag-pub-id-1
+                    created_at: '2026-04-01T12:00:00.000Z'
+                    updated_at: '2026-04-01T12:00:00.000Z'
+                branches:
+                - show_page_step:
+                    id: 200
+                    public_id: ShPgMa
+                    name: Matched Page step
+                    current_path: /matched
+                  page:
+                    id: 600
+                    public_id: PgMatch
+                    name: Matched Page
+                - show_page_step: null
+                  page: null
+                created_at: '2026-05-01T00:00:00.000Z'
+                updated_at: '2026-05-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: conditional_split_step.branches[0].page_id is already used by another funnel step'
+    delete:
+      tags:
+      - Funnels::ConditionalSplitStep
+      summary: Destroy Conditional Split Step
+      description: "Remove a conditional split from the funnel.\n\n**A 1-branch conditional split is not a supported state**, so any value\nof `branch` collapses the entire split:\n\n- `DELETE /funnels/{funnel_id}/conditional_split_steps/{id}` (default\n  `branch=both`) → removes the entire conditional split, both branches\n  discarded.\n- `DELETE /funnels/{funnel_id}/conditional_split_steps/{id}?branch=matched`\n  → removes the entire conditional split; the **unmatched** branch's\n  pages are promoted up under the split's parent so they remain\n  attached to the funnel's main workflow.\n- `DELETE /funnels/{funnel_id}/conditional_split_steps/{id}?branch=unmatched`\n  → removes the entire conditional split; the **matched** branch's\n  pages are promoted up under the split's parent.\n\nSee [Destroying a conditional split](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#destroying-a-conditional-split) in the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for how the collapse fits into the rest of the conditional-split surface.\n"
+      operationId: destroyFunnelConditionalSplitStep
+      parameters:
+      - name: funnel_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: branch
+        in: query
+        required: false
+        description: Optional branch to remove. One of `matched`, `unmatched`, or `both` (default).
+        schema:
+          type: string
+          enum:
+          - matched
+          - unmatched
+          - both
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    RefineFilterAttributes:
+      type: object
+      title: Refine Filter
+      description: 'A reusable workspace-scoped audience filter composed of one or more criteria joined by a single conjunction.
+
+
+        Public API requests are validated against a [safe-condition whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist); criteria outside the whitelist return 422 with a pointer to the developer community.
+
+        '
+      externalDocs:
+        description: Refine Filters Skill - attributes, clauses, and worked examples
+        url: https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md
+      properties:
+        id:
+          type: integer
+          description: Refine Filter ID
+        public_id:
+          type: string
+          description: Obfuscated Refine Filter ID
+        workspace_id:
+          type: integer
+          description: ID of the workspace this filter belongs to
+        name:
+          type:
+          - string
+          - 'null'
+          description: Optional human-readable name for the filter. Must be unique within the workspace when set.
+        filter_class:
+          type:
+          - string
+          - 'null'
+          description: 'The filter class recorded on the saved filter. This API authors `ContactsFilter` and applies `ContactsFilter` and `OrdersFilter`, but the list returns every saved filter in the workspace, and other ClickFunnels surfaces save their own classes here — `ContactsSegmentsFilter`, `ProductsFilter`, `FunnelsFilter` and `ContactUpsellsFilter` all appear in real workspaces. Treat this as an open set: match on the class you want rather than assuming the rest are absent. `null` for a legacy row whose stored state can no longer be decoded (such rows also return empty `criteria`; they can still be deleted).'
+          example: ContactsFilter
+        conjunction:
+          type: string
+          enum:
+          - and
+          - or
+          description: How the criteria are joined — `and` (all must match) or `or` (any must match).
+        criteria:
+          type: array
+          description: Ordered list of filter criteria.
+          items:
+            $ref: '#/components/schemas/RefineFilterCriterion'
+        created_at:
+          type: string
+          format: date-time
+          description: Created at
+        updated_at:
+          type: string
+          format: date-time
+          description: Updated at
+      example:
+        id: 42
+        public_id: AbCdEf
+        workspace_id: 5
+        name: VIP newsletter audience
+        filter_class: ContactsFilter
+        conjunction: and
+        criteria:
+        - attribute: tags.id
+          clause: in
+          value:
+          - tag-pub-id-1
+        - attribute: created_at
+          clause: gte
+          value: '2026-01-01'
+        created_at: '2026-04-01T12:00:00.000Z'
+        updated_at: '2026-04-01T12:00:00.000Z'
+      required:
+      - conjunction
+      - created_at
+      - criteria
+      - filter_class
+      - id
+      - name
+      - public_id
+      - updated_at
+      - workspace_id
+    RefineFilterCriterion:
+      type: object
+      title: Refine Filter Criterion
+      description: A single filter criterion consisting of an attribute, a comparison clause, and a value.
+      properties:
+        attribute:
+          type: string
+          description: 'The contact attribute to filter on (e.g. `tags.id`, `created_at`, `email_address`).
+
+            The public API restricts attributes to a [safe whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist) — see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for the full reference.
+
+            '
+          example: tags.id
+        clause:
+          type: string
+          description: 'The comparison operator for this criterion (e.g. `in`, `eq`, `gte`, `lte`, `st`, `nst`).
+
+            Allowed clauses depend on the attribute. Text attributes (`email_address`, `first_name`, `last_name`) only accept `eq` and `sw` on the public API; see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist).
+
+            '
+          example: in
+        value:
+          description: "The comparison value. Type depends on the attribute and clause:\n- **Option conditions** (tags, products, etc.): a single opaque public id string, or an array of public id strings.\n- **Date/datetime conditions**: an ISO 8601 date string (`\"2026-01-01\"`) or datetime string (`\"2026-01-01T00:00:00Z\"`).\n  For `between`/`not_between` clauses supply an array of exactly two date strings.\n  For relative `gt`, `lt`, or `exct` clauses supply an object with `days` and a `modifier` of `ago` or `from_now`.\n- **Text/numeric conditions**: a plain string or number.\n- **Set/not-set clauses**: omit `value` entirely.\n"
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+          - type: object
+            required:
+            - days
+            - modifier
+            properties:
+              days:
+                oneOf:
+                - type: string
+                - type: integer
+                description: Number of days used by a relative date clause.
+              modifier:
+                type: string
+                enum:
+                - ago
+                - from_now
+          example:
+          - tag-pub-id-1
+          - tag-pub-id-2
+    ConditionalSplitStepAttributes:
+      type: object
+      title: Conditional Split Step
+      description: 'A conditional split step routes contacts down one of two branches based on whether
+
+        they match a contact filter (`condition`). Each branch carries the
+
+        `show_page_step` + `page` attached to that branch (both `null` when the branch is
+
+        empty). The first branch (`branches[0]`) is the **matched** branch; the second
+
+        (`branches[1]`) is the **unmatched** branch.
+
+
+        See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#conditional-split-steps) for the full conditional-split surface (positioning, multi-page branches, attaching filters).
+
+
+        The `condition.filter_id` is the public id of a RefineFilter scoped to the same workspace.
+
+        Pass it on PATCH to attach or replace the filter. Create filters first via `POST /api/v2/workspaces/{workspace_id}/refine_filters` — see [Attaching a filter](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#attaching-a-filter) and the cross-link to [Applying filters to conditional split steps](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-conditional-split-steps).
+
+
+        On `GET /funnels/{funnel_id}/conditional_split_steps/{id}` (show), `condition.filter` is always
+
+        included as a full RefineFilter object. On the list endpoint it is included only when
+
+        `expand[]=filter` is passed.
+
+        '
+      properties:
+        id:
+          type: integer
+          description: Conditional split step ID
+        public_id:
+          type: string
+          description: Obfuscated conditional split step ID
+        funnel_id:
+          type: integer
+          description: ID of the funnel containing this conditional split
+        funnel_public_id:
+          type: string
+          description: Obfuscated funnel ID
+        condition:
+          type: object
+          properties:
+            filter_id:
+              type:
+              - string
+              - 'null'
+              description: Public id of the attached RefineFilter. `null` when no filter has been set up.
+            is_setup:
+              type: boolean
+              description: True when a filter has been attached and the conditional split is ready to evaluate.
+            filter:
+              description: 'The full RefineFilter object for the attached filter. Always present on the show endpoint.
+
+                Present on the list endpoint only when `expand[]=filter` is requested. Absent (key omitted)
+
+                when no filter is attached or the expand param is not passed.
+
+                '
+              oneOf:
+              - $ref: '#/components/schemas/RefineFilterAttributes'
+              - type: 'null'
+        branches:
+          type: array
+          minItems: 2
+          maxItems: 2
+          description: Ordered branches — `[matched, unmatched]`.
+          items:
+            type: object
+            properties:
+              show_page_step:
+                type:
+                - object
+                - 'null'
+                description: The ShowPageStep function attached to this branch, or null if empty.
+                properties:
+                  id:
+                    type: integer
+                  public_id:
+                    type: string
+                  name:
+                    type: string
+                  current_path:
+                    type: string
+              page:
+                type:
+                - object
+                - 'null'
+                description: The page attached to this branch, or null if empty.
+                properties:
+                  id:
+                    type: integer
+                  public_id:
+                    type: string
+                  name:
+                    type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 9876
+        public_id: CsXyZ1
+        funnel_id: 42
+        funnel_public_id: xYz123
+        condition:
+          filter_id: AbCdEf
+          is_setup: true
+          filter:
+            id: 42
+            public_id: AbCdEf
+            workspace_id: 5
+            name: VIP newsletter audience
+            filter_class: ContactsFilter
+            conjunction: and
+            criteria:
+            - attribute: tags.id
+              clause: in
+              value:
+              - tag-pub-id-1
+            created_at: '2026-04-01T12:00:00.000Z'
+            updated_at: '2026-04-01T12:00:00.000Z'
+        branches:
+        - show_page_step:
+            id: 200
+            public_id: ShPgMa
+            name: Matched Page step
+            current_path: /matched
+          page:
+            id: 600
+            public_id: PgMatch
+            name: Matched Page
+        - show_page_step: null
+          page: null
+        created_at: '2026-05-01T00:00:00.000Z'
+        updated_at: '2026-05-01T00:00:00.000Z'
+      required:
+      - branches
+      - condition
+      - created_at
+      - funnel_id
+      - funnel_public_id
+      - id
+      - public_id
+      - updated_at
+    ConditionalSplitStepParametersCreate:
+      type: object
+      title: Create Conditional Split Step
+      description: "Parameters for adding a new conditional split step to a funnel's workflow. The split\nalways starts as a 2-branch tree (`matched` first, `unmatched` second). All fields\nbelow are optional — providing none creates an empty unconfigured split that\nthe caller can fill in later via PATCH.\n\n### `condition`\n\nSupply `filter_id` — the public id of a RefineFilter scoped to the same workspace.\nCreate filters first via `POST /api/v2/workspaces/{workspace_id}/refine_filters`.\nRaw numeric ids are rejected for cross-tenant safety. See [Attaching a filter](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#attaching-a-filter)\nand [Applying filters to conditional split steps](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-conditional-split-steps).\n\n### Branches\n\nOptional `branches` array — up to 2 entries; `branches[0]` is the matched branch,\n`branches[1]` is the unmatched branch. Each entry may carry either:\n\n- `page_id` — a single fresh `user_page` id to attach as the branch's first step.\n- `page_ids` — an array of fresh `user_page` ids to attach in order. Use this to\n  build a branch with multiple sequential pages (e.g. matched users see Welcome →\n  Onboarding → CTA, while unmatched users see Email Capture → Welcome).\n\n`page_id` and `page_ids` are mutually exclusive per branch entry. Each page\nreferenced must be in the same workspace and not already wired to any\n`ShowPageStep` anywhere.\n\n### Positioning\n\nSee `show_page_step_id` semantics — identical to the split test step endpoint.\n"
+      properties:
+        conditional_split_step:
+          type: object
+          properties:
+            condition:
+              type: object
+              properties:
+                filter_id:
+                  type: string
+                  description: Public id of a RefineFilter in this workspace. Create filters via `POST /api/v2/workspaces/{workspace_id}/refine_filters`.
+            branches:
+              type: array
+              minItems: 0
+              maxItems: 2
+              description: Optional 0..2 branch entries; `branches[0]` is the matched branch, `branches[1]` is the unmatched branch.
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  page_id:
+                    type: integer
+                    description: Optional id of a page with no existing show-page step (an unattached internal page or a standalone external page) to attach as the branch's first step. Mutually exclusive with `page_ids`. See [Placing an external (SDK) page in a branch](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#placing-an-external-sdk-page-in-a-branch) in the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for creating the standalone external page you reference here.
+                  page_ids:
+                    type: array
+                    items:
+                      type: integer
+                    description: 'Optional list of fresh `user_page` ids to attach in order under this branch.
+
+                      Use this to build branches with multiple sequential steps. Mutually exclusive with `page_id`.
+
+                      '
+            show_page_step_id:
+              type:
+              - integer
+              - string
+              description: 'Optional. Insert the new conditional split AFTER the workflow step that wraps
+
+                this `show_page_step`. Accepts a numeric `Workflows::Steps::ShowPageStep` id
+
+                or its obfuscated public id (you can read either off any page response).
+
+                When omitted, the split lands at funnel entry.
+
+                Caution: creating a split moves the wrapped step inside a branch sequence,
+
+                so an id fetched earlier may no longer sit where you think — read the
+
+                funnel structure immediately before creating, and note that anchoring on
+
+                a step inside another split''s branch nests the new split in that branch.
+
+                '
+      example:
+        conditional_split_step:
+          condition:
+            filter_id: AbCdEf
+          branches:
+          - page_ids:
+            - 600
+            - 601
+            - 602
+          - page_ids:
+            - 603
+          show_page_step_id: 100
+    ConditionalSplitStepParametersUpdate:
+      type: object
+      title: Update Conditional Split Step
+      description: "Update the `condition` and/or attach pages to existing `branches`. At least one of\nthe two must be provided.\n\n- `condition.filter_id` is the public id of a RefineFilter in the same workspace.\n  Create or update filters via the RefineFilter endpoints. See [Attaching a filter](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#attaching-a-filter)\n  and [Applying filters to conditional split steps](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-conditional-split-steps).\n- `branches` must be a 2-entry array (matched, unmatched).\n  - `page_id` (single) — when the branch is empty: attach. When the branch already\n    has show-page-steps: swap the FIRST step's page (subsequent steps preserved).\n  - `page_ids` (array) — APPEND the listed fresh pages to the end of the branch.\n    Use this to grow a branch with more sequential steps over multiple PATCHes.\n  Both forms are mutually exclusive per entry; any page referenced must be a\n  fresh `user_page` in the same workspace with no existing ShowPageStep.\n"
+      properties:
+        conditional_split_step:
+          type: object
+          properties:
+            condition:
+              type: object
+              properties:
+                filter_id:
+                  type: string
+                  description: Public id of a RefineFilter in this workspace.
+            branches:
+              type: array
+              minItems: 2
+              maxItems: 2
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  page_id:
+                    type: integer
+                    description: Page id to attach (currently empty branch) or swap (first step on populated branch). Mutually exclusive with `page_ids`.
+                  page_ids:
+                    type: array
+                    items:
+                      type: integer
+                    description: List of fresh page ids to APPEND to the end of this branch. Mutually exclusive with `page_id`.
+      example:
+        conditional_split_step:
+          condition:
+            filter_id: AbCdEf
+          branches:
+          - page_ids:
+            - 600
+            - 601
+            - 602
+          - page_id: 603
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

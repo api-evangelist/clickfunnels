@@ -1,0 +1,791 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Blogs::Post API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Blogs::Post
+  description: '> Blog Posts are the individual articles published within a Blog
+
+
+    Blog posts support rich content via PML markup, visibility controls, SEO settings, categories, tags, and authors. Use `expand[]=markup` to retrieve the PML markup for a post''s visual content.
+
+
+    See [Creating a blog post](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#creating-a-blog-post) in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md); the `markup` body is authored in PML — see the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md).
+
+
+    To copy posts in from an external RSS/Atom feed or article page, see the [Import External Blog Post Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md), which covers [normalizing external HTML for PML](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#3-normalize-external-html-for-pml), [duplicate checking](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#4-discover-the-destination-and-check-for-duplicates), and [verifying the draft](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#6-verify-the-draft) before publishing.
+
+    '
+paths:
+  /blogs/{blog_id}/posts:
+    get:
+      tags:
+      - Blogs::Post
+      summary: List Blog Posts
+      description: List posts for the given blog. When importing content from an external source, page through this list first so you do not create a duplicate post, see [Discover the destination and check for duplicates](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#4-discover-the-destination-and-check-for-duplicates) in the [Import External Blog Post Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md).
+      operationId: listBlogsPosts
+      parameters:
+      - name: blog_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      - $ref: '#/components/parameters/ExpandBlogPostFields'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlogsPostAttributes'
+              example:
+              - id: 1
+                public_id: xYzAbC
+                blog_id: 1
+                title: Getting started with your blog
+                published_at: '2025-06-01T10:00:00.000Z'
+                current_path: /blog/getting-started
+                url: https://myworkspace.myclickfunnels.com/blog/getting-started
+                visibility: public
+                excerpt_content: An introduction to what you'll find on this blog.
+                seo_title: Getting started with your blog
+                seo_description: Learn how to make the most of your new blog.
+                image_id: 42
+                image_url: https://example.myclickfunnels.com/uploads/image/42/file/example.jpg
+                categories:
+                - name: Tutorials
+                tags:
+                - name: beginner
+                authors:
+                - first_name: Jane
+                  last_name: Smith
+                  email_address: jane@example.com
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-06-01T10:00:00.000Z'
+              - id: 2
+                public_id: dEfGhI
+                blog_id: 1
+                title: Tips for getting started with marketing automation
+                published_at: null
+                current_path: /blog/tips-for-marketing-automation
+                url: https://myworkspace.myclickfunnels.com/blog/tips-for-marketing-automation
+                visibility: draft
+                excerpt_content: Practical advice for new marketers.
+                seo_title: null
+                seo_description: null
+                image_id: null
+                image_url: null
+                categories: []
+                tags: []
+                authors: []
+                created_at: '2025-02-01T00:00:00.000Z'
+                updated_at: '2025-02-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Blogs::Post
+      summary: Create Blog Post
+      description: 'Create a new post within the given blog.
+
+
+        Pass `markup` to set the post''s visual content via PML. Invalid markup returns 400 and the post is not created. Pass `expand[]=markup` to have the markup returned in the response.
+
+
+        See [Creating a blog post](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#creating-a-blog-post) in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md) for the permitted fields and the publish-state rules. To copy an article in from an RSS/Atom feed or an external page, follow [Normalize external HTML for PML](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#3-normalize-external-html-for-pml) and [Create a draft](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#5-create-a-draft) in the [Import External Blog Post Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md).
+
+        '
+      operationId: createBlogPost
+      parameters:
+      - name: blog_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/ExpandBlogPostFields'
+      requestBody:
+        description: Information about a new Blog Post
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                blogs_post:
+                  type: object
+                  $ref: '#/components/schemas/BlogsPostParameters'
+            example:
+              blogs_post:
+                title: Getting started with your blog
+                visibility: draft
+                published_at: null
+                excerpt_content: An introduction to what you'll find on this blog.
+                seo_title: Getting started with your blog
+                seo_description: Learn how to make the most of your new blog.
+                image_id: null
+                markup: <section><row cols="1"><column><headline>Hello world</headline></column></row></section>
+                author_ids: []
+                tag_ids: []
+                category_ids: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogsPostAttributes'
+              example:
+                id: 3
+                public_id: jKlMnO
+                blog_id: 1
+                title: Getting started with your blog
+                published_at: null
+                current_path: /blog/getting-started-with-your-blog
+                url: https://myworkspace.myclickfunnels.com/blog/getting-started-with-your-blog
+                visibility: draft
+                excerpt_content: An introduction to what you'll find on this blog.
+                seo_title: Getting started with your blog
+                seo_description: Learn how to make the most of your new blog.
+                image_id: null
+                image_url: null
+                categories: []
+                tags: []
+                authors: []
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Invalid markup: unexpected token at line 3'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Title can't be blank
+  /blogs/posts/{id}:
+    get:
+      tags:
+      - Blogs::Post
+      summary: Fetch Blog Post
+      description: Retrieve a blog post.
+      operationId: getBlogPost
+      parameters:
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/ExpandBlogPostFields'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogsPostAttributes'
+              example:
+                id: 1
+                public_id: xYzAbC
+                blog_id: 1
+                title: Getting started with your blog
+                published_at: '2025-06-01T10:00:00.000Z'
+                current_path: /blog/getting-started
+                url: https://myworkspace.myclickfunnels.com/blog/getting-started
+                visibility: public
+                excerpt_content: An introduction to what you'll find on this blog.
+                seo_title: Getting started with your blog
+                seo_description: Learn how to make the most of your new blog.
+                image_id: 42
+                image_url: https://example.myclickfunnels.com/uploads/image/42/file/example.jpg
+                categories:
+                - name: Tutorials
+                tags:
+                - name: beginner
+                authors:
+                - first_name: Jane
+                  last_name: Smith
+                  email_address: jane@example.com
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-06-01T10:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    patch:
+      tags:
+      - Blogs::Post
+      summary: Update Blog Post
+      description: 'Update a blog post.
+
+
+        Pass `markup` to update the post''s visual content via PML. It replaces the whole body, and PML covers only a subset of what the ClickFunnels editor can build, so if this post could have been written or edited in the editor, stop and get explicit approval from the user first: see [the approval guardrail](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#stop-get-approval-before-overwriting-an-existing-page). Omit `markup` to change only metadata. Invalid markup returns 400 and neither the post metadata nor the markup is saved. Pass `expand[]=markup` to have the markup returned in the response.
+
+
+        See [Updating a blog post](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#updating-a-blog-post) in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md). To publish a draft, see [Publish separately](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#7-publish-separately) and [Two gotchas worth knowing](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#two-gotchas-worth-knowing).
+
+        '
+      operationId: updateBlogPost
+      parameters:
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/ExpandBlogPostFields'
+      requestBody:
+        description: Information about updated fields in Blog Post
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                blogs_post:
+                  type: object
+                  $ref: '#/components/schemas/BlogsPostParameters'
+            example:
+              blogs_post:
+                title: Getting started with your blog
+                visibility: draft
+                published_at: null
+                excerpt_content: An introduction to what you'll find on this blog.
+                seo_title: Getting started with your blog
+                seo_description: Learn how to make the most of your new blog.
+                image_id: null
+                markup: <section><row cols="1"><column><headline>Hello world</headline></column></row></section>
+                author_ids: []
+                tag_ids: []
+                category_ids: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogsPostAttributes'
+              example:
+                id: 1
+                public_id: xYzAbC
+                blog_id: 1
+                title: Updated post title
+                published_at: '2025-06-01T10:00:00.000Z'
+                current_path: /blog/getting-started
+                url: https://myworkspace.myclickfunnels.com/blog/getting-started
+                visibility: public
+                excerpt_content: An updated summary.
+                seo_title: Updated post title
+                seo_description: Updated description.
+                image_id: 42
+                image_url: https://example.myclickfunnels.com/uploads/image/42/file/example.jpg
+                categories:
+                - name: Tutorials
+                tags:
+                - name: beginner
+                authors:
+                - first_name: Jane
+                  last_name: Smith
+                  email_address: jane@example.com
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-07-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Invalid markup: unexpected token at line 3'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Title can't be blank
+    delete:
+      tags:
+      - Blogs::Post
+      summary: Delete Blog Post
+      description: 'Delete a blog post. This is a hard delete; the post and its associated authorships, taggings, applied categories, and publish actions are removed.
+
+
+        Deleting example or stock posts while migrating content in is a separate step, see [Optional cleanup of confirmed example posts](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#optional-cleanup-of-confirmed-example-posts) in the [Import External Blog Post Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md).
+
+        '
+      operationId: deleteBlogPost
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    ExpandBlogPostFields:
+      name: expand[]
+      in: query
+      description: Expand additional data in the response. Use `expand[]=markup` to include the PML markup for the post's visual content. Markup is opt-in on every endpoint (show, list, create, update) because PML serialization runs per post. See the [Expanding guide](https://developers.myclickfunnels.com/docs/expand) for available fields and examples.
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - markup
+  schemas:
+    BlogsPostParameters:
+      type: object
+      title: Blogs::Posts
+      description: Blog Posts
+      properties:
+        title:
+          type: string
+          description: Title of the post
+        visibility:
+          type: string
+          description: Visibility status. One of `draft`, `public`, `members_only`, or `scheduled`. See [Two gotchas worth knowing](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#two-gotchas-worth-knowing) in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md).
+          enum:
+          - draft
+          - public
+          - members_only
+          - scheduled
+        published_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time to publish the post. Required when visibility is `scheduled`. See [Publish separately](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#7-publish-separately) in the [Import External Blog Post Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md).
+        excerpt_content:
+          type:
+          - string
+          - 'null'
+          description: Short summary of the blog post
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: SEO page title
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: SEO page description
+        image_id:
+          type:
+          - integer
+          - 'null'
+          description: 'Featured image ID. When importing an article, its images need rehosting first: see [Rehost source images during a migration](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#rehost-source-images-during-a-migration) and the [image caveat](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#image-caveat).'
+        markup:
+          type:
+          - string
+          - 'null'
+          description: 'PML (Page Markup Language) that builds the post''s content tree (its page_content) — this IS the post body that renders. Replaces the existing tree, published version and editor draft alike. PML covers only a subset of what the ClickFunnels editor can build, so writing this to a post that already has a body silently drops editor-built content it cannot express. **If the post could have been written or edited in the ClickFunnels editor, stop and get explicit approval from the user before sending this on update** (a general instruction to update the post does not count): see [the approval guardrail](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#stop-get-approval-before-overwriting-an-existing-page). Omit `markup` to leave the body untouched and change only metadata. Validated before any DB write; invalid markup returns 400 and the post is not created or updated. Markup that stops mid-construct is treated as truncated and rejected with a 400 — re-send the complete document rather than the missing tail. See the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md) for the DSL itself. Raw HTML from another site is not PML; normalize and wrap it as described in [Normalize external HTML for PML](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#3-normalize-external-html-for-pml).'
+        author_ids:
+          type: array
+          description: IDs of authors to associate with the post
+          items:
+            type: integer
+        tag_ids:
+          type: array
+          description: IDs of tags to associate with the post
+          items:
+            type: integer
+        category_ids:
+          type: array
+          description: IDs of categories to associate with the post
+          items:
+            type: integer
+      example:
+        blogs_post:
+          title: Getting started with your blog
+          visibility: draft
+          published_at: null
+          excerpt_content: An introduction to what you'll find on this blog.
+          seo_title: Getting started with your blog
+          seo_description: Learn how to make the most of your new blog.
+          image_id: null
+          markup: <section><row cols="1"><column><headline>Hello world</headline></column></row></section>
+          author_ids: []
+          tag_ids: []
+          category_ids: []
+    BlogsPostAttributes:
+      type: object
+      title: Blogs::Posts
+      description: Blog Posts
+      properties:
+        id:
+          type: integer
+          description: Post ID
+        public_id:
+          type: string
+          description: The public identifier of the post
+        blog_id:
+          type: integer
+          description: Blog ID that the post belongs to
+        title:
+          type: string
+          description: Title of the post
+        published_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time the post was published
+        current_path:
+          type: string
+          description: The URL path for the post. Use the value returned here rather than composing a post URL yourself. See [Discover the destination and check for duplicates](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#4-discover-the-destination-and-check-for-duplicates) in the [Import External Blog Post Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md).
+        url:
+          type: string
+          description: The full public URL of the post
+        visibility:
+          type: string
+          description: Visibility status of the post. One of `draft`, `public`, `members_only`, or `scheduled`.
+          enum:
+          - draft
+          - public
+          - members_only
+          - scheduled
+        excerpt_content:
+          type:
+          - string
+          - 'null'
+          description: Short summary of the blog post
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: SEO page title
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: SEO page description
+        image_id:
+          type:
+          - integer
+          - 'null'
+          description: Featured image ID
+        image_url:
+          type:
+          - string
+          - 'null'
+          description: URL of the featured image
+        categories:
+          type: array
+          description: Categories associated with the post
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Category name
+        tags:
+          type: array
+          description: Tags associated with the post
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Tag name
+        authors:
+          type: array
+          description: Authors associated with the post
+          items:
+            type: object
+            properties:
+              first_name:
+                type: string
+                description: Author's first name
+              last_name:
+                type: string
+                description: Author's last name
+              email_address:
+                type: string
+                description: Author's email address
+        markup:
+          type: string
+          description: '**Expandable** The PML (Page Markup Language) representation of the post''s visual content. Only returned when expand[]=markup is provided. This serialization is lossy: elements PML has no equivalent for are omitted with no error and no placeholder, so a round-tripped read is not a safe basis for rewriting a post (see [the approval guardrail](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#stop-get-approval-before-overwriting-an-existing-page)). An empty string therefore does not prove the post is empty: a post built entirely from elements PML cannot express also reads back empty. The value `<!-- markup unavailable: page tree could not be serialized -->` means the read failed; treat the post as unreadable and do not write that string back. See the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md) for the full DSL reference.'
+        created_at:
+          type: string
+          format: date-time
+          description: Created at
+        updated_at:
+          type: string
+          format: date-time
+          description: Updated at
+      example:
+        id: 1
+        public_id: xYzAbC
+        blog_id: 1
+        title: Getting started with your blog
+        published_at: '2025-06-01T10:00:00.000Z'
+        current_path: /blog/getting-started
+        url: https://myworkspace.myclickfunnels.com/blog/getting-started
+        visibility: public
+        excerpt_content: An introduction to what you'll find on this blog.
+        seo_title: Getting started with your blog
+        seo_description: Learn how to make the most of your new blog.
+        image_id: 42
+        image_url: https://example.myclickfunnels.com/uploads/image/42/file/example.jpg
+        categories:
+        - name: Tutorials
+        tags:
+        - name: beginner
+        authors:
+        - first_name: Jane
+          last_name: Smith
+          email_address: jane@example.com
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-06-01T10:00:00.000Z'
+      required:
+      - authors
+      - blog_id
+      - categories
+      - created_at
+      - current_path
+      - excerpt_content
+      - id
+      - image_id
+      - image_url
+      - public_id
+      - published_at
+      - seo_description
+      - seo_title
+      - tags
+      - title
+      - updated_at
+      - url
+      - visibility
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

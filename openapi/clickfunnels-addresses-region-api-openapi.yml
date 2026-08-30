@@ -1,0 +1,125 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Addresses::Region API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Addresses::Region
+  description: '> Regions are the states/provinces of a country.
+
+
+    The Addresses::Region API provides read-only access to the regions of a country. Use a region''s code or name as the address region value. Many countries have no regions.
+
+    '
+paths:
+  /addresses/countries/{country_id}/regions:
+    get:
+      tags:
+      - Addresses::Region
+      summary: List Country Regions
+      description: List the regions (states/provinces) of a country. Use a region's `code` or `name` as the address `region` value. Many countries have no regions.
+      operationId: listAddressesCountriesRegions
+      parameters:
+      - name: country_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The country's ISO 3166-1 alpha-2 code (e.g. "US").
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressesRegionAttributes'
+              example:
+              - code: CA
+                name: California
+                localized_name: California
+                country_code: US
+              - code: NY
+                name: New York
+                localized_name: New York
+                country_code: US
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: No such country: ZZ'
+components:
+  schemas:
+    AddressesRegionAttributes:
+      type: object
+      title: Region
+      description: A region (state/province) of a country.
+      required:
+      - code
+      - country_code
+      - localized_name
+      - name
+      properties:
+        code:
+          type:
+          - string
+          - 'null'
+          description: Region/state code (e.g. "CA"). Pass this (or name) as the address region value.
+        name:
+          type: string
+          description: Region/state name (e.g. "California").
+        localized_name:
+          type: string
+          description: Region name localized to the request's locale.
+        country_code:
+          type: string
+          description: The country's ISO 3166-1 alpha-2 code.
+      example:
+        code: CA
+        name: California
+        localized_name: California
+        country_code: US
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

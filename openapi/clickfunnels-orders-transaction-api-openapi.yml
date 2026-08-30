@@ -1,0 +1,564 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Orders::Transaction API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Orders::Transaction
+  description: Order Transactions
+paths:
+  /orders/{order_id}/transactions:
+    get:
+      tags:
+      - Orders::Transaction
+      summary: List Transactions
+      description: List transactions for an order
+      operationId: listOrdersTransactions
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrdersTransactionAttributes'
+              example:
+              - id: 2
+                public_id: EzgTHG
+                order_id: 40
+                status: completed
+                external_type: sale
+                external_id: 6b436949b329728434b26662ee95d57a
+                amount: '100.00'
+                currency: USD
+                reason: null
+                adjusted_transaction_id: null
+                result: approved
+                billing_payment_instruction_id: null
+                billing_payment_instruction_type: null
+                arn: null
+                is_rebill: false
+                rebill_number: null
+                created_at: null
+                updated_at: null
+              - id: 3
+                public_id: WjodBq
+                order_id: 41
+                status: completed
+                external_type: sale
+                external_id: a8344a384a200f11c69970cca8cc5f87
+                amount: '100.00'
+                currency: USD
+                reason: null
+                adjusted_transaction_id: null
+                result: approved
+                billing_payment_instruction_id: null
+                billing_payment_instruction_type: null
+                arn: null
+                is_rebill: false
+                rebill_number: null
+                created_at: null
+                updated_at: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+  /orders/transactions/{id}:
+    get:
+      tags:
+      - Orders::Transaction
+      summary: Fetch Transaction
+      description: Retrieve a transaction for an order
+      operationId: getOrdersTransactions
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersTransactionAttributes'
+              example:
+                id: 4
+                public_id: oaSpKq
+                order_id: 42
+                status: completed
+                external_type: sale
+                external_id: ac3a48524377eb673c500b3a53a28b36
+                amount: '100.00'
+                currency: USD
+                reason: null
+                adjusted_transaction_id: null
+                result: approved
+                billing_payment_instruction_id: null
+                billing_payment_instruction_type: null
+                arn: null
+                is_rebill: false
+                rebill_number: null
+                created_at: null
+                updated_at: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /orders/transactions/{id}/refund:
+    post:
+      tags:
+      - Orders::Transaction
+      summary: Refund Transaction
+      description: 'Refund this charge, in full, through ClickFunnels'' own refund path (the same path the in-app
+
+        refund button uses) so the money actually moves back through the payment processor (Payments
+
+        AI/Rebilly or Stripe).
+
+
+        A refund addresses a transaction because the transaction IS the charge: refundable balance and
+
+        refund eligibility are tracked per transaction, and the refund is recorded against this one. A
+
+        subscription order accumulates one charge per renewal and an invoice can carry more than one,
+
+        so neither identifies a single charge to reverse. List an order''s charges with `GET
+
+        /orders/{order_id}/transactions` and refund the one you mean - a refundable charge has
+
+        `external_type` `sale` or `capture`, `result: approved`, and `status` `completed` or
+
+        `partially-refunded`.
+
+
+        Partial refunds are deliberately not offered here, so this always refunds the charge''s full
+
+        outstanding amount. Writing `status: refunded` onto an invoice is not an alternative: that is
+
+        available only for external (self-managed) orders, and a local status write moves no money.
+
+
+        Payments AI/Rebilly records the refund synchronously, so the returned transaction already
+
+        reflects it (200). Stripe only initiates the refund and confirms it in a later webhook, so the
+
+        response is 202 and the returned transaction can still show its pre-refund `status`; poll `GET
+
+        /orders/transactions/{id}` for the settled state. Please refer to [our Orders Overview
+
+        guide](https://developers.myclickfunnels.com/docs/orders) for more information about the
+
+        different types of orders and payment processors.'
+      operationId: refundOrdersTransactions
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: 'Optional refund parameters. Omit the body entirely (or send `{"orders_transaction": {}}`) to refund with defaults.'
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orders_transaction:
+                  $ref: '#/components/schemas/OrdersTransactionParametersRefund'
+            example:
+              orders_transaction:
+                reason: requested_by_customer
+      responses:
+        '200':
+          description: OK - the processor refunded the charge in-request (Payments AI/Rebilly), so the returned transaction already reflects it. `status` becomes `refunded`, or `partially-refunded` when earlier refunds left a remaining balance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersTransactionAttributes'
+              example:
+                id: 4
+                public_id: oaSpKq
+                order_id: 42
+                status: refunded
+                external_type: sale
+                external_id: ac3a48524377eb673c500b3a53a28b36
+                amount: '100.00'
+                currency: USD
+                reason: requested_by_customer
+                adjusted_transaction_id: null
+                result: approved
+                billing_payment_instruction_id: null
+                billing_payment_instruction_type: null
+                arn: null
+                is_rebill: false
+                rebill_number: null
+                created_at: null
+                updated_at: null
+        '202':
+          description: Accepted - the processor accepted the refund but settles it asynchronously (Stripe). It confirms in a later webhook, so the returned transaction can still show its pre-refund `status`; poll `GET /orders/transactions/{id}` until it settles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdersTransactionAttributes'
+              example:
+                id: 4
+                public_id: oaSpKq
+                order_id: 42
+                status: completed
+                external_type: sale
+                external_id: ac3a48524377eb673c500b3a53a28b36
+                amount: '100.00'
+                currency: USD
+                reason: null
+                adjusted_transaction_id: null
+                result: approved
+                billing_payment_instruction_id: null
+                billing_payment_instruction_type: null
+                arn: null
+                is_rebill: false
+                rebill_number: null
+                created_at: null
+                updated_at: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: 'Not Found - the transaction does not exist, does not belong to a workspace your API key
+
+            can access, or is not a refundable charge (already refunded, declined, not a sale, on a
+
+            deleted order, or a payment method that does not support API refunds).
+
+
+            Both bodies below mean the same thing to a caller: not refundable. Which one you get
+
+            depends on where the record was hidden, so match on the status rather than the message.
+
+            Fetch `GET /orders/{order_id}/transactions` and check `external_type`, `result` and
+
+            `status` to tell the cases apart.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                not_refundable_or_inaccessible:
+                  summary: Already refunded, not a charge, or outside the workspaces this key can reach
+                  value:
+                    error: Not found
+                unknown_declined_or_deleted:
+                  summary: No such transaction, a declined charge, or a charge on a deleted order
+                  value:
+                    error: 'Not found: Record 4 missing'
+        '422':
+          description: Unprocessable Entity - the request was understood but not performed. The charge keeps its previous status and no money moved, so it is safe to correct the request and retry.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                partial_refund_requested:
+                  summary: 'Sent partial: true, or an amount'
+                  value:
+                    error: 'Request unprocessable: Partial refunds are not supported via this endpoint (full refund of this charge only)'
+                invalid_reason:
+                  summary: reason is not accepted by this order's payment processor
+                  value:
+                    error: 'Request unprocessable: Invalid reason ''store-credit''. Valid values: duplicate, fraudulent, requested_by_customer'
+                processor_declined:
+                  summary: The payment processor declined the refund
+                  value:
+                    error: 'Request unprocessable: Transaction not found.'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    OrdersTransactionAttributes:
+      type: object
+      title: Payments
+      description: Payments
+      properties:
+        id:
+          type: integer
+          description: Transaction ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Transaction public ID
+        order_id:
+          type: integer
+          description: Order ID
+        status:
+          type: string
+          description: Status
+        external_type:
+          type:
+          - string
+          - 'null'
+          description: Type
+        external_id:
+          type: string
+          description: External ID
+        amount:
+          type:
+          - string
+          - 'null'
+          description: Amount
+        currency:
+          type:
+          - string
+          - 'null'
+          description: Currency
+        reason:
+          type:
+          - string
+          - 'null'
+          description: Reason
+        adjusted_transaction_id:
+          type:
+          - string
+          - 'null'
+          description: Adjusted transaction
+        result:
+          type: string
+          description: Result
+        billing_payment_instruction_id:
+          type:
+          - string
+          - 'null'
+          description: Billing Payment Instruction ID
+        billing_payment_instruction_type:
+          type:
+          - string
+          - 'null'
+          description: Billing Payment Instruction Type
+        arn:
+          type:
+          - string
+          - 'null'
+          description: ARN
+        is_rebill:
+          type:
+          - boolean
+          - 'null'
+          description: Is Rebill
+        rebill_number:
+          type:
+          - string
+          - 'null'
+          description: Rebill Number
+        created_at:
+          type:
+          - string
+          - 'null'
+          description: Created
+        updated_at:
+          type:
+          - string
+          - 'null'
+          description: Updated
+      example:
+        id: 1
+        public_id: NpboZw
+        order_id: 6
+        status: completed
+        external_type: sale
+        external_id: 4a74b081c7ff7d8d7332e54d7d2a89df
+        amount: '100.00'
+        currency: USD
+        reason: null
+        adjusted_transaction_id: null
+        result: approved
+        billing_payment_instruction_id: null
+        billing_payment_instruction_type: null
+        arn: null
+        is_rebill: false
+        rebill_number: null
+        created_at: null
+        updated_at: null
+      required:
+      - adjusted_transaction_id
+      - amount
+      - arn
+      - billing_payment_instruction_id
+      - billing_payment_instruction_type
+      - created_at
+      - currency
+      - external_id
+      - external_type
+      - id
+      - is_rebill
+      - order_id
+      - public_id
+      - reason
+      - rebill_number
+      - result
+      - status
+      - updated_at
+    OrdersTransactionParametersRefund:
+      type: object
+      title: Refund Transaction
+      description: 'Parameters for `POST /orders/transactions/{id}/refund`. Every field is optional - a bare POST
+
+        (or `{"orders_transaction": {}}`) refunds the addressed charge with defaults.
+
+
+        The refund is always for the charge''s full outstanding amount, so there is no amount to send.
+
+        Partial refunds are deliberately not offered here: they are a human-gated exception, handled in
+
+        the ClickFunnels admin.'
+      required: []
+      properties:
+        reason:
+          type: string
+          description: 'Defaults to `requested_by_customer`.
+
+
+            Stripe orders accept only `duplicate`, `fraudulent`, or `requested_by_customer`; any other
+
+            value returns 422 listing the accepted set. Payments AI (Rebilly) orders treat this as a
+
+            free-text description that is recorded on the refund and the order timeline.'
+        partial:
+          type: boolean
+          description: 'Must be `false` or omitted. Sending `true` returns 422 rather than silently refunding the
+
+            full charge. An `amount` field is rejected the same way - honoring it would be a partial
+
+            refund, and ignoring it would refund more than you asked for.'
+      example:
+        reason: requested_by_customer
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

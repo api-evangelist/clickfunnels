@@ -1,0 +1,673 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Courses::Section API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Courses::Section
+  description: '> Represents the modules within a Course
+
+
+    The section is the organization layer of a course where the content is accessed and managed for
+
+    a customer. Sections can have sub-sections and will have one or more lessons. Access to sections
+
+    can be managed by the `Courses::Enrollment` and also by the completion of previous sections and lessons.
+
+
+    See [Sections (modules)](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#sections-modules) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for creating modules and the fields you can set.
+
+    '
+paths:
+  /courses/{course_id}/sections:
+    get:
+      tags:
+      - Courses::Section
+      summary: List Sections
+      description: 'List Sections. Ordered by id ascending by default (pass sort_order=desc for
+
+        descending), consistent with the pagination cursor, so following the
+
+        Pagination-Next header returns every section exactly once.
+
+
+        The list includes the course''s root section - a structural container
+
+        (`parent_id: null`, matching the course''s `root_section_id`) that is not
+
+        shown in the course builder UI; most integrations can ignore it and treat its
+
+        children as the modules. Pass sort_property=sort_order for the builder''s
+
+        display order; note sort_order is scoped per parent, so it is not globally
+
+        unique across the list (the root and each parent''s first child both start at
+
+        0, tie-broken by id).
+
+
+        See [Reading back a course](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#reading-back-a-course) in the
+
+        [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the read walk.
+
+        '
+      operationId: listCoursesSections
+      parameters:
+      - name: course_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - name: sort_property
+        in: query
+        description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+          If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+          '
+        required: false
+        schema:
+          type: string
+          enum:
+          - id
+          - updated_at
+          - sort_order
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CoursesSectionAttributes'
+              example:
+              - id: 4
+                public_id: JyVHGZ
+                course_id: 25
+                title: Module 4
+                published_at: '2025-01-01T00:00:00.000Z'
+                description: Example Course Section
+                days_till_drip_access: 5
+                blocker_section_id: null
+                blocker_lesson_id: null
+                current_path: /section-example
+                is_hidden_from_non_members: true
+                upgrade_url: null
+                parent_id: null
+                sort_order: 3
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+              - id: 5
+                public_id: SXZNPl
+                course_id: 26
+                title: Module 5
+                published_at: '2025-01-01T00:00:00.000Z'
+                description: Example Course Section
+                days_till_drip_access: 5
+                blocker_section_id: null
+                blocker_lesson_id: null
+                current_path: /section-example
+                is_hidden_from_non_members: true
+                upgrade_url: null
+                parent_id: null
+                sort_order: 4
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Courses::Section
+      summary: Create Section
+      description: Add a new Section. See [Sections (modules)](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#sections-modules) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md).
+      operationId: createCoursesSections
+      parameters:
+      - name: course_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Section
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                courses_section:
+                  type: object
+                  $ref: '#/components/schemas/CoursesSectionParametersUpdate'
+            example:
+              courses_section:
+                title: Module 1
+                description: Example Course Section
+                days_till_drip_access: 5
+                blocker_section_id: 123
+                blocker_lesson_id: 123
+                is_hidden_from_non_members: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoursesSectionAttributes'
+              example:
+                id: 7
+                public_id: ZkVcQM
+                course_id: 28
+                title: Module 7
+                published_at: '2025-01-01T00:00:00.000Z'
+                description: Example Course Section
+                days_till_drip_access: 5
+                blocker_section_id: null
+                blocker_lesson_id: null
+                current_path: /section-example
+                is_hidden_from_non_members: true
+                upgrade_url: null
+                parent_id: null
+                sort_order: 6
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Title can't be blank
+  /courses/sections/{id}:
+    get:
+      tags:
+      - Courses::Section
+      summary: Fetch Section
+      description: Fetch Section
+      operationId: getCoursesSections
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoursesSectionAttributes'
+              example:
+                id: 6
+                public_id: QkVcPU
+                course_id: 27
+                title: Module 6
+                published_at: '2025-01-01T00:00:00.000Z'
+                description: Example Course Section
+                days_till_drip_access: 5
+                blocker_section_id: null
+                blocker_lesson_id: null
+                current_path: /section-example
+                is_hidden_from_non_members: true
+                upgrade_url: null
+                parent_id: null
+                sort_order: 5
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Courses::Section
+      summary: Update Section
+      description: Update Section. See [Permitted section fields (create and update)](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#permitted-section-fields-create-and-update) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the writable fields.
+      operationId: updateCoursesSections
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Section
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                courses_section:
+                  type: object
+                  $ref: '#/components/schemas/CoursesSectionParametersUpdate'
+            example:
+              courses_section:
+                title: Module 1
+                description: Example Course Section
+                days_till_drip_access: 5
+                blocker_section_id: 123
+                blocker_lesson_id: 123
+                is_hidden_from_non_members: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoursesSectionAttributes'
+              example:
+                id: 9
+                public_id: lmTNJu
+                course_id: 30
+                title: Module 9
+                published_at: '2025-01-01T00:00:00.000Z'
+                description: Example Course Section
+                days_till_drip_access: 5
+                blocker_section_id: null
+                blocker_lesson_id: null
+                current_path: /section-example
+                is_hidden_from_non_members: true
+                upgrade_url: null
+                parent_id: null
+                sort_order: 8
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /courses/sections/{id}/publish:
+    post:
+      tags:
+      - Courses::Section
+      summary: Publish Section
+      description: 'Makes a single section live by setting `published_at`, and cascade-publishes its lessons individually so per-lesson side effects fire. The response is the canonical section resource. If section or lesson validation fails, the entire request returns `422` without changing any publish timestamps. Pass an optional future `published_at` to schedule it; omit it to publish now. A past `published_at` is rejected. This is the default publish (`auto_enroll: false`) — to also grant existing enrollees access and notify them, use `createCoursesSectionsPublishActions` with `auto_enroll` instead. The root section cannot be published directly.
+
+        See [Publishing](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#publishing) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the publish paths.'
+      operationId: publishCoursesSections
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                published_at:
+                  type: string
+                  format: date-time
+                  description: Optional ISO 8601 datetime at which the section should become live. Must be now or in the future — a past datetime is rejected. Omit to publish immediately.
+            example:
+              published_at: '2026-09-01T09:00:00.000Z'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoursesSectionAttributes'
+              example:
+                id: 6
+                public_id: QkVcPU
+                course_id: 27
+                title: Module 6
+                published_at: '2026-09-01T09:00:00.000Z'
+                description: Example Course Section
+                days_till_drip_access: null
+                blocker_section_id: null
+                blocker_lesson_id: null
+                current_path: /section-example
+                is_hidden_from_non_members: true
+                upgrade_url: null
+                parent_id: null
+                sort_order: 5
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: published_at cannot be in the past; omit it to publish now or pass a future datetime to schedule
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    CoursesSectionAttributes:
+      type: object
+      title: Modules
+      description: Modules
+      properties:
+        id:
+          type: integer
+          description: ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Public ID
+        course_id:
+          type: integer
+          description: Course ID
+        title:
+          type: string
+          description: Title
+        published_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Published at
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description
+        days_till_drip_access:
+          type:
+          - integer
+          - 'null'
+          description: Days until drip access
+        blocker_section_id:
+          type:
+          - integer
+          - 'null'
+          description: Blocker section
+        blocker_lesson_id:
+          type:
+          - integer
+          - 'null'
+          description: Blocker lesson
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current Path
+        is_hidden_from_non_members:
+          type:
+          - boolean
+          - 'null'
+          description: Current Path
+        upgrade_url:
+          type:
+          - string
+          - 'null'
+          description: Upgrade URL
+        parent_id:
+          type:
+          - string
+          - 'null'
+          description: Parent ID is pointing to the parent section. If it's `nil` then it's the <b>root</b> section.
+        sort_order:
+          type:
+          - integer
+          - 'null'
+          description: Builder display order within the parent module. Scoped per parent, so it is not globally unique across the sections list (the root section and each parent's first child both start at 0).
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at
+      example:
+        id: 1
+        public_id: sSwcZK
+        course_id: 3
+        title: Module 1
+        published_at: '2025-01-01T00:00:00.000Z'
+        description: Example Course Section
+        days_till_drip_access: 5
+        blocker_section_id: null
+        blocker_lesson_id: null
+        current_path: /section-example
+        is_hidden_from_non_members: true
+        upgrade_url: null
+        parent_id: null
+        sort_order: 0
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - blocker_lesson_id
+      - blocker_section_id
+      - course_id
+      - created_at
+      - current_path
+      - days_till_drip_access
+      - description
+      - id
+      - is_hidden_from_non_members
+      - parent_id
+      - public_id
+      - published_at
+      - sort_order
+      - title
+      - updated_at
+      - upgrade_url
+    CoursesSectionParametersUpdate:
+      type: object
+      title: Modules
+      description: Modules
+      required: []
+      properties:
+        title:
+          type: string
+          description: Title
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description
+        days_till_drip_access:
+          type:
+          - integer
+          - 'null'
+          description: Days until drip access
+        blocker_section_id:
+          type:
+          - integer
+          - 'null'
+          description: Blocker section
+        blocker_lesson_id:
+          type:
+          - integer
+          - 'null'
+          description: Blocker lesson
+        is_hidden_from_non_members:
+          type:
+          - boolean
+          - 'null'
+          description: Current Path
+      example:
+        courses_section:
+          title: Module 1
+          description: Example Course Section
+          days_till_drip_access: 5
+          blocker_section_id: 123
+          blocker_lesson_id: 123
+          is_hidden_from_non_members: true
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

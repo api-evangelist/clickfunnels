@@ -1,0 +1,1491 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Sales::Opportunity API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Sales::Opportunity
+  description: '>  Sales Opportunities
+
+
+    Sales Opportunities are initially created in a specific stage of a Pipeline and can be moved between different stages within that Pipeline.
+
+
+    Each Sales Opportunity requires a name and a reference to a Primary Contact. If the Opportunity is associated with a new Contact, you must first create the Contact using the Contacts API.
+
+
+    The `value` field, which is optional, represents the potential value of the Opportunity in the default currency of the Workspace.
+
+
+    You can assign an Opportunity to a Team Member using the `assignee_id` field. To reassign the Opportunity to a different team member, simply update this value. To remove the assignee, set the `assignee_id` to `null`. The `assignee_id` corresponds to the `membership.id` in the relevant Team, which can be retrieved using the Teams API.
+
+
+    When an Opportunity is moved to a stage with a `close_probability` value of 0 or 100, the `closed_at` timestamp is automatically set. If the Opportunity is later moved to a different stage, the `closed_at` timestamp remains unchanged. You can also manually set the `closed_at` timestamp using the API.
+
+    '
+paths:
+  /workspaces/{workspace_id}/sales/opportunities:
+    get:
+      tags:
+      - Sales::Opportunity
+      summary: List Opportunities
+      description: List Opportunities
+      operationId: listSalesOpportunities
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - name: sort_property
+        in: query
+        description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+          If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+          '
+        required: false
+        schema:
+          type: string
+          enum:
+          - id
+          - updated_at
+          - sort_order
+      - name: filter
+        in: query
+        description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[id]=value&filter[another_property]=value1,value2`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
+
+          '
+        required: false
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              description: A comma-separated list of opportunity IDs to filter by.
+              example: 1,42
+            pipeline_id:
+              type: string
+              description: A comma-separated list of pipeline IDs to filter by.
+              example: 1,42
+            pipelines_stage_id:
+              type: string
+              description: A comma-separated list of pipelines stage IDs to filter by.
+              example: 1,42
+            primary_contact_id:
+              type: string
+              description: A comma-separated list of primary contact IDs to filter by.
+              example: 1,42
+            assignee_id:
+              type: string
+              description: A comma-separated list of assignee memberships IDs to filter by.
+              example: 1,42
+        style: deepObject
+        explode: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SalesOpportunityAttributes'
+              example:
+              - id: 121
+                public_id: btWsEF
+                name: Example Opportunity
+                workspace_id: 42000
+                pipeline_id: null
+                pipelines_stage_id: 93
+                primary_contact_id: 230
+                value: '100.0'
+                sort_order: 0
+                closed_at: '2025-01-01T00:00:00.000Z'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                pipeline:
+                  id: 23
+                  public_id: HitAmN
+                  name: Example Pipeline
+                pipelines_stage:
+                  id: 93
+                  public_id: hDwypl
+                  name: Example Stage
+                primary_contact:
+                  id: 24359
+                  public_id: vQxYMj
+                  workspace_id: 4
+                  anonymous: 0
+                  email_address: jane.doe@example.com
+                  first_name: Jane
+                  last_name: Doe
+                  phone_number: '+18005550199'
+                  time_zone: Madrid
+                  uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+                  unsubscribed_at: null
+                  last_notification_email_sent_at: null
+                  email_suppression_reason: null
+                  is_active: true
+                  fb_url: null
+                  twitter_url: null
+                  instagram_url: null
+                  linkedin_url: null
+                  website_url: null
+                  created_at: '2026-01-09T15:27:56.647Z'
+                  updated_at: '2026-01-09T15:28:08.075Z'
+                  tags: []
+                  custom_attributes: {}
+                  visits:
+                    first_visit:
+                      uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                      utm_source: google
+                      utm_medium: cpc
+                      utm_campaign: spring_sale
+                      utm_term: running shoes
+                      utm_content: ad_variant_a
+                      ip: 192.168.1.1
+                      user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                      referrer: https://www.google.com/search?q=example
+                      referring_domain: google.com
+                      landing_page: https://example.com/products/shoes
+                      browser: Chrome
+                      os: Mac OS X
+                      device_type: desktop
+                      started_at: '2026-01-09T14:23:45.123Z'
+                      created_at: '2026-01-09T14:23:45.123Z'
+                      updated_at: '2026-01-09T14:23:45.123Z'
+                    last_visit: null
+                    last_visit_with_utm:
+                      uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                      utm_source: google
+                      utm_medium: cpc
+                      utm_campaign: spring_sale
+                      utm_term: running shoes
+                      utm_content: ad_variant_a
+                      ip: 192.168.1.1
+                      user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                      referrer: https://www.google.com/search?q=example
+                      referring_domain: google.com
+                      landing_page: https://example.com/products/shoes
+                      browser: Chrome
+                      os: Mac OS X
+                      device_type: desktop
+                      started_at: '2026-01-09T14:23:45.123Z'
+                      created_at: '2026-01-09T14:23:45.123Z'
+                      updated_at: '2026-01-09T14:23:45.123Z'
+                assignee_id: null
+                notes:
+                - id: 242
+                  public_id: yYtAjP
+                  content: Example note
+                  created_by_id: 270
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+                - id: 243
+                  public_id: CvSOcu
+                  content: Example note
+                  created_by_id: 271
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+              - id: 128
+                public_id: GbjyKd
+                name: Example Opportunity
+                workspace_id: 42000
+                pipeline_id: null
+                pipelines_stage_id: 96
+                primary_contact_id: 237
+                value: '100.0'
+                sort_order: 1
+                closed_at: '2025-01-01T00:00:00.000Z'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                pipeline:
+                  id: 24
+                  public_id: mtrsfR
+                  name: Example Pipeline
+                pipelines_stage:
+                  id: 96
+                  public_id: tdzsUR
+                  name: Example Stage
+                primary_contact:
+                  id: 24359
+                  public_id: vQxYMj
+                  workspace_id: 4
+                  anonymous: 0
+                  email_address: jane.doe@example.com
+                  first_name: Jane
+                  last_name: Doe
+                  phone_number: '+18005550199'
+                  time_zone: Madrid
+                  uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+                  unsubscribed_at: null
+                  last_notification_email_sent_at: null
+                  email_suppression_reason: null
+                  is_active: true
+                  fb_url: null
+                  twitter_url: null
+                  instagram_url: null
+                  linkedin_url: null
+                  website_url: null
+                  created_at: '2026-01-09T15:27:56.647Z'
+                  updated_at: '2026-01-09T15:28:08.075Z'
+                  tags: []
+                  custom_attributes: {}
+                  visits:
+                    first_visit:
+                      uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                      utm_source: google
+                      utm_medium: cpc
+                      utm_campaign: spring_sale
+                      utm_term: running shoes
+                      utm_content: ad_variant_a
+                      ip: 192.168.1.1
+                      user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                      referrer: https://www.google.com/search?q=example
+                      referring_domain: google.com
+                      landing_page: https://example.com/products/shoes
+                      browser: Chrome
+                      os: Mac OS X
+                      device_type: desktop
+                      started_at: '2026-01-09T14:23:45.123Z'
+                      created_at: '2026-01-09T14:23:45.123Z'
+                      updated_at: '2026-01-09T14:23:45.123Z'
+                    last_visit: null
+                    last_visit_with_utm:
+                      uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                      utm_source: google
+                      utm_medium: cpc
+                      utm_campaign: spring_sale
+                      utm_term: running shoes
+                      utm_content: ad_variant_a
+                      ip: 192.168.1.1
+                      user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                      referrer: https://www.google.com/search?q=example
+                      referring_domain: google.com
+                      landing_page: https://example.com/products/shoes
+                      browser: Chrome
+                      os: Mac OS X
+                      device_type: desktop
+                      started_at: '2026-01-09T14:23:45.123Z'
+                      created_at: '2026-01-09T14:23:45.123Z'
+                      updated_at: '2026-01-09T14:23:45.123Z'
+                assignee_id: null
+                notes:
+                - id: 256
+                  public_id: ljeBRN
+                  content: Example note
+                  created_by_id: 284
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+                - id: 257
+                  public_id: KAeTQr
+                  content: Example note
+                  created_by_id: 285
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Sales::Opportunity
+      summary: Create Opportunity
+      description: Create Opportunity
+      operationId: createSalesOpportunities
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Opportunity
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sales_opportunity:
+                  type: object
+                  $ref: '#/components/schemas/SalesOpportunityParameters'
+            example:
+              sales_opportunity:
+                name: Example Opportunity
+                pipelines_stage_id: 42
+                primary_contact_id: 26
+                value: '100.0'
+                closed_at: '2025-01-01T00:00:00.000Z'
+                assignee_id: 42
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOpportunityAttributes'
+              example:
+                id: 142
+                public_id: ErgUxn
+                name: Example Opportunity
+                workspace_id: 42000
+                pipeline_id: null
+                pipelines_stage_id: 102
+                primary_contact_id: 251
+                value: '100.0'
+                sort_order: 0
+                closed_at: '2025-01-01T00:00:00.000Z'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                pipeline:
+                  id: 26
+                  public_id: klSaQR
+                  name: Example Pipeline
+                pipelines_stage:
+                  id: 102
+                  public_id: ZeQGtn
+                  name: Example Stage
+                primary_contact:
+                  id: 24359
+                  public_id: vQxYMj
+                  workspace_id: 4
+                  anonymous: 0
+                  email_address: jane.doe@example.com
+                  first_name: Jane
+                  last_name: Doe
+                  phone_number: '+18005550199'
+                  time_zone: Madrid
+                  uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+                  unsubscribed_at: null
+                  last_notification_email_sent_at: null
+                  email_suppression_reason: null
+                  is_active: true
+                  fb_url: null
+                  twitter_url: null
+                  instagram_url: null
+                  linkedin_url: null
+                  website_url: null
+                  created_at: '2026-01-09T15:27:56.647Z'
+                  updated_at: '2026-01-09T15:28:08.075Z'
+                  tags: []
+                  custom_attributes: {}
+                  visits:
+                    first_visit:
+                      uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                      utm_source: google
+                      utm_medium: cpc
+                      utm_campaign: spring_sale
+                      utm_term: running shoes
+                      utm_content: ad_variant_a
+                      ip: 192.168.1.1
+                      user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                      referrer: https://www.google.com/search?q=example
+                      referring_domain: google.com
+                      landing_page: https://example.com/products/shoes
+                      browser: Chrome
+                      os: Mac OS X
+                      device_type: desktop
+                      started_at: '2026-01-09T14:23:45.123Z'
+                      created_at: '2026-01-09T14:23:45.123Z'
+                      updated_at: '2026-01-09T14:23:45.123Z'
+                    last_visit: null
+                    last_visit_with_utm:
+                      uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                      utm_source: google
+                      utm_medium: cpc
+                      utm_campaign: spring_sale
+                      utm_term: running shoes
+                      utm_content: ad_variant_a
+                      ip: 192.168.1.1
+                      user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                      referrer: https://www.google.com/search?q=example
+                      referring_domain: google.com
+                      landing_page: https://example.com/products/shoes
+                      browser: Chrome
+                      os: Mac OS X
+                      device_type: desktop
+                      started_at: '2026-01-09T14:23:45.123Z'
+                      created_at: '2026-01-09T14:23:45.123Z'
+                      updated_at: '2026-01-09T14:23:45.123Z'
+                assignee_id: null
+                notes:
+                - id: 284
+                  public_id: weRPKo
+                  content: Example note
+                  created_by_id: 312
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+                - id: 285
+                  public_id: WaGtCQ
+                  content: Example note
+                  created_by_id: 313
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /sales/opportunities/{id}:
+    get:
+      tags:
+      - Sales::Opportunity
+      summary: Fetch Opportunity
+      description: Fetch Opportunity
+      operationId: getSalesOpportunities
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOpportunityAttributes'
+              example:
+                id: 135
+                public_id: wyMSmr
+                name: Example Opportunity
+                workspace_id: 42000
+                pipeline_id: null
+                pipelines_stage_id: 99
+                primary_contact_id: 244
+                value: '100.0'
+                sort_order: 0
+                closed_at: '2025-01-01T00:00:00.000Z'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                pipeline:
+                  id: 25
+                  public_id: sWhAUF
+                  name: Example Pipeline
+                pipelines_stage:
+                  id: 99
+                  public_id: lBFCsR
+                  name: Example Stage
+                primary_contact:
+                  id: 24359
+                  public_id: vQxYMj
+                  workspace_id: 4
+                  anonymous: 0
+                  email_address: jane.doe@example.com
+                  first_name: Jane
+                  last_name: Doe
+                  phone_number: '+18005550199'
+                  time_zone: Madrid
+                  uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+                  unsubscribed_at: null
+                  last_notification_email_sent_at: null
+                  email_suppression_reason: null
+                  is_active: true
+                  fb_url: null
+                  twitter_url: null
+                  instagram_url: null
+                  linkedin_url: null
+                  website_url: null
+                  created_at: '2026-01-09T15:27:56.647Z'
+                  updated_at: '2026-01-09T15:28:08.075Z'
+                  tags: []
+                  custom_attributes: {}
+                  visits:
+                    first_visit:
+                      uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                      utm_source: google
+                      utm_medium: cpc
+                      utm_campaign: spring_sale
+                      utm_term: running shoes
+                      utm_content: ad_variant_a
+                      ip: 192.168.1.1
+                      user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                      referrer: https://www.google.com/search?q=example
+                      referring_domain: google.com
+                      landing_page: https://example.com/products/shoes
+                      browser: Chrome
+                      os: Mac OS X
+                      device_type: desktop
+                      started_at: '2026-01-09T14:23:45.123Z'
+                      created_at: '2026-01-09T14:23:45.123Z'
+                      updated_at: '2026-01-09T14:23:45.123Z'
+                    last_visit: null
+                    last_visit_with_utm:
+                      uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                      utm_source: google
+                      utm_medium: cpc
+                      utm_campaign: spring_sale
+                      utm_term: running shoes
+                      utm_content: ad_variant_a
+                      ip: 192.168.1.1
+                      user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                      referrer: https://www.google.com/search?q=example
+                      referring_domain: google.com
+                      landing_page: https://example.com/products/shoes
+                      browser: Chrome
+                      os: Mac OS X
+                      device_type: desktop
+                      started_at: '2026-01-09T14:23:45.123Z'
+                      created_at: '2026-01-09T14:23:45.123Z'
+                      updated_at: '2026-01-09T14:23:45.123Z'
+                assignee_id: null
+                notes:
+                - id: 270
+                  public_id: okUbaV
+                  content: Example note
+                  created_by_id: 298
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+                - id: 271
+                  public_id: rxOKWC
+                  content: Example note
+                  created_by_id: 299
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Sales::Opportunity
+      summary: Update Opportunity
+      description: Update Opportunity
+      operationId: updateSalesOpportunities
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Opportunity
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sales_opportunity:
+                  type: object
+                  $ref: '#/components/schemas/SalesOpportunityParametersUpdate'
+            example:
+              sales_opportunity:
+                name: Example Opportunity
+                pipelines_stage_id: 123
+                primary_contact_id: 123
+                value: '100.0'
+                closed_at: '2025-01-01T00:00:00.000Z'
+                assignee_id: 42
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesOpportunityAttributes'
+              example:
+                id: 156
+                public_id: eJQgIk
+                name: Example Opportunity
+                workspace_id: 42000
+                pipeline_id: null
+                pipelines_stage_id: 108
+                primary_contact_id: 265
+                value: '100.0'
+                sort_order: 0
+                closed_at: '2025-01-01T00:00:00.000Z'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                pipeline:
+                  id: 28
+                  public_id: pkaWNV
+                  name: Example Pipeline
+                pipelines_stage:
+                  id: 108
+                  public_id: HBTcXq
+                  name: Example Stage
+                primary_contact:
+                  id: 24359
+                  public_id: vQxYMj
+                  workspace_id: 4
+                  anonymous: 0
+                  email_address: jane.doe@example.com
+                  first_name: Jane
+                  last_name: Doe
+                  phone_number: '+18005550199'
+                  time_zone: Madrid
+                  uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+                  unsubscribed_at: null
+                  last_notification_email_sent_at: null
+                  email_suppression_reason: null
+                  is_active: true
+                  fb_url: null
+                  twitter_url: null
+                  instagram_url: null
+                  linkedin_url: null
+                  website_url: null
+                  created_at: '2026-01-09T15:27:56.647Z'
+                  updated_at: '2026-01-09T15:28:08.075Z'
+                  tags: []
+                  custom_attributes: {}
+                  visits:
+                    first_visit:
+                      uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                      utm_source: google
+                      utm_medium: cpc
+                      utm_campaign: spring_sale
+                      utm_term: running shoes
+                      utm_content: ad_variant_a
+                      ip: 192.168.1.1
+                      user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                      referrer: https://www.google.com/search?q=example
+                      referring_domain: google.com
+                      landing_page: https://example.com/products/shoes
+                      browser: Chrome
+                      os: Mac OS X
+                      device_type: desktop
+                      started_at: '2026-01-09T14:23:45.123Z'
+                      created_at: '2026-01-09T14:23:45.123Z'
+                      updated_at: '2026-01-09T14:23:45.123Z'
+                    last_visit: null
+                    last_visit_with_utm:
+                      uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                      utm_source: google
+                      utm_medium: cpc
+                      utm_campaign: spring_sale
+                      utm_term: running shoes
+                      utm_content: ad_variant_a
+                      ip: 192.168.1.1
+                      user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                      referrer: https://www.google.com/search?q=example
+                      referring_domain: google.com
+                      landing_page: https://example.com/products/shoes
+                      browser: Chrome
+                      os: Mac OS X
+                      device_type: desktop
+                      started_at: '2026-01-09T14:23:45.123Z'
+                      created_at: '2026-01-09T14:23:45.123Z'
+                      updated_at: '2026-01-09T14:23:45.123Z'
+                assignee_id: null
+                notes:
+                - id: 312
+                  public_id: MrjuLR
+                  content: Example note
+                  created_by_id: 340
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+                - id: 313
+                  public_id: HlkFNB
+                  content: Example note
+                  created_by_id: 341
+                  created_at: '2025-01-01T00:00:00.000Z'
+                  updated_at: '2025-01-01T00:00:00.000Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    delete:
+      tags:
+      - Sales::Opportunity
+      summary: Remove Opportunity
+      description: Remove Opportunity
+      operationId: removeSalesOpportunities
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    SalesOpportunityAttributes:
+      type: object
+      title: Opportunities
+      description: Opportunities
+      properties:
+        id:
+          type: integer
+          description: Opportunity ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Opportunity public ID
+        name:
+          type: string
+          description: Name
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        pipeline_id:
+          type:
+          - string
+          - 'null'
+          description: Pipeline ID
+        pipelines_stage_id:
+          type: integer
+          description: Pipeline Stage
+        primary_contact_id:
+          type: integer
+          description: Primary Contact
+        value:
+          type:
+          - number
+          - 'null'
+          description: The potential value of this opportunity in the default currency of the workspace
+        sort_order:
+          type:
+          - integer
+          - 'null'
+          description: The position of the opportunity in its pipeline stage
+        closed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Close date
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        pipeline:
+          type: object
+          description: Pipeline Details
+          properties:
+            id:
+              type: integer
+              description: Pipeline public ID
+            public_id:
+              type: string
+              description: Pipeline Stage Public ID
+            name:
+              type: string
+              description: The name of the pipeline
+        pipelines_stage:
+          type: object
+          description: Pipeline Stage Details
+          properties:
+            id:
+              type: integer
+              description: Pipeline Stage ID
+            public_id:
+              type: string
+              description: Pipeline Stage public ID
+            name:
+              type: string
+              description: Name
+        primary_contact:
+          type: object
+          title: Contacts
+          description: Contact
+          properties:
+            id:
+              type: integer
+              description: Contact ID
+            public_id:
+              type:
+              - string
+              - 'null'
+              description: Contact public ID
+            workspace_id:
+              type: integer
+              description: Workspace ID
+            anonymous:
+              type:
+              - integer
+              - 'null'
+              description: Anonymous
+            email_address:
+              type:
+              - string
+              - 'null'
+              description: Email address
+            first_name:
+              type:
+              - string
+              - 'null'
+              description: First name
+            last_name:
+              type:
+              - string
+              - 'null'
+              description: Last name
+            phone_number:
+              type:
+              - string
+              - 'null'
+              description: Phone number
+            time_zone:
+              type:
+              - string
+              - 'null'
+              description: 'The human-readable time zone, usually set dynamically by the app for the contact, for example, during opt-in.
+
+                Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
+
+                '
+            uuid:
+              type: string
+              description: UUID
+            unsubscribed_at:
+              type:
+              - string
+              - 'null'
+              description: Unsubscribed
+            last_notification_email_sent_at:
+              type:
+              - string
+              - 'null'
+              description: Last notification email sent
+            fb_url:
+              type:
+              - string
+              - 'null'
+              description: Facebook URL
+            twitter_url:
+              type:
+              - string
+              - 'null'
+              description: Twitter URL
+            instagram_url:
+              type:
+              - string
+              - 'null'
+              description: Instagram URL
+            linkedin_url:
+              type:
+              - string
+              - 'null'
+              description: LinkedIn URL
+            website_url:
+              type:
+              - string
+              - 'null'
+              description: Website URL
+            created_at:
+              type:
+              - string
+              - 'null'
+              description: Date added
+            updated_at:
+              type:
+              - string
+              - 'null'
+              description: Last updated
+            tags:
+              type:
+              - array
+              - 'null'
+              minContains: 0
+              contains:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Tag ID
+                  public_id:
+                    type: string
+                    description: Tag public ID
+                  name:
+                    type: string
+                    description: Tag name
+                  color:
+                    type: string
+                    description: Tag color
+                  applied_at:
+                    type: string
+                    description: The datetime the tag was applied by creating a Contacts::AppliedTag that maps the tag to the contact.
+              description: Any valid array, empty or with valid tags will overwrite existing values. To avoid losing existing tags first use the Fetch Contact endpoint, then be sure to include the existing tags in your payload along with any new addition(s)
+            custom_attributes:
+              type:
+              - object
+              - 'null'
+              properties:
+                CustomKey:
+                  type: string
+                  description: Custom Attribute Key
+              description: A dynamic key-value pair object where both the key and value are strings. Custom attributes are usually added to the contact when they submit forms that contain custom contact attributes. But you can also add them via the API using the modifying endpoints like Create/Update/Upsert Contact.
+            visits:
+              allOf:
+              - $ref: '#/components/schemas/VisitsAttributes'
+              description: Visit tracking information for this contact, including first visit, last visit, and last visit with UTM parameters
+        assignee_id:
+          type:
+          - string
+          - 'null'
+          description: The ID of the Team-`Membership` to whom the opportunity is assigned.
+        notes:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            title: Sales Note
+            description: Sales Note
+            properties:
+              id:
+                type: integer
+                description: Note ID
+              public_id:
+                type:
+                - string
+                - 'null'
+                description: Note public ID
+              content:
+                type: string
+                description: Content
+              created_by_id:
+                type:
+                - integer
+                - 'null'
+                description: 'The ID of the Team-`Membership` that created the note.
+
+                  For notes created via the API, this defaults to the ClickFunnels API default User.'
+              created_at:
+                type:
+                - string
+                - 'null'
+                format: date-time
+                description: Note creation date
+              updated_at:
+                type:
+                - string
+                - 'null'
+                format: date-time
+                description: Note last updated date
+          description: Notes
+      example:
+        id: 17
+        public_id: eMKZhP
+        name: Example Opportunity
+        workspace_id: 42000
+        pipeline_id: null
+        pipelines_stage_id: 42
+        primary_contact_id: 26
+        value: '100.0'
+        sort_order: 0
+        closed_at: '2025-01-01T00:00:00.000Z'
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        pipeline:
+          id: 3
+          public_id: KIaXjp
+          name: Example Pipeline
+        pipelines_stage:
+          id: 42
+          public_id: rebCDY
+          name: Example Stage
+        primary_contact:
+          id: 24359
+          public_id: vQxYMj
+          workspace_id: 4
+          anonymous: 0
+          email_address: jane.doe@example.com
+          first_name: Jane
+          last_name: Doe
+          phone_number: '+18005550199'
+          time_zone: Madrid
+          uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+          unsubscribed_at: null
+          last_notification_email_sent_at: null
+          email_suppression_reason: null
+          is_active: true
+          fb_url: null
+          twitter_url: null
+          instagram_url: null
+          linkedin_url: null
+          website_url: null
+          created_at: '2026-01-09T15:27:56.647Z'
+          updated_at: '2026-01-09T15:28:08.075Z'
+          tags: []
+          custom_attributes: {}
+          visits:
+            first_visit:
+              uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+              utm_source: google
+              utm_medium: cpc
+              utm_campaign: spring_sale
+              utm_term: running shoes
+              utm_content: ad_variant_a
+              ip: 192.168.1.1
+              user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+              referrer: https://www.google.com/search?q=example
+              referring_domain: google.com
+              landing_page: https://example.com/products/shoes
+              browser: Chrome
+              os: Mac OS X
+              device_type: desktop
+              started_at: '2026-01-09T14:23:45.123Z'
+              created_at: '2026-01-09T14:23:45.123Z'
+              updated_at: '2026-01-09T14:23:45.123Z'
+            last_visit: null
+            last_visit_with_utm:
+              uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+              utm_source: google
+              utm_medium: cpc
+              utm_campaign: spring_sale
+              utm_term: running shoes
+              utm_content: ad_variant_a
+              ip: 192.168.1.1
+              user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+              referrer: https://www.google.com/search?q=example
+              referring_domain: google.com
+              landing_page: https://example.com/products/shoes
+              browser: Chrome
+              os: Mac OS X
+              device_type: desktop
+              started_at: '2026-01-09T14:23:45.123Z'
+              created_at: '2026-01-09T14:23:45.123Z'
+              updated_at: '2026-01-09T14:23:45.123Z'
+        assignee_id: null
+        notes:
+        - id: 33
+          public_id: TNibqR
+          content: Example note
+          created_by_id: 37
+          created_at: '2025-01-01T00:00:00.000Z'
+          updated_at: '2025-01-01T00:00:00.000Z'
+        - id: 34
+          public_id: jrHtbW
+          content: Example note
+          created_by_id: 38
+          created_at: '2025-01-01T00:00:00.000Z'
+          updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - assignee_id
+      - closed_at
+      - created_at
+      - id
+      - name
+      - notes
+      - pipeline
+      - pipeline_id
+      - pipelines_stage
+      - pipelines_stage_id
+      - primary_contact
+      - primary_contact_id
+      - public_id
+      - sort_order
+      - updated_at
+      - value
+      - workspace_id
+    VisitAttributes:
+      type: object
+      title: Visit
+      description: Visit tracking information including UTM parameters and device data
+      properties:
+        uuid:
+          type: string
+          description: Unique identifier for the visit
+        utm_source:
+          type:
+          - string
+          - 'null'
+          description: UTM source parameter from the visit URL
+        utm_medium:
+          type:
+          - string
+          - 'null'
+          description: UTM medium parameter from the visit URL
+        utm_campaign:
+          type:
+          - string
+          - 'null'
+          description: UTM campaign parameter from the visit URL
+        utm_term:
+          type:
+          - string
+          - 'null'
+          description: UTM term parameter from the visit URL
+        utm_content:
+          type:
+          - string
+          - 'null'
+          description: UTM content parameter from the visit URL
+        ip:
+          type:
+          - string
+          - 'null'
+          description: IP address of the visitor
+        user_agent:
+          type:
+          - string
+          - 'null'
+          description: User agent string from the visitor's browser
+        referrer:
+          type:
+          - string
+          - 'null'
+          description: HTTP referrer URL
+        referring_domain:
+          type:
+          - string
+          - 'null'
+          description: Domain extracted from the referrer URL
+        landing_page:
+          type:
+          - string
+          - 'null'
+          description: The first page URL visited in this session
+        browser:
+          type:
+          - string
+          - 'null'
+          description: Browser name detected from user agent
+        os:
+          type:
+          - string
+          - 'null'
+          description: Operating system detected from user agent
+        device_type:
+          type:
+          - string
+          - 'null'
+          description: Device type (e.g., desktop, mobile, tablet)
+        started_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the visit session started
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the visit record was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the visit record was last updated
+      example:
+        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+        utm_source: google
+        utm_medium: cpc
+        utm_campaign: spring_sale
+        utm_term: running shoes
+        utm_content: ad_variant_a
+        ip: 192.168.1.1
+        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+        referrer: https://www.google.com/search?q=example
+        referring_domain: google.com
+        landing_page: https://example.com/products/shoes
+        browser: Chrome
+        os: Mac OS X
+        device_type: desktop
+        started_at: '2026-01-09T14:23:45.123Z'
+        created_at: '2026-01-09T14:23:45.123Z'
+        updated_at: '2026-01-09T14:23:45.123Z'
+      required:
+      - browser
+      - created_at
+      - device_type
+      - ip
+      - landing_page
+      - os
+      - referrer
+      - referring_domain
+      - started_at
+      - updated_at
+      - user_agent
+      - utm_campaign
+      - utm_content
+      - utm_medium
+      - utm_source
+      - utm_term
+      - uuid
+    VisitsAttributes:
+      type: object
+      title: Visits
+      description: Collection of visit tracking records for a contact, including first visit, last visit, and last visit with UTM parameters
+      properties:
+        first_visit:
+          description: The first visit associated with this contact.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit:
+          description: The most recent visit. May be null if it is identical to first_visit (to avoid duplication).
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit_with_utm:
+          description: The most recent visit that contains UTM parameters.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+      required:
+      - first_visit
+      - last_visit
+      - last_visit_with_utm
+    SalesOpportunityParameters:
+      type: object
+      title: Opportunities
+      description: Opportunities
+      required:
+      - name
+      - pipelines_stage_id
+      - primary_contact_id
+      properties:
+        name:
+          type: string
+          description: Name
+        pipelines_stage_id:
+          type: integer
+          description: Pipeline Stage
+        primary_contact_id:
+          type: integer
+          description: Primary Contact
+        value:
+          type:
+          - number
+          - 'null'
+          description: The potential value of this opportunity in the default currency of the workspace
+        closed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Close date
+        assignee_id:
+          type: integer
+          description: 'The ID of the Team `Membership` to assign the Opportunity to.
+
+            An Opportunity can be assigned to any Team member since they have access to all your workspaces.
+
+            You can get a list of available Memberships and their `id` via the `Team` resource''s `memberships` property.
+
+
+            If the opportunity is already assigned to a team member, the assignee will be updated.
+
+            You can unset the assignee by passing a `null` value for `assignee_id`.
+
+            '
+      example:
+        sales_opportunity:
+          name: Example Opportunity
+          pipelines_stage_id: 42
+          primary_contact_id: 26
+          value: '100.0'
+          closed_at: '2025-01-01T00:00:00.000Z'
+          assignee_id: 42
+    SalesOpportunityParametersUpdate:
+      type: object
+      title: Opportunities
+      description: Opportunities
+      required: []
+      properties:
+        name:
+          type: string
+          description: Name
+        pipelines_stage_id:
+          type: integer
+          description: Pipeline Stage ID
+        primary_contact_id:
+          type: integer
+          description: Primary Contact ID
+        value:
+          type:
+          - number
+          - 'null'
+          description: The potential value of this opportunity in the default currency of the workspace
+        closed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Close date
+        assignee_id:
+          type: integer
+          description: 'The ID of the Team `Membership` to assign the Opportunity to.
+
+            An Opportunity can be assigned to any Team member since they have access to all your workspaces.
+
+            You can get a list of available Memberships and their `id` via the `Team` resource''s `memberships` property.
+
+
+            If the opportunity is already assigned to a team member, the assignee will be updated.
+
+            You can unset the assignee by passing a `null` value for `assignee_id`.
+
+            '
+      example:
+        sales_opportunity:
+          name: Example Opportunity
+          pipelines_stage_id: 123
+          primary_contact_id: 123
+          value: '100.0'
+          closed_at: '2025-01-01T00:00:00.000Z'
+          assignee_id: 42
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

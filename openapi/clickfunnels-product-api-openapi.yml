@@ -1,0 +1,1028 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Product API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Product
+  description: '> Products can be used to create and edit sellable goods.
+
+
+    Products have a few boolean attributes including `archived`, `visible_in_store`, and `visible_in_customer_center`.
+
+
+    Products that are not `archived` are in a `live` state if they are `visible_in_store` or `visible_in_customer_center` or are associated with any live funnels.
+
+
+    `Live` products cannot be archived.
+
+    Products in an `archived` state can always be unarchived.
+
+
+    Each product can have one or more variants expressed as a `Products::Variant`.
+
+    All products have a "default variant" that acts as a parent to any further variants
+
+    the product may have.
+
+
+    When you create a `Product` we will implicitly create a default variant of type `digital`.
+
+    If the product you want to create is actually `physical`, be sure to update the type of it''s
+
+    default variant in a subsequent request.
+
+
+    The Product Object will always contain a `default_variant_id` attribute that lets you identify
+
+    the default variant.
+
+
+    If the Product will have variants you should set the `variant_properties` attribute to an array of the properties a variant can have (e.g. "Size", "Color", etc.)
+
+    '
+paths:
+  /workspaces/{workspace_id}/products:
+    get:
+      tags:
+      - Product
+      summary: List Products
+      description: List all products for a workspace
+      operationId: listProducts
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      - name: filter
+        in: query
+        description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[id]=value&filter[another_property]=value1,value2`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
+
+          '
+        required: false
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+              description: A comma-separated list of product IDs to filter by.
+              example: 1,2,3
+            visible_in_store:
+              type: boolean
+              description: Filter products by visibility in the online store.
+              example: true
+              enum:
+              - true
+              - false
+            visible_in_customer_center:
+              type: boolean
+              description: Filter products by visibility in the customer center.
+              example: true
+              enum:
+              - true
+              - false
+            archived:
+              type: boolean
+              description: Filter products by archived state.
+              example: true
+              enum:
+              - true
+              - false
+        style: deepObject
+        explode: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductAttributes'
+              example:
+              - id: 126
+                public_id: IQGqMi
+                workspace_id: 42000
+                name: Sample Product
+                current_path: null
+                archived: false
+                visible_in_store: true
+                visible_in_customer_center: true
+                image_id: null
+                seo_title: Buy Sample Product Online
+                seo_description: This is a sample product.
+                seo_image_id: null
+                commissionable: true
+                image_ids: []
+                default_variant_id: 126
+                variant_ids:
+                - 126
+                price_ids: []
+                tag_ids: []
+                redirect_funnel_id: null
+                cancellation_funnel_url: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                variant_properties:
+                - id: 126
+                  name: Color
+              - id: 127
+                public_id: eBENtI
+                workspace_id: 42000
+                name: Sample Product
+                current_path: null
+                archived: false
+                visible_in_store: true
+                visible_in_customer_center: true
+                image_id: null
+                seo_title: Buy Sample Product Online
+                seo_description: This is a sample product.
+                seo_image_id: null
+                commissionable: true
+                image_ids: []
+                default_variant_id: 127
+                variant_ids:
+                - 127
+                price_ids: []
+                tag_ids: []
+                redirect_funnel_id: null
+                cancellation_funnel_url: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                variant_properties:
+                - id: 127
+                  name: Color
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Product
+      summary: Create Product
+      description: Add a new product to a workspace
+      operationId: createProducts
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Product
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product:
+                  type: object
+                  $ref: '#/components/schemas/ProductParameters'
+            example:
+              product:
+                name: Sample Product
+                current_path: null
+                visible_in_store: true
+                visible_in_customer_center: true
+                seo_title: Buy Sample Product Online
+                seo_description: This is a sample product.
+                seo_image_id: null
+                commissionable: true
+                image_ids: []
+                redirect_funnel_id: null
+                cancellation_funnel_url: null
+                tag_ids:
+                - 1
+                - 2
+                - 3
+                variant_properties:
+                - id: 1
+                  name: Size
+                - id: 2
+                  name: Color
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductAttributes'
+              example:
+                id: 129
+                public_id: IshNin
+                workspace_id: 42000
+                name: Sample Product
+                current_path: null
+                archived: false
+                visible_in_store: true
+                visible_in_customer_center: true
+                image_id: null
+                seo_title: Buy Sample Product Online
+                seo_description: This is a sample product.
+                seo_image_id: null
+                commissionable: true
+                image_ids: []
+                default_variant_id: 129
+                variant_ids:
+                - 129
+                price_ids: []
+                tag_ids: []
+                redirect_funnel_id: null
+                cancellation_funnel_url: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                variant_properties:
+                - id: 129
+                  name: Color
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /products/{id}:
+    get:
+      tags:
+      - Product
+      summary: Fetch Product
+      description: Retrieve a product for a workspace
+      operationId: getProducts
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductAttributes'
+              example:
+                id: 128
+                public_id: mDqTeg
+                workspace_id: 42000
+                name: Sample Product
+                current_path: null
+                archived: false
+                visible_in_store: true
+                visible_in_customer_center: true
+                image_id: null
+                seo_title: Buy Sample Product Online
+                seo_description: This is a sample product.
+                seo_image_id: null
+                commissionable: true
+                image_ids: []
+                default_variant_id: 128
+                variant_ids:
+                - 128
+                price_ids: []
+                tag_ids: []
+                redirect_funnel_id: null
+                cancellation_funnel_url: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                variant_properties:
+                - id: 128
+                  name: Color
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Product
+      summary: Update Product
+      description: Update a product for a workspace
+      operationId: updateProducts
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Product
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product:
+                  type: object
+                  $ref: '#/components/schemas/ProductParametersUpdate'
+            example:
+              product:
+                name: Heavy Duty Steel
+                current_path: null
+                visible_in_store: true
+                visible_in_customer_center: true
+                seo_title: Buy Sample Product Online
+                seo_description: This is a sample product.
+                seo_image_id: null
+                commissionable: true
+                image_ids: []
+                variant_ids:
+                - 22
+                price_ids: []
+                redirect_funnel_id: null
+                cancellation_funnel_url: null
+                tag_ids:
+                - 1
+                - 2
+                - 3
+                variant_properties:
+                - id: 1
+                  name: Size
+                - id: 2
+                  name: Color
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductAttributes'
+              example:
+                id: 130
+                public_id: SyItmu
+                workspace_id: 42000
+                name: Sample Product
+                current_path: null
+                archived: false
+                visible_in_store: true
+                visible_in_customer_center: true
+                image_id: null
+                seo_title: Buy Sample Product Online
+                seo_description: This is a sample product.
+                seo_image_id: null
+                commissionable: true
+                image_ids: []
+                default_variant_id: 130
+                variant_ids:
+                - 130
+                price_ids: []
+                tag_ids: []
+                redirect_funnel_id: null
+                cancellation_funnel_url: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                variant_properties:
+                - id: 130
+                  name: Color
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Bad request: HTTP body must be valid JSON'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+  /products/{id}/archive:
+    post:
+      tags:
+      - Product
+      summary: Archive a Product
+      description: This will archive a Product. A product can only be archived if it&#39;s not in the &quot;live&quot; state.
+      operationId: archiveProducts
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductAttributes'
+              example:
+                id: 22
+                public_id: RTWMAd
+                workspace_id: 42000
+                name: Sample Product
+                current_path: null
+                archived: false
+                visible_in_store: true
+                visible_in_customer_center: true
+                image_id: null
+                seo_title: Buy Sample Product Online
+                seo_description: This is a sample product.
+                seo_image_id: null
+                commissionable: true
+                image_ids: []
+                default_variant_id: 22
+                variant_ids:
+                - 22
+                price_ids: []
+                tag_ids: []
+                redirect_funnel_id: null
+                cancellation_funnel_url: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                variant_properties:
+                - id: 22
+                  name: Color
+        '404':
+          description: Not Found
+        '409':
+          description: Conflict - occurs if product is already archived.
+        '422':
+          description: Unprocessable Entity
+  /products/{id}/unarchive:
+    post:
+      tags:
+      - Product
+      summary: Unarchive a Product
+      description: This will unarchive a Product.
+      operationId: unarchiveProducts
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductAttributes'
+              example:
+                id: 22
+                public_id: RTWMAd
+                workspace_id: 42000
+                name: Sample Product
+                current_path: null
+                archived: false
+                visible_in_store: true
+                visible_in_customer_center: true
+                image_id: null
+                seo_title: Buy Sample Product Online
+                seo_description: This is a sample product.
+                seo_image_id: null
+                commissionable: true
+                image_ids: []
+                default_variant_id: 22
+                variant_ids:
+                - 22
+                price_ids: []
+                tag_ids: []
+                redirect_funnel_id: null
+                cancellation_funnel_url: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                variant_properties:
+                - id: 22
+                  name: Color
+        '404':
+          description: Not Found
+        '409':
+          description: Conflict - occurs if product is not archived.
+        '422':
+          description: Unprocessable Entity
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    ProductParameters:
+      type: object
+      title: Products
+      description: Products
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Product name
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current Path
+        visible_in_store:
+          type:
+          - boolean
+          - 'null'
+          description: Visible in Store
+        visible_in_customer_center:
+          type:
+          - boolean
+          - 'null'
+          description: Visible in Customer Center
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: A clear title without branding or mentioning the domain itself. Longer is better, but max is 60 characters.
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: A clear SEO description, at least two sentences long. Longer is better, but max is 160 characters. You will find the actual user-facing description on the **default variant of the product** (see the `Products::Variant` resource).
+        seo_image_id:
+          type:
+          - string
+          - 'null'
+          description: SEO image
+        commissionable:
+          type:
+          - boolean
+          - 'null'
+          description: Commissionable
+        image_ids:
+          type:
+          - array
+          - 'null'
+          description: Images
+        redirect_funnel_id:
+          type:
+          - string
+          - 'null'
+          description: Redirect funnel
+        cancellation_funnel_url:
+          type:
+          - string
+          - 'null'
+          description: Cancellation Funnel Url
+        tag_ids:
+          type: array
+          items:
+            type: integer
+          description: Any valid array, empty or with valid tag ids will overwrite existing values. To avoid losing existing tags first use the Fetch Product endpoint, then be sure to include the existing tags in your payload along with any new addition(s)
+        variant_properties:
+          type: array
+          description: The properties of the product's variants. e.g. 'Size', 'Color' etc.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: The ID of the property, if updating the property
+              name:
+                type: string
+                description: The name of the property
+      example:
+        product:
+          name: Sample Product
+          current_path: null
+          visible_in_store: true
+          visible_in_customer_center: true
+          seo_title: Buy Sample Product Online
+          seo_description: This is a sample product.
+          seo_image_id: null
+          commissionable: true
+          image_ids: []
+          redirect_funnel_id: null
+          cancellation_funnel_url: null
+          tag_ids:
+          - 1
+          - 2
+          - 3
+          variant_properties:
+          - id: 1
+            name: Size
+          - id: 2
+            name: Color
+    ProductAttributes:
+      type: object
+      title: Products
+      description: Products
+      properties:
+        id:
+          type: integer
+          description: ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Product Public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        name:
+          type: string
+          description: Product name
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current Path
+        archived:
+          type:
+          - boolean
+          - 'null'
+          description: Archived
+        visible_in_store:
+          type:
+          - boolean
+          - 'null'
+          description: Visible in Store
+        visible_in_customer_center:
+          type:
+          - boolean
+          - 'null'
+          description: Visible in Customer Center
+        image_id:
+          type:
+          - string
+          - 'null'
+          description: Image
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: A clear title without branding or mentioning the domain itself. Longer is better, but max is 60 characters.
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: A clear SEO description, at least two sentences long. Longer is better, but max is 160 characters. You will find the actual user-facing description on the **default variant of the product** (see the `Products::Variant` resource).
+        seo_image_id:
+          type:
+          - string
+          - 'null'
+          description: SEO image
+        commissionable:
+          type:
+          - boolean
+          - 'null'
+          description: Commissionable
+        image_ids:
+          type:
+          - array
+          - 'null'
+          description: Images
+        default_variant_id:
+          type: integer
+          description: The ID of the default variant of the product
+        variant_ids:
+          type:
+          - array
+          - 'null'
+          minContains: 0
+          contains:
+            type: integer
+          description: Variant IDs
+        price_ids:
+          type:
+          - array
+          - 'null'
+          description: Price IDs
+        tag_ids:
+          type:
+          - array
+          - 'null'
+          description: Any valid array, empty or with valid tags will overwrite existing values. To avoid losing existing tags first use the Fetch Product endpoint, then be sure to include the existing tags in your payload along with any new addition(s)
+        redirect_funnel_id:
+          type:
+          - string
+          - 'null'
+          description: Redirect funnel
+        cancellation_funnel_url:
+          type:
+          - string
+          - 'null'
+          description: Cancellation Funnel Url
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        variant_properties:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            title: Product Properties
+            description: Properties
+            properties:
+              id:
+                type: integer
+                description: ID
+              name:
+                type: string
+                description: Name
+          description: Properties that are specific to the default variant of a product
+      example:
+        id: 22
+        public_id: RTWMAd
+        workspace_id: 42000
+        name: Sample Product
+        current_path: null
+        archived: false
+        visible_in_store: true
+        visible_in_customer_center: true
+        image_id: null
+        seo_title: Buy Sample Product Online
+        seo_description: This is a sample product.
+        seo_image_id: null
+        commissionable: true
+        image_ids: []
+        default_variant_id: 22
+        variant_ids:
+        - 22
+        price_ids: []
+        tag_ids: []
+        redirect_funnel_id: null
+        cancellation_funnel_url: null
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        variant_properties:
+        - id: 22
+          name: Color
+      required:
+      - archived
+      - cancellation_funnel_url
+      - commissionable
+      - created_at
+      - current_path
+      - default_variant_id
+      - id
+      - image_id
+      - image_ids
+      - name
+      - price_ids
+      - public_id
+      - redirect_funnel_id
+      - seo_description
+      - seo_image_id
+      - seo_title
+      - tag_ids
+      - updated_at
+      - variant_ids
+      - variant_properties
+      - visible_in_customer_center
+      - visible_in_store
+      - workspace_id
+    ProductParametersUpdate:
+      type: object
+      title: Products
+      description: Products
+      required: []
+      properties:
+        name:
+          type: string
+          description: Product name
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current Path
+        visible_in_store:
+          type:
+          - boolean
+          - 'null'
+          description: Visible in Store
+        visible_in_customer_center:
+          type:
+          - boolean
+          - 'null'
+          description: Visible in Customer Center
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: A clear title without branding or mentioning the domain itself. Longer is better, but max is 60 characters.
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: A clear SEO description, at least two sentences long. Longer is better, but max is 160 characters. You will find the actual user-facing description on the **default variant of the product** (see the `Products::Variant` resource).
+        seo_image_id:
+          type:
+          - string
+          - 'null'
+          description: SEO image
+        commissionable:
+          type:
+          - boolean
+          - 'null'
+          description: Commissionable
+        image_ids:
+          type:
+          - array
+          - 'null'
+          description: Images
+        variant_ids:
+          type:
+          - array
+          - 'null'
+          minContains: 0
+          contains:
+            type: integer
+          description: Variant IDs
+        price_ids:
+          type:
+          - array
+          - 'null'
+          description: Price IDs
+        redirect_funnel_id:
+          type:
+          - string
+          - 'null'
+          description: Redirect funnel
+        cancellation_funnel_url:
+          type:
+          - string
+          - 'null'
+          description: Cancellation Funnel Url
+        tag_ids:
+          type: array
+          items:
+            type: integer
+          description: Any valid array, empty or with valid tag ids will overwrite existing values. To avoid losing existing tags first use the Fetch Product endpoint, then be sure to include the existing tags in your payload along with any new addition(s)
+        variant_properties:
+          type: array
+          description: The properties of the product's variants. e.g. 'Size', 'Color' etc.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: The ID of the property, if updating the property
+              name:
+                type: string
+                description: The name of the property
+      example:
+        product:
+          name: Heavy Duty Steel
+          current_path: null
+          visible_in_store: true
+          visible_in_customer_center: true
+          seo_title: Buy Sample Product Online
+          seo_description: This is a sample product.
+          seo_image_id: null
+          commissionable: true
+          image_ids: []
+          variant_ids:
+          - 22
+          price_ids: []
+          redirect_funnel_id: null
+          cancellation_funnel_url: null
+          tag_ids:
+          - 1
+          - 2
+          - 3
+          variant_properties:
+          - id: 1
+            name: Size
+          - id: 2
+            name: Color
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

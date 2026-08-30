@@ -1,0 +1,326 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Appointments::Scheduled Event API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Appointments::ScheduledEvent
+  description: '> Scheduled Appointment Events represent set meeting events
+
+
+    The Appointment Scheduled Event represents a scheduled meeting between a ClickFunnels user and a contact on a specific day and time.
+
+    '
+paths:
+  /workspaces/{workspace_id}/appointments/scheduled_events:
+    get:
+      tags:
+      - Appointments::ScheduledEvent
+      summary: List Scheduled Events
+      description: List Scheduled Events
+      operationId: listAppointmentsScheduledEvents
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppointmentsScheduledEventAttributes'
+              example:
+              - id: 2
+                public_id: THudgA
+                workspace_id: 42000
+                start_on: '2025-01-01T00:00:00.000Z'
+                end_on: '2025-01-01T00:00:00.000Z'
+                status: scheduled
+                max_invitees: 1
+                order_id: null
+                comments: This is an example scheduled event for testing purposes.
+                tzid: America/Los_Angeles
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                event_type:
+                  name: 30 Minute Meeting
+                primary_contact:
+                  id: 41
+                  public_id: wuHLvl
+                  email_address: test-f2a9de6fe23672ca2a72@example.com
+                  first_name: Jules
+                  last_name: Connelly
+                  phone_number: (224) 508-1342 x59891
+              - id: 3
+                public_id: JbGkLQ
+                workspace_id: 42000
+                start_on: '2025-01-01T00:00:00.000Z'
+                end_on: '2025-01-01T00:00:00.000Z'
+                status: scheduled
+                max_invitees: 1
+                order_id: null
+                comments: This is an example scheduled event for testing purposes.
+                tzid: America/Los_Angeles
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                event_type:
+                  name: 30 Minute Meeting
+                primary_contact:
+                  id: 42
+                  public_id: mOuNlh
+                  email_address: test-789e44776663df4ef58a@example.com
+                  first_name: Bobbie
+                  last_name: Zboncak
+                  phone_number: (224) 508-1342 x59891
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    AppointmentsScheduledEventAttributes:
+      type: object
+      title: Scheduled events
+      description: Scheduled events
+      properties:
+        id:
+          type: integer
+          description: Scheduled event ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: The unique public identifier for the scheduled event
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        start_on:
+          type: string
+          format: date-time
+          description: Event Start Time
+        end_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: End On
+        status:
+          type:
+          - string
+          - 'null'
+          description: Status
+        max_invitees:
+          type:
+          - integer
+          - 'null'
+          description: Max Invitees
+        order_id:
+          type:
+          - string
+          - 'null'
+          description: Event Payment Order
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Please share anything that will help prepare for our meeting.
+        tzid:
+          type:
+          - string
+          - 'null'
+          description: Timezone
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        event_type:
+          type:
+          - object
+          - 'null'
+          title: Scheduled events
+          description: Event type information (can be null in rare cases if the event type has been deleted, but the event record wasn't)
+          properties:
+            name:
+              type:
+              - string
+              - 'null'
+              description: The display name of the scheduled event, typically including event type and invitee information
+        primary_contact:
+          type:
+          - object
+          - 'null'
+          title: Scheduled events
+          description: Scheduled events
+          properties:
+            id:
+              type: integer
+              description: Scheduled event ID
+            public_id:
+              type:
+              - string
+              - 'null'
+              description: The unique public identifier for the scheduled event
+            email_address:
+              type:
+              - string
+              - 'null'
+              description: The email address of the primary invitee for this scheduled event
+            first_name:
+              type:
+              - string
+              - 'null'
+              description: The first name of the primary invitee for this scheduled event
+            last_name:
+              type:
+              - string
+              - 'null'
+              description: The last name of the primary invitee for this scheduled event
+            phone_number:
+              type:
+              - string
+              - 'null'
+              description: The phone number of the primary invitee for this scheduled event
+      example:
+        id: 1
+        public_id: mdheDs
+        workspace_id: 42000
+        start_on: '2025-01-01T00:00:00.000Z'
+        end_on: '2025-01-01T00:00:00.000Z'
+        status: scheduled
+        max_invitees: 1
+        order_id: null
+        comments: This is an example scheduled event for testing purposes.
+        tzid: America/Los_Angeles
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        event_type:
+          name: 30 Minute Meeting
+        primary_contact:
+          id: 1
+          public_id: uONtxf
+          email_address: test-5cc06c0232058b060025@example.com
+          first_name: Shanita
+          last_name: Lockman
+          phone_number: (224) 508-1342 x59891
+      required:
+      - comments
+      - created_at
+      - end_on
+      - event_type
+      - id
+      - max_invitees
+      - order_id
+      - primary_contact
+      - public_id
+      - start_on
+      - status
+      - tzid
+      - updated_at
+      - workspace_id
+  parameters:
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

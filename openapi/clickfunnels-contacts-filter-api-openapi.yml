@@ -1,0 +1,447 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Contacts::Filter API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Contacts::Filter
+  description: '> AI-generated contact filters
+
+
+    Translate a natural-language audience description into a ClickFunnels contact filter using an AI model.
+
+
+    The model can use the full range of contact filter conditions — identity, tags, last activity, email
+
+    engagement, opt-ins, product/variant purchases & ownership, custom attributes, and more — so describe the
+
+    audience however you like (e.g. "buyers of the $99 course who joined in the last 30 days"). Unlike the
+
+    criteria you submit directly to the RefineFilter endpoints, this endpoint is not limited to the public-API
+
+    condition allow-list.
+
+
+    The endpoint always returns a `stable_id` token you can use as the `stable_id` query parameter on the
+
+    contacts index. Keep the token opaque and let the HTTP client encode the complete query parameter value;
+
+    with curl, use `-G --data-urlencode "stable_id=$STABLE_ID"`. Do not decode the token or interpolate it
+
+    directly into a raw URL. When `save: true` is supplied the filter is also persisted as a reusable
+
+    `Refine::StoredFilter` — identical to filters created via the RefineFilter endpoints — and its
+
+    `id`/`public_id` are included in the response so you can reference it later with `stored_filter_id`.
+
+
+    See [Generate a contact filter from plain English](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#generate-a-contact-filter-from-plain-english) in the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for the request body, the `save` semantics, and how the returned `stable_id` is applied to the contacts index.
+
+    '
+paths:
+  /workspaces/{workspace_id}/contacts/filters:
+    post:
+      tags:
+      - Contacts::Filter
+      summary: Generate a Contact Filter
+      description: 'Translates a natural-language audience description into a ClickFunnels contact filter using an AI model.
+
+
+        The response always includes the same key set: a `stable_id` token, a structured `filter` object, and the
+
+        identity fields `id`, `public_id`, `workspace_id`, and `name`. When `save: true` is supplied the filter is
+
+        persisted as a reusable `Refine::StoredFilter` and those identity fields are populated; otherwise they are
+
+        `null`. A saved filter can be fetched later via `GET /api/v2/contacts/filters/{id}`.
+
+
+        Pass the returned `stable_id` to `GET /api/v2/workspaces/{workspace_id}/contacts` as the value of the
+
+        `stable_id` query parameter. Keep it opaque and let the HTTP client encode the complete parameter value;
+
+        with curl, use `-G --data-urlencode "stable_id=$STABLE_ID"`. Do not decode it or interpolate it directly
+
+        into a raw URL. Alternatively, pass the returned `id` as `stored_filter_id` (requires `save: true`).
+
+
+        The `stable_id` token uses the standard gzip+base64 Refine full-state format — the same format the
+
+        server-rendered filter UI produces and consumes — making tokens fully interoperable between the API
+
+        and the HTML filter UI.
+
+
+        Although this is a POST, generating a filter persists nothing, so a token with read-only access to
+
+        the Contacts category may call it (the `stable_id` it returns is usable against read endpoints like
+
+        the contacts index). Passing `save: true` persists a stored filter and requires write access.
+
+
+        See [Generate a contact filter from plain English](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#generate-a-contact-filter-from-plain-english) in the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for a worked request and for managing a saved filter afterwards.
+
+        '
+      operationId: generateContactFilter
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - text
+              properties:
+                text:
+                  type: string
+                  description: Natural-language description of the audience or filter to generate.
+                  example: buyers of the $99 course who joined in the last 30 days
+                save:
+                  type: boolean
+                  default: false
+                  description: When `true`, persists the generated filter as a reusable `Refine::StoredFilter`. The saved filter identity fields are included in the response. Requires write access to the Contacts category (generating without `save` needs only read).
+                name:
+                  type:
+                  - string
+                  - 'null'
+                  description: Human-readable name for the saved filter. Only used when `save` is `true`. Must be unique within the workspace when provided.
+            example:
+              text: buyers of the $99 course who joined in the last 30 days
+              save: true
+              name: Recent course buyers
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - id
+                - public_id
+                - workspace_id
+                - name
+                - stable_id
+                - filter
+                properties:
+                  id:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Saved filter ID, or `null` when the filter was not saved (`save` was falsey).
+                  public_id:
+                    type:
+                    - string
+                    - 'null'
+                    description: Obfuscated saved filter ID, or `null` when the filter was not saved.
+                  workspace_id:
+                    type:
+                    - integer
+                    - 'null'
+                    description: Workspace ID, or `null` when the filter was not saved.
+                  name:
+                    type:
+                    - string
+                    - 'null'
+                    description: Name of the saved filter, or `null` when the filter was not saved or had no name.
+                  stable_id:
+                    type: string
+                    description: URL-encoded Refine `stable_id` token in the standard gzip+base64 full-state format — interoperable with the server-rendered filter UI. To apply it on the contacts index, keep it opaque and let the HTTP client encode the complete `stable_id` query parameter value (with curl, use `-G --data-urlencode "stable_id=$STABLE_ID"`). Always present in the response.
+                  filter:
+                    type: object
+                    description: The structured filter generated from the natural-language description.
+                    required:
+                    - conjunction
+                    - criteria
+                    properties:
+                      conjunction:
+                        type: string
+                        enum:
+                        - and
+                        - or
+                        description: How the criteria are joined — `and` (all must match) or `or` (any must match).
+                      criteria:
+                        type: array
+                        description: Ordered list of filter criteria.
+                        items:
+                          $ref: '#/components/schemas/RefineFilterCriterion'
+              example:
+                id: 87
+                public_id: XyZ123
+                workspace_id: 5
+                name: Recent course buyers
+                stable_id: eyJjb25qdW5jdGlvbiI6ImFuZCIsImNyaXRlcmlhIjpbXX0=
+                filter:
+                  conjunction: and
+                  criteria:
+                  - attribute: owned_products.id
+                    clause: in
+                    value:
+                    - '123'
+                  - attribute: created_at
+                    clause: gt
+                    value: '2026-05-12'
+        '400':
+          description: Bad Request — `text` is blank or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'param is missing or the value is empty: text'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found — workspace not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: 'Unprocessable Entity — the model could not produce a valid filter from the given description, or the
+
+            request is too big to translate in one call.
+
+
+            The second case is worth designing for: how long generation takes is driven by how long the ANSWER is,
+
+            so a description implying many separate criteria (a list of individual contacts or email addresses,
+
+            for example) exceeds the request budget every time, not intermittently. Retrying it unchanged fails
+
+            identically — describe the audience by attributes (tags, dates, purchases) or split it into smaller
+
+            requests instead.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: The request is too large to translate into a contact filter. Describe the audience in terms of attributes (tags, dates, purchases) rather than listing individual contacts, or split it into smaller requests.
+        '503':
+          description: Service Unavailable — a transient dependency was unavailable; retry the request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Service unavailable: Transient service issue: Please try again shortly.'
+  /contacts/filters/{id}:
+    get:
+      tags:
+      - Contacts::Filter
+      summary: Get a Contact Filter
+      description: 'Fetches a previously saved contact filter by id. This route is shallow — the workspace is resolved from
+
+        the filter itself, so no `workspace_id` is required in the path. Use the `id` (or `public_id`) returned by
+
+        `POST /api/v2/workspaces/{workspace_id}/contacts/filters` with `save: true`.
+
+
+        Returns the same resource shape as the generate endpoint, with the identity fields populated. The
+
+        `stable_id` is re-derived from the saved filter. To apply it on the contacts index, keep it opaque and
+
+        let the HTTP client encode the complete `stable_id` query parameter value; with curl, use
+
+        `-G --data-urlencode "stable_id=$STABLE_ID"`.
+
+        '
+      operationId: getContactFilter
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The saved filter's `id` or `public_id`.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - id
+                - public_id
+                - workspace_id
+                - name
+                - stable_id
+                - filter
+                properties:
+                  id:
+                    type: integer
+                    description: Saved filter ID.
+                  public_id:
+                    type: string
+                    description: Obfuscated saved filter ID.
+                  workspace_id:
+                    type: integer
+                    description: Workspace the filter belongs to.
+                  name:
+                    type:
+                    - string
+                    - 'null'
+                    description: Name of the saved filter, or `null` when it has no name.
+                  stable_id:
+                    type: string
+                    description: URL-encoded Refine `stable_id` token in the standard gzip+base64 full-state format — interoperable with the server-rendered filter UI. To apply it on the contacts index, keep it opaque and let the HTTP client encode the complete `stable_id` query parameter value (with curl, use `-G --data-urlencode "stable_id=$STABLE_ID"`).
+                  filter:
+                    type: object
+                    description: The structured filter.
+                    required:
+                    - conjunction
+                    - criteria
+                    properties:
+                      conjunction:
+                        type: string
+                        enum:
+                        - and
+                        - or
+                        description: How the criteria are joined — `and` (all must match) or `or` (any must match).
+                      criteria:
+                        type: array
+                        description: Ordered list of filter criteria.
+                        items:
+                          $ref: '#/components/schemas/RefineFilterCriterion'
+              example:
+                id: 87
+                public_id: XyZ123
+                workspace_id: 5
+                name: Recent course buyers
+                stable_id: eyJjb25qdW5jdGlvbiI6ImFuZCIsImNyaXRlcmlhIjpbXX0=
+                filter:
+                  conjunction: and
+                  criteria:
+                  - attribute: owned_products.id
+                    clause: in
+                    value:
+                    - '123'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found — no such filter, or it belongs to a workspace you cannot access
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    RefineFilterCriterion:
+      type: object
+      title: Refine Filter Criterion
+      description: A single filter criterion consisting of an attribute, a comparison clause, and a value.
+      properties:
+        attribute:
+          type: string
+          description: 'The contact attribute to filter on (e.g. `tags.id`, `created_at`, `email_address`).
+
+            The public API restricts attributes to a [safe whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist) — see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for the full reference.
+
+            '
+          example: tags.id
+        clause:
+          type: string
+          description: 'The comparison operator for this criterion (e.g. `in`, `eq`, `gte`, `lte`, `st`, `nst`).
+
+            Allowed clauses depend on the attribute. Text attributes (`email_address`, `first_name`, `last_name`) only accept `eq` and `sw` on the public API; see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist).
+
+            '
+          example: in
+        value:
+          description: "The comparison value. Type depends on the attribute and clause:\n- **Option conditions** (tags, products, etc.): a single opaque public id string, or an array of public id strings.\n- **Date/datetime conditions**: an ISO 8601 date string (`\"2026-01-01\"`) or datetime string (`\"2026-01-01T00:00:00Z\"`).\n  For `between`/`not_between` clauses supply an array of exactly two date strings.\n  For relative `gt`, `lt`, or `exct` clauses supply an object with `days` and a `modifier` of `ago` or `from_now`.\n- **Text/numeric conditions**: a plain string or number.\n- **Set/not-set clauses**: omit `value` entirely.\n"
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+          - type: object
+            required:
+            - days
+            - modifier
+            properties:
+              days:
+                oneOf:
+                - type: string
+                - type: integer
+                description: Number of days used by a relative date clause.
+              modifier:
+                type: string
+                enum:
+                - ago
+                - from_now
+          example:
+          - tag-pub-id-1
+          - tag-pub-id-2
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

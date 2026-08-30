@@ -1,0 +1,549 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Emails::Address API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Emails::Address
+  description: '> Email Addresses
+
+
+    Email Addresses represent sender addresses in your workspace. These are used as "from" and "reply-to" addresses when sending email broadcasts. Select a from-address whose `usable_as_sender` field is true; for a custom domain that means its sending domain is verified and connected to this workspace, while a shared workspace-default address is available only as the fallback.
+
+
+    See [Addresses (pick a usable sender)](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#addresses-pick-a-usable-sender) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+
+    '
+paths:
+  /workspaces/{workspace_id}/emails/addresses:
+    get:
+      tags:
+      - Emails::Address
+      summary: List Email Addresses
+      description: List all email addresses for a workspace. See [Addresses (pick a usable sender)](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#addresses-pick-a-usable-sender) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md) for picking one to send from.
+      operationId: listEmailsAddresses
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      - name: filter
+        in: query
+        description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[email_address]=value&filter[verified]=true`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
+
+          '
+        required: false
+        schema:
+          type: object
+          properties:
+            email_address:
+              type: string
+              description: Exact match on the email address.
+              example: marketing@example.com
+            verified:
+              type: boolean
+              description: 'When `true`, returns only addresses whose sending domain has verified email transport. This is NOT the same as usable: transport verification says nothing about domain ownership, so always pick a sender by the top-level `usable_as_sender` field rather than by this filter. When `false`, returns only addresses without a transport-verified sending domain (including shared-domain addresses). Omit to return all addresses.'
+        style: deepObject
+        explode: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmailsAddressAttributes'
+              example:
+              - id: 1
+                public_id: AbCdEf
+                workspace_id: 42000
+                email_address: marketing@example.com
+                name: Marketing Team
+                is_workspace_default: false
+                emails_domain:
+                  name: example.com
+                  verified: true
+                  dkim_verified: true
+                  spf_verified: true
+                  dmarc_verified: true
+                  smtp_verified: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                usable_as_sender: true
+              - id: 2
+                public_id: GhIjKl
+                workspace_id: 42000
+                email_address: support@clickfunnelsmail.com
+                name: Support
+                is_workspace_default: true
+                emails_domain: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                usable_as_sender: false
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Emails::Address
+      summary: Create Email Address
+      description: 'Create a sender ("from") email address. Provide `username` and `name` (the from-name shown on emails). By default, the address is created on ClickFunnels'' shared sending domain. To use a custom domain, first provision it with `POST /workspaces/{workspace_id}/emails/domains`, add the returned DNS records, and have the customer connect that same root domain to this workspace as a website/hosting domain in the ClickFunnels app. Both halves are required and no API call can do the second one, so DNS records alone never make a domain ready. Re-check with `POST /emails/domains/{id}/verify` until `ready_for_sending` is true, then pass the domain''s numeric `id` as `emails_domain_id`. An address created before the domain is ready is allowed; it simply reports `usable_as_sender: false` until then. See [Addresses (pick a usable sender)](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#addresses-pick-a-usable-sender) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).'
+      operationId: createEmailsAddresses
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Email Address
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - emails_address
+              properties:
+                emails_address:
+                  type: object
+                  $ref: '#/components/schemas/EmailsAddressParameters'
+                  required:
+                  - username
+                  - name
+            example:
+              emails_address:
+                username: hello
+                name: Acme Support
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsAddressAttributes'
+              example:
+                id: 3
+                public_id: MnOpQr
+                workspace_id: 42000
+                email_address: hello@clickfunnelsmail.com
+                name: Acme Support
+                is_workspace_default: true
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                emails_domain: null
+                usable_as_sender: true
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Validation failed
+  /emails/addresses/{id}:
+    get:
+      tags:
+      - Emails::Address
+      summary: Get Email Address
+      description: Retrieve a single email address
+      operationId: getEmailsAddresses
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsAddressAttributes'
+              example:
+                id: 1
+                public_id: AbCdEf
+                workspace_id: 42000
+                email_address: marketing@example.com
+                name: Marketing Team
+                is_workspace_default: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                emails_domain:
+                  name: example.com
+                  verified: true
+                  dkim_verified: true
+                  spf_verified: true
+                  dmarc_verified: true
+                  smtp_verified: false
+                usable_as_sender: true
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    put:
+      tags:
+      - Emails::Address
+      summary: Update Email Address
+      description: Update a sender address — most commonly to change its `name` (the from-name). You may also move it to a different ready-for-sending custom domain via `emails_domain_id`.
+      operationId: updateEmailsAddresses
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Information about updated fields in Email Address
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - emails_address
+              properties:
+                emails_address:
+                  type: object
+                  $ref: '#/components/schemas/EmailsAddressParameters'
+            example:
+              emails_address:
+                name: Acme Support
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsAddressAttributes'
+              example:
+                id: 1
+                public_id: AbCdEf
+                workspace_id: 42000
+                email_address: marketing@example.com
+                name: Acme Support
+                is_workspace_default: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                emails_domain:
+                  name: example.com
+                  verified: true
+                  dkim_verified: true
+                  spf_verified: true
+                  dmarc_verified: true
+                  smtp_verified: false
+                usable_as_sender: true
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Validation failed
+    delete:
+      tags:
+      - Emails::Address
+      summary: Archive Email Address
+      description: 'Archive (soft-delete) a sender address. Once archived the sender is treated as gone: it is excluded from the list endpoint and a subsequent GET/PATCH/DELETE on its id returns 404 (there is no un-archive endpoint).'
+      operationId: removeEmailsAddresses
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  schemas:
+    EmailsAddressParameters:
+      type: object
+      title: Email Address
+      description: A sender (from) email address.
+      required: []
+      properties:
+        username:
+          type: string
+          description: The local part before the @ (e.g. "hello" for hello@yourdomain.com). Required when creating.
+        domain:
+          type: string
+          description: 'Selects among ClickFunnels'' shared sending domains only; normally omit it to get the default (`clickfunnelsmail.com`). This is not how you use your own domain: putting a custom name here neither provisions nor authenticates it, and the request is rejected with `422` unless `emails_domain_id` is also given. To send from your own domain, provision it first and pass its numeric id as `emails_domain_id`, which is what the address is then created on.'
+        name:
+          type: string
+          description: The from-name shown to recipients (e.g. "Acme Support"). Required when creating.
+        label:
+          type: string
+          description: Optional internal label.
+        emails_domain_id:
+          type: integer
+          description: Numeric `id` (not `public_id`) of a custom sending domain belonging to this workspace. Use the Email Domains endpoints to provision it and wait until that domain is ready to send before sending from the resulting address.
+      example:
+        emails_address:
+          username: hello
+          name: Acme Support
+    EmailsAddressAttributes:
+      type: object
+      title: Email Addresses
+      description: Email Addresses
+      properties:
+        id:
+          type: integer
+          description: Address ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Address public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        email_address:
+          type: string
+          description: Email address
+        name:
+          type:
+          - string
+          - 'null'
+          description: Display name associated with this email address
+        is_workspace_default:
+          type: boolean
+          description: 'Whether this address is on the shared ClickFunnels sending domain (the workspace default). A workspace-default address is usable as a sender only as a fallback: once the workspace has a usable custom sender of its own, its workspace-default address reports `usable_as_sender: false`. So `is_workspace_default: true` together with `usable_as_sender: false` is expected whenever the workspace already has a usable custom sender.'
+        usable_as_sender:
+          type: boolean
+          description: Whether this address is eligible to be used as the `from` sender of an email broadcast. A custom-domain address is usable once its sending domain is verified (DKIM/SPF/DMARC or a verified SMTP setting) and the workspace owns that domain. A workspace-default (shared-domain) address is usable only as a fallback - it is `true` when the workspace has no usable custom sender of its own and flips to `false` once one exists. Filter broadcast senders to addresses where this is true to avoid a broadcast failing validation at send time. See [Addresses (pick a usable sender)](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#addresses-pick-a-usable-sender) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+        emails_domain:
+          type:
+          - object
+          - 'null'
+          description: Sending-domain verification status for this address. `null` for shared-domain / workspace-default addresses, which send via shared infrastructure and have no per-workspace sending domain.
+          properties:
+            name:
+              type: string
+              description: The sending domain name.
+            verified:
+              type: boolean
+              description: Whether the sending domain has completed transport verification (DKIM/SPF/DMARC DNS records, or a verified SMTP setting). This alone does not mean the address can send; select senders on the address's top-level `usable_as_sender` field.
+            dkim_verified:
+              type: boolean
+              description: Whether the domain's DKIM DNS record is verified.
+            spf_verified:
+              type: boolean
+              description: Whether the domain's SPF DNS record is verified.
+            dmarc_verified:
+              type: boolean
+              description: Whether the domain's DMARC DNS record is verified.
+            smtp_verified:
+              type: boolean
+              description: Whether the domain is verified via a verified SMTP setting (an alternative to DNS verification). A domain is `verified` when its DKIM/SPF/DMARC are all verified OR `smtp_verified` is true — so when a domain is SMTP-verified, `verified` is true while dkim_verified/spf_verified/dmarc_verified are false.
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at datetime
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at datetime
+      example:
+        id: 1
+        public_id: AbCdEf
+        workspace_id: 42000
+        email_address: marketing@example.com
+        name: Marketing Team
+        is_workspace_default: false
+        usable_as_sender: true
+        emails_domain:
+          name: example.com
+          verified: true
+          dkim_verified: true
+          spf_verified: true
+          dmarc_verified: true
+          smtp_verified: false
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - email_address
+      - emails_domain
+      - id
+      - is_workspace_default
+      - name
+      - public_id
+      - updated_at
+      - usable_as_sender
+      - workspace_id
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

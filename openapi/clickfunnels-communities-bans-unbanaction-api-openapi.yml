@@ -1,0 +1,306 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Communities::Bans::Unban Action API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Communities::Bans::UnbanAction
+  description: '> Async bulk action that unbans multiple contacts from a community in the background.
+
+
+    Creating an UnbanAction enqueues a background job and immediately returns an action record. Poll the `show` endpoint using the returned `id` and check the `status` field (`queued` → `processing` → `completed`) to track progress.
+
+    '
+paths:
+  /communities/{community_id}/bans/unban_actions:
+    post:
+      tags:
+      - Communities::Bans::UnbanAction
+      summary: Create Ban Unban Action
+      description: 'Enqueue an async background job to unban one or more contacts from a community. The action record is returned immediately with `status: queued`. Poll `GET /communities/bans/unban_actions/{id}` until `status` is `completed`.
+
+        '
+      operationId: createCommunitiesBansUnbanActions
+      parameters:
+      - name: community_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Parameters for the unban action
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                communities_bans_unban_action:
+                  type: object
+                  $ref: '#/components/schemas/CommunitiesBansUnbanActionParameters'
+            example:
+              communities_bans_unban_action:
+                target_all: false
+                target_ids:
+                - MnOpQr
+                - StUvWx
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunitiesBansUnbanActionAttributes'
+              example:
+                id: 505
+                public_id: UnBn01
+                community_id: 1
+                target_all: false
+                target_ids:
+                - 201
+                - 202
+                failed_ids: []
+                target_count: null
+                performed_count: 0
+                started_at: null
+                completed_at: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                status: queued
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /communities/bans/unban_actions/{id}:
+    get:
+      tags:
+      - Communities::Bans::UnbanAction
+      summary: Fetch Ban Unban Action
+      description: Retrieve the current status of a ban unban action. Poll this endpoint until `status` is `completed`.
+      operationId: getCommunitiesBansUnbanActions
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunitiesBansUnbanActionAttributes'
+              example:
+                id: 505
+                public_id: UnBn01
+                community_id: 1
+                target_all: false
+                target_ids:
+                - 201
+                - 202
+                failed_ids: []
+                target_count: 2
+                performed_count: 2
+                started_at: '2025-01-01T00:01:00.000Z'
+                completed_at: '2025-01-01T00:01:05.000Z'
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:01:05.000Z'
+                status: completed
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    CommunitiesBansUnbanActionParameters:
+      type: object
+      title: Communities::Bans::UnbanAction
+      description: Communities::Bans::UnbanAction
+      properties:
+        target_all:
+          type: boolean
+          description: When true, unban all banned contacts in the community (target_ids is ignored)
+        target_ids:
+          type: array
+          description: Array of ban public IDs to unban. Required when target_all is false.
+          items:
+            type: string
+      example:
+        communities_bans_unban_action:
+          target_all: false
+          target_ids:
+          - MnOpQr
+          - StUvWx
+    CommunitiesActionAttributes:
+      type: object
+      title: Async Action
+      description: 'Base response shape shared by all community async bulk-action resources. The `status` field progresses from `queued` → `processing` → `completed`. Poll the `show` endpoint until `status` is `completed` or `performed_count` equals `target_count`.
+
+        '
+      properties:
+        id:
+          type: integer
+          description: Action ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Action public ID
+        community_id:
+          type: integer
+          description: ID of the Community this action belongs to
+        target_all:
+          type: boolean
+          description: When true the action targets all eligible records in the community rather than the explicit target_ids list
+        target_ids:
+          type: array
+          description: Integer IDs of the targeted records (memberships or bans)
+          items:
+            type: integer
+        failed_ids:
+          type: array
+          description: Integer IDs of records that could not be processed
+          items:
+            type: integer
+        target_count:
+          type:
+          - integer
+          - 'null'
+          description: Total number of records that will be processed
+        performed_count:
+          type:
+          - integer
+          - 'null'
+          description: Number of records processed so far
+        started_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the background job began processing
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the background job finished
+        created_at:
+          type: string
+          format: date-time
+          description: Created at
+        updated_at:
+          type: string
+          format: date-time
+          description: Updated at
+        status:
+          type: string
+          enum:
+          - queued
+          - processing
+          - completed
+          description: 'Current status of the async action. Progresses: queued → processing → completed.'
+      required:
+      - community_id
+      - completed_at
+      - created_at
+      - failed_ids
+      - id
+      - performed_count
+      - public_id
+      - started_at
+      - status
+      - target_all
+      - target_count
+      - target_ids
+      - updated_at
+    CommunitiesBansUnbanActionAttributes:
+      type: object
+      title: Communities::Bans::UnbanAction
+      description: Communities::Bans::UnbanAction
+      allOf:
+      - $ref: '#/components/schemas/CommunitiesActionAttributes'
+      example:
+        id: 505
+        public_id: UnBn01
+        community_id: 1
+        target_all: false
+        target_ids:
+        - 201
+        - 202
+        failed_ids: []
+        target_count: 2
+        performed_count: 2
+        started_at: '2025-01-01T00:01:00.000Z'
+        completed_at: '2025-01-01T00:01:05.000Z'
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:01:05.000Z'
+        status: completed
+      required:
+      - community_id
+      - completed_at
+      - created_at
+      - failed_ids
+      - id
+      - performed_count
+      - public_id
+      - started_at
+      - status
+      - target_all
+      - target_count
+      - target_ids
+      - updated_at
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

@@ -1,0 +1,621 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Emails::Template API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Emails::Template
+  description: '> Email Templates
+
+
+    Email Templates are reusable email content that can be used with broadcasts.
+
+
+    See [Templates](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#templates) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
+
+    '
+paths:
+  /workspaces/{workspace_id}/emails/templates:
+    get:
+      tags:
+      - Emails::Template
+      summary: List Email Templates
+      description: List all email templates for a workspace
+      operationId: listEmailsTemplates
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmailsTemplateAttributes'
+              example:
+              - id: 1
+                public_id: MnOpQr
+                workspace_id: 42000
+                name: Welcome Email
+                template_type: email
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                created_via_api: false
+                from_address: null
+                subject: null
+              - id: 2
+                public_id: StUvWx
+                workspace_id: 42000
+                name: Newsletter Template
+                template_type: email
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                created_via_api: false
+                from_address: null
+                subject: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Emails::Template
+      summary: Create Email Template
+      description: 'Create an email template from html_body/text_body. The template is marked api-created and is hidden from the visual template pickers (it cannot be edited in the visual BeeFree editor). When accessing the API through an OAuth connection from a third-party platform acting on another team''s workspaces, this endpoint is restricted to trusted developer platforms; if you are using your own API key (acting on your own account), you can write directly.
+
+        See [Create a template](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#create-a-template) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md), including the `expand[]=html_body`/`expand[]=text_body` params that echo the body you just set back in the response.'
+      operationId: createEmailsTemplate
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Email Template
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                emails_template:
+                  type: object
+                  $ref: '#/components/schemas/EmailsTemplateParameters'
+            example:
+              emails_template:
+                name: Welcome Email
+                subject: Welcome aboard!
+                html_body: <h1>Hello</h1>
+                text_body: Hello
+                from_address_id: 4001
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsTemplateAttributes'
+              example:
+                id: 1
+                public_id: MnOpQr
+                workspace_id: 42000
+                name: Welcome Email
+                template_type: email
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                subject: Welcome aboard!
+                html_body: <h1>Hello</h1>
+                text_body: Hello
+                created_via_api: true
+                from_address:
+                  id: 4001
+                  public_id: FrAd01
+                  email_address: marketing@example.com
+                  name: Marketing Team
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: from_address_id not found
+  /emails/templates/{id}:
+    get:
+      tags:
+      - Emails::Template
+      summary: Fetch Email Template
+      description: Retrieve a single email template
+      operationId: getEmailsTemplate
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsTemplateAttributes'
+              example:
+                id: 1
+                public_id: MnOpQr
+                workspace_id: 42000
+                name: Welcome Email
+                template_type: email
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                created_via_api: false
+                from_address: null
+                subject: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    patch:
+      tags:
+      - Emails::Template
+      summary: Update Email Template
+      description: 'Update an email template. Only the provided fields are changed. Invalid Liquid in html_body is rejected with 422. When accessing the API through an OAuth connection from a third-party platform acting on another team''s workspaces, this endpoint is restricted to trusted developer platforms; if you are using your own API key (acting on your own account), you can write directly.
+
+        See [Update a template](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#update-a-template) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).'
+      operationId: updateEmailsTemplate
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Fields to update on the template
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                emails_template:
+                  type: object
+                  $ref: '#/components/schemas/EmailsTemplateParametersUpdate'
+            example:
+              emails_template:
+                html_body: <h1>Updated</h1>
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsTemplateAttributes'
+              example:
+                id: 1
+                public_id: MnOpQr
+                workspace_id: 42000
+                name: Welcome Email
+                template_type: email
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                subject: Welcome aboard!
+                html_body: <h1>Hello</h1>
+                text_body: Hello
+                created_via_api: true
+                from_address:
+                  id: 4001
+                  public_id: FrAd01
+                  email_address: marketing@example.com
+                  name: Marketing Team
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Liquid syntax error: ''if'' tag was never closed'
+    delete:
+      tags:
+      - Emails::Template
+      summary: Delete Email Template
+      description: 'Delete an email template. Returns 422 if the template is shared or is in use by a workflow send-email step. When accessing the API through an OAuth connection from a third-party platform acting on another team''s workspaces, this endpoint is restricted to trusted developer platforms; if you are using your own API key (acting on your own account), you can delete directly.
+
+        See [Delete a template](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#delete-a-template) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md) for what makes a template undeletable.'
+      operationId: deleteEmailsTemplate
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Template cannot be deleted while it is in use by a workflow step or is shared
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    EmailsTemplateAttributes:
+      type: object
+      title: Email Templates
+      description: Email Templates
+      properties:
+        id:
+          type: integer
+          description: Template ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Template public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        name:
+          type:
+          - string
+          - 'null'
+          description: Template name
+        template_type:
+          type: string
+          description: Template type
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at datetime
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at datetime
+        subject:
+          type:
+          - string
+          - 'null'
+          description: Default email subject line for the template
+        html_body:
+          type:
+          - string
+          - 'null'
+          description: '**Expandable** The template''s rendered HTML body. Only returned when expand[]=html_body is provided. get_html is a per-template cloud-storage read, so this is omitted from list and show by default; expanding it on a list fans out to one read per row — use sparingly. See [Templates](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#templates) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).'
+        text_body:
+          type:
+          - string
+          - 'null'
+          description: '**Expandable** The template''s plain text body. Only returned when expand[]=text_body is provided.'
+        created_via_api:
+          type: boolean
+          description: Whether this template was authored via the public API. API-created templates are hidden from the visual template pickers and cannot be edited in the visual (BeeFree) editor.
+        from_address:
+          type:
+          - object
+          - 'null'
+          description: The template's sender address, or null when unset.
+          properties:
+            id:
+              type: integer
+            public_id:
+              type: string
+            email_address:
+              type:
+              - string
+              - 'null'
+            name:
+              type:
+              - string
+              - 'null'
+      example:
+        id: 1
+        public_id: MnOpQr
+        workspace_id: 42000
+        name: Welcome Email
+        template_type: email
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        subject: Welcome aboard!
+        html_body: <h1>Hello</h1>
+        text_body: Hello
+        created_via_api: true
+        from_address:
+          id: 4001
+          public_id: FrAd01
+          email_address: marketing@example.com
+          name: Marketing Team
+      required:
+      - created_at
+      - created_via_api
+      - from_address
+      - id
+      - name
+      - public_id
+      - subject
+      - template_type
+      - updated_at
+      - workspace_id
+    EmailsTemplateParameters:
+      type: object
+      title: Email Templates
+      description: Parameters for creating an email template. Provide the body as html_body/text_body (mapped to the template content). Templates created via the API are marked api-created and are hidden from the visual template pickers.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Internal name for the template (required)
+        subject:
+          type:
+          - string
+          - 'null'
+          description: Default email subject line. May be blank.
+        html_body:
+          type:
+          - string
+          - 'null'
+          description: HTML email body
+        text_body:
+          type:
+          - string
+          - 'null'
+          description: Plain text email body
+        from_address_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of a sending address that belongs to this workspace. Pick one whose top-level `usable_as_sender` is true rather than one whose sending domain is merely `verified` (see GET /workspaces/{workspace_id}/emails/addresses). A foreign address is rejected with 422.
+      example:
+        emails_template:
+          name: Welcome Email
+          subject: Welcome aboard!
+          html_body: <h1>Hello</h1>
+          text_body: Hello
+          from_address_id: 4001
+    EmailsTemplateParametersUpdate:
+      type: object
+      title: Email Templates
+      description: Parameters for updating an email template. Only the provided fields are changed. Invalid Liquid in html_body is rejected with 422.
+      required: []
+      properties:
+        name:
+          type: string
+          description: Internal name for the template
+        subject:
+          type:
+          - string
+          - 'null'
+          description: Default email subject line
+        html_body:
+          type:
+          - string
+          - 'null'
+          description: HTML email body
+        text_body:
+          type:
+          - string
+          - 'null'
+          description: Plain text email body
+        from_address_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of a sending address that belongs to this workspace. A foreign address is rejected with 422.
+      example:
+        emails_template:
+          html_body: <h1>Updated</h1>
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

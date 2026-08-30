@@ -1,0 +1,681 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Course API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Course
+  description: '> Represents the volume of educational material
+
+
+    The course is the top-level layer of a concept for educational material. It is the _thing_  to be sold
+
+    to a customer. Once a customer purchases or otherwise opts into a course, they will be enrolled into
+
+    the underlying sections and lessons.
+
+
+    You can get a broader understanding of the structure of a course by studying the `Courses::Section`
+
+    and `Courses::Lesson` endpoints.
+
+
+    See the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the end-to-end guide — [creating a course](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#creating-a-course) and building out its sections and lessons.
+
+    '
+paths:
+  /workspaces/{workspace_id}/courses:
+    get:
+      tags:
+      - Course
+      summary: List Courses
+      description: List courses for a team
+      operationId: listCourses
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseAttributes'
+              example:
+              - id: 7
+                public_id: QwdWoj
+                title: Example Course
+                published_at: '2025-01-01T00:00:00.000Z'
+                root_section_id: null
+                description: A practical and engaging course designed to build core skills in Marketing.
+                current_path: null
+                sharing_fingerprint: null
+                show_in_community: false
+                show_to_non_members: false
+                upgrade_url: null
+                redirect_to_full_course: true
+                unauthorized_redirect_url: null
+                comments_enabled: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                image_url: https://example.myclickfunnels.com/uploads/image/1/file/9c8d1e7d480dc9882c519d4b4528826f.png
+              - id: 8
+                public_id: LzpZKh
+                title: Example Course
+                published_at: '2025-01-01T00:00:00.000Z'
+                root_section_id: null
+                description: A practical and engaging course designed to build core skills in Marketing.
+                current_path: null
+                sharing_fingerprint: null
+                show_in_community: false
+                show_to_non_members: false
+                upgrade_url: null
+                redirect_to_full_course: true
+                unauthorized_redirect_url: null
+                comments_enabled: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                image_url: https://example.myclickfunnels.com/uploads/image/1/file/9c8d1e7d480dc9882c519d4b4528826f.png
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Course
+      summary: Create Course
+      description: Create a course for a team. See [Creating a course](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#creating-a-course) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the permitted fields.
+      operationId: createCourses
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about a new Course
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course:
+                  type: object
+                  $ref: '#/components/schemas/CourseParameters'
+            example:
+              course:
+                title: Getting Started
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseAttributes'
+              example:
+                id: 10
+                public_id: gVWRTP
+                title: Getting Started
+                published_at: null
+                root_section_id: null
+                description: A practical and engaging course designed to build core skills in Marketing.
+                current_path: null
+                sharing_fingerprint: null
+                show_in_community: false
+                show_to_non_members: false
+                upgrade_url: null
+                redirect_to_full_course: true
+                unauthorized_redirect_url: null
+                comments_enabled: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                image_url: https://example.myclickfunnels.com/uploads/image/1/file/9c8d1e7d480dc9882c519d4b4528826f.png
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Title can't be blank
+  /courses/{id}:
+    get:
+      tags:
+      - Course
+      summary: Fetch Course
+      description: Retrieve a course
+      operationId: getCourses
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseAttributes'
+              example:
+                id: 9
+                public_id: gVWRTP
+                title: Example Course
+                published_at: '2025-01-01T00:00:00.000Z'
+                root_section_id: null
+                description: A practical and engaging course designed to build core skills in Marketing.
+                current_path: null
+                sharing_fingerprint: null
+                show_in_community: false
+                show_to_non_members: false
+                upgrade_url: null
+                redirect_to_full_course: true
+                unauthorized_redirect_url: null
+                comments_enabled: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                image_url: https://example.myclickfunnels.com/uploads/image/1/file/9c8d1e7d480dc9882c519d4b4528826f.png
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    patch:
+      tags:
+      - Course
+      summary: Update Course
+      description: 'Update a course''s settings and appearance — including its storefront image (`image_id`), title, and description. Updates are partial: only the attributes you include are changed; omitted attributes are left unchanged.
+
+        See [Permitted course fields](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#permitted-course-fields) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md).'
+      operationId: updateCourses
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: The Course attributes to change
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course:
+                  type: object
+                  $ref: '#/components/schemas/CourseParametersUpdate'
+            example:
+              course:
+                title: Example Course
+                description: A practical and engaging course designed to build core skills in Marketing.
+                show_in_community: false
+                redirect_to_full_course: true
+                image_id: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseAttributes'
+              example:
+                id: 9
+                public_id: gVWRTP
+                title: Example Course
+                published_at: '2025-01-01T00:00:00.000Z'
+                root_section_id: null
+                description: A practical and engaging course designed to build core skills in Marketing.
+                current_path: null
+                sharing_fingerprint: null
+                show_in_community: false
+                show_to_non_members: false
+                upgrade_url: null
+                redirect_to_full_course: true
+                unauthorized_redirect_url: null
+                comments_enabled: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                image_url: https://example.myclickfunnels.com/uploads/image/1/file/9c8d1e7d480dc9882c519d4b4528826f.png
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: Title can't be blank
+  /courses/{id}/publish:
+    post:
+      tags:
+      - Course
+      summary: Publish Course
+      description: 'Makes the course live by setting `published_at`. Pass an optional future `published_at` to schedule the publish; omit it (or leave it blank) to publish immediately. A `published_at` in the past is rejected.
+
+        By default this publishes only the course record. To publish a brand-new course in one step, pass `publish_sections_and_lessons: true`. Before the `200 OK` response, the requested publish timestamp is set on the course, every eligible unpublished non-root section, and all unpublished or scheduled lessons underneath it. Drip and blocked section gates remain in effect. Section publish actions may still perform follow-up work asynchronously, and each records how many lessons it published in `published_lessons_count`. Otherwise sections and lessons stay draft until published via the `Courses::Sections::PublishAction` resource.
+
+        Returns 422 if `published_at` is supplied but is not a valid ISO 8601 datetime, or if it is in the past.
+
+        See [Publishing](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#publishing) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the publish paths.'
+      operationId: publishCourse
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                published_at:
+                  type: string
+                  format: date-time
+                  description: Optional ISO 8601 datetime at which the course should become live. Must be now or in the future — a past datetime is rejected with a 422. Omit or leave blank to publish immediately.
+                publish_sections_and_lessons:
+                  type: boolean
+                  description: When `true`, sets the requested publish timestamp on the course, every eligible unpublished non-root section, and all unpublished or scheduled lessons before returning the response. Drip and blocked section gates remain in effect. Section publish actions may continue follow-up processing asynchronously. Use this for a one-step publish of a new course. Defaults to `false`.
+            example:
+              published_at: '2026-09-01T09:00:00.000Z'
+              publish_sections_and_lessons: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseAttributes'
+              example:
+                id: 9
+                public_id: gVWRTP
+                title: Example Course
+                published_at: '2026-09-01T09:00:00.000Z'
+                root_section_id: null
+                description: A practical and engaging course designed to build core skills in Marketing.
+                current_path: null
+                sharing_fingerprint: null
+                show_in_community: false
+                show_to_non_members: false
+                upgrade_url: null
+                redirect_to_full_course: true
+                unauthorized_redirect_url: null
+                comments_enabled: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2026-09-01T09:00:00.000Z'
+                image_url: https://example.myclickfunnels.com/uploads/image/1/file/9c8d1e7d480dc9882c519d4b4528826f.png
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity — `published_at` is not a valid datetime
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: published_at is not a valid datetime
+components:
+  schemas:
+    CourseAttributes:
+      type: object
+      title: Courses
+      description: Courses
+      properties:
+        id:
+          type: integer
+          description: Course ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Course public ID
+        title:
+          type: string
+          description: Title
+        published_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Available at
+        root_section_id:
+          type:
+          - string
+          - 'null'
+          description: Root section. Auto-created with the course and the implicit parent of every top-level module. See [How a course is structured](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#how-a-course-is-structured) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md).
+        description:
+          type: string
+          description: Description
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Course Path URL
+        sharing_fingerprint:
+          type:
+          - string
+          - 'null'
+          description: Sharing Fingerprint
+        show_in_community:
+          type:
+          - boolean
+          - 'null'
+          description: Show In Customer Center?
+        show_to_non_members:
+          type:
+          - boolean
+          - 'null'
+          description: Show To Non Members
+        upgrade_url:
+          type:
+          - string
+          - 'null'
+          description: Upgrade URL
+        redirect_to_full_course:
+          type:
+          - boolean
+          - 'null'
+          description: Redirect To Full Course
+        unauthorized_redirect_url:
+          type:
+          - string
+          - 'null'
+          description: Unauthorized Redirect
+        comments_enabled:
+          type:
+          - boolean
+          - 'null'
+          description: Enable Lesson Comments?
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created at
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated at
+        image_url:
+          type:
+          - string
+          - 'null'
+          description: The URL of the image that is shown on the storefront of the main course page
+      example:
+        id: 1
+        public_id: iawbIp
+        title: Example Course
+        published_at: '2025-01-01T00:00:00.000Z'
+        root_section_id: null
+        description: A practical and engaging course designed to build core skills in Marketing.
+        current_path: null
+        sharing_fingerprint: null
+        show_in_community: false
+        show_to_non_members: false
+        upgrade_url: null
+        redirect_to_full_course: true
+        unauthorized_redirect_url: null
+        comments_enabled: false
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        image_url: https://example.myclickfunnels.com/uploads/image/1/file/9c8d1e7d480dc9882c519d4b4528826f.png
+      required:
+      - comments_enabled
+      - created_at
+      - current_path
+      - description
+      - id
+      - image_url
+      - public_id
+      - published_at
+      - redirect_to_full_course
+      - root_section_id
+      - sharing_fingerprint
+      - show_in_community
+      - show_to_non_members
+      - title
+      - unauthorized_redirect_url
+      - updated_at
+      - upgrade_url
+    CourseParametersUpdate:
+      type: object
+      title: Courses
+      description: Courses. Updates are partial — only the attributes you include are changed; omitted attributes are left unchanged.
+      properties:
+        title:
+          type: string
+          description: Title
+        description:
+          type: string
+          description: Description
+        show_in_community:
+          type:
+          - boolean
+          - 'null'
+          description: Show In Customer Center?
+        redirect_to_full_course:
+          type:
+          - boolean
+          - 'null'
+          description: Redirect To Full Course
+        image_id:
+          type:
+          - integer
+          - 'null'
+          description: The ID of an Image to show on the storefront of the main course page
+      example:
+        course:
+          title: Example Course
+          description: A practical and engaging course designed to build core skills in Marketing.
+          show_in_community: false
+          redirect_to_full_course: true
+          image_id: 1
+    CourseParameters:
+      type: object
+      title: Courses
+      description: Courses
+      required:
+      - title
+      properties:
+        title:
+          type: string
+          description: Title
+        description:
+          type: string
+          description: Description
+        show_in_community:
+          type:
+          - boolean
+          - 'null'
+          description: Show In Customer Center?
+        redirect_to_full_course:
+          type:
+          - boolean
+          - 'null'
+          description: Redirect To Full Course
+        image_id:
+          type:
+          - integer
+          - 'null'
+          description: The ID of an Image to show on the storefront of the main course page
+      example:
+        course:
+          title: Getting Started
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

@@ -1,0 +1,1060 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Workflows::Trigger API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Workflows::Trigger
+  description: 'Triggers attached to a workflow. Each trigger specifies an `event_type_key` (e.g. `$contact.tag_applied`) and optional condition FK ids that narrow which events fire the trigger.
+
+
+    See [Triggers](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#triggers) in the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md).
+
+    '
+paths:
+  /workflows/{workflow_id}/triggers:
+    get:
+      tags:
+      - Workflows::Trigger
+      summary: List Triggers
+      description: 'List all triggers attached to a workflow.
+
+        '
+      operationId: listWorkflowTriggers
+      externalDocs:
+        description: Workflows Skill - triggers
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#triggers
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: workflow_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Integer id or obfuscated public_id of the workflow.
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkflowsTriggerAttributes'
+              example:
+              - id: 11
+                public_id: TrXxYy
+                workflow_id: 101
+                event_type_key: $contact.tag_applied
+                event_type_name: Contact tag applied
+                active: true
+                allow_anonymous_contacts: false
+                subscription_cancelation_reason: null
+                contacts_tag_id: 7001
+                funnel_id: null
+                page_id: null
+                product_id: null
+                cancellation_product_id: null
+                product_variant_id: null
+                cancellation_product_variant_id: null
+                subscription_variant_to_id: null
+                sales_pipelines_id: null
+                current_sales_pipelines_stage_id: null
+                appointments_calendar_id: null
+                appointments_event_type_id: null
+                course_id: null
+                courses_lesson_id: null
+                courses_section_id: null
+                community_id: null
+                communities_space_id: null
+                communities_space_group_id: null
+                emails_broadcasts_id: null
+                calendar_event_id: null
+                survey_workflow_id: null
+                workflows_step_id: null
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    post:
+      tags:
+      - Workflows::Trigger
+      summary: Create Trigger
+      description: 'Add a new trigger to a workflow. The `event_type_key` must be a valid workflow
+
+        trigger event key — an invalid value returns 422. All condition FK fields accept
+
+        the integer id or obfuscated `public_id` of a referenced resource in the same
+
+        workspace/team scope.
+
+        '
+      operationId: createWorkflowTrigger
+      externalDocs:
+        description: Workflows Skill - triggers
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#triggers
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: workflow_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Integer id or obfuscated public_id of the workflow.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowsTriggerParametersCreate'
+            example:
+              workflows_trigger:
+                event_type_key: $contact.tag_applied
+                active: true
+                contacts_tag_id: 7001
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowsTriggerAttributes'
+              example:
+                id: 12
+                public_id: TrMnOp
+                workflow_id: 101
+                event_type_key: $contact.tag_applied
+                event_type_name: Contact tag applied
+                active: true
+                allow_anonymous_contacts: false
+                subscription_cancelation_reason: null
+                contacts_tag_id: 7001
+                funnel_id: null
+                page_id: null
+                product_id: null
+                cancellation_product_id: null
+                product_variant_id: null
+                cancellation_product_variant_id: null
+                subscription_variant_to_id: null
+                sales_pipelines_id: null
+                current_sales_pipelines_stage_id: null
+                appointments_calendar_id: null
+                appointments_event_type_id: null
+                course_id: null
+                courses_lesson_id: null
+                courses_section_id: null
+                community_id: null
+                communities_space_id: null
+                communities_space_group_id: null
+                emails_broadcasts_id: null
+                calendar_event_id: null
+                survey_workflow_id: null
+                workflows_step_id: null
+                created_at: '2025-06-18T00:00:00.000Z'
+                updated_at: '2025-06-18T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: event_type_key ''$bad.event'' is not a valid workflow trigger event.'
+  /workflows/triggers/{id}:
+    get:
+      tags:
+      - Workflows::Trigger
+      summary: Fetch Trigger
+      description: 'Retrieve a single workflow trigger.
+
+        '
+      operationId: getWorkflowTrigger
+      externalDocs:
+        description: Workflows Skill - triggers
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#triggers
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowsTriggerAttributes'
+              example:
+                id: 11
+                public_id: TrXxYy
+                workflow_id: 101
+                event_type_key: $contact.tag_applied
+                event_type_name: Contact tag applied
+                active: true
+                allow_anonymous_contacts: false
+                subscription_cancelation_reason: null
+                contacts_tag_id: 7001
+                funnel_id: null
+                page_id: null
+                product_id: null
+                cancellation_product_id: null
+                product_variant_id: null
+                cancellation_product_variant_id: null
+                subscription_variant_to_id: null
+                sales_pipelines_id: null
+                current_sales_pipelines_stage_id: null
+                appointments_calendar_id: null
+                appointments_event_type_id: null
+                course_id: null
+                courses_lesson_id: null
+                courses_section_id: null
+                community_id: null
+                communities_space_id: null
+                communities_space_group_id: null
+                emails_broadcasts_id: null
+                calendar_event_id: null
+                survey_workflow_id: null
+                workflows_step_id: null
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-01T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+    patch:
+      tags:
+      - Workflows::Trigger
+      summary: Update Trigger
+      description: 'Update an existing workflow trigger. All fields optional. An invalid `event_type_key`
+
+        returns 422.
+
+        '
+      operationId: updateWorkflowTrigger
+      externalDocs:
+        description: Workflows Skill - triggers
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#triggers
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowsTriggerParametersUpdate'
+            example:
+              workflows_trigger:
+                active: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowsTriggerAttributes'
+              example:
+                id: 11
+                public_id: TrXxYy
+                workflow_id: 101
+                event_type_key: $contact.tag_applied
+                event_type_name: Contact tag applied
+                active: false
+                allow_anonymous_contacts: false
+                subscription_cancelation_reason: null
+                contacts_tag_id: 7001
+                funnel_id: null
+                page_id: null
+                product_id: null
+                cancellation_product_id: null
+                product_variant_id: null
+                cancellation_product_variant_id: null
+                subscription_variant_to_id: null
+                sales_pipelines_id: null
+                current_sales_pipelines_stage_id: null
+                appointments_calendar_id: null
+                appointments_event_type_id: null
+                course_id: null
+                courses_lesson_id: null
+                courses_section_id: null
+                community_id: null
+                communities_space_id: null
+                communities_space_group_id: null
+                emails_broadcasts_id: null
+                calendar_event_id: null
+                survey_workflow_id: null
+                workflows_step_id: null
+                created_at: '2025-06-01T00:00:00.000Z'
+                updated_at: '2025-06-18T00:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Request unprocessable: event_type_key ''$bad.event'' is not a valid workflow trigger event.'
+    delete:
+      tags:
+      - Workflows::Trigger
+      summary: Delete Trigger
+      description: 'Delete a trigger from a workflow.
+
+        '
+      operationId: deleteWorkflowTrigger
+      externalDocs:
+        description: Workflows Skill - triggers
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#triggers
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: You are not authorized to perform this action.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: Record missing'
+components:
+  schemas:
+    WorkflowsTriggerAttributes:
+      type: object
+      title: Workflows::Trigger
+      description: 'A trigger attached to a workflow. Each trigger has an `event_type_key` (e.g.
+
+        `$contact.tag_applied`) and optional condition FK ids that narrow when the
+
+        trigger fires. An invalid `event_type_key` returns 422. NOTE: for site events
+
+        (`$optin`, `$view`) scope by `page_id` — these events are not associated with a
+
+        funnel, so a `funnel_id` condition silently never matches.
+
+        '
+      properties:
+        id:
+          type: integer
+          description: Trigger ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Obfuscated trigger ID
+        workflow_id:
+          type: integer
+          description: Integer ID of the parent workflow
+        event_type_key:
+          type:
+          - string
+          - 'null'
+          description: The event that fires this trigger (e.g. `$contact.tag_applied`, `$order.successful_purchase`).
+        event_type_name:
+          type:
+          - string
+          - 'null'
+          description: Human-readable name of the event type.
+        active:
+          type: boolean
+          description: Whether the trigger is active and will enroll contacts.
+        allow_anonymous_contacts:
+          type: boolean
+          description: Whether the trigger fires for anonymous (non-identified) contacts.
+        subscription_cancelation_reason:
+          type:
+          - string
+          - 'null'
+          description: Only set on `$order.cancelled` (subscription cancellation) triggers — the cancellation-reason token the contact selected (e.g. `too_expensive`). `null` for every other event type.
+        contacts_tag_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Contacts::Tag id used as a condition filter.
+        funnel_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Funnel id used as a condition filter.
+        page_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Page id used as a condition filter.
+        product_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Product id used as a condition filter.
+        cancellation_product_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Product id for cancellation condition filtering.
+        product_variant_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Products::Variant id used as a condition filter.
+        cancellation_product_variant_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Products::Variant id for cancellation condition filtering.
+        subscription_variant_to_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Products::Variant id for subscription upgrade/downgrade triggers.
+        sales_pipelines_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Sales::Pipeline id used as a condition filter.
+        current_sales_pipelines_stage_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Sales::Pipelines::Stage id used as a condition filter.
+        appointments_calendar_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Appointments::Calendar id used as a condition filter.
+        appointments_event_type_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Appointments::EventType id used as a condition filter.
+        course_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Course id used as a condition filter.
+        courses_lesson_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Courses::Lesson id used as a condition filter.
+        courses_section_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Courses::Section id used as a condition filter.
+        community_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Community id used as a condition filter.
+        communities_space_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Communities::Space id used as a condition filter.
+        communities_space_group_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Communities::SpaceGroup id used as a condition filter.
+        emails_broadcasts_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Emails::Broadcast id used as a condition filter.
+        calendar_event_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer CalendarEvent id used as a condition filter.
+        survey_workflow_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer SurveyWorkflow id used as a condition filter.
+        workflows_step_id:
+          type:
+          - integer
+          - 'null'
+          description: Raw integer Workflows::Step id used as a condition filter.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 11
+        public_id: TrXxYy
+        workflow_id: 101
+        event_type_key: $contact.tag_applied
+        event_type_name: Contact tag applied
+        active: true
+        allow_anonymous_contacts: false
+        subscription_cancelation_reason: null
+        contacts_tag_id: 7001
+        funnel_id: null
+        page_id: null
+        product_id: null
+        cancellation_product_id: null
+        product_variant_id: null
+        cancellation_product_variant_id: null
+        subscription_variant_to_id: null
+        sales_pipelines_id: null
+        current_sales_pipelines_stage_id: null
+        appointments_calendar_id: null
+        appointments_event_type_id: null
+        course_id: null
+        courses_lesson_id: null
+        courses_section_id: null
+        community_id: null
+        communities_space_id: null
+        communities_space_group_id: null
+        emails_broadcasts_id: null
+        calendar_event_id: null
+        survey_workflow_id: null
+        workflows_step_id: null
+        created_at: '2025-06-01T00:00:00.000Z'
+        updated_at: '2025-06-01T00:00:00.000Z'
+      required:
+      - active
+      - allow_anonymous_contacts
+      - appointments_calendar_id
+      - appointments_event_type_id
+      - calendar_event_id
+      - cancellation_product_id
+      - cancellation_product_variant_id
+      - communities_space_group_id
+      - communities_space_id
+      - community_id
+      - contacts_tag_id
+      - course_id
+      - courses_lesson_id
+      - courses_section_id
+      - created_at
+      - current_sales_pipelines_stage_id
+      - emails_broadcasts_id
+      - event_type_key
+      - event_type_name
+      - funnel_id
+      - id
+      - page_id
+      - product_id
+      - product_variant_id
+      - public_id
+      - sales_pipelines_id
+      - subscription_cancelation_reason
+      - subscription_variant_to_id
+      - survey_workflow_id
+      - updated_at
+      - workflow_id
+      - workflows_step_id
+    IntegerOrPublicId:
+      type:
+      - integer
+      - string
+      description: Integer database id or obfuscated public_id.
+    WorkflowsTriggerParametersCreate:
+      type: object
+      title: Create Workflows::Trigger
+      description: 'Parameters for creating a new trigger on a workflow. `event_type_key` is
+
+        required; all condition FK fields accept either the integer id or obfuscated
+
+        `public_id` string for a resource in the same workspace/team scope.
+
+
+        An invalid `event_type_key` returns 422.
+
+        '
+      required:
+      - workflows_trigger
+      properties:
+        workflows_trigger:
+          type: object
+          required:
+          - event_type_key
+          properties:
+            event_type_key:
+              type: string
+              description: The event key that fires this trigger (e.g. `$contact.tag_applied`). Must be one of the enumerated keys.
+              enum:
+              - $appointments.appointment_scheduled
+              - $calendar_event.contact_registered
+              - $community.join
+              - $community.group_join
+              - $community.topic_join
+              - $community.post
+              - $community.ban
+              - $community.unban
+              - $community.post_view
+              - $contact.tag_applied
+              - $contact.tag_removed
+              - $course.complete
+              - $course.enroll
+              - $course.unenroll
+              - $course.lesson_complete
+              - $course.lesson_view
+              - $course.section_complete
+              - $email.bounce
+              - $email.click
+              - $email.open
+              - $email.sent
+              - $email.spam_complaint
+              - $send_email_step.bounce
+              - $send_email_step.click
+              - $send_email_step.open
+              - $send_email_step.sent
+              - $send_email_step.spam_complaint
+              - $order.successful_purchase
+              - $order.cancelled
+              - $order.churned
+              - $subscription.upgraded
+              - $subscription.downgraded
+              - $transaction.renewal_failed
+              - $sales.contact_entered_stage
+              - $sales.contact_exited_stage
+              - $optin
+              - $view
+              - $message_hub_event.contact_conversation_started
+              - $message_hub_event.agent_conversation_started
+              - $message_hub_event.contact_responded
+              - $message_hub_event.agent_responded
+              - $survey.complete
+            active:
+              type: boolean
+              description: Whether the trigger is active. Defaults to `true` when omitted.
+            allow_anonymous_contacts:
+              type: boolean
+              description: Whether to fire for anonymous contacts.
+            subscription_cancelation_reason:
+              type: string
+              description: Reason filter for `$order.cancelled` subscription cancellation triggers.
+            contacts_tag_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Contacts::Tag id or public_id.
+            funnel_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Funnel id or public_id.
+            page_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Page id or public_id.
+            product_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Product id or public_id.
+            cancellation_product_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Product id or public_id for cancellation condition.
+            product_variant_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Products::Variant id or public_id.
+            cancellation_product_variant_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Products::Variant id or public_id for cancellation.
+            subscription_variant_to_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Products::Variant id or public_id for subscription upgrade/downgrade.
+            sales_pipelines_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Sales::Pipeline id or public_id.
+            current_sales_pipelines_stage_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Sales::Pipelines::Stage id or public_id.
+            appointments_calendar_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Appointments::Calendar id or public_id.
+            appointments_event_type_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Appointments::EventType id or public_id.
+            course_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Course id or public_id.
+            courses_lesson_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Courses::Lesson id or public_id.
+            courses_section_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Courses::Section id or public_id.
+            community_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Community id or public_id.
+            communities_space_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Communities::Space id or public_id.
+            communities_space_group_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Communities::SpaceGroup id or public_id.
+            emails_broadcasts_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Emails::Broadcast id or public_id.
+            calendar_event_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: CalendarEvent id or public_id.
+            survey_workflow_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: SurveyWorkflow id or public_id.
+            workflows_step_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Workflows::Step id or public_id.
+      example:
+        workflows_trigger:
+          event_type_key: $contact.tag_applied
+          active: true
+          contacts_tag_id: 7001
+    WorkflowsTriggerParametersUpdate:
+      type: object
+      title: Update Workflows::Trigger
+      description: 'Parameters for updating an existing trigger. All fields optional.
+
+        Condition FK fields accept either the integer id or obfuscated `public_id`
+
+        string for a resource in the same workspace/team scope.
+
+        '
+      required:
+      - workflows_trigger
+      properties:
+        workflows_trigger:
+          type: object
+          properties:
+            event_type_key:
+              type: string
+              description: New event key. Must be one of the enumerated keys; an invalid key returns 422.
+              enum:
+              - $appointments.appointment_scheduled
+              - $calendar_event.contact_registered
+              - $community.join
+              - $community.group_join
+              - $community.topic_join
+              - $community.post
+              - $community.ban
+              - $community.unban
+              - $community.post_view
+              - $contact.tag_applied
+              - $contact.tag_removed
+              - $course.complete
+              - $course.enroll
+              - $course.unenroll
+              - $course.lesson_complete
+              - $course.lesson_view
+              - $course.section_complete
+              - $email.bounce
+              - $email.click
+              - $email.open
+              - $email.sent
+              - $email.spam_complaint
+              - $send_email_step.bounce
+              - $send_email_step.click
+              - $send_email_step.open
+              - $send_email_step.sent
+              - $send_email_step.spam_complaint
+              - $order.successful_purchase
+              - $order.cancelled
+              - $order.churned
+              - $subscription.upgraded
+              - $subscription.downgraded
+              - $transaction.renewal_failed
+              - $sales.contact_entered_stage
+              - $sales.contact_exited_stage
+              - $optin
+              - $view
+              - $message_hub_event.contact_conversation_started
+              - $message_hub_event.agent_conversation_started
+              - $message_hub_event.contact_responded
+              - $message_hub_event.agent_responded
+              - $survey.complete
+            active:
+              type: boolean
+            allow_anonymous_contacts:
+              type: boolean
+            subscription_cancelation_reason:
+              type: string
+            contacts_tag_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            funnel_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            page_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            product_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            cancellation_product_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            product_variant_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            cancellation_product_variant_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            subscription_variant_to_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            sales_pipelines_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            current_sales_pipelines_stage_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            appointments_calendar_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            appointments_event_type_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            course_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            courses_lesson_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            courses_section_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            community_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            communities_space_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            communities_space_group_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            emails_broadcasts_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            calendar_event_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            survey_workflow_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+            workflows_step_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+      example:
+        workflows_trigger:
+          active: false
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

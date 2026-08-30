@@ -1,0 +1,530 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels User API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: User
+  description: Users
+paths:
+  /users:
+    get:
+      tags:
+      - User
+      summary: List Users
+      description: 'List users for the current account. Note: an OAuth/API integration authenticates as a
+
+        **platform-agent user** (e.g. "Default API Client"), so this endpoint is scoped to that
+
+        agent and typically returns only it — it is **not** the way to enumerate the human team
+
+        members. To find real team members (for example a workflow `notify_step`''s `user_ids`),
+
+        use `GET /api/v2/teams/{team_id}/memberships` and read each membership''s `user_id`
+
+        (`notify_step` only accepts non-platform team members).
+
+        '
+      operationId: listUsers
+      parameters:
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserAttributes'
+              example:
+              - id: 9
+                public_id: QxvoAS
+                email: test@email.com
+                first_name: Kevin
+                last_name: Hoppe
+                time_zone: Pacific Time (US & Canada)
+                locale: en
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                memberships:
+                - id: 10
+                  public_id: vYxaJB
+                  team_id: 4
+                  user_id: 9
+                  user_first_name: null
+                  user_last_name: null
+                  user_profile_photo_id: null
+                  user_email: null
+                  added_by_id: null
+                  platform_agent_of_id: null
+                  role_ids:
+                  - admin
+                  created_at: '2025-01-27T12:44:11.708Z'
+                  updated_at: '2025-01-27T12:44:11.776Z'
+                  user:
+                    id: 4
+                    public_id: WJrGjY
+                    name: ClickFunnels
+                    time_zone: Eastern Time (US & Canada)
+                    locale: en
+                    created_at: '2025-01-27T12:43:53.368Z'
+                    updated_at: '2025-07-15T11:27:53.059Z'
+                    billing_subscriptions:
+                    - id: 4
+                      public_id: WYrGvz
+                      team_id: 4
+                      status: active
+                      cycle_ends_at: null
+                      created_at: '2025-01-27T12:46:33.400Z'
+                      updated_at: '2025-01-27T12:46:33.459Z'
+                      included_prices:
+                      - id: 4
+                        subscription_id: 4
+                        price_id: funnel_hacker_monthly_2022
+                        quantity: 1
+                        created_at: '2025-01-27T12:46:33.458Z'
+                        updated_at: '2025-01-27T12:46:33.458Z'
+              - id: 10
+                public_id: boYPTU
+                email: test@email.com
+                first_name: Tandra
+                last_name: Bechtelar
+                time_zone: Pacific Time (US & Canada)
+                locale: en
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                memberships:
+                - id: 11
+                  public_id: OezDJK
+                  team_id: 6
+                  user_id: 10
+                  user_first_name: null
+                  user_last_name: null
+                  user_profile_photo_id: null
+                  user_email: noreply+f59f2d7a1f5fbdf431a5772b5e4ca0e4@bullettrain.co
+                  added_by_id: null
+                  platform_agent_of_id: 6
+                  role_ids:
+                  - admin
+                  created_at: '2025-01-27T12:46:33.953Z'
+                  updated_at: '2025-01-27T12:46:33.959Z'
+                  user:
+                    id: 6
+                    public_id: GJPOeQ
+                    name: ClickFunnels Internal
+                    time_zone: Eastern Time (US & Canada)
+                    locale: en
+                    created_at: '2025-01-27T12:46:33.481Z'
+                    updated_at: '2025-03-07T16:47:17.574Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /users/{id}:
+    get:
+      tags:
+      - User
+      summary: Fetch User
+      description: Retrieve a single user
+      operationId: fetchUser
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAttributes'
+              example:
+                id: 11
+                public_id: nQDZEX
+                email: test@email.com
+                first_name: Eugenio
+                last_name: Watsica
+                time_zone: Pacific Time (US & Canada)
+                locale: en
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                memberships:
+                - id: 14
+                  public_id: RegNjN
+                  team_id: 2
+                  user_id: 11
+                  user_first_name: null
+                  user_last_name: null
+                  user_profile_photo_id: null
+                  user_email: noreply+557af4afa3ddc7d542ae242fef455a41@bullettrain.co
+                  added_by_id: null
+                  platform_agent_of_id: 7
+                  role_ids:
+                  - admin
+                  created_at: '2025-01-27T12:46:38.579Z'
+                  updated_at: '2025-01-27T12:46:38.587Z'
+                  user:
+                    id: 2
+                    public_id: OjMAjZ
+                    name: System Admin Team Team
+                    time_zone: Pacific Time (US & Canada)
+                    locale: en
+                    created_at: '2025-01-27T12:42:38.175Z'
+                    updated_at: '2025-03-07T16:46:55.374Z'
+                    billing_subscriptions:
+                    - id: 1
+                      public_id: BvJXjb
+                      team_id: 2
+                      status: active
+                      cycle_ends_at: null
+                      created_at: '2025-01-27T12:42:44.975Z'
+                      updated_at: '2025-01-27T12:42:45.038Z'
+                      included_prices:
+                      - id: 1
+                        subscription_id: 1
+                        price_id: basic_monthly_2022
+                        quantity: 1
+                        created_at: '2025-01-27T12:42:45.037Z'
+                        updated_at: '2025-01-27T12:42:45.037Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: User not found
+  /me:
+    get:
+      tags:
+      - User
+      summary: Fetch My User
+      description: 'This endpoint returns the user data for the currently authenticated user.
+
+        It is useful for quickly retrieving user information without knowing the user ID.
+
+        It also includes optional data if the current user is a platform agent.
+
+        '
+      operationId: fetchMyUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                title: My User
+                description: Current user data with optional platform agent information
+                properties:
+                  id:
+                    type: integer
+                    description: User ID
+                  public_id:
+                    type:
+                    - string
+                    description: User public ID
+                  email:
+                    type: string
+                    description: Email Address
+                  first_name:
+                    type: string
+                    description: First Name
+                  last_name:
+                    type: string
+                    description: Last Name
+                  time_zone:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The human-readable time zone set manually by a ClickFunnels user or dynamically by the app.
+
+                      Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
+
+                      '
+                  locale:
+                    type:
+                    - string
+                    description: The main language used to create a new website.
+                    enum:
+                    - en
+                    - ja
+                    - pt
+                  created_at:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: Created at
+                  updated_at:
+                    type:
+                    - string
+                    - 'null'
+                    format: date-time
+                    description: Updated at
+                  connected_workspace:
+                    type:
+                    - object
+                    - 'null'
+                    description: 'The connected workspace for the user, if the user''s access is
+
+                      scoped to a single workspace. This can happen in the case of
+
+                      OAuth, where the `/me` subject is a user who is a platform
+
+                      agent acting on behalf of the ClickFunnels workspace users.
+
+                      The platform agent was authorized by a team admin to act on
+
+                      behalf of the connected workspace.
+
+                      '
+                    properties:
+                      team_id:
+                        type: integer
+                        description: Team ID of the connected workspace
+                      team_name:
+                        type: string
+                        description: Name of the team associated with the connected workspace
+                      workspace_id:
+                        type: integer
+                        description: Workspace ID of the connected workspace
+                      workspace_name:
+                        type: string
+                        description: Name of the connected workspace
+                      workspace_url:
+                        type: string
+                        description: URL of the connected workspace
+                      workspace_currency:
+                        type: string
+                        description: ISO 4217 currency code
+                        example: USD
+                  platform_application:
+                    type:
+                    - object
+                    - 'null'
+                    description: 'The connected platform application. It''s only present if the
+
+                      `/me` subject user is an agent of a different platform who
+
+                      was authorized by a team admin to act on behalf of the
+
+                      connected workspace.
+
+                      '
+                    properties:
+                      id:
+                        type: integer
+                        description: ID of the platform application
+                      public_id:
+                        type: string
+                        description: Public ID of the platform application
+                      team_id:
+                        type: integer
+                        description: Team ID associated with the platform application
+              example:
+                id: 1
+                public_id: tOACcL
+                email: ines_lang@gibson.com
+                first_name: Marcell
+                last_name: Mertz
+                time_zone: Pacific Time (US & Canada)
+                locale: en
+                created_at: '2025-06-25T10:13:57.348Z'
+                updated_at: '2025-06-25T10:13:57.348Z'
+                connected_workspace:
+                  team_id: 1
+                  team_name: Team Alpha
+                  workspace_id: 2
+                  workspace_name: Workspace Beta
+                  workspace_url: https://workspace-beta.example.com
+                  workspace_currency: USD
+                platform_application:
+                  id: 11
+                  public_id: OjzDYD
+                  team_id: 4
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  schemas:
+    UserAttributes:
+      type: object
+      title: Profile
+      description: 'A user profile. This includes **platform-agent** users — the synthetic user an OAuth/API
+
+        client authenticates as (e.g. "Default API Client") — as well as human users. Workflow
+
+        `notify_step` targets exclude platform agents (they resolve against non-platform team
+
+        members); discover those via `GET /api/v2/teams/{team_id}/memberships`.
+
+        '
+      properties:
+        id:
+          type: integer
+          description: User ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: User public ID
+        email:
+          type: string
+          description: Email Address
+        first_name:
+          type: string
+          description: First Name
+        last_name:
+          type: string
+          description: Last Name
+        time_zone:
+          type:
+          - string
+          - 'null'
+          description: Your Time Zone
+        locale:
+          type:
+          - string
+          - 'null'
+          description: Language
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Signed up
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+      example:
+        id: 1
+        public_id: prbtEx
+        email: test@email.com
+        first_name: Lili
+        last_name: Stiedemann
+        time_zone: Pacific Time (US & Canada)
+        locale: en
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - email
+      - first_name
+      - id
+      - last_name
+      - locale
+      - public_id
+      - time_zone
+      - updated_at
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

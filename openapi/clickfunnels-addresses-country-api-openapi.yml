@@ -1,0 +1,161 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Addresses::Country API
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+    '
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+tags:
+- name: Addresses::Country
+  description: '> Countries are a global reference list used when setting addresses.
+
+
+    The Addresses::Country API provides read-only access to the list of countries, each with its ISO 3166-1 alpha-2 code (iso2). Use a country''s iso2 as the country_code when setting an address, and as the {country_id} path segment when listing its regions.
+
+    '
+paths:
+  /addresses/countries:
+    get:
+      tags:
+      - Addresses::Country
+      summary: List Countries
+      description: List all countries, each with its ISO 3166-1 alpha-2 code (iso2). Use a country's iso2 as the country_code when setting an address, and as the {country_id} path segment when listing its regions.
+      operationId: listAddressesCountries
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressesCountryAttributes'
+              example:
+              - iso2: US
+                iso3: USA
+                name: United States
+                localized_name: United States
+                has_regions: true
+              - iso2: CA
+                iso3: CAN
+                name: Canada
+                localized_name: Canada
+                has_regions: true
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+  /addresses/countries/{id}:
+    get:
+      tags:
+      - Addresses::Country
+      summary: Get Country
+      description: Retrieve a single country by its ISO 3166-1 alpha-2 code.
+      operationId: getAddressesCountries
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The country's ISO 3166-1 alpha-2 code (e.g. "US").
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressesCountryAttributes'
+              example:
+                iso2: US
+                iso3: USA
+                name: United States
+                localized_name: United States
+                has_regions: true
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: API key missing or invalid
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: 'Not found: No such country: ZZ'
+components:
+  schemas:
+    AddressesCountryAttributes:
+      type: object
+      title: Country
+      description: A country reference record.
+      required:
+      - has_regions
+      - iso2
+      - iso3
+      - localized_name
+      - name
+      properties:
+        iso2:
+          type: string
+          description: ISO 3166-1 alpha-2 code (e.g. "US"). Pass this as country_code when setting an address.
+        iso3:
+          type: string
+          description: ISO 3166-1 alpha-3 code (e.g. "USA").
+        name:
+          type: string
+          description: English country name (e.g. "United States").
+        localized_name:
+          type: string
+          description: Country name localized to the request's locale.
+        has_regions:
+          type: boolean
+          description: True if the country has regions/states to choose from.
+      example:
+        iso2: US
+        iso3: USA
+        name: United States
+        localized_name: United States
+        has_regions: true
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com
