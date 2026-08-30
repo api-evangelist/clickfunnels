@@ -1155,6 +1155,8 @@ apis:
   humanURL: https://developers.myclickfunnels.com/reference
   baseURL: https://{subdomain}.myclickfunnels.com/api/v2
   tags:
+  - course
+  tags_raw:
   - Course
   properties:
   - type: OpenAPI
@@ -1445,6 +1447,8 @@ apis:
   humanURL: https://developers.myclickfunnels.com/reference
   baseURL: https://{subdomain}.myclickfunnels.com/api/v2
   tags:
+  - Downloads
+  tags_raw:
   - Download
   properties:
   - type: OpenAPI
@@ -2759,6 +2763,8 @@ apis:
   humanURL: https://developers.myclickfunnels.com/reference
   baseURL: https://{subdomain}.myclickfunnels.com/api/v2
   tags:
+  - Sales Pipeline
+  tags_raw:
   - Sales::Pipeline
   properties:
   - type: OpenAPI
@@ -2992,6 +2998,8 @@ apis:
   humanURL: https://developers.myclickfunnels.com/reference
   baseURL: https://{subdomain}.myclickfunnels.com/api/v2
   tags:
+  - Styles
+  tags_raw:
   - Style
   properties:
   - type: OpenAPI
@@ -3166,6 +3174,8 @@ apis:
   humanURL: https://developers.myclickfunnels.com/reference
   baseURL: https://{subdomain}.myclickfunnels.com/api/v2
   tags:
+  - Workflows
+  tags_raw:
   - Workflow
   properties:
   - type: OpenAPI
