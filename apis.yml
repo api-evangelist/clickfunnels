@@ -1155,7 +1155,7 @@ apis:
   humanURL: https://developers.myclickfunnels.com/reference
   baseURL: https://{subdomain}.myclickfunnels.com/api/v2
   tags:
-  - course
+  - Course
   tags_raw:
   - Course
   properties:
@@ -3299,6 +3299,9 @@ apis:
   - type: RateLimits
     url: rate-limits/clickfunnels-rate-limits.yml
 common:
+- type: License
+  name: MIT
+  url: https://github.com/clickfunnels/cli/blob/main/LICENSE
 - type: CapabilityMap
   url: capabilities/clickfunnels-capability-edges.yml
   name: ClickFunnels Business Capability Map
