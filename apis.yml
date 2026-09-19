@@ -1393,6 +1393,8 @@ apis:
   humanURL: https://developers.myclickfunnels.com/reference
   baseURL: https://{subdomain}.myclickfunnels.com/api/v2
   tags:
+  - Discounts
+  tags_raw:
   - Discount
   properties:
   - type: OpenAPI
