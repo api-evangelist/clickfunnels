@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -416,13 +414,23 @@ paths:
               - 2
               - 1
 components:
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -433,14 +441,47 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
+    FormsFieldParametersUpdate:
+      type: object
+      title: Fields
+      description: Fields
+      required: []
+      properties:
+        label:
+          type: string
+          description: Label
+        field_type:
+          type:
+          - string
+          - 'null'
+          description: Field Type
+        allow_multiple:
+          type:
+          - boolean
+          - 'null'
+          description: Allow Multiple
+        key:
+          type: string
+          description: Key
+        hidden:
+          type:
+          - boolean
+          - 'null'
+          description: Hidden
+      example:
+        forms_field:
+          label: Example Field
+          field_type: MyString
+          allow_multiple: false
+          key: CustomKey
+          hidden: false
     FormsFieldAttributes:
       type: object
       title: Fields
@@ -555,49 +596,6 @@ components:
           allow_multiple: false
           key: CustomKey
           hidden: false
-    FormsFieldParametersUpdate:
-      type: object
-      title: Fields
-      description: Fields
-      required: []
-      properties:
-        label:
-          type: string
-          description: Label
-        field_type:
-          type:
-          - string
-          - 'null'
-          description: Field Type
-        allow_multiple:
-          type:
-          - boolean
-          - 'null'
-          description: Allow Multiple
-        key:
-          type: string
-          description: Key
-        hidden:
-          type:
-          - boolean
-          - 'null'
-          description: Hidden
-      example:
-        forms_field:
-          label: Example Field
-          field_type: MyString
-          allow_multiple: false
-          key: CustomKey
-          hidden: false
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http

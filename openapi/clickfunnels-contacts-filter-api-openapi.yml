@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -27,36 +25,7 @@ tags:
   description: '> AI-generated contact filters
 
 
-    Translate a natural-language audience description into a ClickFunnels contact filter using an AI model.
-
-
-    The model can use the full range of contact filter conditions — identity, tags, last activity, email
-
-    engagement, opt-ins, product/variant purchases & ownership, custom attributes, and more — so describe the
-
-    audience however you like (e.g. "buyers of the $99 course who joined in the last 30 days"). Unlike the
-
-    criteria you submit directly to the RefineFilter endpoints, this endpoint is not limited to the public-API
-
-    condition allow-list.
-
-
-    The endpoint always returns a `stable_id` token you can use as the `stable_id` query parameter on the
-
-    contacts index. Keep the token opaque and let the HTTP client encode the complete query parameter value;
-
-    with curl, use `-G --data-urlencode "stable_id=$STABLE_ID"`. Do not decode the token or interpolate it
-
-    directly into a raw URL. When `save: true` is supplied the filter is also persisted as a reusable
-
-    `Refine::StoredFilter` — identical to filters created via the RefineFilter endpoints — and its
-
-    `id`/`public_id` are included in the response so you can reference it later with `stored_filter_id`.
-
-
-    See [Generate a contact filter from plain English](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#generate-a-contact-filter-from-plain-english) in the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for the request body, the `save` semantics, and how the returned `stable_id` is applied to the contacts index.
-
-    '
+    Translate a natural-language audience description into a ClickFunnels contact filter using an AI model.'
 paths:
   /workspaces/{workspace_id}/contacts/filters:
     post:
@@ -98,9 +67,7 @@ paths:
         the contacts index). Passing `save: true` persists a stored filter and requires write access.
 
 
-        See [Generate a contact filter from plain English](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#generate-a-contact-filter-from-plain-english) in the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for a worked request and for managing a saved filter afterwards.
-
-        '
+        See Generate a contact filter from plain English in the Refine Filters Skill for a worked request and for managing a saved filter afterwards.'
       operationId: generateContactFilter
       parameters:
       - name: workspace_id
@@ -294,9 +261,7 @@ paths:
 
         let the HTTP client encode the complete `stable_id` query parameter value; with curl, use
 
-        `-G --data-urlencode "stable_id=$STABLE_ID"`.
-
-        '
+        `-G --data-urlencode "stable_id=$STABLE_ID"`.'
       operationId: getContactFilter
       parameters:
       - name: id

@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -24,16 +22,13 @@ security:
 - BearerAuth: []
 tags:
 - name: Funnels::Tag
-  description: '> Funnels::Tag are used to distinguish, segment and run additional automations on your funnels and the users who go through them.
-
-    '
+  description: '> Funnels::Tag are used to distinguish, segment and run additional automations on your funnels and the users who go through them.'
 paths:
   /workspaces/{workspace_id}/funnels/tags:
     get:
       tags:
       - Funnels::Tag
       summary: List Tags
-      description: List Tags
       operationId: listFunnelsTags
       parameters:
       - name: workspace_id
@@ -119,7 +114,6 @@ paths:
       tags:
       - Funnels::Tag
       summary: Create Tag
-      description: Create Tag
       operationId: createFunnelsTags
       parameters:
       - name: workspace_id
@@ -184,7 +178,6 @@ paths:
       tags:
       - Funnels::Tag
       summary: Fetch Tag
-      description: Fetch Tag
       operationId: getFunnelsTags
       parameters:
       - $ref: '#/components/parameters/id'
@@ -229,7 +222,6 @@ paths:
       tags:
       - Funnels::Tag
       summary: Update Tag
-      description: Update Tag
       operationId: updateFunnelsTags
       parameters:
       - $ref: '#/components/parameters/id'
@@ -300,7 +292,6 @@ paths:
       tags:
       - Funnels::Tag
       summary: Remove Tag
-      description: Remove Tag
       operationId: removeFunnelsTags
       parameters:
       - $ref: '#/components/parameters/id'
@@ -330,62 +321,7 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    sort_property:
-      name: sort_property
-      in: query
-      description: 'Sort property of a list response. The default is id and thus the created_at order.
-
-        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
-
-        '
-      required: false
-      schema:
-        type: string
-        enum:
-        - id
-        - updated_at
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
-    FunnelsTagParameters:
-      type: object
-      title: Funnel Tags
-      description: Funnel Tags
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          description: The name of the funnel tag
-        color:
-          type: string
-          description: The color of the funnel tag
-      example:
-        funnels_tag:
-          name: Example Funnel Tag
-          color: '#FF5733'
     FunnelsTagAttributes:
       type: object
       title: Funnel Tags
@@ -436,6 +372,23 @@ components:
       - public_id
       - updated_at
       - workspace_id
+    FunnelsTagParameters:
+      type: object
+      title: Funnel Tags
+      description: Funnel Tags
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: The name of the funnel tag
+        color:
+          type: string
+          description: The color of the funnel tag
+      example:
+        funnels_tag:
+          name: Example Funnel Tag
+          color: '#FF5733'
     FunnelsTagParametersUpdate:
       type: object
       title: Funnel Tags
@@ -452,6 +405,44 @@ components:
         funnels_tag:
           name: Example Funnel Tag
           color: '#FF5733'
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
   headers:
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.

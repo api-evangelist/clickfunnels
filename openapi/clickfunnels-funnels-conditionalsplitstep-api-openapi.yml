@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -27,9 +25,7 @@ tags:
   description: '> Conditional split steps route contacts down a "matched" or "unmatched" branch based on a RefineFilter condition.
 
 
-    Conditional split steps live inside a funnel''s workflow. Each step exposes a `condition` (filter + setup state) and a 2-entry `branches` array (`[matched, unmatched]`). See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#conditional-split-steps) for the full surface.
-
-    '
+    Conditional split steps live inside a funnel''s workflow. Each step exposes a `condition` (filter + setup state) and a 2-entry `branches` array (`[matched, unmatched]`). See the Funnels Skill for the full surface.'
 paths:
   /funnels/{funnel_id}/conditional_split_steps:
     get:
@@ -48,9 +44,7 @@ paths:
         always included without needing the expand param.
 
 
-        See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#conditional-split-steps) for the full conditional-split surface.
-
-        '
+        See the Funnels Skill for the full conditional-split surface.'
       operationId: listFunnelConditionalSplitSteps
       parameters:
       - name: funnel_id
@@ -150,9 +144,7 @@ paths:
         `show_page_step_id` to position the split in the workflow.
 
 
-        See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#conditional-split-steps) for the full surface.
-
-        '
+        See the Funnels Skill for the full surface.'
       operationId: createFunnelConditionalSplitStep
       externalDocs:
         description: Funnels Skill - conditional split steps
@@ -355,7 +347,20 @@ paths:
       tags:
       - Funnels::ConditionalSplitStep
       summary: Update Conditional Split Step
-      description: "Update the `condition` and/or attach pages to existing `branches`. At least one of\nthe two must be provided.\n\n- `condition.filter_id` is the public id of a RefineFilter in the same workspace.\n- Branches array must have 2 entries (matched, unmatched). Each entry may carry a\n  `page_id` to attach (currently empty branch) or swap (currently populated branch).\n  Any page being attached / swapped-in must be a fresh `user_page` in the same\n  workspace with no existing `ShowPageStep`.\n"
+      description: 'Update the `condition` and/or attach pages to existing `branches`. At least one of
+
+        the two must be provided.
+
+
+        - `condition.filter_id` is the public id of a RefineFilter in the same workspace.
+
+        - Branches array must have 2 entries (matched, unmatched). Each entry may carry a
+
+        `page_id` to attach (currently empty branch) or swap (currently populated branch).
+
+        Any page being attached / swapped-in must be a fresh `user_page` in the same
+
+        workspace with no existing `ShowPageStep`.'
       operationId: updateFunnelConditionalSplitStep
       externalDocs:
         description: Funnels Skill - conditional split steps
@@ -478,7 +483,36 @@ paths:
       tags:
       - Funnels::ConditionalSplitStep
       summary: Destroy Conditional Split Step
-      description: "Remove a conditional split from the funnel.\n\n**A 1-branch conditional split is not a supported state**, so any value\nof `branch` collapses the entire split:\n\n- `DELETE /funnels/{funnel_id}/conditional_split_steps/{id}` (default\n  `branch=both`) → removes the entire conditional split, both branches\n  discarded.\n- `DELETE /funnels/{funnel_id}/conditional_split_steps/{id}?branch=matched`\n  → removes the entire conditional split; the **unmatched** branch's\n  pages are promoted up under the split's parent so they remain\n  attached to the funnel's main workflow.\n- `DELETE /funnels/{funnel_id}/conditional_split_steps/{id}?branch=unmatched`\n  → removes the entire conditional split; the **matched** branch's\n  pages are promoted up under the split's parent.\n\nSee [Destroying a conditional split](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#destroying-a-conditional-split) in the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for how the collapse fits into the rest of the conditional-split surface.\n"
+      description: 'Remove a conditional split from the funnel.
+
+
+        **A 1-branch conditional split is not a supported state**, so any value
+
+        of `branch` collapses the entire split:
+
+
+        - `DELETE /funnels/{funnel_id}/conditional_split_steps/{id}` (default
+
+        `branch=both`) → removes the entire conditional split, both branches
+
+        discarded.
+
+        - `DELETE /funnels/{funnel_id}/conditional_split_steps/{id}?branch=matched`
+
+        → removes the entire conditional split; the **unmatched** branch''s
+
+        pages are promoted up under the split''s parent so they remain
+
+        attached to the funnel''s main workflow.
+
+        - `DELETE /funnels/{funnel_id}/conditional_split_steps/{id}?branch=unmatched`
+
+        → removes the entire conditional split; the **matched** branch''s
+
+        pages are promoted up under the split''s parent.
+
+
+        See Destroying a conditional split in the Funnels Skill for how the collapse fits into the rest of the conditional-split surface.'
       operationId: destroyFunnelConditionalSplitStep
       parameters:
       - name: funnel_id
@@ -618,6 +652,74 @@ components:
       - public_id
       - updated_at
       - workspace_id
+    ConditionalSplitStepParametersCreate:
+      type: object
+      title: Create Conditional Split Step
+      description: "Parameters for adding a new conditional split step to a funnel's workflow. The split\nalways starts as a 2-branch tree (`matched` first, `unmatched` second). All fields\nbelow are optional — providing none creates an empty unconfigured split that\nthe caller can fill in later via PATCH.\n\n### `condition`\n\nSupply `filter_id` — the public id of a RefineFilter scoped to the same workspace.\nCreate filters first via `POST /api/v2/workspaces/{workspace_id}/refine_filters`.\nRaw numeric ids are rejected for cross-tenant safety. See [Attaching a filter](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#attaching-a-filter)\nand [Applying filters to conditional split steps](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-conditional-split-steps).\n\n### Branches\n\nOptional `branches` array — up to 2 entries; `branches[0]` is the matched branch,\n`branches[1]` is the unmatched branch. Each entry may carry either:\n\n- `page_id` — a single fresh `user_page` id to attach as the branch's first step.\n- `page_ids` — an array of fresh `user_page` ids to attach in order. Use this to\n  build a branch with multiple sequential pages (e.g. matched users see Welcome →\n  Onboarding → CTA, while unmatched users see Email Capture → Welcome).\n\n`page_id` and `page_ids` are mutually exclusive per branch entry. Each page\nreferenced must be in the same workspace and not already wired to any\n`ShowPageStep` anywhere.\n\n### Positioning\n\nSee `show_page_step_id` semantics — identical to the split test step endpoint.\n"
+      properties:
+        conditional_split_step:
+          type: object
+          properties:
+            condition:
+              type: object
+              properties:
+                filter_id:
+                  type: string
+                  description: Public id of a RefineFilter in this workspace. Create filters via `POST /api/v2/workspaces/{workspace_id}/refine_filters`.
+            branches:
+              type: array
+              minItems: 0
+              maxItems: 2
+              description: Optional 0..2 branch entries; `branches[0]` is the matched branch, `branches[1]` is the unmatched branch.
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  page_id:
+                    type: integer
+                    description: Optional id of a page with no existing show-page step (an unattached internal page or a standalone external page) to attach as the branch's first step. Mutually exclusive with `page_ids`. See [Placing an external (SDK) page in a branch](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#placing-an-external-sdk-page-in-a-branch) in the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for creating the standalone external page you reference here.
+                  page_ids:
+                    type: array
+                    items:
+                      type: integer
+                    description: 'Optional list of fresh `user_page` ids to attach in order under this branch.
+
+                      Use this to build branches with multiple sequential steps. Mutually exclusive with `page_id`.
+
+                      '
+            show_page_step_id:
+              type:
+              - integer
+              - string
+              description: 'Optional. Insert the new conditional split AFTER the workflow step that wraps
+
+                this `show_page_step`. Accepts a numeric `Workflows::Steps::ShowPageStep` id
+
+                or its obfuscated public id (you can read either off any page response).
+
+                When omitted, the split lands at funnel entry.
+
+                Caution: creating a split moves the wrapped step inside a branch sequence,
+
+                so an id fetched earlier may no longer sit where you think — read the
+
+                funnel structure immediately before creating, and note that anchoring on
+
+                a step inside another split''s branch nests the new split in that branch.
+
+                '
+      example:
+        conditional_split_step:
+          condition:
+            filter_id: AbCdEf
+          branches:
+          - page_ids:
+            - 600
+            - 601
+            - 602
+          - page_ids:
+            - 603
+          show_page_step_id: 100
     RefineFilterCriterion:
       type: object
       title: Refine Filter Criterion
@@ -813,74 +915,6 @@ components:
       - id
       - public_id
       - updated_at
-    ConditionalSplitStepParametersCreate:
-      type: object
-      title: Create Conditional Split Step
-      description: "Parameters for adding a new conditional split step to a funnel's workflow. The split\nalways starts as a 2-branch tree (`matched` first, `unmatched` second). All fields\nbelow are optional — providing none creates an empty unconfigured split that\nthe caller can fill in later via PATCH.\n\n### `condition`\n\nSupply `filter_id` — the public id of a RefineFilter scoped to the same workspace.\nCreate filters first via `POST /api/v2/workspaces/{workspace_id}/refine_filters`.\nRaw numeric ids are rejected for cross-tenant safety. See [Attaching a filter](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#attaching-a-filter)\nand [Applying filters to conditional split steps](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-conditional-split-steps).\n\n### Branches\n\nOptional `branches` array — up to 2 entries; `branches[0]` is the matched branch,\n`branches[1]` is the unmatched branch. Each entry may carry either:\n\n- `page_id` — a single fresh `user_page` id to attach as the branch's first step.\n- `page_ids` — an array of fresh `user_page` ids to attach in order. Use this to\n  build a branch with multiple sequential pages (e.g. matched users see Welcome →\n  Onboarding → CTA, while unmatched users see Email Capture → Welcome).\n\n`page_id` and `page_ids` are mutually exclusive per branch entry. Each page\nreferenced must be in the same workspace and not already wired to any\n`ShowPageStep` anywhere.\n\n### Positioning\n\nSee `show_page_step_id` semantics — identical to the split test step endpoint.\n"
-      properties:
-        conditional_split_step:
-          type: object
-          properties:
-            condition:
-              type: object
-              properties:
-                filter_id:
-                  type: string
-                  description: Public id of a RefineFilter in this workspace. Create filters via `POST /api/v2/workspaces/{workspace_id}/refine_filters`.
-            branches:
-              type: array
-              minItems: 0
-              maxItems: 2
-              description: Optional 0..2 branch entries; `branches[0]` is the matched branch, `branches[1]` is the unmatched branch.
-              items:
-                type: object
-                additionalProperties: false
-                properties:
-                  page_id:
-                    type: integer
-                    description: Optional id of a page with no existing show-page step (an unattached internal page or a standalone external page) to attach as the branch's first step. Mutually exclusive with `page_ids`. See [Placing an external (SDK) page in a branch](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#placing-an-external-sdk-page-in-a-branch) in the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for creating the standalone external page you reference here.
-                  page_ids:
-                    type: array
-                    items:
-                      type: integer
-                    description: 'Optional list of fresh `user_page` ids to attach in order under this branch.
-
-                      Use this to build branches with multiple sequential steps. Mutually exclusive with `page_id`.
-
-                      '
-            show_page_step_id:
-              type:
-              - integer
-              - string
-              description: 'Optional. Insert the new conditional split AFTER the workflow step that wraps
-
-                this `show_page_step`. Accepts a numeric `Workflows::Steps::ShowPageStep` id
-
-                or its obfuscated public id (you can read either off any page response).
-
-                When omitted, the split lands at funnel entry.
-
-                Caution: creating a split moves the wrapped step inside a branch sequence,
-
-                so an id fetched earlier may no longer sit where you think — read the
-
-                funnel structure immediately before creating, and note that anchoring on
-
-                a step inside another split''s branch nests the new split in that branch.
-
-                '
-      example:
-        conditional_split_step:
-          condition:
-            filter_id: AbCdEf
-          branches:
-          - page_ids:
-            - 600
-            - 601
-            - 602
-          - page_ids:
-            - 603
-          show_page_step_id: 100
     ConditionalSplitStepParametersUpdate:
       type: object
       title: Update Conditional Split Step

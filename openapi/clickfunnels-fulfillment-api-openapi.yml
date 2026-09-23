@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -27,16 +25,14 @@ tags:
   description: '> Fulfillments allow fulfilling orders and managing shipments.
 
 
-    Please refer to [our Fulfillments guide](https://developers.myclickfunnels.com/docs/fulfillments) for more information.
-
-    '
+    Please refer to our Fulfillments guide for more information.'
 paths:
   /workspaces/{workspace_id}/fulfillments:
     get:
       tags:
       - Fulfillment
       summary: List Fulfillments
-      description: List all fulfillments for your workspace. You will find detailed information about fulfilling orders is in [our Fulfillments guide](https://developers.myclickfunnels.com/docs/fulfillments).
+      description: List all fulfillments for your workspace. You will find detailed information about fulfilling orders is in our Fulfillments guide.
       operationId: listFulfillments
       parameters:
       - name: workspace_id
@@ -125,7 +121,7 @@ paths:
       tags:
       - Fulfillment
       summary: Create Fulfillment
-      description: Fulfill an order or a part of an order. More information in [our Fulfillments guide](https://developers.myclickfunnels.com/docs/fulfillments).
+      description: Fulfill an order or a part of an order. More information in our Fulfillments guide.
       operationId: createFulfillments
       parameters:
       - name: workspace_id
@@ -351,7 +347,6 @@ paths:
       tags:
       - Fulfillment
       summary: Remove Fulfillment
-      description: Remove Fulfillment
       operationId: removeFulfillments
       parameters:
       - $ref: '#/components/parameters/id'
@@ -385,7 +380,7 @@ paths:
       tags:
       - Fulfillment
       summary: Cancel a Fulfillment
-      description: This will cancel a Fulfillment. A Fulfillment can only be cancelled when it&#39;s in a &quot;fulfilled&quot; state. The &quot;cancelled&quot; state is final.
+      description: This will cancel a Fulfillment. A Fulfillment can only be cancelled when it's in a "fulfilled" state. The "cancelled" state is final.
       operationId: cancelFulfillments
       parameters:
       - $ref: '#/components/parameters/id'
@@ -423,18 +418,12 @@ paths:
           description: Unprocessable Entity
 components:
   schemas:
-    FulfillmentParameters:
+    FulfillmentParametersUpdate:
       type: object
       title: Fulfillments
       description: Fulfillments
-      required:
-      - contact_id
-      - location_id
-      - included_orders_invoices_line_items_attributes
+      required: []
       properties:
-        contact_id:
-          type: integer
-          description: The contact that made the order that is being fulfilled.
         tracking_url:
           type:
           - string
@@ -450,41 +439,15 @@ components:
           - string
           - 'null'
           description: Tracking Code
-        location_id:
-          type: integer
-          description: The location that the fulfillment is being fulfilled from
-        ignore_out_of_stock:
-          type: boolean
-          description: Create a fulfillment despite the item being out of stock.
         notify_customer:
           type: boolean
-          description: Send an email to the customer when the fulfillment is created. Will use workspace default behavior if left unset.
-        included_orders_invoices_line_items_attributes:
-          type: array
-          description: The orders invoices line items to fulfill as part of this fulfillment.
-          items:
-            type: object
-            properties:
-              invoices_line_item_id:
-                type: integer
-                description: The orders invoice line item to fulfill
-              quantity:
-                type: integer
-                description: The quantity to fulfill
+          description: Send an email to the customer when the fulfillment is updated. Will use workspace default behavior if left unset
       example:
         fulfillment:
-          contact_id: 8
           tracking_url: https://usps.com/track/1234567890
           shipping_provider: USPS
           tracking_code: '1234567890'
-          location_id: 1
-          ignore_out_of_stock: true
           notify_customer: true
-          included_orders_invoices_line_items_attributes:
-          - invoices_line_item_id: 1
-            quantity: 1
-          - invoices_line_item_id: 2
-            quantity: 2
     FulfillmentAttributes:
       type: object
       title: Fulfillments
@@ -606,12 +569,18 @@ components:
       - tracking_url
       - updated_at
       - workspace_id
-    FulfillmentParametersUpdate:
+    FulfillmentParameters:
       type: object
       title: Fulfillments
       description: Fulfillments
-      required: []
+      required:
+      - contact_id
+      - location_id
+      - included_orders_invoices_line_items_attributes
       properties:
+        contact_id:
+          type: integer
+          description: The contact that made the order that is being fulfilled.
         tracking_url:
           type:
           - string
@@ -627,16 +596,58 @@ components:
           - string
           - 'null'
           description: Tracking Code
+        location_id:
+          type: integer
+          description: The location that the fulfillment is being fulfilled from
+        ignore_out_of_stock:
+          type: boolean
+          description: Create a fulfillment despite the item being out of stock.
         notify_customer:
           type: boolean
-          description: Send an email to the customer when the fulfillment is updated. Will use workspace default behavior if left unset
+          description: Send an email to the customer when the fulfillment is created. Will use workspace default behavior if left unset.
+        included_orders_invoices_line_items_attributes:
+          type: array
+          description: The orders invoices line items to fulfill as part of this fulfillment.
+          items:
+            type: object
+            properties:
+              invoices_line_item_id:
+                type: integer
+                description: The orders invoice line item to fulfill
+              quantity:
+                type: integer
+                description: The quantity to fulfill
       example:
         fulfillment:
+          contact_id: 8
           tracking_url: https://usps.com/track/1234567890
           shipping_provider: USPS
           tracking_code: '1234567890'
+          location_id: 1
+          ignore_out_of_stock: true
           notify_customer: true
+          included_orders_invoices_line_items_attributes:
+          - invoices_line_item_id: 1
+            quantity: 1
+          - invoices_line_item_id: 2
+            quantity: 2
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     id:
       name: id
       in: path
@@ -667,22 +678,6 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http

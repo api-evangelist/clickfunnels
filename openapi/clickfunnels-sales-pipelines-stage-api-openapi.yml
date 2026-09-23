@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -24,7 +22,7 @@ security:
 - BearerAuth: []
 tags:
 - name: Sales::Pipelines::Stage
-  description: '>  Sales Pipeline Stages
+  description: '> Sales Pipeline Stages
 
 
     Stages belong to a Pipeline, and allow you to track and advance Opportunities.
@@ -35,16 +33,13 @@ tags:
     Sort order values are zero-indexed, with 0 being the first stage of a pipeline.
 
 
-    Currently, it''s not possible to delete a stage if it''s the last one left in the Pipeline.
-
-    '
+    Currently, it''s not possible to delete a stage if it''s the last one left in the Pipeline.'
 paths:
   /sales/pipelines/{pipeline_id}/stages:
     get:
       tags:
       - Sales::Pipelines::Stage
       summary: List Stages
-      description: List Stages
       operationId: listSalesPipelinesStages
       parameters:
       - name: pipeline_id
@@ -153,7 +148,6 @@ paths:
       tags:
       - Sales::Pipelines::Stage
       summary: Create Stage
-      description: Create Stage
       operationId: createSalesPipelinesStages
       parameters:
       - name: pipeline_id
@@ -226,7 +220,6 @@ paths:
       tags:
       - Sales::Pipelines::Stage
       summary: Fetch Stage
-      description: Fetch Stage
       operationId: getSalesPipelinesStages
       parameters:
       - $ref: '#/components/parameters/id'
@@ -278,7 +271,6 @@ paths:
       tags:
       - Sales::Pipelines::Stage
       summary: Update Stage
-      description: Update Stage
       operationId: updateSalesPipelinesStages
       parameters:
       - $ref: '#/components/parameters/id'
@@ -357,7 +349,6 @@ paths:
       tags:
       - Sales::Pipelines::Stage
       summary: Remove Stage
-      description: Remove Stage
       operationId: removeSalesPipelinesStages
       parameters:
       - $ref: '#/components/parameters/id'
@@ -388,66 +379,6 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
-    SalesPipelinesStageParameters:
-      type: object
-      title: Stages
-      description: Stages
-      required:
-      - name
-      - close_probability
-      properties:
-        name:
-          type: string
-          description: Stage name
-        sort_order:
-          type:
-          - integer
-          - 'null'
-          description: 'The position of the stage in the pipeline. The stages are ordered by the sort order attribute, starting at zero.
-
-            If not provided, the stage will be added at the end of the pipeline.
-
-            If provided, the stage will be inserted at the specified position, and the sort order of the subsequent stages will be incremented by one.
-
-            '
-        close_probability:
-          type: number
-          description: Close probability of the opportunities in this stage
-      example:
-        sales_pipelines_stage:
-          name: Example Stage
-          sort_order: 5
-          close_probability: 20
-    SalesPipelinesStageParametersUpdate:
-      type: object
-      title: Stages
-      description: Stages
-      required: []
-      properties:
-        name:
-          type: string
-          description: Stage name
-        sort_order:
-          type:
-          - integer
-          - 'null'
-          description: 'The position of the stage in the pipeline. The stages are ordered by the sort order attribute, starting at zero.
-
-            If not provided, the stage will be added at the end of the pipeline.
-
-            If provided, the stage will be inserted at the specified position, and the sort order of the subsequent stages will be incremented by one.
-
-            '
-        close_probability:
-          type:
-          - number
-          - 'null'
-          description: Close probability of the opportunities in this stage
-      example:
-        sales_pipelines_stage:
-          name: Example Stage
-          sort_order: 5
-          close_probability: 20
     SalesPipelinesStageAttributes:
       type: object
       title: Stages
@@ -544,13 +475,76 @@ components:
       - updated_at
       - weighted_value
       - workspace_id
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
+    SalesPipelinesStageParametersUpdate:
+      type: object
+      title: Stages
+      description: Stages
+      required: []
+      properties:
+        name:
+          type: string
+          description: Stage name
+        sort_order:
+          type:
+          - integer
+          - 'null'
+          description: 'The position of the stage in the pipeline. The stages are ordered by the sort order attribute, starting at zero.
+
+            If not provided, the stage will be added at the end of the pipeline.
+
+            If provided, the stage will be inserted at the specified position, and the sort order of the subsequent stages will be incremented by one.
+
+            '
+        close_probability:
+          type:
+          - number
+          - 'null'
+          description: Close probability of the opportunities in this stage
+      example:
+        sales_pipelines_stage:
+          name: Example Stage
+          sort_order: 5
+          close_probability: 20
+    SalesPipelinesStageParameters:
+      type: object
+      title: Stages
+      description: Stages
+      required:
+      - name
+      - close_probability
+      properties:
+        name:
+          type: string
+          description: Stage name
+        sort_order:
+          type:
+          - integer
+          - 'null'
+          description: 'The position of the stage in the pipeline. The stages are ordered by the sort order attribute, starting at zero.
+
+            If not provided, the stage will be added at the end of the pipeline.
+
+            If provided, the stage will be inserted at the specified position, and the sort order of the subsequent stages will be incremented by one.
+
+            '
+        close_probability:
+          type: number
+          description: Close probability of the opportunities in this stage
+      example:
+        sales_pipelines_stage:
+          name: Example Stage
+          sort_order: 5
+          close_probability: 20
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
     sort_order:
       name: sort_order
       in: query
@@ -568,13 +562,10 @@ components:
       schema:
         type: string
       description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
   securitySchemes:

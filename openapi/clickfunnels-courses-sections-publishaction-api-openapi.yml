@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -24,18 +22,7 @@ security:
 - BearerAuth: []
 tags:
 - name: Courses::Sections::PublishAction
-  description: '> Publishes course sections (and their lessons) in bulk.
-
-
-    A Publish Action selects one or more course sections — either by explicit `target_ids` (course-section public IDs) or `target_all` — and publishes them along with their lessons. It can optionally grant existing course enrollees access to the newly published sections (`auto_enroll`) and email them (`send_email`). The action runs asynchronously; poll the returned record for `target_count` / `performed_count` progress.
-
-
-    Use `scheduled_for` to defer the publish to a future datetime.
-
-
-    See [Publishing](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#publishing) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the publish paths.
-
-    '
+  description: '> Publishes course sections (and their lessons) in bulk.'
 paths:
   /courses/{course_id}/sections/publish_actions:
     get:
@@ -144,7 +131,7 @@ paths:
 
         Use `scheduled_for` (ISO 8601, must be a future datetime) to defer the publish.
 
-        See [Publishing](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#publishing) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for when this bulk action is the right choice.'
+        See Publishing in the Courses Skill for when this bulk action is the right choice.'
       operationId: createCoursesSectionsPublishActions
       parameters:
       - name: course_id
@@ -349,13 +336,23 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -380,13 +377,12 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
     CoursesSectionsPublishActionParameters:
       type: object
@@ -580,15 +576,6 @@ components:
       - target_count
       - target_ids
       - updated_at
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http

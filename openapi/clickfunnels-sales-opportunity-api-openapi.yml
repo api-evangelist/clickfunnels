@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -24,31 +22,16 @@ security:
 - BearerAuth: []
 tags:
 - name: Sales::Opportunity
-  description: '>  Sales Opportunities
+  description: '> Sales Opportunities
 
 
-    Sales Opportunities are initially created in a specific stage of a Pipeline and can be moved between different stages within that Pipeline.
-
-
-    Each Sales Opportunity requires a name and a reference to a Primary Contact. If the Opportunity is associated with a new Contact, you must first create the Contact using the Contacts API.
-
-
-    The `value` field, which is optional, represents the potential value of the Opportunity in the default currency of the Workspace.
-
-
-    You can assign an Opportunity to a Team Member using the `assignee_id` field. To reassign the Opportunity to a different team member, simply update this value. To remove the assignee, set the `assignee_id` to `null`. The `assignee_id` corresponds to the `membership.id` in the relevant Team, which can be retrieved using the Teams API.
-
-
-    When an Opportunity is moved to a stage with a `close_probability` value of 0 or 100, the `closed_at` timestamp is automatically set. If the Opportunity is later moved to a different stage, the `closed_at` timestamp remains unchanged. You can also manually set the `closed_at` timestamp using the API.
-
-    '
+    Sales Opportunities are initially created in a specific stage of a Pipeline and can be moved between different stages within that Pipeline.'
 paths:
   /workspaces/{workspace_id}/sales/opportunities:
     get:
       tags:
       - Sales::Opportunity
       summary: List Opportunities
-      description: List Opportunities
       operationId: listSalesOpportunities
       parameters:
       - name: workspace_id
@@ -337,7 +320,6 @@ paths:
       tags:
       - Sales::Opportunity
       summary: Create Opportunity
-      description: Create Opportunity
       operationId: createSalesOpportunities
       parameters:
       - name: workspace_id
@@ -495,7 +477,6 @@ paths:
       tags:
       - Sales::Opportunity
       summary: Fetch Opportunity
-      description: Fetch Opportunity
       operationId: getSalesOpportunities
       parameters:
       - $ref: '#/components/parameters/id'
@@ -629,7 +610,6 @@ paths:
       tags:
       - Sales::Opportunity
       summary: Update Opportunity
-      description: Update Opportunity
       operationId: updateSalesOpportunities
       parameters:
       - $ref: '#/components/parameters/id'
@@ -793,7 +773,6 @@ paths:
       tags:
       - Sales::Opportunity
       summary: Remove Opportunity
-      description: Remove Opportunity
       operationId: removeSalesOpportunities
       parameters:
       - $ref: '#/components/parameters/id'
@@ -824,6 +803,228 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
+    SalesOpportunityParameters:
+      type: object
+      title: Opportunities
+      description: Opportunities
+      required:
+      - name
+      - pipelines_stage_id
+      - primary_contact_id
+      properties:
+        name:
+          type: string
+          description: Name
+        pipelines_stage_id:
+          type: integer
+          description: Pipeline Stage
+        primary_contact_id:
+          type: integer
+          description: Primary Contact
+        value:
+          type:
+          - number
+          - 'null'
+          description: The potential value of this opportunity in the default currency of the workspace
+        closed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Close date
+        assignee_id:
+          type: integer
+          description: 'The ID of the Team `Membership` to assign the Opportunity to.
+
+            An Opportunity can be assigned to any Team member since they have access to all your workspaces.
+
+            You can get a list of available Memberships and their `id` via the `Team` resource''s `memberships` property.
+
+
+            If the opportunity is already assigned to a team member, the assignee will be updated.
+
+            You can unset the assignee by passing a `null` value for `assignee_id`.
+
+            '
+      example:
+        sales_opportunity:
+          name: Example Opportunity
+          pipelines_stage_id: 42
+          primary_contact_id: 26
+          value: '100.0'
+          closed_at: '2025-01-01T00:00:00.000Z'
+          assignee_id: 42
+    VisitAttributes:
+      type: object
+      title: Visit
+      description: Visit tracking information including UTM parameters and device data
+      properties:
+        uuid:
+          type: string
+          description: Unique identifier for the visit
+        utm_source:
+          type:
+          - string
+          - 'null'
+          description: UTM source parameter from the visit URL
+        utm_medium:
+          type:
+          - string
+          - 'null'
+          description: UTM medium parameter from the visit URL
+        utm_campaign:
+          type:
+          - string
+          - 'null'
+          description: UTM campaign parameter from the visit URL
+        utm_term:
+          type:
+          - string
+          - 'null'
+          description: UTM term parameter from the visit URL
+        utm_content:
+          type:
+          - string
+          - 'null'
+          description: UTM content parameter from the visit URL
+        ip:
+          type:
+          - string
+          - 'null'
+          description: IP address of the visitor
+        user_agent:
+          type:
+          - string
+          - 'null'
+          description: User agent string from the visitor's browser
+        referrer:
+          type:
+          - string
+          - 'null'
+          description: HTTP referrer URL
+        referring_domain:
+          type:
+          - string
+          - 'null'
+          description: Domain extracted from the referrer URL
+        landing_page:
+          type:
+          - string
+          - 'null'
+          description: The first page URL visited in this session
+        browser:
+          type:
+          - string
+          - 'null'
+          description: Browser name detected from user agent
+        os:
+          type:
+          - string
+          - 'null'
+          description: Operating system detected from user agent
+        device_type:
+          type:
+          - string
+          - 'null'
+          description: Device type (e.g., desktop, mobile, tablet)
+        started_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the visit session started
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the visit record was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the visit record was last updated
+      example:
+        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+        utm_source: google
+        utm_medium: cpc
+        utm_campaign: spring_sale
+        utm_term: running shoes
+        utm_content: ad_variant_a
+        ip: 192.168.1.1
+        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+        referrer: https://www.google.com/search?q=example
+        referring_domain: google.com
+        landing_page: https://example.com/products/shoes
+        browser: Chrome
+        os: Mac OS X
+        device_type: desktop
+        started_at: '2026-01-09T14:23:45.123Z'
+        created_at: '2026-01-09T14:23:45.123Z'
+        updated_at: '2026-01-09T14:23:45.123Z'
+      required:
+      - browser
+      - created_at
+      - device_type
+      - ip
+      - landing_page
+      - os
+      - referrer
+      - referring_domain
+      - started_at
+      - updated_at
+      - user_agent
+      - utm_campaign
+      - utm_content
+      - utm_medium
+      - utm_source
+      - utm_term
+      - uuid
+    SalesOpportunityParametersUpdate:
+      type: object
+      title: Opportunities
+      description: Opportunities
+      required: []
+      properties:
+        name:
+          type: string
+          description: Name
+        pipelines_stage_id:
+          type: integer
+          description: Pipeline Stage ID
+        primary_contact_id:
+          type: integer
+          description: Primary Contact ID
+        value:
+          type:
+          - number
+          - 'null'
+          description: The potential value of this opportunity in the default currency of the workspace
+        closed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Close date
+        assignee_id:
+          type: integer
+          description: 'The ID of the Team `Membership` to assign the Opportunity to.
+
+            An Opportunity can be assigned to any Team member since they have access to all your workspaces.
+
+            You can get a list of available Memberships and their `id` via the `Team` resource''s `memberships` property.
+
+
+            If the opportunity is already assigned to a team member, the assignee will be updated.
+
+            You can unset the assignee by passing a `null` value for `assignee_id`.
+
+            '
+      example:
+        sales_opportunity:
+          name: Example Opportunity
+          pipelines_stage_id: 123
+          primary_contact_id: 123
+          value: '100.0'
+          closed_at: '2025-01-01T00:00:00.000Z'
+          assignee_id: 42
     SalesOpportunityAttributes:
       type: object
       title: Opportunities
@@ -1203,129 +1404,6 @@ components:
       - updated_at
       - value
       - workspace_id
-    VisitAttributes:
-      type: object
-      title: Visit
-      description: Visit tracking information including UTM parameters and device data
-      properties:
-        uuid:
-          type: string
-          description: Unique identifier for the visit
-        utm_source:
-          type:
-          - string
-          - 'null'
-          description: UTM source parameter from the visit URL
-        utm_medium:
-          type:
-          - string
-          - 'null'
-          description: UTM medium parameter from the visit URL
-        utm_campaign:
-          type:
-          - string
-          - 'null'
-          description: UTM campaign parameter from the visit URL
-        utm_term:
-          type:
-          - string
-          - 'null'
-          description: UTM term parameter from the visit URL
-        utm_content:
-          type:
-          - string
-          - 'null'
-          description: UTM content parameter from the visit URL
-        ip:
-          type:
-          - string
-          - 'null'
-          description: IP address of the visitor
-        user_agent:
-          type:
-          - string
-          - 'null'
-          description: User agent string from the visitor's browser
-        referrer:
-          type:
-          - string
-          - 'null'
-          description: HTTP referrer URL
-        referring_domain:
-          type:
-          - string
-          - 'null'
-          description: Domain extracted from the referrer URL
-        landing_page:
-          type:
-          - string
-          - 'null'
-          description: The first page URL visited in this session
-        browser:
-          type:
-          - string
-          - 'null'
-          description: Browser name detected from user agent
-        os:
-          type:
-          - string
-          - 'null'
-          description: Operating system detected from user agent
-        device_type:
-          type:
-          - string
-          - 'null'
-          description: Device type (e.g., desktop, mobile, tablet)
-        started_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Timestamp when the visit session started
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp when the visit record was created
-        updated_at:
-          type: string
-          format: date-time
-          description: Timestamp when the visit record was last updated
-      example:
-        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-        utm_source: google
-        utm_medium: cpc
-        utm_campaign: spring_sale
-        utm_term: running shoes
-        utm_content: ad_variant_a
-        ip: 192.168.1.1
-        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-        referrer: https://www.google.com/search?q=example
-        referring_domain: google.com
-        landing_page: https://example.com/products/shoes
-        browser: Chrome
-        os: Mac OS X
-        device_type: desktop
-        started_at: '2026-01-09T14:23:45.123Z'
-        created_at: '2026-01-09T14:23:45.123Z'
-        updated_at: '2026-01-09T14:23:45.123Z'
-      required:
-      - browser
-      - created_at
-      - device_type
-      - ip
-      - landing_page
-      - os
-      - referrer
-      - referring_domain
-      - started_at
-      - updated_at
-      - user_agent
-      - utm_campaign
-      - utm_content
-      - utm_medium
-      - utm_source
-      - utm_term
-      - uuid
     VisitsAttributes:
       type: object
       title: Visits
@@ -1350,106 +1428,14 @@ components:
       - first_visit
       - last_visit
       - last_visit_with_utm
-    SalesOpportunityParameters:
-      type: object
-      title: Opportunities
-      description: Opportunities
-      required:
-      - name
-      - pipelines_stage_id
-      - primary_contact_id
-      properties:
-        name:
-          type: string
-          description: Name
-        pipelines_stage_id:
-          type: integer
-          description: Pipeline Stage
-        primary_contact_id:
-          type: integer
-          description: Primary Contact
-        value:
-          type:
-          - number
-          - 'null'
-          description: The potential value of this opportunity in the default currency of the workspace
-        closed_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Close date
-        assignee_id:
-          type: integer
-          description: 'The ID of the Team `Membership` to assign the Opportunity to.
-
-            An Opportunity can be assigned to any Team member since they have access to all your workspaces.
-
-            You can get a list of available Memberships and their `id` via the `Team` resource''s `memberships` property.
-
-
-            If the opportunity is already assigned to a team member, the assignee will be updated.
-
-            You can unset the assignee by passing a `null` value for `assignee_id`.
-
-            '
-      example:
-        sales_opportunity:
-          name: Example Opportunity
-          pipelines_stage_id: 42
-          primary_contact_id: 26
-          value: '100.0'
-          closed_at: '2025-01-01T00:00:00.000Z'
-          assignee_id: 42
-    SalesOpportunityParametersUpdate:
-      type: object
-      title: Opportunities
-      description: Opportunities
-      required: []
-      properties:
-        name:
-          type: string
-          description: Name
-        pipelines_stage_id:
-          type: integer
-          description: Pipeline Stage ID
-        primary_contact_id:
-          type: integer
-          description: Primary Contact ID
-        value:
-          type:
-          - number
-          - 'null'
-          description: The potential value of this opportunity in the default currency of the workspace
-        closed_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Close date
-        assignee_id:
-          type: integer
-          description: 'The ID of the Team `Membership` to assign the Opportunity to.
-
-            An Opportunity can be assigned to any Team member since they have access to all your workspaces.
-
-            You can get a list of available Memberships and their `id` via the `Team` resource''s `memberships` property.
-
-
-            If the opportunity is already assigned to a team member, the assignee will be updated.
-
-            You can unset the assignee by passing a `null` value for `assignee_id`.
-
-            '
-      example:
-        sales_opportunity:
-          name: Example Opportunity
-          pipelines_stage_id: 123
-          primary_contact_id: 123
-          value: '100.0'
-          closed_at: '2025-01-01T00:00:00.000Z'
-          assignee_id: 42
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     id:
       name: id
       in: path
@@ -1466,13 +1452,6 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   headers:
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.

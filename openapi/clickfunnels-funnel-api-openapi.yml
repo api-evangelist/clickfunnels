@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -30,16 +28,13 @@ tags:
     Funnel-level analytics are available via the Fetch Funnel Stats endpoint (`GET /funnels/{funnel_id}/stats`); per-page analytics via the Fetch Page Stats endpoint (`GET /pages/{page_id}/stats`).
 
 
-    See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for building and modifying funnel workflows ([split tests](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#split-test-steps), [conditional splits](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#conditional-split-steps), [structure](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#funnel-structure)), and the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for reading funnel and page analytics.
-
-    '
+    See the Funnels Skill for building and modifying funnel workflows (split tests, conditional splits, structure), and the Stats Skill for reading funnel and page analytics.'
 paths:
   /workspaces/{workspace_id}/funnels:
     get:
       tags:
       - Funnel
       summary: List Funnels
-      description: List Funnels
       operationId: listFunnels
       parameters:
       - name: workspace_id
@@ -150,16 +145,14 @@ paths:
 
         1. `POST /api/v2/workspaces/:id/funnels` — creates the funnel (workflow auto-created)
 
-        2. `POST /api/v2/workspaces/:id/pages` with `{ page: { name: "...", funnel: { funnel_id: "<funnel_id>" }, markup: "<PML string>" } }` — creates each page, auto-links it to the funnel, and applies the markup in one call
+        2. `POST /api/v2/workspaces/:id/pages` with `{ page: { name: "...", funnel: { funnel_id: "" }, markup: "" } }` — creates each page, auto-links it to the funnel, and applies the markup in one call
 
-        3. `PATCH /api/v2/pages/:id` with `{ page: { markup: "<PML string>" } }` — applies or updates visual content (PML markup) on an existing page
+        3. `PATCH /api/v2/pages/:id` with `{ page: { markup: "" } }` — applies or updates visual content (PML markup) on an existing page
 
         4. Steps 2 and 3 can be combined: passing `markup` in the create call sets the initial visual content without a separate PATCH
 
 
-        The internal step/workflow wiring is handled automatically — API clients never need to manage workflows or steps directly.
-
-        '
+        The internal step/workflow wiring is handled automatically — API clients never need to manage workflows or steps directly.'
       operationId: createFunnel
       externalDocs:
         description: Funnels Skill - build and modify funnel workflows
@@ -246,7 +239,6 @@ paths:
       tags:
       - Funnel
       summary: Fetch Funnel
-      description: Fetch Funnel
       operationId: getFunnels
       parameters:
       - $ref: '#/components/parameters/id'
@@ -304,9 +296,7 @@ paths:
       description: 'Update Funnel.
 
 
-        You can use head_code and footer_code parameters to inject custom code. Use head_code_mode and footer_code_mode to control whether code is appended or replaced.
-
-        '
+        You can use head_code and footer_code parameters to inject custom code. Use head_code_mode and footer_code_mode to control whether code is appended or replaced.'
       operationId: updateFunnels
       externalDocs:
         description: Funnels Skill - build and modify funnel workflows
@@ -393,7 +383,49 @@ paths:
       tags:
       - Funnel
       summary: Fetch Funnel Structure
-      description: "A funnel's steps as a single, flat, ordered list — the same top‑to‑bottom flow you see in the funnel builder. Use it to read or visualize how a funnel is laid out.\n\nEach entry in `steps` is one of three kinds:\n\n- **`show_page_step`** — a page. Includes `page` (its `name`, `url`, and the `external` / `sdk_token` flags for externally‑hosted SDK pages) and `show_page_step_id` — the id you hand back as `funnel.show_page_step_id` to swap a page onto this step.\n- **`split_test_step`** — an A/B test: a `variants` list, each with a `weight` and its own `steps`.\n- **`conditional_split_step`** — routing by a saved contact filter: a `branches` list, always `[matched, unmatched]`, each with its own `steps`.\n\nSplits can nest — a split placed inside a branch shows up inside that branch's `steps`.\n\n**Two things to know when reading it:**\n\n1. **Follow the array order, not `sort_order`.** `sort_order` only numbers a step within its own list, so it repeats across branches and after splits — in the example below the top level runs `0, 1, 0, 1`. The array order is the real sequence. (Separately: when you *create* a step, the `sort_order` you send positions it among the funnel's top‑level steps.)\n2. **Branches come back together.** A branch lists only its own steps; afterwards the flow continues at the step right after the split, and every branch ends up there. In the example below, both branches lead on to `Order Form → Thank You`. A split with nothing after it ends the funnel.\n\nThe `200` example below is this funnel:\n\n```text\nEntry\n└─ Conditional Split\n   ├─ matched:     VIP Welcome   → Split Test ( Premium Offer A 50% / Premium Offer B 50% )\n   └─ unmatched: Guest Welcome → Conditional Split ( Returning Customer / New Customer )\n→ Order Form → Thank You          (every path comes back together here)\n```\n\nRelated: the [Pages skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#positioning-a-page-within-a-funnel) (create, position, and swap pages) and the [Funnels skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) (add split tests and conditional splits). When migrating externally-hosted pages to a new domain, this is the read that inventories them: see [Migrate an External Page Domain](https://accounts.myclickfunnels.com/.well-known/sdk/migrate-external-page-domain/skill.md#2-read-and-recursively-inventory-the-funnel).\n"
+      description: 'A funnel''s steps as a single, flat, ordered list — the same top‑to‑bottom flow you see in the funnel builder. Use it to read or visualize how a funnel is laid out.
+
+
+        Each entry in `steps` is one of three kinds:
+
+
+        - **`show_page_step`** — a page. Includes `page` (its `name`, `url`, and the `external` / `sdk_token` flags for externally‑hosted SDK pages) and `show_page_step_id` — the id you hand back as `funnel.show_page_step_id` to swap a page onto this step.
+
+        - **`split_test_step`** — an A/B test: a `variants` list, each with a `weight` and its own `steps`.
+
+        - **`conditional_split_step`** — routing by a saved contact filter: a `branches` list, always `[matched, unmatched]`, each with its own `steps`.
+
+
+        Splits can nest — a split placed inside a branch shows up inside that branch''s `steps`.
+
+
+        **Two things to know when reading it:**
+
+
+        1. **Follow the array order, not `sort_order`.** `sort_order` only numbers a step within its own list, so it repeats across branches and after splits — in the example below the top level runs `0, 1, 0, 1`. The array order is the real sequence. (Separately: when you *create* a step, the `sort_order` you send positions it among the funnel''s top‑level steps.)
+
+        2. **Branches come back together.** A branch lists only its own steps; afterwards the flow continues at the step right after the split, and every branch ends up there. In the example below, both branches lead on to `Order Form → Thank You`. A split with nothing after it ends the funnel.
+
+
+        The `200` example below is this funnel:
+
+
+        ```text
+
+        Entry
+
+        └─ Conditional Split
+
+        ├─ matched: VIP Welcome → Split Test ( Premium Offer A 50% / Premium Offer B 50% )
+
+        └─ unmatched: Guest Welcome → Conditional Split ( Returning Customer / New Customer )
+
+        → Order Form → Thank You (every path comes back together here)
+
+        ```
+
+
+        Related: the Pages skill (create, position, and swap pages) and the Funnels skill (add split tests and conditional splits). When migrating externally-hosted pages to a new domain, this is the read that inventories them: see Migrate an External Page Domain.'
       operationId: getFunnelStructure
       parameters:
       - $ref: '#/components/parameters/id'
@@ -702,9 +734,7 @@ paths:
         `expand[]=steps` to receive a `steps` array with per-step metrics instead.
 
 
-        The metric names in the response are defined in [Metric vocabulary](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#metric-vocabulary) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md), which also walks a [recurring funnel auditor agent](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#example-use-case---recurring-funnel-auditor-agent) built on this endpoint.
-
-        '
+        The metric names in the response are defined in Metric vocabulary in the Stats Skill, which also walks a recurring funnel auditor agent built on this endpoint.'
       operationId: getFunnelStats
       externalDocs:
         description: Stats Skill - funnel stats
@@ -767,159 +797,95 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
+  parameters:
+    ExpandFunnelStatsFields:
+      name: expand[]
+      in: query
+      description: Expand additional data in the response. Use `expand[]=steps` to include per-step statistics. When `expand[]=steps` is set, the response contains a `steps` array with detailed metrics for each funnel step. When omitted, the response contains a `page_public_ids` array instead. See [the expanded steps response](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#response-with-expandsteps) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for both response shapes.
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - steps
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    StatsTimerangeStart:
+      name: timerange_start
+      in: query
+      description: Start of the stats timerange (ISO 8601 format). Defaults to 30 days before `timerange_end`. If the window between start and end exceeds 90 days, start is automatically clamped to 90 days before end. If start is after end, the window resets to the default 30 days ending at `timerange_end`. See [Timerange parameters (both endpoints)](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#timerange-parameters-both-endpoints) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for the clamping rules and how to cover longer windows.
+      required: false
+      schema:
+        type: string
+        format: date-time
+      example: '2026-01-01T00:00:00Z'
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    StatsTimerangeEnd:
+      name: timerange_end
+      in: query
+      description: End of the stats timerange (ISO 8601 format). Defaults to the current time. Values in the future are automatically clamped to now.
+      required: false
+      schema:
+        type: string
+        format: date-time
+      example: '2026-01-31T23:59:59Z'
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    ExpandFunnelFields:
+      name: expand[]
+      in: query
+      description: 'Expand additional data in the response. Use `expand[]=field_name` to include optional fields. Available fields: head_code, footer_code. See the [Expanding guide](https://developers.myclickfunnels.com/docs/expand) for examples.'
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - head_code
+          - footer_code
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
   schemas:
-    FunnelStatsAttributes:
-      type: object
-      title: Funnel Stats
-      description: Detailed funnel statistics with aggregate summary and optional per-step breakdown.
-      properties:
-        funnel:
-          $ref: '#/components/schemas/FunnelSummary'
-        currency:
-          type: string
-          description: ISO 4217 currency code for all monetary values (e.g. USD, EUR)
-        timerange:
-          type: object
-          description: The actual time range used for the stats (after any clamping)
-          properties:
-            from:
-              type: string
-              format: date-time
-              description: Start of the timerange (ISO 8601)
-            to:
-              type: string
-              format: date-time
-              description: End of the timerange (ISO 8601)
-        summary:
-          type: object
-          description: Aggregate funnel summary metrics
-          properties:
-            earnings_per_click:
-              type: string
-              description: Earnings per click as a decimal string (see currency field)
-            upfront_sales:
-              type: string
-              description: Total upfront sales as a decimal string (see currency field)
-            upfront_sales_count:
-              type: integer
-              description: Number of upfront sales
-            recurring_sales:
-              type: string
-              description: Total recurring sales as a decimal string (see currency field)
-            average_cart_value:
-              type: string
-              description: Average cart value as a decimal string (see currency field)
-            pageviews:
-              type: integer
-              description: Total pageviews across all funnel steps
-        page_public_ids:
-          type: array
-          description: Public IDs of the pages associated with each funnel step, in step order. Present when `expand[]=steps` is NOT requested. Steps without an associated page are omitted.
-          items:
-            type: string
-        steps:
-          type: array
-          description: Per-step statistics. Present only when `expand[]=steps` is requested. When this field is present, `page_public_ids` is absent.
-          items:
-            $ref: '#/components/schemas/FunnelStepStats'
-      example:
-        funnel:
-          id: 1
-          public_id: gESyMv
-          name: My Sales Funnel
-        currency: USD
-        timerange:
-          from: '2026-03-03T00:00:00Z'
-          to: '2026-04-02T23:59:59Z'
-        summary:
-          earnings_per_click: '0.00'
-          upfront_sales: '0.00'
-          upfront_sales_count: 0
-          recurring_sales: '0.00'
-          average_cart_value: '0.00'
-          pageviews: 85
-        page_public_ids:
-        - NnAdPE
-        - kJzvQi
-      required:
-      - currency
-      - funnel
-      - summary
-      - timerange
-    FunnelParametersCreate:
-      type: object
-      title: Funnels
-      description: Funnels
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          description: Name of the Funnel
-        current_path:
-          type: string
-          description: The URL path for the funnel. If not provided, a path will be auto-generated from the name.
-        live_mode:
-          type: boolean
-          description: In Live Mode your Funnel cannot be tested and will process live payments
-        domain_id:
-          type:
-          - integer
-          - 'null'
-          description: The ID of the domain to associate with this funnel. Use the Domains API to look up available domain IDs.
-        tag_ids:
-          type: array
-          items:
-            type: integer
-          description: An array of tag IDs to associate with this funnel
-        head_code:
-          type:
-          - string
-          - 'null'
-          description: Custom code to inject into the funnel's <head> section. Content should be wrapped in appropriate HTML tags such as <script>, <link>, <meta>, or <style>.
-        head_code_mode:
-          type: string
-          enum:
-          - append
-          - replace
-          description: How to handle head_code. 'append' adds to existing code (default), 'replace' overwrites.
-        footer_code:
-          type:
-          - string
-          - 'null'
-          description: Custom code to inject before the closing </body> tag. JavaScript should be wrapped in <script> tags.
-        footer_code_mode:
-          type: string
-          enum:
-          - append
-          - replace
-          description: How to handle footer_code. 'append' adds to existing code (default), 'replace' overwrites.
-      example:
-        funnel:
-          name: Example Funnel
-          current_path: /example-funnel
-          live_mode: true
-          tag_ids:
-          - 1
-          - 2
-    FunnelSummary:
-      type: object
-      title: Funnel Summary
-      description: Lightweight funnel identifier used inside stats responses.
-      properties:
-        id:
-          type: integer
-          description: The funnel ID
-        public_id:
-          type: string
-          description: The public identifier of the funnel
-        name:
-          type: string
-          description: The name of the funnel
-      example:
-        id: 1
-        public_id: gESyMv
-        name: My Sales Funnel
     FunnelParametersUpdate:
       type: object
       title: Funnels
@@ -1135,94 +1101,158 @@ components:
         recurring_sales_value: '0.00'
         earnings_per_view: '0.00'
         earnings_per_unique_view: '0.00'
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    sort_property:
-      name: sort_property
-      in: query
-      description: 'Sort property of a list response. The default is id and thus the created_at order.
-
-        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
-
-        '
-      required: false
-      schema:
-        type: string
-        enum:
-        - id
-        - updated_at
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    StatsTimerangeStart:
-      name: timerange_start
-      in: query
-      description: Start of the stats timerange (ISO 8601 format). Defaults to 30 days before `timerange_end`. If the window between start and end exceeds 90 days, start is automatically clamped to 90 days before end. If start is after end, the window resets to the default 30 days ending at `timerange_end`. See [Timerange parameters (both endpoints)](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#timerange-parameters-both-endpoints) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for the clamping rules and how to cover longer windows.
-      required: false
-      schema:
-        type: string
-        format: date-time
-      example: '2026-01-01T00:00:00Z'
-    StatsTimerangeEnd:
-      name: timerange_end
-      in: query
-      description: End of the stats timerange (ISO 8601 format). Defaults to the current time. Values in the future are automatically clamped to now.
-      required: false
-      schema:
-        type: string
-        format: date-time
-      example: '2026-01-31T23:59:59Z'
-    ExpandFunnelFields:
-      name: expand[]
-      in: query
-      description: 'Expand additional data in the response. Use `expand[]=field_name` to include optional fields. Available fields: head_code, footer_code. See the [Expanding guide](https://developers.myclickfunnels.com/docs/expand) for examples.'
-      required: false
-      schema:
-        type: array
-        items:
+    FunnelStatsAttributes:
+      type: object
+      title: Funnel Stats
+      description: Detailed funnel statistics with aggregate summary and optional per-step breakdown.
+      properties:
+        funnel:
+          $ref: '#/components/schemas/FunnelSummary'
+        currency:
+          type: string
+          description: ISO 4217 currency code for all monetary values (e.g. USD, EUR)
+        timerange:
+          type: object
+          description: The actual time range used for the stats (after any clamping)
+          properties:
+            from:
+              type: string
+              format: date-time
+              description: Start of the timerange (ISO 8601)
+            to:
+              type: string
+              format: date-time
+              description: End of the timerange (ISO 8601)
+        summary:
+          type: object
+          description: Aggregate funnel summary metrics
+          properties:
+            earnings_per_click:
+              type: string
+              description: Earnings per click as a decimal string (see currency field)
+            upfront_sales:
+              type: string
+              description: Total upfront sales as a decimal string (see currency field)
+            upfront_sales_count:
+              type: integer
+              description: Number of upfront sales
+            recurring_sales:
+              type: string
+              description: Total recurring sales as a decimal string (see currency field)
+            average_cart_value:
+              type: string
+              description: Average cart value as a decimal string (see currency field)
+            pageviews:
+              type: integer
+              description: Total pageviews across all funnel steps
+        page_public_ids:
+          type: array
+          description: Public IDs of the pages associated with each funnel step, in step order. Present when `expand[]=steps` is NOT requested. Steps without an associated page are omitted.
+          items:
+            type: string
+        steps:
+          type: array
+          description: Per-step statistics. Present only when `expand[]=steps` is requested. When this field is present, `page_public_ids` is absent.
+          items:
+            $ref: '#/components/schemas/FunnelStepStats'
+      example:
+        funnel:
+          id: 1
+          public_id: gESyMv
+          name: My Sales Funnel
+        currency: USD
+        timerange:
+          from: '2026-03-03T00:00:00Z'
+          to: '2026-04-02T23:59:59Z'
+        summary:
+          earnings_per_click: '0.00'
+          upfront_sales: '0.00'
+          upfront_sales_count: 0
+          recurring_sales: '0.00'
+          average_cart_value: '0.00'
+          pageviews: 85
+        page_public_ids:
+        - NnAdPE
+        - kJzvQi
+      required:
+      - currency
+      - funnel
+      - summary
+      - timerange
+    FunnelParametersCreate:
+      type: object
+      title: Funnels
+      description: Funnels
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name of the Funnel
+        current_path:
+          type: string
+          description: The URL path for the funnel. If not provided, a path will be auto-generated from the name.
+        live_mode:
+          type: boolean
+          description: In Live Mode your Funnel cannot be tested and will process live payments
+        domain_id:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the domain to associate with this funnel. Use the Domains API to look up available domain IDs.
+        tag_ids:
+          type: array
+          items:
+            type: integer
+          description: An array of tag IDs to associate with this funnel
+        head_code:
+          type:
+          - string
+          - 'null'
+          description: Custom code to inject into the funnel's <head> section. Content should be wrapped in appropriate HTML tags such as <script>, <link>, <meta>, or <style>.
+        head_code_mode:
           type: string
           enum:
-          - head_code
-          - footer_code
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    ExpandFunnelStatsFields:
-      name: expand[]
-      in: query
-      description: Expand additional data in the response. Use `expand[]=steps` to include per-step statistics. When `expand[]=steps` is set, the response contains a `steps` array with detailed metrics for each funnel step. When omitted, the response contains a `page_public_ids` array instead. See [the expanded steps response](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#response-with-expandsteps) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for both response shapes.
-      required: false
-      schema:
-        type: array
-        items:
+          - append
+          - replace
+          description: How to handle head_code. 'append' adds to existing code (default), 'replace' overwrites.
+        footer_code:
+          type:
+          - string
+          - 'null'
+          description: Custom code to inject before the closing </body> tag. JavaScript should be wrapped in <script> tags.
+        footer_code_mode:
           type: string
           enum:
-          - steps
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
+          - append
+          - replace
+          description: How to handle footer_code. 'append' adds to existing code (default), 'replace' overwrites.
+      example:
+        funnel:
+          name: Example Funnel
+          current_path: /example-funnel
+          live_mode: true
+          tag_ids:
+          - 1
+          - 2
+    FunnelSummary:
+      type: object
+      title: Funnel Summary
+      description: Lightweight funnel identifier used inside stats responses.
+      properties:
+        id:
+          type: integer
+          description: The funnel ID
+        public_id:
+          type: string
+          description: The public identifier of the funnel
+        name:
+          type: string
+          description: The name of the funnel
+      example:
+        id: 1
+        public_id: gESyMv
+        name: My Sales Funnel
   securitySchemes:
     BearerAuth:
       type: http

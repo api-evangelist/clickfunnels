@@ -1,15 +1,13 @@
 openapi: 3.2.0
 info:
-  title: ClickFunnels Communities::Memberships::Remove From Group Action API
+  title: ClickFunnels Communities::Memberships::Remove From Group…
   termsOfService: https://www.clickfunnels.com/terms-of-service
   contact:
     name: ClickFunnels API Team
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -27,18 +25,14 @@ tags:
   description: '> Async bulk action that removes multiple members from one or more community spaces (groups) in the background.
 
 
-    Creating a RemoveFromGroupAction enqueues a background job and immediately returns an action record. Poll the `show` endpoint using the returned `id` and check the `status` field (`queued` → `processing` → `completed`) to track progress.
-
-    '
+    Creating a RemoveFromGroupAction enqueues a background job and immediately returns an action record. Poll the `show` endpoint using the returned `id` and check the `status` field (`queued` → `processing` → `completed`) to track progress.'
 paths:
   /communities/{community_id}/memberships/remove_from_group_actions:
     post:
       tags:
       - Communities::Memberships::RemoveFromGroupAction
       summary: Create Membership Remove-From-Group Action
-      description: 'Enqueue an async background job to remove one or more community members from one or more spaces (groups). The action record is returned immediately with `status: queued`. Poll `GET /communities/memberships/remove_from_group_actions/{id}` until `status` is `completed`.
-
-        '
+      description: 'Enqueue an async background job to remove one or more community members from one or more spaces (groups). The action record is returned immediately with `status: queued`. Poll `GET /communities/memberships/remove_from_group_actions/{id}` until `status` is `completed`.'
       operationId: createCommunitiesMembershipsRemoveFromGroupActions
       parameters:
       - name: community_id
@@ -170,53 +164,6 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
-    CommunitiesMembershipsRemoveFromGroupActionAttributes:
-      type: object
-      title: Communities::Memberships::RemoveFromGroupAction
-      description: Communities::Memberships::RemoveFromGroupAction
-      allOf:
-      - $ref: '#/components/schemas/CommunitiesActionAttributes'
-      - type: object
-        properties:
-          space_ids:
-            type: array
-            description: Integer IDs of the spaces (groups) members are removed from
-            items:
-              type: integer
-      example:
-        id: 503
-        public_id: RmGrP1
-        community_id: 1
-        target_all: false
-        target_ids:
-        - 101
-        - 102
-        failed_ids: []
-        target_count: 2
-        performed_count: 2
-        started_at: '2025-01-01T00:01:00.000Z'
-        completed_at: '2025-01-01T00:01:05.000Z'
-        created_at: '2025-01-01T00:00:00.000Z'
-        updated_at: '2025-01-01T00:01:05.000Z'
-        status: completed
-        space_ids:
-        - 10
-        - 11
-      required:
-      - community_id
-      - completed_at
-      - created_at
-      - failed_ids
-      - id
-      - performed_count
-      - public_id
-      - space_ids
-      - started_at
-      - status
-      - target_all
-      - target_count
-      - target_ids
-      - updated_at
     CommunitiesMembershipsRemoveFromGroupActionParameters:
       type: object
       title: Communities::Memberships::RemoveFromGroupAction
@@ -319,6 +266,53 @@ components:
       - id
       - performed_count
       - public_id
+      - started_at
+      - status
+      - target_all
+      - target_count
+      - target_ids
+      - updated_at
+    CommunitiesMembershipsRemoveFromGroupActionAttributes:
+      type: object
+      title: Communities::Memberships::RemoveFromGroupAction
+      description: Communities::Memberships::RemoveFromGroupAction
+      allOf:
+      - $ref: '#/components/schemas/CommunitiesActionAttributes'
+      - type: object
+        properties:
+          space_ids:
+            type: array
+            description: Integer IDs of the spaces (groups) members are removed from
+            items:
+              type: integer
+      example:
+        id: 503
+        public_id: RmGrP1
+        community_id: 1
+        target_all: false
+        target_ids:
+        - 101
+        - 102
+        failed_ids: []
+        target_count: 2
+        performed_count: 2
+        started_at: '2025-01-01T00:01:00.000Z'
+        completed_at: '2025-01-01T00:01:05.000Z'
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:01:05.000Z'
+        status: completed
+        space_ids:
+        - 10
+        - 11
+      required:
+      - community_id
+      - completed_at
+      - created_at
+      - failed_ids
+      - id
+      - performed_count
+      - public_id
+      - space_ids
       - started_at
       - status
       - target_all

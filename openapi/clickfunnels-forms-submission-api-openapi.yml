@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -32,9 +30,7 @@ tags:
     form submission programmatically outside of ClickFunnels.
 
 
-    To get the raw submission data, refer to the `FormSubmission` resource.
-
-    '
+    To get the raw submission data, refer to the `FormSubmission` resource.'
 paths:
   /forms/{form_id}/submissions:
     get:
@@ -313,34 +309,6 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
-    FormsSubmissionParametersUpdate:
-      type: object
-      title: Submissions
-      description: Submissions
-      required: []
-      properties:
-        contact_id:
-          type:
-          - integer
-          - 'null'
-          description: Contact
-      example:
-        forms_submission:
-          contact_id: 5
-    FormsSubmissionParameters:
-      type: object
-      title: Submissions
-      description: Submissions
-      required: []
-      properties:
-        contact_id:
-          type:
-          - integer
-          - 'null'
-          description: Contact
-      example:
-        forms_submission:
-          contact_id: 5
     FormsSubmissionAttributes:
       type: object
       title: Submissions
@@ -388,13 +356,42 @@ components:
       - id
       - public_id
       - updated_at
+    FormsSubmissionParameters:
+      type: object
+      title: Submissions
+      description: Submissions
+      required: []
+      properties:
+        contact_id:
+          type:
+          - integer
+          - 'null'
+          description: Contact
+      example:
+        forms_submission:
+          contact_id: 5
+    FormsSubmissionParametersUpdate:
+      type: object
+      title: Submissions
+      description: Submissions
+      required: []
+      properties:
+        contact_id:
+          type:
+          - integer
+          - 'null'
+          description: Contact
+      example:
+        forms_submission:
+          contact_id: 5
   parameters:
-    id:
-      name: id
-      in: path
-      required: true
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -419,13 +416,12 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   headers:
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.

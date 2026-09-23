@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -27,23 +25,7 @@ tags:
   description: '> Bulk-export contacts to a CSV file
 
 
-    An Export Action generates a CSV of an audience of contacts in a single async operation. Supply `fields` to control which contact columns appear in the CSV (including custom attribute keys). Once complete, the `file_url` field on the record contains a download URL.
-
-
-    **Target selection** — supply exactly one of:
-
-    - `stable_id` — a URL-encoded Refine `stable_id` token.
-
-    - `stored_filter_id` — the `id` or `public_id` of a saved `Refine::StoredFilter` (ContactsFilter). Also accepted as `filter_id`.
-
-    - `target_ids` — an explicit array of contact public IDs.
-
-    - `target_all` — `true` to target every contact in the workspace.
-
-
-    **Progress tracking** — after creating an Export Action, poll it with `GET /api/v2/contacts/export_actions/{id}`. When complete, `file_url` contains the CSV download URL.
-
-    '
+    An Export Action generates a CSV of an audience of contacts in a single async operation.'
 paths:
   /workspaces/{workspace_id}/contacts/export_actions:
     get:
@@ -324,13 +306,23 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -355,14 +347,50 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
+    ContactsExportActionParameters:
+      type: object
+      title: Contacts Export Actions
+      description: Contacts Export Actions
+      required:
+      - fields
+      properties:
+        fields:
+          type: array
+          items:
+            type: string
+          description: The contact field keys to include as columns in the exported CSV. Standard keys include `email_address`, `first_name`, `last_name`, `tag_ids`, `phone_number`, etc. Custom attribute keys are also accepted. Required.
+        stable_id:
+          type: string
+          description: A URL-encoded Refine `stable_id` token — the standard gzip+base64 full-state format used by both the `contacts/filters` API endpoint and the server-rendered filter UI, making tokens interoperable. Returned by `POST /api/v2/workspaces/{workspace_id}/contacts/filters` in the `stable_id` field. Pass the token exactly as returned; do not decode or re-encode it. The server persists the decoded filter so the async job can re-derive the audience at perform time. Mutually exclusive with `stored_filter_id`, `target_ids`, and `target_all`.
+        stored_filter_id:
+          type: string
+          description: The `id` (integer) or `public_id` (string) of a saved `Refine::StoredFilter` scoped to this workspace (must be a ContactsFilter). Also accepted as `filter_id`. Mutually exclusive with `stable_id`, `target_ids`, and `target_all`.
+        target_ids:
+          type: array
+          items:
+            type: string
+          description: Explicit list of contacts to export, as the `public_id` strings returned by the contacts endpoints. Numeric ids are also accepted. Mutually exclusive with `stable_id`, `stored_filter_id`, and `target_all`.
+        target_all:
+          type: boolean
+          description: Set to `true` to target every contact in the workspace. Use deliberately. Mutually exclusive with `stable_id`, `stored_filter_id`, and `target_ids`.
+        scheduled_for:
+          type: string
+          format: date-time
+          description: Optional ISO 8601 datetime. When supplied the action is deferred until this time. Omit (or pass `null`) to execute immediately.
+      example:
+        contacts_export_action:
+          fields:
+          - email_address
+          - first_name
+          - tag_ids
+          stored_filter_id: '7'
     ContactsExportActionAttributes:
       type: object
       title: Contacts Export Actions
@@ -497,52 +525,6 @@ components:
       - target_ids
       - updated_at
       - workspace_id
-    ContactsExportActionParameters:
-      type: object
-      title: Contacts Export Actions
-      description: Contacts Export Actions
-      required:
-      - fields
-      properties:
-        fields:
-          type: array
-          items:
-            type: string
-          description: The contact field keys to include as columns in the exported CSV. Standard keys include `email_address`, `first_name`, `last_name`, `tag_ids`, `phone_number`, etc. Custom attribute keys are also accepted. Required.
-        stable_id:
-          type: string
-          description: A URL-encoded Refine `stable_id` token — the standard gzip+base64 full-state format used by both the `contacts/filters` API endpoint and the server-rendered filter UI, making tokens interoperable. Returned by `POST /api/v2/workspaces/{workspace_id}/contacts/filters` in the `stable_id` field. Pass the token exactly as returned; do not decode or re-encode it. The server persists the decoded filter so the async job can re-derive the audience at perform time. Mutually exclusive with `stored_filter_id`, `target_ids`, and `target_all`.
-        stored_filter_id:
-          type: string
-          description: The `id` (integer) or `public_id` (string) of a saved `Refine::StoredFilter` scoped to this workspace (must be a ContactsFilter). Also accepted as `filter_id`. Mutually exclusive with `stable_id`, `target_ids`, and `target_all`.
-        target_ids:
-          type: array
-          items:
-            type: string
-          description: Explicit list of contacts to export, as the `public_id` strings returned by the contacts endpoints. Numeric ids are also accepted. Mutually exclusive with `stable_id`, `stored_filter_id`, and `target_all`.
-        target_all:
-          type: boolean
-          description: Set to `true` to target every contact in the workspace. Use deliberately. Mutually exclusive with `stable_id`, `stored_filter_id`, and `target_ids`.
-        scheduled_for:
-          type: string
-          format: date-time
-          description: Optional ISO 8601 datetime. When supplied the action is deferred until this time. Omit (or pass `null`) to execute immediately.
-      example:
-        contacts_export_action:
-          fields:
-          - email_address
-          - first_name
-          - tag_ids
-          stored_filter_id: '7'
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http

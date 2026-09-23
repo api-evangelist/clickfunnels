@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -30,9 +28,7 @@ tags:
     A Blog is a top-level container for blog posts, categories, tags, and authors. Each workspace site can have one or more blogs, each with their own SEO settings, theme, and URL path.
 
 
-    See the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md) for the end-to-end guide to creating, reading, and updating blog posts.
-
-    '
+    See the Blogs Skill for the end-to-end guide to creating, reading, and updating blog posts.'
 paths:
   /workspaces/{workspace_id}/blogs:
     get:
@@ -185,9 +181,7 @@ paths:
       description: 'Update a blog''s metadata. Permitted fields: `name`, `seo_title`, `seo_description`, `seo_image_id`, `theme_id`.
 
 
-        See [Update blog metadata](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#update-blog-metadata) in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md). For appearance and templates, see [Configure blog appearance with existing Theme and Page APIs](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#configure-blog-appearance-with-existing-theme-and-page-apis).
-
-        '
+        See Update blog metadata in the Blogs Skill. For appearance and templates, see Configure blog appearance with existing Theme and Page APIs.'
       operationId: updateBlog
       parameters:
       - $ref: '#/components/parameters/id'
@@ -268,13 +262,23 @@ paths:
               example:
                 error: Name can't be blank
 components:
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -299,13 +303,12 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
     BlogAttributes:
       type: object
@@ -454,15 +457,6 @@ components:
           seo_description: Read our latest articles and updates.
           seo_image_id: null
           theme_id: 5
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http

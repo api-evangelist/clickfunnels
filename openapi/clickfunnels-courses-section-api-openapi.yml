@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -34,9 +32,7 @@ tags:
     can be managed by the `Courses::Enrollment` and also by the completion of previous sections and lessons.
 
 
-    See [Sections (modules)](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#sections-modules) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for creating modules and the fields you can set.
-
-    '
+    See Sections (modules) in the Courses Skill for creating modules and the fields you can set.'
 paths:
   /courses/{course_id}/sections:
     get:
@@ -65,11 +61,9 @@ paths:
         0, tie-broken by id).
 
 
-        See [Reading back a course](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#reading-back-a-course) in the
+        See Reading back a course in the
 
-        [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the read walk.
-
-        '
+        Courses Skill for the read walk.'
       operationId: listCoursesSections
       parameters:
       - name: course_id
@@ -167,7 +161,7 @@ paths:
       tags:
       - Courses::Section
       summary: Create Section
-      description: Add a new Section. See [Sections (modules)](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#sections-modules) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md).
+      description: Add a new Section. See Sections (modules) in the Courses Skill.
       operationId: createCoursesSections
       parameters:
       - name: course_id
@@ -256,7 +250,6 @@ paths:
       tags:
       - Courses::Section
       summary: Fetch Section
-      description: Fetch Section
       operationId: getCoursesSections
       parameters:
       - $ref: '#/components/parameters/id'
@@ -310,7 +303,7 @@ paths:
       tags:
       - Courses::Section
       summary: Update Section
-      description: Update Section. See [Permitted section fields (create and update)](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#permitted-section-fields-create-and-update) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the writable fields.
+      description: Update Section. See Permitted section fields (create and update) in the Courses Skill for the writable fields.
       operationId: updateCoursesSections
       parameters:
       - $ref: '#/components/parameters/id'
@@ -397,7 +390,7 @@ paths:
       summary: Publish Section
       description: 'Makes a single section live by setting `published_at`, and cascade-publishes its lessons individually so per-lesson side effects fire. The response is the canonical section resource. If section or lesson validation fails, the entire request returns `422` without changing any publish timestamps. Pass an optional future `published_at` to schedule it; omit it to publish now. A past `published_at` is rejected. This is the default publish (`auto_enroll: false`) — to also grant existing enrollees access and notify them, use `createCoursesSectionsPublishActions` with `auto_enroll` instead. The root section cannot be published directly.
 
-        See [Publishing](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#publishing) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the publish paths.'
+        See Publishing in the Courses Skill for the publish paths.'
       operationId: publishCoursesSections
       parameters:
       - $ref: '#/components/parameters/id'
@@ -472,13 +465,23 @@ paths:
               example:
                 error: published_at cannot be in the past; omit it to publish now or pass a future datetime to schedule
 components:
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -489,14 +492,55 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
+    CoursesSectionParametersUpdate:
+      type: object
+      title: Modules
+      description: Modules
+      required: []
+      properties:
+        title:
+          type: string
+          description: Title
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description
+        days_till_drip_access:
+          type:
+          - integer
+          - 'null'
+          description: Days until drip access
+        blocker_section_id:
+          type:
+          - integer
+          - 'null'
+          description: Blocker section
+        blocker_lesson_id:
+          type:
+          - integer
+          - 'null'
+          description: Blocker lesson
+        is_hidden_from_non_members:
+          type:
+          - boolean
+          - 'null'
+          description: Current Path
+      example:
+        courses_section:
+          title: Module 1
+          description: Example Course Section
+          days_till_drip_access: 5
+          blocker_section_id: 123
+          blocker_lesson_id: 123
+          is_hidden_from_non_members: true
     CoursesSectionAttributes:
       type: object
       title: Modules
@@ -613,57 +657,6 @@ components:
       - title
       - updated_at
       - upgrade_url
-    CoursesSectionParametersUpdate:
-      type: object
-      title: Modules
-      description: Modules
-      required: []
-      properties:
-        title:
-          type: string
-          description: Title
-        description:
-          type:
-          - string
-          - 'null'
-          description: Description
-        days_till_drip_access:
-          type:
-          - integer
-          - 'null'
-          description: Days until drip access
-        blocker_section_id:
-          type:
-          - integer
-          - 'null'
-          description: Blocker section
-        blocker_lesson_id:
-          type:
-          - integer
-          - 'null'
-          description: Blocker lesson
-        is_hidden_from_non_members:
-          type:
-          - boolean
-          - 'null'
-          description: Current Path
-      example:
-        courses_section:
-          title: Module 1
-          description: Example Course Section
-          days_till_drip_access: 5
-          blocker_section_id: 123
-          blocker_lesson_id: 123
-          is_hidden_from_non_members: true
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http

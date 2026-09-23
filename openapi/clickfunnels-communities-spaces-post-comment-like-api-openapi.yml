@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -27,9 +25,7 @@ tags:
   description: '> Comment Likes record a Contact''s like reaction on a Post Comment.
 
 
-    A Comment Like belongs to a Comment and is authored by a Contact. Likes have no update operation — create one to like, delete it to unlike.
-
-    '
+    A Comment Like belongs to a Comment and is authored by a Contact. Likes have no update operation — create one to like, delete it to unlike.'
 paths:
   /communities/spaces/posts/comments/{comment_id}/likes:
     get:
@@ -183,13 +179,23 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -214,14 +220,25 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
+    CommunitiesSpacesPostsCommentsLikeParameters:
+      type: object
+      title: Communities::Spaces::Post::Comment::Like
+      description: Communities::Spaces::Post::Comment::Like
+      properties:
+        contact_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of the Contact to record the like for. Optional — defaults to the connected user's own contact.
+      example:
+        communities_spaces_posts_comments_like: {}
     CommunitiesSpacesPostsCommentsLikeAttributes:
       type: object
       title: Communities::Spaces::Post::Comment::Like
@@ -302,27 +319,6 @@ components:
       - id
       - public_id
       - updated_at
-    CommunitiesSpacesPostsCommentsLikeParameters:
-      type: object
-      title: Communities::Spaces::Post::Comment::Like
-      description: Communities::Spaces::Post::Comment::Like
-      properties:
-        contact_id:
-          type:
-          - integer
-          - 'null'
-          description: ID of the Contact to record the like for. Optional — defaults to the connected user's own contact.
-      example:
-        communities_spaces_posts_comments_like: {}
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http

@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -30,9 +28,7 @@ tags:
     Email Templates are reusable email content that can be used with broadcasts.
 
 
-    See [Templates](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#templates) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).
-
-    '
+    See Templates in the Emails Skill.'
 paths:
   /workspaces/{workspace_id}/emails/templates:
     get:
@@ -113,7 +109,7 @@ paths:
       summary: Create Email Template
       description: 'Create an email template from html_body/text_body. The template is marked api-created and is hidden from the visual template pickers (it cannot be edited in the visual BeeFree editor). When accessing the API through an OAuth connection from a third-party platform acting on another team''s workspaces, this endpoint is restricted to trusted developer platforms; if you are using your own API key (acting on your own account), you can write directly.
 
-        See [Create a template](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#create-a-template) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md), including the `expand[]=html_body`/`expand[]=text_body` params that echo the body you just set back in the response.'
+        See Create a template in the Emails Skill, including the `expand[]=html_body`/`expand[]=text_body` params that echo the body you just set back in the response.'
       operationId: createEmailsTemplate
       parameters:
       - name: workspace_id
@@ -251,7 +247,7 @@ paths:
       summary: Update Email Template
       description: 'Update an email template. Only the provided fields are changed. Invalid Liquid in html_body is rejected with 422. When accessing the API through an OAuth connection from a third-party platform acting on another team''s workspaces, this endpoint is restricted to trusted developer platforms; if you are using your own API key (acting on your own account), you can write directly.
 
-        See [Update a template](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#update-a-template) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md).'
+        See Update a template in the Emails Skill.'
       operationId: updateEmailsTemplate
       parameters:
       - $ref: '#/components/parameters/id'
@@ -343,7 +339,7 @@ paths:
       summary: Delete Email Template
       description: 'Delete an email template. Returns 422 if the template is shared or is in use by a workflow send-email step. When accessing the API through an OAuth connection from a third-party platform acting on another team''s workspaces, this endpoint is restricted to trusted developer platforms; if you are using your own API key (acting on your own account), you can delete directly.
 
-        See [Delete a template](https://accounts.myclickfunnels.com/.well-known/emails/skill.md#delete-a-template) in the [Emails Skill](https://accounts.myclickfunnels.com/.well-known/emails/skill.md) for what makes a template undeletable.'
+        See Delete a template in the Emails Skill for what makes a template undeletable.'
       operationId: deleteEmailsTemplate
       parameters:
       - $ref: '#/components/parameters/id'
@@ -395,13 +391,23 @@ paths:
               example:
                 error: Template cannot be deleted while it is in use by a workflow step or is shared
 components:
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -426,14 +432,82 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
+    EmailsTemplateParametersUpdate:
+      type: object
+      title: Email Templates
+      description: Parameters for updating an email template. Only the provided fields are changed. Invalid Liquid in html_body is rejected with 422.
+      required: []
+      properties:
+        name:
+          type: string
+          description: Internal name for the template
+        subject:
+          type:
+          - string
+          - 'null'
+          description: Default email subject line
+        html_body:
+          type:
+          - string
+          - 'null'
+          description: HTML email body
+        text_body:
+          type:
+          - string
+          - 'null'
+          description: Plain text email body
+        from_address_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of a sending address that belongs to this workspace. A foreign address is rejected with 422.
+      example:
+        emails_template:
+          html_body: <h1>Updated</h1>
+    EmailsTemplateParameters:
+      type: object
+      title: Email Templates
+      description: Parameters for creating an email template. Provide the body as html_body/text_body (mapped to the template content). Templates created via the API are marked api-created and are hidden from the visual template pickers.
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Internal name for the template (required)
+        subject:
+          type:
+          - string
+          - 'null'
+          description: Default email subject line. May be blank.
+        html_body:
+          type:
+          - string
+          - 'null'
+          description: HTML email body
+        text_body:
+          type:
+          - string
+          - 'null'
+          description: Plain text email body
+        from_address_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of a sending address that belongs to this workspace. Pick one whose top-level `usable_as_sender` is true rather than one whose sending domain is merely `verified` (see GET /workspaces/{workspace_id}/emails/addresses). A foreign address is rejected with 422.
+      example:
+        emails_template:
+          name: Welcome Email
+          subject: Welcome aboard!
+          html_body: <h1>Hello</h1>
+          text_body: Hello
+          from_address_id: 4001
     EmailsTemplateAttributes:
       type: object
       title: Email Templates
@@ -534,84 +608,6 @@ components:
       - template_type
       - updated_at
       - workspace_id
-    EmailsTemplateParameters:
-      type: object
-      title: Email Templates
-      description: Parameters for creating an email template. Provide the body as html_body/text_body (mapped to the template content). Templates created via the API are marked api-created and are hidden from the visual template pickers.
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          description: Internal name for the template (required)
-        subject:
-          type:
-          - string
-          - 'null'
-          description: Default email subject line. May be blank.
-        html_body:
-          type:
-          - string
-          - 'null'
-          description: HTML email body
-        text_body:
-          type:
-          - string
-          - 'null'
-          description: Plain text email body
-        from_address_id:
-          type:
-          - integer
-          - 'null'
-          description: ID of a sending address that belongs to this workspace. Pick one whose top-level `usable_as_sender` is true rather than one whose sending domain is merely `verified` (see GET /workspaces/{workspace_id}/emails/addresses). A foreign address is rejected with 422.
-      example:
-        emails_template:
-          name: Welcome Email
-          subject: Welcome aboard!
-          html_body: <h1>Hello</h1>
-          text_body: Hello
-          from_address_id: 4001
-    EmailsTemplateParametersUpdate:
-      type: object
-      title: Email Templates
-      description: Parameters for updating an email template. Only the provided fields are changed. Invalid Liquid in html_body is rejected with 422.
-      required: []
-      properties:
-        name:
-          type: string
-          description: Internal name for the template
-        subject:
-          type:
-          - string
-          - 'null'
-          description: Default email subject line
-        html_body:
-          type:
-          - string
-          - 'null'
-          description: HTML email body
-        text_body:
-          type:
-          - string
-          - 'null'
-          description: Plain text email body
-        from_address_id:
-          type:
-          - integer
-          - 'null'
-          description: ID of a sending address that belongs to this workspace. A foreign address is rejected with 422.
-      example:
-        emails_template:
-          html_body: <h1>Updated</h1>
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http

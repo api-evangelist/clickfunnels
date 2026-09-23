@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -27,19 +25,17 @@ tags:
   description: '> Invoices track payments for orders.
 
 
-    Order Invoices are the invoices issued against Orders. For more information please consult our [Orders Overview guide](https://developers.myclickfunnels.com/docs/orders).
+    Order Invoices are the invoices issued against Orders. For more information please consult our Orders Overview guide.
 
 
-    Orders can be fulfilled by fulfilling invoice line items. Please refer to [our Fulfillments guide](https://developers.myclickfunnels.com/docs/fulfillments) to see how this can be done.
-
-    '
+    Orders can be fulfilled by fulfilling invoice line items. Please refer to our Fulfillments guide to see how this can be done.'
 paths:
   /orders/{order_id}/invoices:
     get:
       tags:
       - Orders::Invoice
       summary: List Invoices
-      description: List invoices for a specific order. Please refer to [our Orders Overview guide](https://developers.myclickfunnels.com/docs/orders/invoices) for more information about the different types of invoices and payment processors.
+      description: List invoices for a specific order. Please refer to our Orders Overview guide for more information about the different types of invoices and payment processors.
       operationId: listOrdersInvoices
       parameters:
       - name: order_id
@@ -303,7 +299,7 @@ paths:
       tags:
       - Orders::Invoice
       summary: Create External Invoice
-      description: Create an invoice for an external order. This is useful if you process payments outside of ClickFunnels, but still want to make use of ClickFunnels&#39; automations and funnels. Refer to the corresponding guide for more information [here](https://developers.myclickfunnels.com/docs/orders#external-orders).
+      description: Create an invoice for an external order. This is useful if you process payments outside of ClickFunnels, but still want to make use of ClickFunnels' automations and funnels. Refer to the corresponding guide for more information here.
       operationId: createOrdersInvoices
       parameters:
       - name: order_id
@@ -590,7 +586,7 @@ paths:
       tags:
       - Orders::Invoice
       summary: Fetch Invoice
-      description: Retrieve an invoice for an order. Please refer to [our Orders Overview guide](https://developers.myclickfunnels.com/docs/orders/invoices) for more information about the different types of invoices and payment processors.
+      description: Retrieve an invoice for an order. Please refer to our Orders Overview guide for more information about the different types of invoices and payment processors.
       operationId: getOrdersInvoices
       parameters:
       - $ref: '#/components/parameters/id'
@@ -838,7 +834,7 @@ paths:
       tags:
       - Orders::Invoice
       summary: Update External Invoice
-      description: Update a specific invoice in the current workspace. Currently, only invoices of [external orders](https://developers.myclickfunnels.com/docs/orders#external-orders) can be updated. So, you can&#39;t update invoices of other payment processors, like Payments AI and Stripe.
+      description: Update a specific invoice in the current workspace. Currently, only invoices of external orders can be updated. So, you can't update invoices of other payment processors, like Payments AI and Stripe.
       operationId: updateOrdersInvoices
       parameters:
       - $ref: '#/components/parameters/id'
@@ -1153,9 +1149,9 @@ paths:
 
         other status returns 404 rather than 422, because this API hides records the caller may not
 
-        act on. Please refer to [our Invoices
+        act on. Please refer to our Invoices
 
-        guide](https://developers.myclickfunnels.com/docs/orders/invoices) for more information about
+        guide for more information about
 
         the different types of invoices and payment processors.'
       operationId: abandonOrdersInvoices
@@ -1381,7 +1377,7 @@ paths:
       tags:
       - Orders::Invoice
       summary: List Workspace Invoices
-      description: List all invoices for a specific workspace. Please refer to the [API documentation](https://developers.myclickfunnels.com/docs/orders/invoices) for more information about the different types of invoices and payment processors.
+      description: List all invoices for a specific workspace. Please refer to the API documentation for more information about the different types of invoices and payment processors.
       operationId: listWorkspaceOrdersInvoices
       parameters:
       - name: workspace_id
@@ -1642,77 +1638,449 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    sort_property:
-      name: sort_property
-      in: query
-      description: 'Sort property of a list response. The default is id and thus the created_at order.
-
-        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
-
-        '
-      required: false
-      schema:
-        type: string
-        enum:
-        - id
-        - updated_at
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    InvoiceFilter:
-      name: filter
-      in: query
-      description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[id]=value&filter[another_property]=value1,value2`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
-
-        '
-      required: false
-      schema:
-        type: object
-        properties:
-          id:
-            type: string
-            description: A comma-separated list of Invoice IDs to filter by.
-            example: 1,42
-          status:
-            type: string
-            description: The status of the invoice to filter by.
-            example: pending
-          invoice_type:
-            type: string
-            description: The type of the invoice to filter by.
-            example: one_time_sale
-          invoice_number:
-            type: string
-            description: A comma-separated list of Invoice Numbers to filter by.
-            example: '#1000,#1001'
-          external_id:
-            type: string
-            description: A comma-separated list of External IDs to filter by.
-            example: inv_1234567890,inv_0987654321
-      style: deepObject
-      explode: true
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
+    OrdersInvoicesLineItemAttributes:
+      type: object
+      title: Line items
+      description: Line items
+      properties:
+        id:
+          type: integer
+          description: Line item ID
+        public_id:
+          type: string
+          description: ClickFunnels line item public ID
+        invoice_id:
+          type: integer
+          description: Invoice ID
+        external_id:
+          type: string
+          description: External
+        payment_type:
+          type:
+          - string
+          - 'null'
+          description: Payment Type
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description
+        quantity:
+          type:
+          - integer
+          - 'null'
+          description: Quantity
+        fulfillment_status:
+          type:
+          - string
+          - 'null'
+          enum:
+          - unfulfilled
+          - partially_fulfilled
+          - complete
+          - ignored
+          - null
+          description: "Represents the current fulfillment status of the line item.\nThis can be one of the following:\n - `unfulfilled` - the line item has not been fully fulfilled (fulfilled quantity is 0)\n - `partially_fulfilled` - the line item is partially fulfilled (fulfilled quantity is less than line item quantity)\n - `complete` - the line item is completely fulfilled (fulfilled quantity is equal to line item quantity)\n - `ignored` - the line item is marked as ignored for fulfillment\n"
+        external_product_id:
+          type:
+          - string
+          - 'null'
+          description: External Product
+        discount_amount:
+          type:
+          - number
+          - 'null'
+          description: Discount Amount
+        state_tax_amount:
+          type:
+          - number
+          - 'null'
+          description: State Tax Amount
+        county_tax_amount:
+          type:
+          - number
+          - 'null'
+          description: County Tax Amount
+        city_tax_amount:
+          type:
+          - number
+          - 'null'
+          description: City Tax Amount
+        district_tax_amount:
+          type:
+          - number
+          - 'null'
+          description: District Tax Amount
+        state_tax_rate:
+          type:
+          - number
+          - 'null'
+          description: State Tax Rate
+        county_tax_rate:
+          type:
+          - number
+          - 'null'
+          description: County Tax Rate
+        city_tax_rate:
+          type:
+          - number
+          - 'null'
+          description: City Tax Rate
+        district_tax_rate:
+          type:
+          - number
+          - 'null'
+          description: District Tax Rate
+        country_tax_jurisdiction:
+          type:
+          - string
+          - 'null'
+          description: Country Tax Jurisdiction
+        state_tax_jurisdiction:
+          type:
+          - string
+          - 'null'
+          description: State Tax Jurisdiction
+        county_tax_jurisdiction:
+          type:
+          - string
+          - 'null'
+          description: County Tax Jurisdiction
+        city_tax_jurisdiction:
+          type:
+          - string
+          - 'null'
+          description: City Tax Jurisdiction
+        period_start_at:
+          type:
+          - string
+          - 'null'
+          description: Period Start At
+        period_end_at:
+          type:
+          - string
+          - 'null'
+          description: Period End At
+        period_number:
+          type:
+          - string
+          - 'null'
+          description: Period Number
+        created_at:
+          type:
+          - string
+          - 'null'
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          description: Updated
+        amount:
+          type:
+          - string
+          - 'null'
+          description: Amount
+        products_price:
+          type:
+          - object
+          - 'null'
+          title: Product Price
+          description: Product Price
+          properties:
+            id:
+              type: integer
+              description: ID
+            public_id:
+              type: string
+              description: Price public ID
+            amount:
+              type: string
+              description: Amount
+            currency:
+              type: string
+              description: Currency
+            duration:
+              type: string
+              description: Duration
+            interval:
+              type: string
+              description: Interval
+            interval_count:
+              type: string
+              description: Interval count
+        products_variant:
+          type:
+          - object
+          - 'null'
+          title: Product Variant
+          description: Product Variant
+          properties:
+            id:
+              type: integer
+              description: ID
+            public_id:
+              type: string
+              description: Variant public ID
+            product_id:
+              type: integer
+              description: Product ID
+            name:
+              type: string
+              description: Name
+            description:
+              type:
+              - string
+              - 'null'
+              description: The description of the variant. The description of the **default variant** is the user-facing description of the `Product`.
+            sku:
+              type:
+              - string
+              - 'null'
+              description: SKU
+            fulfillment_required:
+              type:
+              - boolean
+              - 'null'
+              description: Fulfillment required
+      example:
+        id: 682
+        public_id: RegpVj
+        invoice_id: 838
+        external_id: null
+        payment_type: null
+        description: null
+        quantity: 1
+        fulfillment_status: unfulfilled
+        external_product_id: null
+        discount_amount: '0.0'
+        state_tax_amount: '0.0'
+        county_tax_amount: '0.0'
+        city_tax_amount: '0.0'
+        district_tax_amount: '0.0'
+        state_tax_rate: '0.0'
+        county_tax_rate: '0.0'
+        city_tax_rate: '0.0'
+        district_tax_rate: '0.0'
+        country_tax_jurisdiction: null
+        state_tax_jurisdiction: null
+        county_tax_jurisdiction: null
+        city_tax_jurisdiction: null
+        period_start_at: null
+        period_end_at: null
+        period_number: null
+        created_at: '2026-01-10T20:16:16.538Z'
+        updated_at: '2026-01-10T20:16:16.538Z'
+        amount: '3.00'
+        products_price:
+          id: 22229
+          public_id: YqEWxY
+          amount: '198.00'
+          currency: usd
+          duration: null
+          interval: null
+          interval_count: null
+        products_variant:
+          id: 22228
+          public_id: JdknyN
+          product_id: 6512
+          name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+          description: null
+          sku: SIYP-BLACK-PREMIUM-001
+          fulfillment_required: false
+      required:
+      - amount
+      - city_tax_amount
+      - city_tax_jurisdiction
+      - city_tax_rate
+      - country_tax_jurisdiction
+      - county_tax_amount
+      - county_tax_jurisdiction
+      - county_tax_rate
+      - created_at
+      - description
+      - discount_amount
+      - district_tax_amount
+      - district_tax_rate
+      - external_id
+      - external_product_id
+      - fulfillment_status
+      - id
+      - invoice_id
+      - payment_type
+      - period_end_at
+      - period_number
+      - period_start_at
+      - products_price
+      - products_variant
+      - public_id
+      - quantity
+      - state_tax_amount
+      - state_tax_jurisdiction
+      - state_tax_rate
+      - updated_at
+    VisitAttributes:
+      type: object
+      title: Visit
+      description: Visit tracking information including UTM parameters and device data
+      properties:
+        uuid:
+          type: string
+          description: Unique identifier for the visit
+        utm_source:
+          type:
+          - string
+          - 'null'
+          description: UTM source parameter from the visit URL
+        utm_medium:
+          type:
+          - string
+          - 'null'
+          description: UTM medium parameter from the visit URL
+        utm_campaign:
+          type:
+          - string
+          - 'null'
+          description: UTM campaign parameter from the visit URL
+        utm_term:
+          type:
+          - string
+          - 'null'
+          description: UTM term parameter from the visit URL
+        utm_content:
+          type:
+          - string
+          - 'null'
+          description: UTM content parameter from the visit URL
+        ip:
+          type:
+          - string
+          - 'null'
+          description: IP address of the visitor
+        user_agent:
+          type:
+          - string
+          - 'null'
+          description: User agent string from the visitor's browser
+        referrer:
+          type:
+          - string
+          - 'null'
+          description: HTTP referrer URL
+        referring_domain:
+          type:
+          - string
+          - 'null'
+          description: Domain extracted from the referrer URL
+        landing_page:
+          type:
+          - string
+          - 'null'
+          description: The first page URL visited in this session
+        browser:
+          type:
+          - string
+          - 'null'
+          description: Browser name detected from user agent
+        os:
+          type:
+          - string
+          - 'null'
+          description: Operating system detected from user agent
+        device_type:
+          type:
+          - string
+          - 'null'
+          description: Device type (e.g., desktop, mobile, tablet)
+        started_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the visit session started
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the visit record was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the visit record was last updated
+      example:
+        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+        utm_source: google
+        utm_medium: cpc
+        utm_campaign: spring_sale
+        utm_term: running shoes
+        utm_content: ad_variant_a
+        ip: 192.168.1.1
+        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+        referrer: https://www.google.com/search?q=example
+        referring_domain: google.com
+        landing_page: https://example.com/products/shoes
+        browser: Chrome
+        os: Mac OS X
+        device_type: desktop
+        started_at: '2026-01-09T14:23:45.123Z'
+        created_at: '2026-01-09T14:23:45.123Z'
+        updated_at: '2026-01-09T14:23:45.123Z'
+      required:
+      - browser
+      - created_at
+      - device_type
+      - ip
+      - landing_page
+      - os
+      - referrer
+      - referring_domain
+      - started_at
+      - updated_at
+      - user_agent
+      - utm_campaign
+      - utm_content
+      - utm_medium
+      - utm_source
+      - utm_term
+      - uuid
+    OrderVisitsAttributes:
+      type: object
+      title: Order Visits
+      description: Visit tracking records for orders and invoices. Contains last_visit and last_visit_with_utm only (first_visit belongs to the contact).
+      properties:
+        last_visit:
+          description: The most recent visit associated with this order.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit_with_utm:
+          description: The most recent visit that contains UTM parameters.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+      example:
+        last_visit: null
+        last_visit_with_utm:
+          uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+          utm_source: google
+          utm_medium: cpc
+          utm_campaign: spring_sale
+          utm_term: running shoes
+          utm_content: ad_variant_a
+          ip: 192.168.1.1
+          user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+          referrer: https://www.google.com/search?q=example
+          referring_domain: google.com
+          landing_page: https://example.com/products/shoes
+          browser: Chrome
+          os: Mac OS X
+          device_type: desktop
+          started_at: '2026-01-09T14:23:45.123Z'
+          created_at: '2026-01-09T14:23:45.123Z'
+          updated_at: '2026-01-09T14:23:45.123Z'
+      required:
+      - last_visit
+      - last_visit_with_utm
     OrderBaseAttributes:
       type: object
       title: Order (Base)
@@ -2124,315 +2492,6 @@ components:
       - tag_ids
       - total_amount
       - trial_end_at
-    OrdersInvoiceParameters:
-      type: object
-      title: External Invoice
-      description: 'Parameters for creating an external invoice. Only external orders support invoice creation via the API.
-
-        External orders are orders where payments are processed outside of ClickFunnels.
-
-        '
-      required:
-      - external_id
-      - status
-      properties:
-        external_id:
-          type: string
-          description: 'Required. A unique identifier for this invoice in your external system.
-
-            This ID allows you to correlate ClickFunnels invoices with records in your payment processor.
-
-            '
-        status:
-          type: string
-          description: 'Required. The billing status of the invoice.
-
-
-            For external one-time orders, valid statuses are: `unpaid`, `paid`, `voided`, `refunded`, `disputed`, `past-due`.
-
-            For external subscription orders, the same statuses apply.
-
-
-            When creating an invoice with status `paid`, you must also provide `paid_at`.
-
-            A change in status will update the `billing_status` of the parent order.
-
-            If a one-time order''s invoice status is changed to `paid`, the order''s `service_status` will also flip to `completed`.
-
-            '
-          enum:
-          - unpaid
-          - paid
-          - voided
-          - refunded
-          - disputed
-          - past-due
-        invoice_type:
-          type: string
-          description: 'The type of invoice. If not provided, defaults based on the order type:
-
-            - For one-time orders: `one_time_sale`
-
-            - For subscription orders: `initial`
-
-
-            For subscription orders, valid types are: `initial`, `renewal`, `interim`, `cancellation`, `one_time`, `refund`, `charge`.
-
-            For one-time orders, only `one_time_sale` is valid.
-
-            '
-          enum:
-          - initial
-          - renewal
-          - interim
-          - cancellation
-          - one_time
-          - refund
-          - charge
-          - one_time_sale
-        invoice_number:
-          type:
-          - string
-          - 'null'
-          description: 'Optional. A sequential number for bookkeeping purposes.
-
-            If not provided, one will be auto-generated.
-
-            '
-        shipping_amount:
-          type:
-          - string
-          - 'null'
-          description: Invoiced shipping amount. Cannot be negative. Defaults to "0.00".
-        issued_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: The date the invoice was issued.
-        due_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: The date the invoice is due.
-        paid_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: 'The date the invoice was paid. Required when `status` is `paid`.
-
-            '
-        line_items_attributes:
-          type: array
-          description: 'Line items for the invoice. Each line item represents a product/variant being invoiced.
-
-            Required fields for each line item: `amount`, `quantity`, `variant_id`, `products_price_id`.
-
-            '
-          items:
-            type: object
-            required:
-            - amount
-            - quantity
-            - variant_id
-            - products_price_id
-            properties:
-              amount:
-                type: string
-                description: The price amount for this line item.
-              quantity:
-                type: integer
-                description: The quantity of items.
-              variant_id:
-                type: integer
-                description: The product variant ID.
-              products_price_id:
-                type: integer
-                description: The product price ID.
-              description:
-                type:
-                - string
-                - 'null'
-                description: Optional description for the line item.
-      example:
-        orders_invoice:
-          external_id: inv-ext-12345
-          status: paid
-          invoice_type: one_time_sale
-          invoice_number: INV-001
-          shipping_amount: '9.99'
-          issued_at: '2025-01-01T00:00:00.000Z'
-          due_at: '2025-01-15T00:00:00.000Z'
-          paid_at: '2025-01-10T00:00:00.000Z'
-          line_items_attributes:
-          - amount: '99.00'
-            quantity: 1
-            variant_id: 123
-            products_price_id: 456
-            description: Premium Widget
-    VisitAttributes:
-      type: object
-      title: Visit
-      description: Visit tracking information including UTM parameters and device data
-      properties:
-        uuid:
-          type: string
-          description: Unique identifier for the visit
-        utm_source:
-          type:
-          - string
-          - 'null'
-          description: UTM source parameter from the visit URL
-        utm_medium:
-          type:
-          - string
-          - 'null'
-          description: UTM medium parameter from the visit URL
-        utm_campaign:
-          type:
-          - string
-          - 'null'
-          description: UTM campaign parameter from the visit URL
-        utm_term:
-          type:
-          - string
-          - 'null'
-          description: UTM term parameter from the visit URL
-        utm_content:
-          type:
-          - string
-          - 'null'
-          description: UTM content parameter from the visit URL
-        ip:
-          type:
-          - string
-          - 'null'
-          description: IP address of the visitor
-        user_agent:
-          type:
-          - string
-          - 'null'
-          description: User agent string from the visitor's browser
-        referrer:
-          type:
-          - string
-          - 'null'
-          description: HTTP referrer URL
-        referring_domain:
-          type:
-          - string
-          - 'null'
-          description: Domain extracted from the referrer URL
-        landing_page:
-          type:
-          - string
-          - 'null'
-          description: The first page URL visited in this session
-        browser:
-          type:
-          - string
-          - 'null'
-          description: Browser name detected from user agent
-        os:
-          type:
-          - string
-          - 'null'
-          description: Operating system detected from user agent
-        device_type:
-          type:
-          - string
-          - 'null'
-          description: Device type (e.g., desktop, mobile, tablet)
-        started_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Timestamp when the visit session started
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp when the visit record was created
-        updated_at:
-          type: string
-          format: date-time
-          description: Timestamp when the visit record was last updated
-      example:
-        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-        utm_source: google
-        utm_medium: cpc
-        utm_campaign: spring_sale
-        utm_term: running shoes
-        utm_content: ad_variant_a
-        ip: 192.168.1.1
-        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-        referrer: https://www.google.com/search?q=example
-        referring_domain: google.com
-        landing_page: https://example.com/products/shoes
-        browser: Chrome
-        os: Mac OS X
-        device_type: desktop
-        started_at: '2026-01-09T14:23:45.123Z'
-        created_at: '2026-01-09T14:23:45.123Z'
-        updated_at: '2026-01-09T14:23:45.123Z'
-      required:
-      - browser
-      - created_at
-      - device_type
-      - ip
-      - landing_page
-      - os
-      - referrer
-      - referring_domain
-      - started_at
-      - updated_at
-      - user_agent
-      - utm_campaign
-      - utm_content
-      - utm_medium
-      - utm_source
-      - utm_term
-      - uuid
-    OrderVisitsAttributes:
-      type: object
-      title: Order Visits
-      description: Visit tracking records for orders and invoices. Contains last_visit and last_visit_with_utm only (first_visit belongs to the contact).
-      properties:
-        last_visit:
-          description: The most recent visit associated with this order.
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-        last_visit_with_utm:
-          description: The most recent visit that contains UTM parameters.
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-      example:
-        last_visit: null
-        last_visit_with_utm:
-          uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-          utm_source: google
-          utm_medium: cpc
-          utm_campaign: spring_sale
-          utm_term: running shoes
-          utm_content: ad_variant_a
-          ip: 192.168.1.1
-          user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-          referrer: https://www.google.com/search?q=example
-          referring_domain: google.com
-          landing_page: https://example.com/products/shoes
-          browser: Chrome
-          os: Mac OS X
-          device_type: desktop
-          started_at: '2026-01-09T14:23:45.123Z'
-          created_at: '2026-01-09T14:23:45.123Z'
-          updated_at: '2026-01-09T14:23:45.123Z'
-      required:
-      - last_visit
-      - last_visit_with_utm
     VisitsAttributes:
       type: object
       title: Visits
@@ -2457,512 +2516,6 @@ components:
       - first_visit
       - last_visit
       - last_visit_with_utm
-    OrdersInvoicesLineItemAttributes:
-      type: object
-      title: Line items
-      description: Line items
-      properties:
-        id:
-          type: integer
-          description: Line item ID
-        public_id:
-          type: string
-          description: ClickFunnels line item public ID
-        invoice_id:
-          type: integer
-          description: Invoice ID
-        external_id:
-          type: string
-          description: External
-        payment_type:
-          type:
-          - string
-          - 'null'
-          description: Payment Type
-        description:
-          type:
-          - string
-          - 'null'
-          description: Description
-        quantity:
-          type:
-          - integer
-          - 'null'
-          description: Quantity
-        fulfillment_status:
-          type:
-          - string
-          - 'null'
-          enum:
-          - unfulfilled
-          - partially_fulfilled
-          - complete
-          - ignored
-          - null
-          description: "Represents the current fulfillment status of the line item.\nThis can be one of the following:\n - `unfulfilled` - the line item has not been fully fulfilled (fulfilled quantity is 0)\n - `partially_fulfilled` - the line item is partially fulfilled (fulfilled quantity is less than line item quantity)\n - `complete` - the line item is completely fulfilled (fulfilled quantity is equal to line item quantity)\n - `ignored` - the line item is marked as ignored for fulfillment\n"
-        external_product_id:
-          type:
-          - string
-          - 'null'
-          description: External Product
-        discount_amount:
-          type:
-          - number
-          - 'null'
-          description: Discount Amount
-        state_tax_amount:
-          type:
-          - number
-          - 'null'
-          description: State Tax Amount
-        county_tax_amount:
-          type:
-          - number
-          - 'null'
-          description: County Tax Amount
-        city_tax_amount:
-          type:
-          - number
-          - 'null'
-          description: City Tax Amount
-        district_tax_amount:
-          type:
-          - number
-          - 'null'
-          description: District Tax Amount
-        state_tax_rate:
-          type:
-          - number
-          - 'null'
-          description: State Tax Rate
-        county_tax_rate:
-          type:
-          - number
-          - 'null'
-          description: County Tax Rate
-        city_tax_rate:
-          type:
-          - number
-          - 'null'
-          description: City Tax Rate
-        district_tax_rate:
-          type:
-          - number
-          - 'null'
-          description: District Tax Rate
-        country_tax_jurisdiction:
-          type:
-          - string
-          - 'null'
-          description: Country Tax Jurisdiction
-        state_tax_jurisdiction:
-          type:
-          - string
-          - 'null'
-          description: State Tax Jurisdiction
-        county_tax_jurisdiction:
-          type:
-          - string
-          - 'null'
-          description: County Tax Jurisdiction
-        city_tax_jurisdiction:
-          type:
-          - string
-          - 'null'
-          description: City Tax Jurisdiction
-        period_start_at:
-          type:
-          - string
-          - 'null'
-          description: Period Start At
-        period_end_at:
-          type:
-          - string
-          - 'null'
-          description: Period End At
-        period_number:
-          type:
-          - string
-          - 'null'
-          description: Period Number
-        created_at:
-          type:
-          - string
-          - 'null'
-          description: Added
-        updated_at:
-          type:
-          - string
-          - 'null'
-          description: Updated
-        amount:
-          type:
-          - string
-          - 'null'
-          description: Amount
-        products_price:
-          type:
-          - object
-          - 'null'
-          title: Product Price
-          description: Product Price
-          properties:
-            id:
-              type: integer
-              description: ID
-            public_id:
-              type: string
-              description: Price public ID
-            amount:
-              type: string
-              description: Amount
-            currency:
-              type: string
-              description: Currency
-            duration:
-              type: string
-              description: Duration
-            interval:
-              type: string
-              description: Interval
-            interval_count:
-              type: string
-              description: Interval count
-        products_variant:
-          type:
-          - object
-          - 'null'
-          title: Product Variant
-          description: Product Variant
-          properties:
-            id:
-              type: integer
-              description: ID
-            public_id:
-              type: string
-              description: Variant public ID
-            product_id:
-              type: integer
-              description: Product ID
-            name:
-              type: string
-              description: Name
-            description:
-              type:
-              - string
-              - 'null'
-              description: The description of the variant. The description of the **default variant** is the user-facing description of the `Product`.
-            sku:
-              type:
-              - string
-              - 'null'
-              description: SKU
-            fulfillment_required:
-              type:
-              - boolean
-              - 'null'
-              description: Fulfillment required
-      example:
-        id: 682
-        public_id: RegpVj
-        invoice_id: 838
-        external_id: null
-        payment_type: null
-        description: null
-        quantity: 1
-        fulfillment_status: unfulfilled
-        external_product_id: null
-        discount_amount: '0.0'
-        state_tax_amount: '0.0'
-        county_tax_amount: '0.0'
-        city_tax_amount: '0.0'
-        district_tax_amount: '0.0'
-        state_tax_rate: '0.0'
-        county_tax_rate: '0.0'
-        city_tax_rate: '0.0'
-        district_tax_rate: '0.0'
-        country_tax_jurisdiction: null
-        state_tax_jurisdiction: null
-        county_tax_jurisdiction: null
-        city_tax_jurisdiction: null
-        period_start_at: null
-        period_end_at: null
-        period_number: null
-        created_at: '2026-01-10T20:16:16.538Z'
-        updated_at: '2026-01-10T20:16:16.538Z'
-        amount: '3.00'
-        products_price:
-          id: 22229
-          public_id: YqEWxY
-          amount: '198.00'
-          currency: usd
-          duration: null
-          interval: null
-          interval_count: null
-        products_variant:
-          id: 22228
-          public_id: JdknyN
-          product_id: 6512
-          name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
-          description: null
-          sku: SIYP-BLACK-PREMIUM-001
-          fulfillment_required: false
-      required:
-      - amount
-      - city_tax_amount
-      - city_tax_jurisdiction
-      - city_tax_rate
-      - country_tax_jurisdiction
-      - county_tax_amount
-      - county_tax_jurisdiction
-      - county_tax_rate
-      - created_at
-      - description
-      - discount_amount
-      - district_tax_amount
-      - district_tax_rate
-      - external_id
-      - external_product_id
-      - fulfillment_status
-      - id
-      - invoice_id
-      - payment_type
-      - period_end_at
-      - period_number
-      - period_start_at
-      - products_price
-      - products_variant
-      - public_id
-      - quantity
-      - state_tax_amount
-      - state_tax_jurisdiction
-      - state_tax_rate
-      - updated_at
-    ContactBaseAttributes:
-      type: object
-      title: Contacts
-      description: Contacts
-      properties:
-        id:
-          type: integer
-          description: Contact ID
-        public_id:
-          type: string
-          description: Contact public ID
-        workspace_id:
-          type: integer
-          description: Workspace ID
-        anonymous:
-          type:
-          - integer
-          - 'null'
-          description: Anonymous
-        email_address:
-          type:
-          - string
-          - 'null'
-          description: The contact's email address. It is currently not expected to be null and is the main identifier for a contact.
-        first_name:
-          type:
-          - string
-          - 'null'
-          description: First name
-        last_name:
-          type:
-          - string
-          - 'null'
-          description: Last name
-        phone_number:
-          type:
-          - string
-          - 'null'
-          description: Phone number
-        time_zone:
-          type:
-          - string
-          - 'null'
-          description: 'The human-readable time zone, usually set dynamically by the app for the contact, for example, during opt-in.
-
-            Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
-
-            '
-        uuid:
-          type: string
-          description: UUID
-        unsubscribed_at:
-          type:
-          - string
-          - 'null'
-          description: Unsubscribed
-        last_notification_email_sent_at:
-          type:
-          - string
-          - 'null'
-          description: Last notification email sent
-        email_suppression_reason:
-          type:
-          - string
-          - 'null'
-          description: The reason the contact's email address is suppressed from receiving emails. Null when no suppression exists.
-        is_active:
-          type: boolean
-          description: Whether the contact is active. A contact is considered active when they have a valid email address, have not unsubscribed, have not been deleted, and have no email suppression reason.
-        fb_url:
-          type:
-          - string
-          - 'null'
-          description: Facebook URL
-        twitter_url:
-          type:
-          - string
-          - 'null'
-          description: Twitter URL
-        instagram_url:
-          type:
-          - string
-          - 'null'
-          description: Instagram URL
-        linkedin_url:
-          type:
-          - string
-          - 'null'
-          description: LinkedIn URL
-        website_url:
-          type:
-          - string
-          - 'null'
-          description: Website URL
-        created_at:
-          type: string
-          format: date-time
-          description: Date added
-        updated_at:
-          type: string
-          format: date-time
-          description: Last updated
-        tags:
-          type:
-          - array
-          - 'null'
-          items:
-            type: object
-            title: Contact Tags
-            description: Contact Tags
-            properties:
-              id:
-                type: integer
-                description: Tag ID
-              public_id:
-                type: string
-                description: Tag public ID
-              name:
-                type: string
-                description: Name
-              color:
-                type: string
-                description: Color
-              applied_at:
-                type:
-                - string
-                - 'null'
-                description: The datetime the tag was applied by creating a Contacts::AppliedTag that maps the tag to the contact.
-          description: Contact Tags
-        custom_attributes:
-          type: object
-          additionalProperties:
-            type: string
-          description: A dynamic key-value pair object where both the key and value are strings. Custom attributes are usually added to the contact when they submit forms that contain custom contact attributes. But you can also add them via the API using the modifying endpoints like Create/Update/Upsert Contact.
-        visits:
-          allOf:
-          - $ref: '#/components/schemas/VisitsAttributes'
-          description: Visit tracking information for this contact, including first visit, last visit, and last visit with UTM parameters
-      example:
-        id: 24359
-        public_id: vQxYMj
-        workspace_id: 4
-        anonymous: 0
-        email_address: jane.doe@example.com
-        first_name: Jane
-        last_name: Doe
-        phone_number: '+18005550199'
-        time_zone: Madrid
-        uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
-        unsubscribed_at: null
-        last_notification_email_sent_at: null
-        email_suppression_reason: null
-        is_active: true
-        fb_url: null
-        twitter_url: null
-        instagram_url: null
-        linkedin_url: null
-        website_url: null
-        created_at: '2026-01-09T15:27:56.647Z'
-        updated_at: '2026-01-09T15:28:08.075Z'
-        tags: []
-        custom_attributes: {}
-        visits:
-          first_visit:
-            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-            utm_source: google
-            utm_medium: cpc
-            utm_campaign: spring_sale
-            utm_term: running shoes
-            utm_content: ad_variant_a
-            ip: 192.168.1.1
-            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-            referrer: https://www.google.com/search?q=example
-            referring_domain: google.com
-            landing_page: https://example.com/products/shoes
-            browser: Chrome
-            os: Mac OS X
-            device_type: desktop
-            started_at: '2026-01-09T14:23:45.123Z'
-            created_at: '2026-01-09T14:23:45.123Z'
-            updated_at: '2026-01-09T14:23:45.123Z'
-          last_visit: null
-          last_visit_with_utm:
-            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-            utm_source: google
-            utm_medium: cpc
-            utm_campaign: spring_sale
-            utm_term: running shoes
-            utm_content: ad_variant_a
-            ip: 192.168.1.1
-            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-            referrer: https://www.google.com/search?q=example
-            referring_domain: google.com
-            landing_page: https://example.com/products/shoes
-            browser: Chrome
-            os: Mac OS X
-            device_type: desktop
-            started_at: '2026-01-09T14:23:45.123Z'
-            created_at: '2026-01-09T14:23:45.123Z'
-            updated_at: '2026-01-09T14:23:45.123Z'
-      required:
-      - anonymous
-      - created_at
-      - custom_attributes
-      - email_address
-      - email_suppression_reason
-      - fb_url
-      - first_name
-      - id
-      - instagram_url
-      - is_active
-      - last_name
-      - last_notification_email_sent_at
-      - linkedin_url
-      - phone_number
-      - public_id
-      - tags
-      - time_zone
-      - twitter_url
-      - unsubscribed_at
-      - updated_at
-      - uuid
-      - visits
-      - website_url
-      - workspace_id
     OrdersInvoiceAttributes:
       type: object
       title: Invoices
@@ -3342,6 +2895,379 @@ components:
       - total_amount
       - updated_at
       - visits
+    OrdersInvoiceParameters:
+      type: object
+      title: External Invoice
+      description: 'Parameters for creating an external invoice. Only external orders support invoice creation via the API.
+
+        External orders are orders where payments are processed outside of ClickFunnels.
+
+        '
+      required:
+      - external_id
+      - status
+      properties:
+        external_id:
+          type: string
+          description: 'Required. A unique identifier for this invoice in your external system.
+
+            This ID allows you to correlate ClickFunnels invoices with records in your payment processor.
+
+            '
+        status:
+          type: string
+          description: 'Required. The billing status of the invoice.
+
+
+            For external one-time orders, valid statuses are: `unpaid`, `paid`, `voided`, `refunded`, `disputed`, `past-due`.
+
+            For external subscription orders, the same statuses apply.
+
+
+            When creating an invoice with status `paid`, you must also provide `paid_at`.
+
+            A change in status will update the `billing_status` of the parent order.
+
+            If a one-time order''s invoice status is changed to `paid`, the order''s `service_status` will also flip to `completed`.
+
+            '
+          enum:
+          - unpaid
+          - paid
+          - voided
+          - refunded
+          - disputed
+          - past-due
+        invoice_type:
+          type: string
+          description: 'The type of invoice. If not provided, defaults based on the order type:
+
+            - For one-time orders: `one_time_sale`
+
+            - For subscription orders: `initial`
+
+
+            For subscription orders, valid types are: `initial`, `renewal`, `interim`, `cancellation`, `one_time`, `refund`, `charge`.
+
+            For one-time orders, only `one_time_sale` is valid.
+
+            '
+          enum:
+          - initial
+          - renewal
+          - interim
+          - cancellation
+          - one_time
+          - refund
+          - charge
+          - one_time_sale
+        invoice_number:
+          type:
+          - string
+          - 'null'
+          description: 'Optional. A sequential number for bookkeeping purposes.
+
+            If not provided, one will be auto-generated.
+
+            '
+        shipping_amount:
+          type:
+          - string
+          - 'null'
+          description: Invoiced shipping amount. Cannot be negative. Defaults to "0.00".
+        issued_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice was issued.
+        due_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice is due.
+        paid_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: 'The date the invoice was paid. Required when `status` is `paid`.
+
+            '
+        line_items_attributes:
+          type: array
+          description: 'Line items for the invoice. Each line item represents a product/variant being invoiced.
+
+            Required fields for each line item: `amount`, `quantity`, `variant_id`, `products_price_id`.
+
+            '
+          items:
+            type: object
+            required:
+            - amount
+            - quantity
+            - variant_id
+            - products_price_id
+            properties:
+              amount:
+                type: string
+                description: The price amount for this line item.
+              quantity:
+                type: integer
+                description: The quantity of items.
+              variant_id:
+                type: integer
+                description: The product variant ID.
+              products_price_id:
+                type: integer
+                description: The product price ID.
+              description:
+                type:
+                - string
+                - 'null'
+                description: Optional description for the line item.
+      example:
+        orders_invoice:
+          external_id: inv-ext-12345
+          status: paid
+          invoice_type: one_time_sale
+          invoice_number: INV-001
+          shipping_amount: '9.99'
+          issued_at: '2025-01-01T00:00:00.000Z'
+          due_at: '2025-01-15T00:00:00.000Z'
+          paid_at: '2025-01-10T00:00:00.000Z'
+          line_items_attributes:
+          - amount: '99.00'
+            quantity: 1
+            variant_id: 123
+            products_price_id: 456
+            description: Premium Widget
+    ContactBaseAttributes:
+      type: object
+      title: Contacts
+      description: Contacts
+      properties:
+        id:
+          type: integer
+          description: Contact ID
+        public_id:
+          type: string
+          description: Contact public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        anonymous:
+          type:
+          - integer
+          - 'null'
+          description: Anonymous
+        email_address:
+          type:
+          - string
+          - 'null'
+          description: The contact's email address. It is currently not expected to be null and is the main identifier for a contact.
+        first_name:
+          type:
+          - string
+          - 'null'
+          description: First name
+        last_name:
+          type:
+          - string
+          - 'null'
+          description: Last name
+        phone_number:
+          type:
+          - string
+          - 'null'
+          description: Phone number
+        time_zone:
+          type:
+          - string
+          - 'null'
+          description: 'The human-readable time zone, usually set dynamically by the app for the contact, for example, during opt-in.
+
+            Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
+
+            '
+        uuid:
+          type: string
+          description: UUID
+        unsubscribed_at:
+          type:
+          - string
+          - 'null'
+          description: Unsubscribed
+        last_notification_email_sent_at:
+          type:
+          - string
+          - 'null'
+          description: Last notification email sent
+        email_suppression_reason:
+          type:
+          - string
+          - 'null'
+          description: The reason the contact's email address is suppressed from receiving emails. Null when no suppression exists.
+        is_active:
+          type: boolean
+          description: Whether the contact is active. A contact is considered active when they have a valid email address, have not unsubscribed, have not been deleted, and have no email suppression reason.
+        fb_url:
+          type:
+          - string
+          - 'null'
+          description: Facebook URL
+        twitter_url:
+          type:
+          - string
+          - 'null'
+          description: Twitter URL
+        instagram_url:
+          type:
+          - string
+          - 'null'
+          description: Instagram URL
+        linkedin_url:
+          type:
+          - string
+          - 'null'
+          description: LinkedIn URL
+        website_url:
+          type:
+          - string
+          - 'null'
+          description: Website URL
+        created_at:
+          type: string
+          format: date-time
+          description: Date added
+        updated_at:
+          type: string
+          format: date-time
+          description: Last updated
+        tags:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            title: Contact Tags
+            description: Contact Tags
+            properties:
+              id:
+                type: integer
+                description: Tag ID
+              public_id:
+                type: string
+                description: Tag public ID
+              name:
+                type: string
+                description: Name
+              color:
+                type: string
+                description: Color
+              applied_at:
+                type:
+                - string
+                - 'null'
+                description: The datetime the tag was applied by creating a Contacts::AppliedTag that maps the tag to the contact.
+          description: Contact Tags
+        custom_attributes:
+          type: object
+          additionalProperties:
+            type: string
+          description: A dynamic key-value pair object where both the key and value are strings. Custom attributes are usually added to the contact when they submit forms that contain custom contact attributes. But you can also add them via the API using the modifying endpoints like Create/Update/Upsert Contact.
+        visits:
+          allOf:
+          - $ref: '#/components/schemas/VisitsAttributes'
+          description: Visit tracking information for this contact, including first visit, last visit, and last visit with UTM parameters
+      example:
+        id: 24359
+        public_id: vQxYMj
+        workspace_id: 4
+        anonymous: 0
+        email_address: jane.doe@example.com
+        first_name: Jane
+        last_name: Doe
+        phone_number: '+18005550199'
+        time_zone: Madrid
+        uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+        unsubscribed_at: null
+        last_notification_email_sent_at: null
+        email_suppression_reason: null
+        is_active: true
+        fb_url: null
+        twitter_url: null
+        instagram_url: null
+        linkedin_url: null
+        website_url: null
+        created_at: '2026-01-09T15:27:56.647Z'
+        updated_at: '2026-01-09T15:28:08.075Z'
+        tags: []
+        custom_attributes: {}
+        visits:
+          first_visit:
+            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+            utm_source: google
+            utm_medium: cpc
+            utm_campaign: spring_sale
+            utm_term: running shoes
+            utm_content: ad_variant_a
+            ip: 192.168.1.1
+            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+            referrer: https://www.google.com/search?q=example
+            referring_domain: google.com
+            landing_page: https://example.com/products/shoes
+            browser: Chrome
+            os: Mac OS X
+            device_type: desktop
+            started_at: '2026-01-09T14:23:45.123Z'
+            created_at: '2026-01-09T14:23:45.123Z'
+            updated_at: '2026-01-09T14:23:45.123Z'
+          last_visit: null
+          last_visit_with_utm:
+            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+            utm_source: google
+            utm_medium: cpc
+            utm_campaign: spring_sale
+            utm_term: running shoes
+            utm_content: ad_variant_a
+            ip: 192.168.1.1
+            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+            referrer: https://www.google.com/search?q=example
+            referring_domain: google.com
+            landing_page: https://example.com/products/shoes
+            browser: Chrome
+            os: Mac OS X
+            device_type: desktop
+            started_at: '2026-01-09T14:23:45.123Z'
+            created_at: '2026-01-09T14:23:45.123Z'
+            updated_at: '2026-01-09T14:23:45.123Z'
+      required:
+      - anonymous
+      - created_at
+      - custom_attributes
+      - email_address
+      - email_suppression_reason
+      - fb_url
+      - first_name
+      - id
+      - instagram_url
+      - is_active
+      - last_name
+      - last_notification_email_sent_at
+      - linkedin_url
+      - phone_number
+      - public_id
+      - tags
+      - time_zone
+      - twitter_url
+      - unsubscribed_at
+      - updated_at
+      - uuid
+      - visits
+      - website_url
+      - workspace_id
     OrdersInvoiceParametersUpdate:
       type: object
       title: External Invoice Update
@@ -3452,6 +3378,76 @@ components:
           - id: 682
             amount: '99.00'
             quantity: 2
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    InvoiceFilter:
+      name: filter
+      in: query
+      description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[id]=value&filter[another_property]=value1,value2`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
+
+        '
+      required: false
+      schema:
+        type: object
+        properties:
+          id:
+            type: string
+            description: A comma-separated list of Invoice IDs to filter by.
+            example: 1,42
+          status:
+            type: string
+            description: The status of the invoice to filter by.
+            example: pending
+          invoice_type:
+            type: string
+            description: The type of the invoice to filter by.
+            example: one_time_sale
+          invoice_number:
+            type: string
+            description: A comma-separated list of Invoice Numbers to filter by.
+            example: '#1000,#1001'
+          external_id:
+            type: string
+            description: A comma-separated list of External IDs to filter by.
+            example: inv_1234567890,inv_0987654321
+      style: deepObject
+      explode: true
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
   headers:
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.

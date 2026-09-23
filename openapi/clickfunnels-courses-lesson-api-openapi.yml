@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -34,9 +32,7 @@ tags:
     course progress percent.
 
 
-    See [Lessons](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#lessons) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for creating and updating lessons.
-
-    '
+    See Lessons in the Courses Skill for creating and updating lessons.'
 paths:
   /courses/sections/{section_id}/lessons:
     get:
@@ -52,9 +48,7 @@ paths:
 
         Pass sort_property=sort_order for the builder''s display order of lessons
 
-        within the section (sort_order is scoped per section, starting at 0).
-
-        '
+        within the section (sort_order is scoped per section, starting at 0).'
       operationId: listCoursesLessons
       parameters:
       - name: section_id
@@ -140,7 +134,7 @@ paths:
       tags:
       - Courses::Lesson
       summary: Create Lesson
-      description: Add a new Lesson. The lesson body is authored in Markdown via `lesson_content`, not PML. See [Lessons](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#lessons) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md).
+      description: Add a new Lesson. The lesson body is authored in Markdown via `lesson_content`, not PML. See Lessons in the Courses Skill.
       operationId: createCoursesLessons
       parameters:
       - name: section_id
@@ -222,7 +216,6 @@ paths:
       tags:
       - Courses::Lesson
       summary: Fetch Lesson
-      description: Fetch Lesson
       operationId: getCoursesLessons
       parameters:
       - $ref: '#/components/parameters/id'
@@ -270,7 +263,7 @@ paths:
       tags:
       - Courses::Lesson
       summary: Update Lesson
-      description: Update Lesson. See [Permitted lesson fields](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#permitted-lesson-fields) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md); the Markdown body field is `lesson_content`.
+      description: Update Lesson. See Permitted lesson fields in the Courses Skill; the Markdown body field is `lesson_content`.
       operationId: updateCoursesLessons
       parameters:
       - $ref: '#/components/parameters/id'
@@ -350,7 +343,7 @@ paths:
       summary: Publish Lesson
       description: 'Makes a single lesson live by setting `published_at`. Pass an optional future `published_at` to schedule it; omit it to publish now. A past `published_at` is rejected. A lesson''s `published_at` is not writable via `updateCoursesLessons`, so this is the way to publish or schedule an individual lesson.
 
-        See [Publishing](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#publishing) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md) for the other publish paths.'
+        See Publishing in the Courses Skill for the other publish paths.'
       operationId: publishCoursesLessons
       parameters:
       - $ref: '#/components/parameters/id'
@@ -420,21 +413,22 @@ paths:
                 error: published_at cannot be in the past; omit it to publish now or pass a future datetime to schedule
 components:
   headers:
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
       schema:
         type: string
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -445,45 +439,13 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
-    CoursesLessonParametersUpdate:
-      type: object
-      title: Lessons
-      description: Lessons
-      required: []
-      properties:
-        title:
-          type: string
-          description: Title
-        body:
-          type:
-          - string
-          - 'null'
-          description: Description
-        lesson_content:
-          type:
-          - string
-          - 'null'
-          description: Markdown lesson content. This is the primary content field for the lesson body. It is Markdown, not PML. See [Lessons](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#lessons) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md).
-        image_id:
-          type:
-          - string
-          - 'null'
-          description: Public ID of an image in the workspace to use as the lesson image.
-      example:
-        courses_lesson:
-          title: Lesson 1
-          body: Example Lesson
-          lesson_content: '## Welcome
-
-            This is the lesson content.'
     CoursesLessonAttributes:
       type: object
       title: Lessons
@@ -560,6 +522,37 @@ components:
       - sort_order
       - title
       - updated_at
+    CoursesLessonParametersUpdate:
+      type: object
+      title: Lessons
+      description: Lessons
+      required: []
+      properties:
+        title:
+          type: string
+          description: Title
+        body:
+          type:
+          - string
+          - 'null'
+          description: Description
+        lesson_content:
+          type:
+          - string
+          - 'null'
+          description: Markdown lesson content. This is the primary content field for the lesson body. It is Markdown, not PML. See [Lessons](https://accounts.myclickfunnels.com/.well-known/courses/skill.md#lessons) in the [Courses Skill](https://accounts.myclickfunnels.com/.well-known/courses/skill.md).
+        image_id:
+          type:
+          - string
+          - 'null'
+          description: Public ID of an image in the workspace to use as the lesson image.
+      example:
+        courses_lesson:
+          title: Lesson 1
+          body: Example Lesson
+          lesson_content: '## Welcome
+
+            This is the lesson content.'
   securitySchemes:
     BearerAuth:
       type: http

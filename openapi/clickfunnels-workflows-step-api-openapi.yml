@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -27,9 +25,7 @@ tags:
   description: 'Action and split steps within a workflow. The step `type` (e.g. `send_email_step`, `delay_step`, `conditional_split_step`) is conveyed via the `step_type_settings` map — the single key in that map is always the step type.
 
 
-    See [Steps](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#steps) and [Branching](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#branching) in the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md).
-
-    '
+    See Steps and Branching in the Workflows Skill.'
 paths:
   /workflows/{workflow_id}/steps:
     get:
@@ -42,9 +38,7 @@ paths:
 
         container-local and not globally unique; use `GET /workflows/{id}/structure`
 
-        when clients need execution order.
-
-        '
+        when clients need execution order.'
       operationId: listWorkflowSteps
       externalDocs:
         description: Workflows Skill - steps
@@ -180,9 +174,7 @@ paths:
 
         workspace''s email settings. Configure it first with
 
-        `PUT /workspaces/{workspace_id}/emails/settings`; an incomplete address returns 422.
-
-        '
+        `PUT /workspaces/{workspace_id}/emails/settings`; an incomplete address returns 422.'
       operationId: createWorkflowStep
       externalDocs:
         description: Workflows Skill - steps and branching
@@ -291,9 +283,7 @@ paths:
       tags:
       - Workflows::Step
       summary: Fetch Step
-      description: 'Retrieve a single workflow step.
-
-        '
+      description: Retrieve a single workflow step.
       operationId: getWorkflowStep
       externalDocs:
         description: Workflows Skill - steps
@@ -374,9 +364,7 @@ paths:
 
         changed here (returns 422) — edit the email in place with `html_body`/`text_body`, or
 
-        create a new step to use a different template.
-
-        '
+        create a new step to use a different template.'
       operationId: updateWorkflowStep
       externalDocs:
         description: Workflows Skill - steps and branching
@@ -481,9 +469,7 @@ paths:
       summary: Delete Step
       description: 'Delete a step from a workflow. Split steps and their branch contents are removed
 
-        recursively.
-
-        '
+        recursively.'
       operationId: deleteWorkflowStep
       externalDocs:
         description: Workflows Skill - steps and branching
@@ -529,47 +515,93 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
-  schemas:
-    WorkflowsStepParametersUpdate:
-      type: object
-      title: Update Workflows::Step
-      description: 'Parameters for updating an existing step. Only `step_type_settings`,
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
 
-        `name`, and placement fields (`parent_step_id`, `branch`, `position`,
-
-        `after_step_id`) are accepted. All are optional.
-
-
-        Moving split steps is not supported and returns 422.
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
 
         '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    IntegerOrPublicId:
+      type:
+      - integer
+      - string
+      description: Integer database id or obfuscated public_id.
+    WorkflowsStepParametersCreate:
+      type: object
+      title: Create Workflows::Step
+      description: "Parameters for adding a new step to a workflow. `step_type_settings` must contain\nexactly one key naming the step type.\n\n### Placement\n\n- **Trunk (default)**: omit `parent_step_id` and `branch` to append at the end of the main sequence.\n- **Inside a split branch**: set `parent_step_id` to the id (integer or public_id) of the split step, and `branch` to:\n  - `matched` or `unmatched` for a `conditional_split_step` (the legacy `match`/`fallback` aliases are still accepted)\n  - A 0-based variant index string (`\"0\"`, `\"1\"`) for a `split_test_step`\n- **Specific position**: use `position` (0-based integer) or `after_step_id` (id of the preceding step).\n\nSee [Branching](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#branching) in the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md) for where a step with no placement lands relative to a split.\n\nFor `split_test_step`, the `variants` array must have exactly 2 entries with integer weights summing to 100.\nFor `conditional_split_step`, provide `condition.filter_id` (integer id or obfuscated RefineFilter public_id).\n\nCreating a `send_email_step` requires a complete business mailing address in\nthe workspace's email settings. Configure it with\n`PUT /workspaces/{workspace_id}/emails/settings`; otherwise creation returns `422`.\n"
       required:
       - workflows_step
       properties:
         workflows_step:
           type: object
+          required:
+          - step_type_settings
           properties:
             name:
               type: string
+              description: Optional human-readable name. Defaults to a titleized version of the step type.
             parent_step_id:
               $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Move this step into a split branch (sets new container).
+              description: Step id or public_id of a split step. Required when placing a step inside a branch.
             branch:
               type: string
+              description: Branch selector — `matched`/`unmatched` for conditional splits (legacy `match`/`fallback` still accepted); `"0"`/`"1"` for split tests.
             position:
               type: integer
+              description: 0-based position within the container. Mutually exclusive with `after_step_id`.
             after_step_id:
               $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Step id or public_id of the step to insert after. Mutually exclusive with `position`.
             step_type_settings:
               type: object
-              description: 'One-key settings map; the key must match the step''s existing type.
+              description: 'Exactly one key naming the step type, with its settings as the value. On a
 
+                `send_email_step` a `template_id` is copied into a new step-owned template, and
 
-                A `send_email_step` update **cannot change `template_id`** (it is create-only —
-
-                including it returns `422`); edit the email in place with `html_body`/`text_body`
-
-                instead, or create a new step to use a different template.
+                you may instead pass the write-only `html_body`/`text_body` to author one inline.
 
 
                 **See the `step_type_settings` field on the Workflows::Step response schema
@@ -581,16 +613,12 @@ components:
                 '
       example:
         workflows_step:
+          name: Send Welcome Email
           step_type_settings:
-            delay_step:
-              delay_type: relative
-              duration: 7
-              interval: days
-    IntegerOrPublicId:
-      type:
-      - integer
-      - string
-      description: Integer database id or obfuscated public_id.
+            send_email_step:
+              subject: Welcome!
+              template_id: TmPl01
+              from_address_id: FrAd01
     WorkflowsStepAttributes:
       type: object
       title: Workflows::Step
@@ -807,40 +835,46 @@ components:
       - step_type_settings
       - updated_at
       - workflow_id
-    WorkflowsStepParametersCreate:
+    WorkflowsStepParametersUpdate:
       type: object
-      title: Create Workflows::Step
-      description: "Parameters for adding a new step to a workflow. `step_type_settings` must contain\nexactly one key naming the step type.\n\n### Placement\n\n- **Trunk (default)**: omit `parent_step_id` and `branch` to append at the end of the main sequence.\n- **Inside a split branch**: set `parent_step_id` to the id (integer or public_id) of the split step, and `branch` to:\n  - `matched` or `unmatched` for a `conditional_split_step` (the legacy `match`/`fallback` aliases are still accepted)\n  - A 0-based variant index string (`\"0\"`, `\"1\"`) for a `split_test_step`\n- **Specific position**: use `position` (0-based integer) or `after_step_id` (id of the preceding step).\n\nSee [Branching](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#branching) in the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md) for where a step with no placement lands relative to a split.\n\nFor `split_test_step`, the `variants` array must have exactly 2 entries with integer weights summing to 100.\nFor `conditional_split_step`, provide `condition.filter_id` (integer id or obfuscated RefineFilter public_id).\n\nCreating a `send_email_step` requires a complete business mailing address in\nthe workspace's email settings. Configure it with\n`PUT /workspaces/{workspace_id}/emails/settings`; otherwise creation returns `422`.\n"
+      title: Update Workflows::Step
+      description: 'Parameters for updating an existing step. Only `step_type_settings`,
+
+        `name`, and placement fields (`parent_step_id`, `branch`, `position`,
+
+        `after_step_id`) are accepted. All are optional.
+
+
+        Moving split steps is not supported and returns 422.
+
+        '
       required:
       - workflows_step
       properties:
         workflows_step:
           type: object
-          required:
-          - step_type_settings
           properties:
             name:
               type: string
-              description: Optional human-readable name. Defaults to a titleized version of the step type.
             parent_step_id:
               $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Step id or public_id of a split step. Required when placing a step inside a branch.
+              description: Move this step into a split branch (sets new container).
             branch:
               type: string
-              description: Branch selector — `matched`/`unmatched` for conditional splits (legacy `match`/`fallback` still accepted); `"0"`/`"1"` for split tests.
             position:
               type: integer
-              description: 0-based position within the container. Mutually exclusive with `after_step_id`.
             after_step_id:
               $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Step id or public_id of the step to insert after. Mutually exclusive with `position`.
             step_type_settings:
               type: object
-              description: 'Exactly one key naming the step type, with its settings as the value. On a
+              description: 'One-key settings map; the key must match the step''s existing type.
 
-                `send_email_step` a `template_id` is copied into a new step-owned template, and
 
-                you may instead pass the write-only `html_body`/`text_body` to author one inline.
+                A `send_email_step` update **cannot change `template_id`** (it is create-only —
+
+                including it returns `422`); edit the email in place with `html_body`/`text_body`
+
+                instead, or create a new step to use a different template.
 
 
                 **See the `step_type_settings` field on the Workflows::Step response schema
@@ -852,59 +886,11 @@ components:
                 '
       example:
         workflows_step:
-          name: Send Welcome Email
           step_type_settings:
-            send_email_step:
-              subject: Welcome!
-              template_id: TmPl01
-              from_address_id: FrAd01
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    sort_property:
-      name: sort_property
-      in: query
-      description: 'Sort property of a list response. The default is id and thus the created_at order.
-
-        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
-
-        '
-      required: false
-      schema:
-        type: string
-        enum:
-        - id
-        - updated_at
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
+            delay_step:
+              delay_type: relative
+              duration: 7
+              interval: days
   securitySchemes:
     BearerAuth:
       type: http

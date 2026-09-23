@@ -1,15 +1,13 @@
 openapi: 3.2.0
 info:
-  title: ClickFunnels Communities::Memberships::Add To Group Action API
+  title: ClickFunnels Communities::Memberships::Add To Group Action…
   termsOfService: https://www.clickfunnels.com/terms-of-service
   contact:
     name: ClickFunnels API Team
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -27,18 +25,14 @@ tags:
   description: '> Async bulk action that adds multiple members to one or more community spaces (groups) in the background.
 
 
-    Creating an AddToGroupAction enqueues a background job and immediately returns an action record. Poll the `show` endpoint using the returned `id` and check the `status` field (`queued` → `processing` → `completed`) to track progress.
-
-    '
+    Creating an AddToGroupAction enqueues a background job and immediately returns an action record. Poll the `show` endpoint using the returned `id` and check the `status` field (`queued` → `processing` → `completed`) to track progress.'
 paths:
   /communities/{community_id}/memberships/add_to_group_actions:
     post:
       tags:
       - Communities::Memberships::AddToGroupAction
       summary: Create Membership Add-To-Group Action
-      description: 'Enqueue an async background job to add one or more community members to one or more spaces (groups). The action record is returned immediately with `status: queued`. Poll `GET /communities/memberships/add_to_group_actions/{id}` until `status` is `completed`.
-
-        '
+      description: 'Enqueue an async background job to add one or more community members to one or more spaces (groups). The action record is returned immediately with `status: queued`. Poll `GET /communities/memberships/add_to_group_actions/{id}` until `status` is `completed`.'
       operationId: createCommunitiesMembershipsAddToGroupActions
       parameters:
       - name: community_id
@@ -220,6 +214,33 @@ components:
       - target_count
       - target_ids
       - updated_at
+    CommunitiesMembershipsAddToGroupActionParameters:
+      type: object
+      title: Communities::Memberships::AddToGroupAction
+      description: Communities::Memberships::AddToGroupAction
+      properties:
+        target_all:
+          type: boolean
+          description: When true, add all members in the community to the specified spaces (target_ids is ignored)
+        target_ids:
+          type: array
+          description: Array of membership public IDs to add to the spaces. Required when target_all is false.
+          items:
+            type: string
+        space_ids:
+          type: array
+          description: Array of space public IDs to add the members to
+          items:
+            type: string
+      example:
+        communities_memberships_add_to_group_action:
+          target_all: false
+          target_ids:
+          - AbCdEf
+          - GhIjKl
+          space_ids:
+          - SpAcEa
+          - SpAcEb
     CommunitiesActionAttributes:
       type: object
       title: Async Action
@@ -302,33 +323,6 @@ components:
       - target_count
       - target_ids
       - updated_at
-    CommunitiesMembershipsAddToGroupActionParameters:
-      type: object
-      title: Communities::Memberships::AddToGroupAction
-      description: Communities::Memberships::AddToGroupAction
-      properties:
-        target_all:
-          type: boolean
-          description: When true, add all members in the community to the specified spaces (target_ids is ignored)
-        target_ids:
-          type: array
-          description: Array of membership public IDs to add to the spaces. Required when target_all is false.
-          items:
-            type: string
-        space_ids:
-          type: array
-          description: Array of space public IDs to add the members to
-          items:
-            type: string
-      example:
-        communities_memberships_add_to_group_action:
-          target_all: false
-          target_ids:
-          - AbCdEf
-          - GhIjKl
-          space_ids:
-          - SpAcEa
-          - SpAcEb
   parameters:
     id:
       name: id

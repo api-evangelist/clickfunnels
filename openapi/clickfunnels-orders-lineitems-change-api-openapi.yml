@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -24,30 +22,7 @@ security:
 - BearerAuth: []
 tags:
 - name: Orders::LineItems::Change
-  description: '> Preview and commit variant/price changes on existing subscription line items.
-
-
-    A self-serve flow for switching the variant or price on a subscription line item. The
-
-    surface has three endpoints — discovery (`Products::Prices::ChangeOption`) tells
-
-    you which targets are allowed; this resource is the actual change. `POST` to `…/changes`
-
-    to preview the upcoming invoice (`preview: true`); `POST` to `…/changes/perform` to commit
-
-    (`preview: false`). The response envelope is identical between preview and commit and only
-
-    the `preview` flag flips.
-
-
-    Allowed transitions are constrained by merchant-configured upgrade/downgrade option rows.
-
-    See the discovery endpoint for sourcing legal `products_price_id` targets.
-
-
-    See the [Subscription Changes Skill](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md) for the full flow — [preview](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-2---preview-the-change) and [commit](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-3---commit-the-change).
-
-    '
+  description: '> Preview and commit variant/price changes on existing subscription line items.'
 paths:
   /orders/line_items/{line_item_id}/changes:
     post:
@@ -90,11 +65,9 @@ paths:
         underlying record.
 
 
-        See [Step 2 - Preview the change](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-2---preview-the-change) in the [Subscription Changes Skill](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md),
+        See Step 2 - Preview the change in the Subscription Changes Skill,
 
-        and [Step 1 - Discover what''s allowed](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-1---discover-whats-allowed) for sourcing a legal target.
-
-        '
+        and Step 1 - Discover what''s allowed for sourcing a legal target.'
       operationId: previewOrdersLineItemsChange
       parameters:
       - $ref: '#/components/parameters/line_item_id'
@@ -257,11 +230,9 @@ paths:
         underlying record.
 
 
-        See [Step 3 - Commit the change](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#step-3---commit-the-change) in the [Subscription Changes Skill](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md),
+        See Step 3 - Commit the change in the Subscription Changes Skill,
 
-        plus [Eligibility](https://accounts.myclickfunnels.com/.well-known/subscription-changes/skill.md#eligibility) for which orders can be changed this way.
-
-        '
+        plus Eligibility for which orders can be changed this way.'
       operationId: performOrdersLineItemsChange
       parameters:
       - $ref: '#/components/parameters/line_item_id'
@@ -447,6 +418,180 @@ components:
           products_price_id: 24
           prorate: true
           effective_time: now
+    ProductsPriceMinimal:
+      type: object
+      title: Products Price (Minimal)
+      description: 'Minimal price representation used wherever a price appears as a nested
+
+        attribute (line items, upgrade/downgrade discovery).
+
+        '
+      properties:
+        id:
+          type: integer
+        public_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        key:
+          type:
+          - string
+          - 'null'
+        amount:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        duration:
+          type:
+          - integer
+          - 'null'
+        interval:
+          type:
+          - string
+          - 'null'
+        interval_count:
+          type:
+          - integer
+          - 'null'
+      example:
+        id: 24
+        public_id: aBcDeF
+        name: Pro Monthly
+        key: pro_monthly_2024
+        amount: '20.00'
+        currency: USD
+        duration: null
+        interval: months
+        interval_count: 1
+    OrdersLineItemAttributes:
+      type: object
+      title: Line items
+      description: Line items
+      properties:
+        id:
+          type: integer
+          description: Line item ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Line item public ID
+        order_id:
+          type: integer
+          description: Order ID
+        quantity:
+          type:
+          - integer
+          - 'null'
+          description: Quantity
+        prorated:
+          type:
+          - string
+          - 'null'
+          description: Prorate invoice
+        created_at:
+          type:
+          - string
+          - 'null'
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          description: Updated
+        original_product:
+          type: object
+          title: Product
+          description: Product
+          properties:
+            id:
+              type: integer
+              description: ID
+            public_id:
+              type:
+              - string
+              - 'null'
+              description: Product public ID
+            name:
+              type: string
+              description: Product name
+        products_price:
+          $ref: '#/components/schemas/ProductsPriceMinimal'
+        products_variant:
+          type:
+          - object
+          - 'null'
+          title: Product Variant
+          description: Product Variant
+          properties:
+            id:
+              type: integer
+              description: ID
+            public_id:
+              type:
+              - string
+              - 'null'
+              description: Variant public ID
+            name:
+              type: string
+              description: Name
+            description:
+              type:
+              - string
+              - 'null'
+              description: The description of the variant. The description of the **default variant** is the user-facing description of the `Product`.
+            sku:
+              type:
+              - string
+              - 'null'
+              description: SKU
+      example:
+        id: 674
+        public_id: GjPVnN
+        order_id: 22642
+        quantity: 2
+        prorated: null
+        created_at: '2026-01-10T20:15:01.536Z'
+        updated_at: '2026-01-10T20:15:01.536Z'
+        original_product:
+          id: 6512
+          public_id: YRnzRY
+          name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+        products_price:
+          id: 22229
+          public_id: YqEWxY
+          name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+          key: null
+          amount: '198.00'
+          currency: usd
+          duration: null
+          interval: null
+          interval_count: null
+        products_variant:
+          id: 22228
+          public_id: JdknyN
+          name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+          description: null
+          sku: SIYP-BLACK-PREMIUM-001
+      required:
+      - created_at
+      - id
+      - order_id
+      - original_product
+      - products_price
+      - products_variant
+      - prorated
+      - public_id
+      - quantity
+      - updated_at
     OrdersLineItemsChangeResponse:
       type: object
       title: Line Item Change
@@ -618,180 +763,6 @@ components:
               interval: months
               interval_count: 1
             products_variant: null
-    OrdersLineItemAttributes:
-      type: object
-      title: Line items
-      description: Line items
-      properties:
-        id:
-          type: integer
-          description: Line item ID
-        public_id:
-          type:
-          - string
-          - 'null'
-          description: Line item public ID
-        order_id:
-          type: integer
-          description: Order ID
-        quantity:
-          type:
-          - integer
-          - 'null'
-          description: Quantity
-        prorated:
-          type:
-          - string
-          - 'null'
-          description: Prorate invoice
-        created_at:
-          type:
-          - string
-          - 'null'
-          description: Added
-        updated_at:
-          type:
-          - string
-          - 'null'
-          description: Updated
-        original_product:
-          type: object
-          title: Product
-          description: Product
-          properties:
-            id:
-              type: integer
-              description: ID
-            public_id:
-              type:
-              - string
-              - 'null'
-              description: Product public ID
-            name:
-              type: string
-              description: Product name
-        products_price:
-          $ref: '#/components/schemas/ProductsPriceMinimal'
-        products_variant:
-          type:
-          - object
-          - 'null'
-          title: Product Variant
-          description: Product Variant
-          properties:
-            id:
-              type: integer
-              description: ID
-            public_id:
-              type:
-              - string
-              - 'null'
-              description: Variant public ID
-            name:
-              type: string
-              description: Name
-            description:
-              type:
-              - string
-              - 'null'
-              description: The description of the variant. The description of the **default variant** is the user-facing description of the `Product`.
-            sku:
-              type:
-              - string
-              - 'null'
-              description: SKU
-      example:
-        id: 674
-        public_id: GjPVnN
-        order_id: 22642
-        quantity: 2
-        prorated: null
-        created_at: '2026-01-10T20:15:01.536Z'
-        updated_at: '2026-01-10T20:15:01.536Z'
-        original_product:
-          id: 6512
-          public_id: YRnzRY
-          name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
-        products_price:
-          id: 22229
-          public_id: YqEWxY
-          name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
-          key: null
-          amount: '198.00'
-          currency: usd
-          duration: null
-          interval: null
-          interval_count: null
-        products_variant:
-          id: 22228
-          public_id: JdknyN
-          name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
-          description: null
-          sku: SIYP-BLACK-PREMIUM-001
-      required:
-      - created_at
-      - id
-      - order_id
-      - original_product
-      - products_price
-      - products_variant
-      - prorated
-      - public_id
-      - quantity
-      - updated_at
-    ProductsPriceMinimal:
-      type: object
-      title: Products Price (Minimal)
-      description: 'Minimal price representation used wherever a price appears as a nested
-
-        attribute (line items, upgrade/downgrade discovery).
-
-        '
-      properties:
-        id:
-          type: integer
-        public_id:
-          type:
-          - string
-          - 'null'
-        name:
-          type:
-          - string
-          - 'null'
-        key:
-          type:
-          - string
-          - 'null'
-        amount:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        duration:
-          type:
-          - integer
-          - 'null'
-        interval:
-          type:
-          - string
-          - 'null'
-        interval_count:
-          type:
-          - integer
-          - 'null'
-      example:
-        id: 24
-        public_id: aBcDeF
-        name: Pro Monthly
-        key: pro_monthly_2024
-        amount: '20.00'
-        currency: USD
-        duration: null
-        interval: months
-        interval_count: 1
   parameters:
     line_item_id:
       name: line_item_id

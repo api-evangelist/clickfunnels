@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -24,7 +22,7 @@ security:
 - BearerAuth: []
 tags:
 - name: Sales::Pipeline
-  description: '>  Sales Pipelines
+  description: '> Sales Pipelines
 
 
     Pipelines allow you to organize, track and advance Opportunies between different Stages. A Pipeline consists of multiple Stages.
@@ -32,16 +30,13 @@ tags:
 
     When creating a Pipeline, you must specify one or more stages by passing them in the `stages_attributes` parameter. The Stages
 
-    will be created in the order in which they are given in the `stages_attributes` parameter.
-
-    '
+    will be created in the order in which they are given in the `stages_attributes` parameter.'
 paths:
   /workspaces/{workspace_id}/sales/pipelines:
     get:
       tags:
       - Sales::Pipeline
       summary: List Pipelines
-      description: List Pipelines
       operationId: listSalesPipelines
       parameters:
       - name: workspace_id
@@ -173,7 +168,6 @@ paths:
       tags:
       - Sales::Pipeline
       summary: Create Pipeline
-      description: Create Pipeline
       operationId: createSalesPipelines
       parameters:
       - name: workspace_id
@@ -263,7 +257,6 @@ paths:
       tags:
       - Sales::Pipeline
       summary: Fetch Pipeline
-      description: Fetch Pipeline
       operationId: getSalesPipelines
       parameters:
       - $ref: '#/components/parameters/id'
@@ -333,7 +326,6 @@ paths:
       tags:
       - Sales::Pipeline
       summary: Update Pipeline
-      description: Update Pipeline
       operationId: updateSalesPipelines
       parameters:
       - $ref: '#/components/parameters/id'
@@ -426,30 +418,6 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
-    SalesPipelineParametersUpdate:
-      type: object
-      title: Pipelines
-      description: Pipelines
-      required: []
-      properties:
-        name:
-          type: string
-          description: Pipeline name
-        stages_attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                description: The name of the stage
-              close_probability:
-                type: integer
-                description: The probability of closing a deal in this stage
-          description: The stages of the pipeline. The stages are ordered by the position attribute.
-      example:
-        sales_pipeline:
-          name: Example Pipeline
     SalesPipelineAttributes:
       type: object
       title: Pipelines
@@ -609,13 +577,38 @@ components:
       example:
         sales_pipeline:
           name: Example Pipeline
+    SalesPipelineParametersUpdate:
+      type: object
+      title: Pipelines
+      description: Pipelines
+      required: []
+      properties:
+        name:
+          type: string
+          description: Pipeline name
+        stages_attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the stage
+              close_probability:
+                type: integer
+                description: The probability of closing a deal in this stage
+          description: The stages of the pipeline. The stages are ordered by the position attribute.
+      example:
+        sales_pipeline:
+          name: Example Pipeline
   parameters:
-    id:
-      name: id
-      in: path
-      required: true
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -640,13 +633,12 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   headers:
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.

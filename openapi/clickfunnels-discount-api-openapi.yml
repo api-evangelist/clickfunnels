@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -24,51 +22,7 @@ security:
 - BearerAuth: []
 tags:
 - name: Discount
-  description: '> A reusable, workspace-scoped discount the checkout applies on top of a price.
-
-
-    A Discount is the right tool for a coupon code, a percentage/amount off, or a
-
-    time-boxed sale - anything you would otherwise fake with a second "sale" price.
-
-    It is one reusable object applied on top of the price, so you can start, scope,
-
-    and expire it without touching the product''s prices.
-
-
-    A `code`-type discount (the default) needs a unique `code` that buyers redeem at
-
-    checkout - letters, numbers and hyphens only. `discount_method` decides which amount
-
-    field is required: `percentage` needs `percent` (0.01-100); `fixed` needs a positive
-
-    `amount`. `currency` defaults to the workspace currency and `apply_from` defaults to
-
-    now, so a discount is live immediately unless you schedule it with a future
-
-    `apply_from` and/or expire it with `apply_until`.
-
-
-    By default a discount applies to `all_products`. Set `applies_to` to
-
-    `specific_products` / `specific_variants` / `specific_collections` and pass the
-
-    matching `product_ids` / `variant_ids` / `products_collection_ids` array to scope it.
-
-
-    Two lock-out rules govern the end of a discount''s life. Once it has been redeemed on
-
-    an order its money-affecting fields are locked (422 on update) while renaming and
-
-    expiring still work. Once it has actually expired it is frozen completely - every
-
-    update returns 422 - so rename before you expire, not after. A discount attached to
-
-    an order cannot be deleted at all; `redemptions_count` does not predict that, since
-
-    it only counts completed sales.
-
-    '
+  description: '> A reusable, workspace-scoped discount the checkout applies on top of a price.'
 paths:
   /workspaces/{workspace_id}/discounts:
     get:
@@ -222,9 +176,7 @@ paths:
       description: 'Create a discount in a workspace. A `code`-type discount (the default) needs a unique `code`; a `percentage` discount needs `percent`; a `fixed` discount needs a positive `amount`.
 
 
-        Creating a discount publishes the code; it does not attach it to anything. The link between an order and a discount is a separate applied-discount record, written when a buyer redeems the code at checkout or when a ClickFunnels user applies it in the admin UI - which is why `POST /api/v2/workspaces/{workspace_id}/orders` takes no discount field and the `discount_ids` on an order are read-only. Writing applied discounts is not part of this API yet, and when it lands it will be that record you create rather than a discount field on the order. Until then an integration creates, reads, updates, expires and deletes discounts, and reads back which orders ended up carrying them.
-
-        '
+        Creating a discount publishes the code; it does not attach it to anything. The link between an order and a discount is a separate applied-discount record, written when a buyer redeems the code at checkout or when a ClickFunnels user applies it in the admin UI - which is why `POST /api/v2/workspaces/{workspace_id}/orders` takes no discount field and the `discount_ids` on an order are read-only. Writing applied discounts is not part of this API yet, and when it lands it will be that record you create rather than a discount field on the order. Until then an integration creates, reads, updates, expires and deletes discounts, and reads back which orders ended up carrying them.'
       operationId: createDiscounts
       parameters:
       - name: workspace_id
@@ -428,9 +380,7 @@ paths:
       tags:
       - Discount
       summary: Update Discount
-      description: 'Update a discount. Money-affecting fields are locked once the discount has been redeemed and return 422, while renaming and expiring still work. A discount that is already expired freezes its other fields and returns 422, a rename included - lift the expiry with `expired: false` (the API side of Remove Expiration in the app) or push `apply_until` into the future, then make the change and expire it again.
-
-        '
+      description: 'Update a discount. Money-affecting fields are locked once the discount has been redeemed and return 422, while renaming and expiring still work. A discount that is already expired freezes its other fields and returns 422, a rename included - lift the expiry with `expired: false` (the API side of Remove Expiration in the app) or push `apply_until` into the future, then make the change and expire it again.'
       operationId: updateDiscounts
       parameters:
       - $ref: '#/components/parameters/id'
@@ -556,9 +506,7 @@ paths:
       description: 'Hard-delete a discount. Only a discount that has NOT been applied to an order can be deleted; a used discount returns 422 (expire it with `expired: true` instead, to preserve its order history).
 
 
-        A discount enters that state through an applied-discount record, written when a buyer redeems the code at checkout or when a ClickFunnels user applies it in the admin UI. A code an integration created and never published carries none of those records, so it is always deletable.
-
-        '
+        A discount enters that state through an applied-discount record, written when a buyer redeems the code at checkout or when a ClickFunnels user applies it in the admin UI. A code an integration created and never published carries none of those records, so it is always deletable.'
       operationId: removeDiscounts
       parameters:
       - $ref: '#/components/parameters/id'
@@ -610,45 +558,91 @@ paths:
               example:
                 error: 'Request unprocessable: Cannot delete a discount that has been applied to an order. Expire it instead with `expired: true`.'
 components:
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
-    sort_property:
-      name: sort_property
-      in: query
-      description: 'Sort property of a list response. The default is id and thus the created_at order.
-
-        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
-
-        '
-      required: false
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
       schema:
         type: string
-        enum:
-        - id
-        - updated_at
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
+    DiscountParametersUpdate:
+      type: object
+      title: Discount
+      description: 'Fields accepted when updating a discount. Two lock-out rules apply, in this order: once the discount has been redeemed on an order its money-affecting fields (amount, percent, discount_method, applies_to, apply_from, the scoping arrays, limit_1_per_customer, discounts_per_redemption) are locked and return 422, while renaming and expiring still work; a discount that is already expired freezes its other fields and returns 422 (`Discount cannot be changed because it has expired`). Expiring is reversible - `expired: false` clears the end date and a future `apply_until` pushes it out, either of which makes the discount live again - so editing an expired discount means lifting the expiry first. Expiring a discount and renaming it in the same request is fine; it is a rename sent to a discount that is already expired that gets refused.'
+      required: []
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+          pattern: ^[a-zA-Z0-9-]+$
+          description: Letters, numbers and hyphens only. Uppercased on save; must be unique within the workspace.
+        discount_type:
+          type: string
+          enum:
+          - code
+          - automatic
+          - sale
+          description: '`code` is a redeemable coupon code. `automatic` and `sale` are deprecated.'
+        discount_method:
+          type: string
+          enum:
+          - percentage
+          - fixed
+          - shipping
+          - bogo
+        percent:
+          type: string
+        amount:
+          type: string
+        currency:
+          type: string
+          description: ISO currency code. Locked once the discount has been applied to an order.
+        applies_to:
+          type: string
+          enum:
+          - all_products
+          - specific_products
+          - specific_variants
+          - specific_collections
+        apply_from:
+          type: string
+          format: date-time
+        apply_until:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: 'Schedule a future end date. Must be after `apply_from`; a past date returns 422. To expire a live discount now, use `expired: true` instead.'
+        expired:
+          type: boolean
+          description: 'Virtual switch over `apply_until`, accepted on update only (sending it on create returns 422). `true` expires the discount immediately by setting `apply_until` to now; `false` lifts an expiry by clearing `apply_until`, the same as Remove Expiration in the app. It ends a discount that has not started yet (`scheduled: true`) as well, discarding the future `apply_from`, since nothing can end before it starts. A discount that has been redeemed cannot be un-expired and returns 422. Sending the state the discount is already in changes nothing and returns 200 without moving `apply_until`, so echoing a serialized discount back in a routine update cannot clear a scheduled end date - to remove a future end date, PATCH `apply_until` to null instead. Only `true` and `false` are accepted; any other value returns 422 rather than being read as "expire it".'
+        limit_1_per_customer:
+          type: boolean
+        require_minimum_spend:
+          type: boolean
+        require_minimum_spend_amount:
+          type: integer
+          description: Minimum order subtotal, in whole currency units rather than cents - `50` on a `usd` discount means $50.
+        discounts_per_redemption:
+          type: integer
+        product_ids:
+          type: array
+          items:
+            type: integer
+        variant_ids:
+          type: array
+          items:
+            type: integer
+        products_collection_ids:
+          type: array
+          items:
+            type: integer
+      example:
+        expired: true
     DiscountParameters:
       type: object
       title: Discount
@@ -734,81 +728,6 @@ components:
         discount_method: percentage
         percent: '20.0'
         applies_to: all_products
-    DiscountParametersUpdate:
-      type: object
-      title: Discount
-      description: 'Fields accepted when updating a discount. Two lock-out rules apply, in this order: once the discount has been redeemed on an order its money-affecting fields (amount, percent, discount_method, applies_to, apply_from, the scoping arrays, limit_1_per_customer, discounts_per_redemption) are locked and return 422, while renaming and expiring still work; a discount that is already expired freezes its other fields and returns 422 (`Discount cannot be changed because it has expired`). Expiring is reversible - `expired: false` clears the end date and a future `apply_until` pushes it out, either of which makes the discount live again - so editing an expired discount means lifting the expiry first. Expiring a discount and renaming it in the same request is fine; it is a rename sent to a discount that is already expired that gets refused.'
-      required: []
-      properties:
-        name:
-          type: string
-        code:
-          type: string
-          pattern: ^[a-zA-Z0-9-]+$
-          description: Letters, numbers and hyphens only. Uppercased on save; must be unique within the workspace.
-        discount_type:
-          type: string
-          enum:
-          - code
-          - automatic
-          - sale
-          description: '`code` is a redeemable coupon code. `automatic` and `sale` are deprecated.'
-        discount_method:
-          type: string
-          enum:
-          - percentage
-          - fixed
-          - shipping
-          - bogo
-        percent:
-          type: string
-        amount:
-          type: string
-        currency:
-          type: string
-          description: ISO currency code. Locked once the discount has been applied to an order.
-        applies_to:
-          type: string
-          enum:
-          - all_products
-          - specific_products
-          - specific_variants
-          - specific_collections
-        apply_from:
-          type: string
-          format: date-time
-        apply_until:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: 'Schedule a future end date. Must be after `apply_from`; a past date returns 422. To expire a live discount now, use `expired: true` instead.'
-        expired:
-          type: boolean
-          description: 'Virtual switch over `apply_until`, accepted on update only (sending it on create returns 422). `true` expires the discount immediately by setting `apply_until` to now; `false` lifts an expiry by clearing `apply_until`, the same as Remove Expiration in the app. It ends a discount that has not started yet (`scheduled: true`) as well, discarding the future `apply_from`, since nothing can end before it starts. A discount that has been redeemed cannot be un-expired and returns 422. Sending the state the discount is already in changes nothing and returns 200 without moving `apply_until`, so echoing a serialized discount back in a routine update cannot clear a scheduled end date - to remove a future end date, PATCH `apply_until` to null instead. Only `true` and `false` are accepted; any other value returns 422 rather than being read as "expire it".'
-        limit_1_per_customer:
-          type: boolean
-        require_minimum_spend:
-          type: boolean
-        require_minimum_spend_amount:
-          type: integer
-          description: Minimum order subtotal, in whole currency units rather than cents - `50` on a `usd` discount means $50.
-        discounts_per_redemption:
-          type: integer
-        product_ids:
-          type: array
-          items:
-            type: integer
-        variant_ids:
-          type: array
-          items:
-            type: integer
-        products_collection_ids:
-          type: array
-          items:
-            type: integer
-      example:
-        expired: true
     DiscountAttributes:
       type: object
       title: Discount
@@ -986,13 +905,42 @@ components:
       - updated_at
       - variant_ids
       - workspace_id
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
   securitySchemes:

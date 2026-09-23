@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -24,20 +22,7 @@ security:
 - BearerAuth: []
 tags:
 - name: Page
-  description: '> Page offers extra information about ClickFunnels pages, like those that are part of funnels.
-
-
-    It''s the main element that the user modifies when editing a Page in the ClickFunnels editor.
-
-
-    You can also learn how to source Page name and public ID from your ClickFunnels UI
-
-    [here](https://developers.myclickfunnels.com/docs/filtering-by-page).
-
-
-    See the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md) for [building a page](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#building-a-page) and [positioning it within a funnel](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#positioning-a-page-within-a-funnel); the page body is authored in PML — see the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md). For pages you host yourself, see [Create an External Page](https://accounts.myclickfunnels.com/.well-known/sdk/create-external-page/skill.md) and [Add Checkout to an External Page](https://accounts.myclickfunnels.com/.well-known/sdk/add-checkout/skill.md). To move those externally-hosted pages to a new domain, see [Migrate an External Page Domain](https://accounts.myclickfunnels.com/.well-known/sdk/migrate-external-page-domain/skill.md).
-
-    '
+  description: '> Page offers extra information about ClickFunnels pages, like those that are part of funnels.'
 paths:
   /workspaces/{workspace_id}/pages:
     get:
@@ -190,9 +175,7 @@ paths:
         **Order bumps**: pass `show_page_step.bumps: [{product_id, preheadline}]` (same semantics as `product_ids`) to attach products as order bumps instead of main products, each with its own optional `preheadline` — the line of copy shown above that bump''s offer. A product may appear in only one of the two blocks per request; naming it in both returns a 400.
 
 
-        **`external_url` is rejected** — to create an externally-hosted (SDK) page use `POST /api/v2/workspaces/:workspace_id/pages/external`.
-
-        '
+        **`external_url` is rejected** — to create an externally-hosted (SDK) page use `POST /api/v2/workspaces/:workspace_id/pages/external`.'
       operationId: createPage
       externalDocs:
         description: Pages Skill - building a page (PML body)
@@ -381,14 +364,12 @@ paths:
 
         **SDK onboarding:** The response includes an `sdk` block with a `token` (prefixed `cfp_`). To register the page:
 
-        1. Add `<meta name="cf-page-token" content="<token>">` to your page''s `<head>`.
+        1. Add `">` to your page''s ``.
 
         2. Include the ClickFunnels SDK script tag on the page.
 
 
-        The [Create an External Page Skill](https://accounts.myclickfunnels.com/.well-known/sdk/create-external-page/skill.md) is the end-to-end guide for the page itself. To sell products from that page, see [Add Checkout to an External Page](https://accounts.myclickfunnels.com/.well-known/sdk/add-checkout/skill.md).
-
-        '
+        The Create an External Page Skill is the end-to-end guide for the page itself. To sell products from that page, see Add Checkout to an External Page.'
       operationId: createExternalPage
       externalDocs:
         description: SDK Skill - create an external page
@@ -660,12 +641,10 @@ paths:
         **`show_page_step.product_ids` / `show_page_step.bumps`** (optional, both page types): Append products to the page''s checkout step as main products or as order bumps. Both are additive; `bumps` also promotes a product already attached to the step into a bump, which is how an existing attachment becomes one. Each `bumps` entry is `{product_id, preheadline}`, where `preheadline` is the optional copy shown above that bump''s offer. Requires the page to be part of a funnel (400 otherwise).
 
 
-        **`markup`** (internal pages only): Replaces the page''s entire tree. PML covers only a subset of what the ClickFunnels page editor can build, so if this page could have been created or edited in the editor, stop and get explicit approval from the user first: see [the approval guardrail](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#stop-get-approval-before-overwriting-an-existing-page).
+        **`markup`** (internal pages only): Replaces the page''s entire tree. PML covers only a subset of what the ClickFunnels page editor can build, so if this page could have been created or edited in the editor, stop and get explicit approval from the user first: see the approval guardrail.
 
 
-        To move externally-hosted pages to a new domain, see [Patch one page at a time](https://accounts.myclickfunnels.com/.well-known/sdk/migrate-external-page-domain/skill.md#4-patch-one-page-at-a-time) in the [Migrate an External Page Domain Skill](https://accounts.myclickfunnels.com/.well-known/sdk/migrate-external-page-domain/skill.md).
-
-        '
+        To move externally-hosted pages to a new domain, see Patch one page at a time in the Migrate an External Page Domain Skill.'
       operationId: updatePages
       externalDocs:
         description: Pages Skill - building a page (PML body)
@@ -823,9 +802,7 @@ paths:
       description: 'Delete a page by ID. Works for both internal and external (SDK) pages.
 
 
-        The page''s show page steps are destroyed first (removing the funnel step slot entirely), then the page itself (including its SDK registration for external pages).
-
-        '
+        The page''s show page steps are destroyed first (removing the funnel step slot entirely), then the page itself (including its SDK registration for external pages).'
       operationId: deletePage
       parameters:
       - $ref: '#/components/parameters/id'
@@ -896,9 +873,7 @@ paths:
         Returns 204 with no body on success.
 
 
-        See [Manage products on a checkout page](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#manage-products-on-a-checkout-page) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md) for the attach and detach lifecycle.
-
-        '
+        See Manage products on a checkout page in the Pages Skill for the attach and detach lifecycle.'
       operationId: removeProductsFromPage
       parameters:
       - $ref: '#/components/parameters/id'
@@ -1003,9 +978,7 @@ paths:
         start is after end the window resets to 30 days ending at `timerange_end`.
 
 
-        The metric names in the response are defined in [Metric vocabulary](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#metric-vocabulary) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md).
-
-        '
+        The metric names in the response are defined in Metric vocabulary in the Stats Skill.'
       operationId: getPageStats
       externalDocs:
         description: Stats Skill - page stats
@@ -1078,187 +1051,77 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
-  schemas:
-    PageParametersUpdate:
-      type: object
-      title: Pages
-      description: 'Update parameters for a page. Field availability depends on the page type:
+  parameters:
+    StatsTimerangeStart:
+      name: timerange_start
+      in: query
+      description: Start of the stats timerange (ISO 8601 format). Defaults to 30 days before `timerange_end`. If the window between start and end exceeds 90 days, start is automatically clamped to 90 days before end. If start is after end, the window resets to the default 30 days ending at `timerange_end`. See [Timerange parameters (both endpoints)](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#timerange-parameters-both-endpoints) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for the clamping rules and how to cover longer windows.
+      required: false
+      schema:
+        type: string
+        format: date-time
+      example: '2026-01-01T00:00:00Z'
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    ExpandPageFields:
+      name: expand[]
+      in: query
+      description: 'Expand additional data in the response. Use `expand[]=field_name` to include optional fields (e.g., `expand[]=head_code&expand[]=footer_code&expand[]=custom_css&expand[]=markup`). Markup is opt-in on every endpoint (show, list, create, update) because PML serialization runs per page. `custom_css` is available on internal pages only. See the [Expanding guide](https://developers.myclickfunnels.com/docs/expand) for available fields and examples. Read a page''s existing markup with `expand[]=markup` before editing it: see [Reading Current Markup](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#reading-current-markup) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md).'
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - head_code
+          - footer_code
+          - custom_css
+          - markup
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
 
-
-        **Shared (both internal and external pages):** `name`, `description`, `sort_order`, `funnel.show_page_step_id`, `show_page_step.product_ids`, `show_page_step.bumps`.
-
-
-        **Internal-only** (returns 422 if sent on an external page): `markup`, `theme_id`, `current_path`, `seo_title`, `seo_description`, `seo_index`, `head_code`, `footer_code`, `custom_css`, `live_data_changes`.
-
-
-        **External-only** (returns 422 if sent on an internal page): `external_url`.
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
 
         '
-      required: []
-      properties:
-        name:
-          type: string
-          description: Page name of the editable page element.
-        description:
-          type:
-          - string
-          - 'null'
-          description: A short description of the page (max 1000 characters).
-        sort_order:
-          type: integer
-          description: Reposition the page within its funnel. Zero-based. `0` moves it to the first position. The page must belong to exactly one funnel step; pages with zero or multiple funnel steps return 422. Out-of-bounds values return 422. Ignored when `funnel.show_page_step_id` is also provided — the swap target's position takes precedence.
-        funnel:
-          type: object
-          description: Optional funnel mutation block. On update, only `show_page_step_id` is supported — swap the page onto an existing show page step.
-          properties:
-            show_page_step_id:
-              type:
-              - integer
-              - string
-              description: The ID of an existing show page step to attach this page to. The page previously linked to that step becomes an orphan (kept in the workspace, no longer linked to any step). Shared by both internal and external pages.
-        seo_title:
-          type:
-          - string
-          - 'null'
-          description: Custom title for search engine results. Internal pages only — returns 422 on external pages.
-        seo_description:
-          type:
-          - string
-          - 'null'
-          description: Custom meta description for search engine results. Internal pages only — returns 422 on external pages.
-        seo_index:
-          type: boolean
-          description: Whether search engines should index this page. Internal pages only — returns 422 on external pages.
-        head_code:
-          type:
-          - string
-          - 'null'
-          description: Custom code to inject into the page's <head> section. Internal pages only — returns 422 on external pages. Set to null to clear existing code.
-        head_code_mode:
-          type: string
-          enum:
-          - append
-          - replace
-          description: How to handle head_code. 'append' adds to existing code (default), 'replace' overwrites. Internal pages only.
-        footer_code:
-          type:
-          - string
-          - 'null'
-          description: Custom code to inject before the closing </body> tag. Internal pages only — returns 422 on external pages. Set to null to clear existing code.
-        footer_code_mode:
-          type: string
-          enum:
-          - append
-          - replace
-          description: How to handle footer_code. 'append' adds to existing code (default), 'replace' overwrites. Internal pages only.
-        custom_css:
-          type:
-          - string
-          - 'null'
-          description: Raw CSS to apply at the page level (no <style> wrapper). Maps to the CSS tab in the page editor's Code Editor panel. Internal pages only — returns 422 on external pages. Set to null to clear existing CSS.
-        custom_css_mode:
-          type: string
-          enum:
-          - append
-          - replace
-          description: How to handle custom_css. 'append' adds to existing CSS (default), 'replace' overwrites. Internal pages only.
-        markup:
-          type: string
-          description: 'A valid PML (Page Markup Language) string that replaces the page''s visual tree, published version and editor draft alike. PML covers only a subset of what the ClickFunnels page editor can build, so this write silently drops editor-built content it cannot express. **If the page could have been created or edited in the ClickFunnels editor, stop and get explicit approval from the user before sending this** (a general instruction to update the page does not count): see [the approval guardrail](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#stop-get-approval-before-overwriting-an-existing-page). Internal pages only — returns 422 on external pages. Markup that stops mid-construct (a tag, attribute value, comment or `<customhtml>` body that never closes, or elements still open at the end of the document) is rejected with a 400 and the page is left untouched — re-send the complete document rather than the missing tail. To add a tracking pixel or other custom code, use `head_code`/`footer_code` instead of rewriting the body; see [Add a tracking pixel or custom code](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#add-a-tracking-pixel-or-custom-code). See the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md) for the full DSL reference. The parser errors are listed under [Common Validation Errors](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#common-validation-errors).'
-        external_url:
-          type: string
-          description: Update the external URL for an SDK page. External pages only — returns 422 on internal pages. The SDK token is preserved across URL updates. To move external pages to a new origin, see the [Migrate an External Page Domain Skill](https://accounts.myclickfunnels.com/.well-known/sdk/migrate-external-page-domain/skill.md#4-patch-one-page-at-a-time).
-        show_page_step:
-          type: object
-          description: 'Optional. Mutates the show_page_step that this page is attached to. Only valid when the page is part of a funnel — passing `show_page_step.product_ids` or `show_page_step.bumps` for a page that isn''t linked to a funnel returns 400. Shared by both internal and external pages.
-
-            '
-          properties:
-            product_ids:
-              type: array
-              items:
-                type: string
-              description: 'List of product public IDs to append to the step''s checkout as regular (main) products. This is **additive** — products listed are appended; products already attached are skipped; no products are ever removed via this field, and an existing order bump is never demoted back to a main product by it. All-or-nothing — if any ID does not resolve to a workspace product, no changes are saved and a 400 is returned. To remove products, use `DELETE /api/v2/pages/:id/products`. See [Manage products on a checkout page](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#manage-products-on-a-checkout-page) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md).
-
-                '
-            bumps:
-              type: array
-              description: 'Products to attach to the step as **order bumps** — the optional add-ons offered next to the main products, served to `<checkout/>` and to the SDK as `bumpProducts`. One object per bump, each carrying its own copy. Same additive, all-or-nothing semantics as `product_ids`. A product already attached to the step as a main product is promoted to a bump in place (it keeps its position and its configured variants/prices), which is how you turn an existing attachment into a bump. A product named in both `product_ids` and `bumps` in the same request is a 400 — a product is either a main product or a bump on a given step, never both. To turn a bump back into a main product, detach it with `DELETE /api/v2/pages/:id/products` and re-attach it via `product_ids`.
-
-                '
-              items:
-                type: object
-                required:
-                - product_id
-                properties:
-                  product_id:
-                    type: string
-                    description: Public ID of the product to attach as an order bump. Required on every entry; an entry without one is a 400.
-                  preheadline:
-                    type: string
-                    description: 'Optional short line of copy shown above this bump''s offer (for example "One-time offer"). Sending it for a product that is already a bump replaces that bump''s copy, so this is also how you edit it; omit it to leave the current copy alone. Read it back under `show_page_step.products[].bump_preheadline`.
-
-                      '
-      example:
-        page:
-          name: Example Page
-          description: Updated page description
-          seo_title: Updated SEO Title
-          seo_description: Updated meta description
-          seo_index: true
-          head_code: <script>console.log('updated');</script>
-          head_code_mode: append
-          markup: "<section>\n  <row cols=\"1\">\n    <column>\n      <headline>Welcome to our page</headline>\n      <subheadline>Start your journey here</subheadline>\n    </column>\n  </row>\n</section>\n"
-          show_page_step:
-            product_ids:
-            - PrdXyz
-            bumps:
-            - product_id: PrdBmp
-              preheadline: One-time offer
-    FunnelSummary:
-      type: object
-      title: Funnel Summary
-      description: Lightweight funnel identifier used inside stats responses.
-      properties:
-        id:
-          type: integer
-          description: The funnel ID
-        public_id:
-          type: string
-          description: The public identifier of the funnel
-        name:
-          type: string
-          description: The name of the funnel
-      example:
-        id: 1
-        public_id: gESyMv
-        name: My Sales Funnel
-    PageSummary:
-      type: object
-      title: Page Summary
-      description: Lightweight page identifier used inside the Page Stats response.
-      properties:
-        id:
-          type: integer
-          description: The page ID
-        public_id:
-          type: string
-          description: The public identifier of the page
-        name:
-          type: string
-          description: The page name
-        current_path:
-          type: string
-          description: The canonical page-level path for this page
-        type:
-          type: string
-          description: The page type (e.g. `landing_page`, `site_page`, `funnel_page`, `theme_page`)
-      example:
-        id: 100
-        public_id: abc123
-        name: Order Page
-        current_path: /order-canonical
-        type: funnel_page
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    StatsTimerangeEnd:
+      name: timerange_end
+      in: query
+      description: End of the stats timerange (ISO 8601 format). Defaults to the current time. Values in the future are automatically clamped to now.
+      required: false
+      schema:
+        type: string
+        format: date-time
+      example: '2026-01-31T23:59:59Z'
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
     PageStatsAttributes:
       type: object
       title: Page Stats
@@ -1327,6 +1190,32 @@ components:
       - page
       - step
       - timerange
+    PageSummary:
+      type: object
+      title: Page Summary
+      description: Lightweight page identifier used inside the Page Stats response.
+      properties:
+        id:
+          type: integer
+          description: The page ID
+        public_id:
+          type: string
+          description: The public identifier of the page
+        name:
+          type: string
+          description: The page name
+        current_path:
+          type: string
+          description: The canonical page-level path for this page
+        type:
+          type: string
+          description: The page type (e.g. `landing_page`, `site_page`, `funnel_page`, `theme_page`)
+      example:
+        id: 100
+        public_id: abc123
+        name: Order Page
+        current_path: /order-canonical
+        type: funnel_page
     PageAttributes:
       type: object
       title: Pages
@@ -1533,6 +1422,208 @@ components:
       - updated_at
       - url
       - workspace_id
+    FunnelStepStats:
+      type: object
+      title: Funnel Step Stats
+      description: Per-step statistics for a funnel step. Used in the `steps` array of the Funnel Stats response and as the `step` object in the Page Stats response.
+      properties:
+        page_id:
+          type:
+          - integer
+          - 'null'
+          description: The id of the page this step renders (when the step is a show-page step). `null` for non-page steps.
+        name:
+          type: string
+          description: The step name
+        current_path:
+          type: string
+          description: 'The workflow-level routing segment for this step (from the `Workflows::Step#current_path` attribute). Note: this is the workflow step path, not the page''s own `current_path` which is the page-level canonical path.'
+        views_all:
+          type: integer
+          description: Total pageviews for this step
+        views_unique:
+          type: integer
+          description: Unique pageviews for this step
+        optins:
+          type: integer
+          description: Number of opt-ins on this step
+        optin_rate:
+          type: number
+          format: float
+          description: Opt-in rate (optins / unique views)
+        sales_count:
+          type: integer
+          description: Number of sales on this step
+        sales_rate:
+          type: number
+          format: float
+          description: Sales conversion rate (sales / unique views)
+        sales_value:
+          type: string
+          description: Total sales value as a decimal string (see top-level currency field)
+        recurring_sales_count:
+          type: integer
+          description: Number of recurring sales
+        recurring_sales_value:
+          type: string
+          description: Total recurring sales value as a decimal string (see top-level currency field)
+        earnings_per_view:
+          type: string
+          description: Earnings per view as a decimal string (see top-level currency field)
+        earnings_per_unique_view:
+          type: string
+          description: Earnings per unique view as a decimal string (see top-level currency field)
+      example:
+        page_id: 100
+        name: Sign Up Page
+        current_path: /
+        views_all: 17
+        views_unique: 17
+        optins: 0
+        optin_rate: 0
+        sales_count: 0
+        sales_rate: 0
+        sales_value: '0.00'
+        recurring_sales_count: 0
+        recurring_sales_value: '0.00'
+        earnings_per_view: '0.00'
+        earnings_per_unique_view: '0.00'
+    PageParametersUpdate:
+      type: object
+      title: Pages
+      description: 'Update parameters for a page. Field availability depends on the page type:
+
+
+        **Shared (both internal and external pages):** `name`, `description`, `sort_order`, `funnel.show_page_step_id`, `show_page_step.product_ids`, `show_page_step.bumps`.
+
+
+        **Internal-only** (returns 422 if sent on an external page): `markup`, `theme_id`, `current_path`, `seo_title`, `seo_description`, `seo_index`, `head_code`, `footer_code`, `custom_css`, `live_data_changes`.
+
+
+        **External-only** (returns 422 if sent on an internal page): `external_url`.
+
+        '
+      required: []
+      properties:
+        name:
+          type: string
+          description: Page name of the editable page element.
+        description:
+          type:
+          - string
+          - 'null'
+          description: A short description of the page (max 1000 characters).
+        sort_order:
+          type: integer
+          description: Reposition the page within its funnel. Zero-based. `0` moves it to the first position. The page must belong to exactly one funnel step; pages with zero or multiple funnel steps return 422. Out-of-bounds values return 422. Ignored when `funnel.show_page_step_id` is also provided — the swap target's position takes precedence.
+        funnel:
+          type: object
+          description: Optional funnel mutation block. On update, only `show_page_step_id` is supported — swap the page onto an existing show page step.
+          properties:
+            show_page_step_id:
+              type:
+              - integer
+              - string
+              description: The ID of an existing show page step to attach this page to. The page previously linked to that step becomes an orphan (kept in the workspace, no longer linked to any step). Shared by both internal and external pages.
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: Custom title for search engine results. Internal pages only — returns 422 on external pages.
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: Custom meta description for search engine results. Internal pages only — returns 422 on external pages.
+        seo_index:
+          type: boolean
+          description: Whether search engines should index this page. Internal pages only — returns 422 on external pages.
+        head_code:
+          type:
+          - string
+          - 'null'
+          description: Custom code to inject into the page's <head> section. Internal pages only — returns 422 on external pages. Set to null to clear existing code.
+        head_code_mode:
+          type: string
+          enum:
+          - append
+          - replace
+          description: How to handle head_code. 'append' adds to existing code (default), 'replace' overwrites. Internal pages only.
+        footer_code:
+          type:
+          - string
+          - 'null'
+          description: Custom code to inject before the closing </body> tag. Internal pages only — returns 422 on external pages. Set to null to clear existing code.
+        footer_code_mode:
+          type: string
+          enum:
+          - append
+          - replace
+          description: How to handle footer_code. 'append' adds to existing code (default), 'replace' overwrites. Internal pages only.
+        custom_css:
+          type:
+          - string
+          - 'null'
+          description: Raw CSS to apply at the page level (no <style> wrapper). Maps to the CSS tab in the page editor's Code Editor panel. Internal pages only — returns 422 on external pages. Set to null to clear existing CSS.
+        custom_css_mode:
+          type: string
+          enum:
+          - append
+          - replace
+          description: How to handle custom_css. 'append' adds to existing CSS (default), 'replace' overwrites. Internal pages only.
+        markup:
+          type: string
+          description: 'A valid PML (Page Markup Language) string that replaces the page''s visual tree, published version and editor draft alike. PML covers only a subset of what the ClickFunnels page editor can build, so this write silently drops editor-built content it cannot express. **If the page could have been created or edited in the ClickFunnels editor, stop and get explicit approval from the user before sending this** (a general instruction to update the page does not count): see [the approval guardrail](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#stop-get-approval-before-overwriting-an-existing-page). Internal pages only — returns 422 on external pages. Markup that stops mid-construct (a tag, attribute value, comment or `<customhtml>` body that never closes, or elements still open at the end of the document) is rejected with a 400 and the page is left untouched — re-send the complete document rather than the missing tail. To add a tracking pixel or other custom code, use `head_code`/`footer_code` instead of rewriting the body; see [Add a tracking pixel or custom code](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#add-a-tracking-pixel-or-custom-code). See the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md) for the full DSL reference. The parser errors are listed under [Common Validation Errors](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#common-validation-errors).'
+        external_url:
+          type: string
+          description: Update the external URL for an SDK page. External pages only — returns 422 on internal pages. The SDK token is preserved across URL updates. To move external pages to a new origin, see the [Migrate an External Page Domain Skill](https://accounts.myclickfunnels.com/.well-known/sdk/migrate-external-page-domain/skill.md#4-patch-one-page-at-a-time).
+        show_page_step:
+          type: object
+          description: 'Optional. Mutates the show_page_step that this page is attached to. Only valid when the page is part of a funnel — passing `show_page_step.product_ids` or `show_page_step.bumps` for a page that isn''t linked to a funnel returns 400. Shared by both internal and external pages.
+
+            '
+          properties:
+            product_ids:
+              type: array
+              items:
+                type: string
+              description: 'List of product public IDs to append to the step''s checkout as regular (main) products. This is **additive** — products listed are appended; products already attached are skipped; no products are ever removed via this field, and an existing order bump is never demoted back to a main product by it. All-or-nothing — if any ID does not resolve to a workspace product, no changes are saved and a 400 is returned. To remove products, use `DELETE /api/v2/pages/:id/products`. See [Manage products on a checkout page](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#manage-products-on-a-checkout-page) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md).
+
+                '
+            bumps:
+              type: array
+              description: 'Products to attach to the step as **order bumps** — the optional add-ons offered next to the main products, served to `<checkout/>` and to the SDK as `bumpProducts`. One object per bump, each carrying its own copy. Same additive, all-or-nothing semantics as `product_ids`. A product already attached to the step as a main product is promoted to a bump in place (it keeps its position and its configured variants/prices), which is how you turn an existing attachment into a bump. A product named in both `product_ids` and `bumps` in the same request is a 400 — a product is either a main product or a bump on a given step, never both. To turn a bump back into a main product, detach it with `DELETE /api/v2/pages/:id/products` and re-attach it via `product_ids`.
+
+                '
+              items:
+                type: object
+                required:
+                - product_id
+                properties:
+                  product_id:
+                    type: string
+                    description: Public ID of the product to attach as an order bump. Required on every entry; an entry without one is a 400.
+                  preheadline:
+                    type: string
+                    description: 'Optional short line of copy shown above this bump''s offer (for example "One-time offer"). Sending it for a product that is already a bump replaces that bump''s copy, so this is also how you edit it; omit it to leave the current copy alone. Read it back under `show_page_step.products[].bump_preheadline`.
+
+                      '
+      example:
+        page:
+          name: Example Page
+          description: Updated page description
+          seo_title: Updated SEO Title
+          seo_description: Updated meta description
+          seo_index: true
+          head_code: <script>console.log('updated');</script>
+          head_code_mode: append
+          markup: "<section>\n  <row cols=\"1\">\n    <column>\n      <headline>Welcome to our page</headline>\n      <subheadline>Start your journey here</subheadline>\n    </column>\n  </row>\n</section>\n"
+          show_page_step:
+            product_ids:
+            - PrdXyz
+            bumps:
+            - product_id: PrdBmp
+              preheadline: One-time offer
     PageParameters:
       type: object
       title: Pages
@@ -1681,142 +1772,24 @@ components:
           head_code: <script>console.log('hello');</script>
           head_code_mode: append
           markup: "<section>\n  <row cols=\"1\">\n    <column>\n      <headline>Welcome to our page</headline>\n      <subheadline>Start your journey here</subheadline>\n    </column>\n  </row>\n</section>\n"
-    FunnelStepStats:
+    FunnelSummary:
       type: object
-      title: Funnel Step Stats
-      description: Per-step statistics for a funnel step. Used in the `steps` array of the Funnel Stats response and as the `step` object in the Page Stats response.
+      title: Funnel Summary
+      description: Lightweight funnel identifier used inside stats responses.
       properties:
-        page_id:
-          type:
-          - integer
-          - 'null'
-          description: The id of the page this step renders (when the step is a show-page step). `null` for non-page steps.
+        id:
+          type: integer
+          description: The funnel ID
+        public_id:
+          type: string
+          description: The public identifier of the funnel
         name:
           type: string
-          description: The step name
-        current_path:
-          type: string
-          description: 'The workflow-level routing segment for this step (from the `Workflows::Step#current_path` attribute). Note: this is the workflow step path, not the page''s own `current_path` which is the page-level canonical path.'
-        views_all:
-          type: integer
-          description: Total pageviews for this step
-        views_unique:
-          type: integer
-          description: Unique pageviews for this step
-        optins:
-          type: integer
-          description: Number of opt-ins on this step
-        optin_rate:
-          type: number
-          format: float
-          description: Opt-in rate (optins / unique views)
-        sales_count:
-          type: integer
-          description: Number of sales on this step
-        sales_rate:
-          type: number
-          format: float
-          description: Sales conversion rate (sales / unique views)
-        sales_value:
-          type: string
-          description: Total sales value as a decimal string (see top-level currency field)
-        recurring_sales_count:
-          type: integer
-          description: Number of recurring sales
-        recurring_sales_value:
-          type: string
-          description: Total recurring sales value as a decimal string (see top-level currency field)
-        earnings_per_view:
-          type: string
-          description: Earnings per view as a decimal string (see top-level currency field)
-        earnings_per_unique_view:
-          type: string
-          description: Earnings per unique view as a decimal string (see top-level currency field)
+          description: The name of the funnel
       example:
-        page_id: 100
-        name: Sign Up Page
-        current_path: /
-        views_all: 17
-        views_unique: 17
-        optins: 0
-        optin_rate: 0
-        sales_count: 0
-        sales_rate: 0
-        sales_value: '0.00'
-        recurring_sales_count: 0
-        recurring_sales_value: '0.00'
-        earnings_per_view: '0.00'
-        earnings_per_unique_view: '0.00'
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    sort_property:
-      name: sort_property
-      in: query
-      description: 'Sort property of a list response. The default is id and thus the created_at order.
-
-        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
-
-        '
-      required: false
-      schema:
-        type: string
-        enum:
-        - id
-        - updated_at
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    StatsTimerangeStart:
-      name: timerange_start
-      in: query
-      description: Start of the stats timerange (ISO 8601 format). Defaults to 30 days before `timerange_end`. If the window between start and end exceeds 90 days, start is automatically clamped to 90 days before end. If start is after end, the window resets to the default 30 days ending at `timerange_end`. See [Timerange parameters (both endpoints)](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#timerange-parameters-both-endpoints) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for the clamping rules and how to cover longer windows.
-      required: false
-      schema:
-        type: string
-        format: date-time
-      example: '2026-01-01T00:00:00Z'
-    StatsTimerangeEnd:
-      name: timerange_end
-      in: query
-      description: End of the stats timerange (ISO 8601 format). Defaults to the current time. Values in the future are automatically clamped to now.
-      required: false
-      schema:
-        type: string
-        format: date-time
-      example: '2026-01-31T23:59:59Z'
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    ExpandPageFields:
-      name: expand[]
-      in: query
-      description: 'Expand additional data in the response. Use `expand[]=field_name` to include optional fields (e.g., `expand[]=head_code&expand[]=footer_code&expand[]=custom_css&expand[]=markup`). Markup is opt-in on every endpoint (show, list, create, update) because PML serialization runs per page. `custom_css` is available on internal pages only. See the [Expanding guide](https://developers.myclickfunnels.com/docs/expand) for available fields and examples. Read a page''s existing markup with `expand[]=markup` before editing it: see [Reading Current Markup](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#reading-current-markup) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md).'
-      required: false
-      schema:
-        type: array
-        items:
-          type: string
-          enum:
-          - head_code
-          - footer_code
-          - custom_css
-          - markup
+        id: 1
+        public_id: gESyMv
+        name: My Sales Funnel
   headers:
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.

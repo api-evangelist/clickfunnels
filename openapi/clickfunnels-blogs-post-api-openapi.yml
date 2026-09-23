@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -27,22 +25,14 @@ tags:
   description: '> Blog Posts are the individual articles published within a Blog
 
 
-    Blog posts support rich content via PML markup, visibility controls, SEO settings, categories, tags, and authors. Use `expand[]=markup` to retrieve the PML markup for a post''s visual content.
-
-
-    See [Creating a blog post](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#creating-a-blog-post) in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md); the `markup` body is authored in PML — see the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md).
-
-
-    To copy posts in from an external RSS/Atom feed or article page, see the [Import External Blog Post Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md), which covers [normalizing external HTML for PML](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#3-normalize-external-html-for-pml), [duplicate checking](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#4-discover-the-destination-and-check-for-duplicates), and [verifying the draft](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#6-verify-the-draft) before publishing.
-
-    '
+    Blog posts support rich content via PML markup, visibility controls, SEO settings, categories, tags, and authors.'
 paths:
   /blogs/{blog_id}/posts:
     get:
       tags:
       - Blogs::Post
       summary: List Blog Posts
-      description: List posts for the given blog. When importing content from an external source, page through this list first so you do not create a duplicate post, see [Discover the destination and check for duplicates](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#4-discover-the-destination-and-check-for-duplicates) in the [Import External Blog Post Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md).
+      description: List posts for the given blog. When importing content from an external source, page through this list first so you do not create a duplicate post, see Discover the destination and check for duplicates in the Import External Blog Post Skill.
       operationId: listBlogsPosts
       parameters:
       - name: blog_id
@@ -143,9 +133,7 @@ paths:
         Pass `markup` to set the post''s visual content via PML. Invalid markup returns 400 and the post is not created. Pass `expand[]=markup` to have the markup returned in the response.
 
 
-        See [Creating a blog post](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#creating-a-blog-post) in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md) for the permitted fields and the publish-state rules. To copy an article in from an RSS/Atom feed or an external page, follow [Normalize external HTML for PML](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#3-normalize-external-html-for-pml) and [Create a draft](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#5-create-a-draft) in the [Import External Blog Post Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md).
-
-        '
+        See Creating a blog post in the Blogs Skill for the permitted fields and the publish-state rules. To copy an article in from an RSS/Atom feed or an external page, follow Normalize external HTML for PML and Create a draft in the Import External Blog Post Skill.'
       operationId: createBlogPost
       parameters:
       - name: blog_id
@@ -329,12 +317,10 @@ paths:
       description: 'Update a blog post.
 
 
-        Pass `markup` to update the post''s visual content via PML. It replaces the whole body, and PML covers only a subset of what the ClickFunnels editor can build, so if this post could have been written or edited in the editor, stop and get explicit approval from the user first: see [the approval guardrail](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#stop-get-approval-before-overwriting-an-existing-page). Omit `markup` to change only metadata. Invalid markup returns 400 and neither the post metadata nor the markup is saved. Pass `expand[]=markup` to have the markup returned in the response.
+        Pass `markup` to update the post''s visual content via PML. It replaces the whole body, and PML covers only a subset of what the ClickFunnels editor can build, so if this post could have been written or edited in the editor, stop and get explicit approval from the user first: see the approval guardrail. Omit `markup` to change only metadata. Invalid markup returns 400 and neither the post metadata nor the markup is saved. Pass `expand[]=markup` to have the markup returned in the response.
 
 
-        See [Updating a blog post](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#updating-a-blog-post) in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md). To publish a draft, see [Publish separately](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#7-publish-separately) and [Two gotchas worth knowing](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#two-gotchas-worth-knowing).
-
-        '
+        See Updating a blog post in the Blogs Skill. To publish a draft, see Publish separately and Two gotchas worth knowing.'
       operationId: updateBlogPost
       parameters:
       - $ref: '#/components/parameters/id'
@@ -456,9 +442,7 @@ paths:
       description: 'Delete a blog post. This is a hard delete; the post and its associated authorships, taggings, applied categories, and publish actions are removed.
 
 
-        Deleting example or stock posts while migrating content in is a separate step, see [Optional cleanup of confirmed example posts](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#optional-cleanup-of-confirmed-example-posts) in the [Import External Blog Post Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md).
-
-        '
+        Deleting example or stock posts while migrating content in is a separate step, see Optional cleanup of confirmed example posts in the Import External Blog Post Skill.'
       operationId: deleteBlogPost
       parameters:
       - $ref: '#/components/parameters/id'
@@ -499,13 +483,40 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     id:
       name: id
       in: path
       required: true
       schema:
         type: string
+    ExpandBlogPostFields:
+      name: expand[]
+      in: query
+      description: Expand additional data in the response. Use `expand[]=markup` to include the PML markup for the post's visual content. Markup is opt-in on every endpoint (show, list, create, update) because PML serialization runs per post. See the [Expanding guide](https://developers.myclickfunnels.com/docs/expand) for available fields and examples.
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - markup
     sort_property:
       name: sort_property
       in: query
@@ -530,100 +541,7 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    ExpandBlogPostFields:
-      name: expand[]
-      in: query
-      description: Expand additional data in the response. Use `expand[]=markup` to include the PML markup for the post's visual content. Markup is opt-in on every endpoint (show, list, create, update) because PML serialization runs per post. See the [Expanding guide](https://developers.myclickfunnels.com/docs/expand) for available fields and examples.
-      required: false
-      schema:
-        type: array
-        items:
-          type: string
-          enum:
-          - markup
   schemas:
-    BlogsPostParameters:
-      type: object
-      title: Blogs::Posts
-      description: Blog Posts
-      properties:
-        title:
-          type: string
-          description: Title of the post
-        visibility:
-          type: string
-          description: Visibility status. One of `draft`, `public`, `members_only`, or `scheduled`. See [Two gotchas worth knowing](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#two-gotchas-worth-knowing) in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md).
-          enum:
-          - draft
-          - public
-          - members_only
-          - scheduled
-        published_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Date and time to publish the post. Required when visibility is `scheduled`. See [Publish separately](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#7-publish-separately) in the [Import External Blog Post Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md).
-        excerpt_content:
-          type:
-          - string
-          - 'null'
-          description: Short summary of the blog post
-        seo_title:
-          type:
-          - string
-          - 'null'
-          description: SEO page title
-        seo_description:
-          type:
-          - string
-          - 'null'
-          description: SEO page description
-        image_id:
-          type:
-          - integer
-          - 'null'
-          description: 'Featured image ID. When importing an article, its images need rehosting first: see [Rehost source images during a migration](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#rehost-source-images-during-a-migration) and the [image caveat](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#image-caveat).'
-        markup:
-          type:
-          - string
-          - 'null'
-          description: 'PML (Page Markup Language) that builds the post''s content tree (its page_content) — this IS the post body that renders. Replaces the existing tree, published version and editor draft alike. PML covers only a subset of what the ClickFunnels editor can build, so writing this to a post that already has a body silently drops editor-built content it cannot express. **If the post could have been written or edited in the ClickFunnels editor, stop and get explicit approval from the user before sending this on update** (a general instruction to update the post does not count): see [the approval guardrail](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#stop-get-approval-before-overwriting-an-existing-page). Omit `markup` to leave the body untouched and change only metadata. Validated before any DB write; invalid markup returns 400 and the post is not created or updated. Markup that stops mid-construct is treated as truncated and rejected with a 400 — re-send the complete document rather than the missing tail. See the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md) for the DSL itself. Raw HTML from another site is not PML; normalize and wrap it as described in [Normalize external HTML for PML](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#3-normalize-external-html-for-pml).'
-        author_ids:
-          type: array
-          description: IDs of authors to associate with the post
-          items:
-            type: integer
-        tag_ids:
-          type: array
-          description: IDs of tags to associate with the post
-          items:
-            type: integer
-        category_ids:
-          type: array
-          description: IDs of categories to associate with the post
-          items:
-            type: integer
-      example:
-        blogs_post:
-          title: Getting started with your blog
-          visibility: draft
-          published_at: null
-          excerpt_content: An introduction to what you'll find on this blog.
-          seo_title: Getting started with your blog
-          seo_description: Learn how to make the most of your new blog.
-          image_id: null
-          markup: <section><row cols="1"><column><headline>Hello world</headline></column></row></section>
-          author_ids: []
-          tag_ids: []
-          category_ids: []
     BlogsPostAttributes:
       type: object
       title: Blogs::Posts
@@ -773,15 +691,81 @@ components:
       - updated_at
       - url
       - visibility
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
+    BlogsPostParameters:
+      type: object
+      title: Blogs::Posts
+      description: Blog Posts
+      properties:
+        title:
+          type: string
+          description: Title of the post
+        visibility:
+          type: string
+          description: Visibility status. One of `draft`, `public`, `members_only`, or `scheduled`. See [Two gotchas worth knowing](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#two-gotchas-worth-knowing) in the [Blogs Skill](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md).
+          enum:
+          - draft
+          - public
+          - members_only
+          - scheduled
+        published_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time to publish the post. Required when visibility is `scheduled`. See [Publish separately](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#7-publish-separately) in the [Import External Blog Post Skill](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md).
+        excerpt_content:
+          type:
+          - string
+          - 'null'
+          description: Short summary of the blog post
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: SEO page title
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: SEO page description
+        image_id:
+          type:
+          - integer
+          - 'null'
+          description: 'Featured image ID. When importing an article, its images need rehosting first: see [Rehost source images during a migration](https://accounts.myclickfunnels.com/.well-known/blogs/skill.md#rehost-source-images-during-a-migration) and the [image caveat](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#image-caveat).'
+        markup:
+          type:
+          - string
+          - 'null'
+          description: 'PML (Page Markup Language) that builds the post''s content tree (its page_content) — this IS the post body that renders. Replaces the existing tree, published version and editor draft alike. PML covers only a subset of what the ClickFunnels editor can build, so writing this to a post that already has a body silently drops editor-built content it cannot express. **If the post could have been written or edited in the ClickFunnels editor, stop and get explicit approval from the user before sending this on update** (a general instruction to update the post does not count): see [the approval guardrail](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#stop-get-approval-before-overwriting-an-existing-page). Omit `markup` to leave the body untouched and change only metadata. Validated before any DB write; invalid markup returns 400 and the post is not created or updated. Markup that stops mid-construct is treated as truncated and rejected with a 400 — re-send the complete document rather than the missing tail. See the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md) for the DSL itself. Raw HTML from another site is not PML; normalize and wrap it as described in [Normalize external HTML for PML](https://accounts.myclickfunnels.com/.well-known/blogs/import-external-post/skill.md#3-normalize-external-html-for-pml).'
+        author_ids:
+          type: array
+          description: IDs of authors to associate with the post
+          items:
+            type: integer
+        tag_ids:
+          type: array
+          description: IDs of tags to associate with the post
+          items:
+            type: integer
+        category_ids:
+          type: array
+          description: IDs of categories to associate with the post
+          items:
+            type: integer
+      example:
+        blogs_post:
+          title: Getting started with your blog
+          visibility: draft
+          published_at: null
+          excerpt_content: An introduction to what you'll find on this blog.
+          seo_title: Getting started with your blog
+          seo_description: Learn how to make the most of your new blog.
+          image_id: null
+          markup: <section><row cols="1"><column><headline>Hello world</headline></column></row></section>
+          author_ids: []
+          tag_ids: []
+          category_ids: []
   securitySchemes:
     BearerAuth:
       type: http

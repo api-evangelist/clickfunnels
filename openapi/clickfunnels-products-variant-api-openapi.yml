@@ -7,9 +7,7 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
-
-    '
+  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -29,40 +27,7 @@ tags:
 
     If there are multiple variants of a product (like when a T-shirt can come in many sizes or colors),
 
-    then these should be created as `Products::Variant` records related to the `Product` record.
-
-
-    When creating a variant it is mandatory to set the `properties_values` so that all the Product''s `variant_properties` have a value.
-
-
-    All products have a "default variant". Attributes like the below, if left as `null` on a variant (that is not the default)
-
-    will inherit the value from the default variant:
-
-
-    - `product_type`
-
-    - `sku`
-
-    - `taxable`
-
-    - `tax_category_id`
-
-    - `description`
-
-    - `weight`
-
-    - `weight_unit`
-
-    - `height`
-
-    - `width`
-
-    - `length`
-
-    - `image_id`
-
-    '
+    then these should be created as `Products::Variant` records related to the `Product` record.'
 paths:
   /products/{product_id}/variants:
     get:
@@ -590,13 +555,23 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -621,20 +596,10 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
   schemas:
@@ -832,213 +797,6 @@ components:
           included_space_groups_attributes:
           - id: 19
             _destroy: true
-          taxable: null
-          track_quantity: false
-          archived: false
-          visible: true
-          fulfillment_required: false
-          country_of_manufacture_id: null
-          image_ids: []
-          fulfillments_location_ids: []
-    ProductsVariantParameters:
-      type: object
-      title: Variants
-      description: Variants
-      required:
-      - name
-      - product_type
-      - weight_unit
-      - properties_values
-      properties:
-        name:
-          type: string
-          description: Name
-        description:
-          type:
-          - string
-          - 'null'
-          description: The description of the variant. The description of the **default variant** is the user-facing description of the `Product`.
-        sku:
-          type:
-          - string
-          - 'null'
-          description: SKU
-        product_type:
-          type: string
-          description: '`physical` or `digital`. Drives checkout behavior: a physical variant makes checkout collect a shipping address (and shipping options); a digital variant skips both. Unset behaves like digital at checkout, so set it to match the real-world goods.
-
-            '
-          enum:
-          - physical
-          - digital
-        out_of_stock_sales:
-          type:
-          - boolean
-          - 'null'
-          description: Out of stock sales
-        weight:
-          type:
-          - number
-          - 'null'
-          description: Weight
-        weight_unit:
-          type: string
-          description: Weight unit
-        height:
-          type:
-          - number
-          - 'null'
-          description: Height
-        width:
-          type:
-          - number
-          - 'null'
-          description: Width
-        length:
-          type:
-          - number
-          - 'null'
-          description: Length
-        dimensions_unit:
-          type:
-          - string
-          - 'null'
-          description: Dimensions unit
-        tax_category_id:
-          type:
-          - string
-          - 'null'
-          description: Tax category ID
-        taxable:
-          type:
-          - string
-          - 'null'
-          description: Taxable
-        track_quantity:
-          type:
-          - boolean
-          - 'null'
-          description: Track Quantity
-        archived:
-          type:
-          - boolean
-          - 'null'
-          description: Archived
-        visible:
-          type:
-          - boolean
-          - 'null'
-          description: Is visible
-        fulfillment_required:
-          type:
-          - boolean
-          - 'null'
-          description: Fulfillment required
-        country_of_manufacture_id:
-          type:
-          - string
-          - 'null'
-          description: Country of manufacture
-        image_ids:
-          type:
-          - array
-          - 'null'
-          description: The images for the variant.
-        fulfillments_location_ids:
-          type:
-          - array
-          - 'null'
-          description: The fulfillment locations for the variant.
-        properties_values:
-          type: array
-          description: The property values of the Variant. e.g. 'Large', 'Red' etc.
-          items:
-            type: object
-            properties:
-              property_id:
-                type: integer
-                description: The ID of the property
-              value:
-                type: string
-                description: The value
-        has_access_to_all_valid_assets:
-          type:
-          - boolean
-          - 'null'
-          description: All-or-nothing digital-asset access. When true, a purchase grants access to every valid Asset. Set false and pass `asset_ids` to grant only specific ones.
-        asset_ids:
-          type:
-          - array
-          - 'null'
-          description: Digital-asset access. The IDs of workspace Assets a purchase of this variant should grant access to. Pair with `has_access_to_all_valid_assets` (set it false to grant only these). On update this replaces the current set.
-          items:
-            type: integer
-        included_courses_attributes:
-          type: array
-          description: Course access to grant. Each entry links a Course by `course_id`; a purchase grants access to it. When creating a grant, omit `included_sections_attributes` for FULL-course access, or list specific sections for PARTIAL access. On an existing grant, omitting sections does NOT convert partial access to full; manage sections explicitly (add via `courses_section_id`, remove via `id` + `_destroy`). To revoke the whole grant, pass its `id` with `_destroy` set to true.
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-                description: Existing grant ID (for update/removal).
-              _destroy:
-                type: boolean
-                description: Pass true (with id) to revoke the grant.
-              course_id:
-                type: integer
-                description: The ID of the Course to grant access to.
-              included_sections_attributes:
-                type: array
-                description: Specific sections for partial-course access.
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: Existing included-section ID (for update/removal).
-                    _destroy:
-                      type: boolean
-                      description: Pass true (with id) to remove the section grant.
-                    courses_section_id:
-                      type: integer
-                      description: The ID of the course section to grant.
-        included_space_groups_attributes:
-          type: array
-          description: Community access to grant. Each entry links a Community Space Group by `communities_space_group_id`; a purchase grants access to the whole group. To revoke, pass the grant's `id` with `_destroy` set to true.
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-                description: Existing grant ID (for update/removal).
-              _destroy:
-                type: boolean
-                description: Pass true (with id) to revoke the grant.
-              communities_space_group_id:
-                type: integer
-                description: The ID of the Community Space Group to grant access to.
-      example:
-        products_variant:
-          name: Small Aluminum Gloves variant 393f
-          description: Dolore provident unde quas.
-          sku: LxbnGP0kqyqzQDTK
-          product_type: physical
-          out_of_stock_sales: true
-          weight: '24.0'
-          weight_unit: lb
-          height: '96.0'
-          width: '418.0'
-          length: '66.0'
-          dimensions_unit: inches
-          tax_category_id: null
-          has_access_to_all_valid_assets: false
-          asset_ids:
-          - 904
-          included_courses_attributes:
-          - course_id: 42
-          included_space_groups_attributes:
-          - communities_space_group_id: 8
           taxable: null
           track_quantity: false
           archived: false
@@ -1382,6 +1140,213 @@ components:
       - weight
       - weight_unit
       - width
+    ProductsVariantParameters:
+      type: object
+      title: Variants
+      description: Variants
+      required:
+      - name
+      - product_type
+      - weight_unit
+      - properties_values
+      properties:
+        name:
+          type: string
+          description: Name
+        description:
+          type:
+          - string
+          - 'null'
+          description: The description of the variant. The description of the **default variant** is the user-facing description of the `Product`.
+        sku:
+          type:
+          - string
+          - 'null'
+          description: SKU
+        product_type:
+          type: string
+          description: '`physical` or `digital`. Drives checkout behavior: a physical variant makes checkout collect a shipping address (and shipping options); a digital variant skips both. Unset behaves like digital at checkout, so set it to match the real-world goods.
+
+            '
+          enum:
+          - physical
+          - digital
+        out_of_stock_sales:
+          type:
+          - boolean
+          - 'null'
+          description: Out of stock sales
+        weight:
+          type:
+          - number
+          - 'null'
+          description: Weight
+        weight_unit:
+          type: string
+          description: Weight unit
+        height:
+          type:
+          - number
+          - 'null'
+          description: Height
+        width:
+          type:
+          - number
+          - 'null'
+          description: Width
+        length:
+          type:
+          - number
+          - 'null'
+          description: Length
+        dimensions_unit:
+          type:
+          - string
+          - 'null'
+          description: Dimensions unit
+        tax_category_id:
+          type:
+          - string
+          - 'null'
+          description: Tax category ID
+        taxable:
+          type:
+          - string
+          - 'null'
+          description: Taxable
+        track_quantity:
+          type:
+          - boolean
+          - 'null'
+          description: Track Quantity
+        archived:
+          type:
+          - boolean
+          - 'null'
+          description: Archived
+        visible:
+          type:
+          - boolean
+          - 'null'
+          description: Is visible
+        fulfillment_required:
+          type:
+          - boolean
+          - 'null'
+          description: Fulfillment required
+        country_of_manufacture_id:
+          type:
+          - string
+          - 'null'
+          description: Country of manufacture
+        image_ids:
+          type:
+          - array
+          - 'null'
+          description: The images for the variant.
+        fulfillments_location_ids:
+          type:
+          - array
+          - 'null'
+          description: The fulfillment locations for the variant.
+        properties_values:
+          type: array
+          description: The property values of the Variant. e.g. 'Large', 'Red' etc.
+          items:
+            type: object
+            properties:
+              property_id:
+                type: integer
+                description: The ID of the property
+              value:
+                type: string
+                description: The value
+        has_access_to_all_valid_assets:
+          type:
+          - boolean
+          - 'null'
+          description: All-or-nothing digital-asset access. When true, a purchase grants access to every valid Asset. Set false and pass `asset_ids` to grant only specific ones.
+        asset_ids:
+          type:
+          - array
+          - 'null'
+          description: Digital-asset access. The IDs of workspace Assets a purchase of this variant should grant access to. Pair with `has_access_to_all_valid_assets` (set it false to grant only these). On update this replaces the current set.
+          items:
+            type: integer
+        included_courses_attributes:
+          type: array
+          description: Course access to grant. Each entry links a Course by `course_id`; a purchase grants access to it. When creating a grant, omit `included_sections_attributes` for FULL-course access, or list specific sections for PARTIAL access. On an existing grant, omitting sections does NOT convert partial access to full; manage sections explicitly (add via `courses_section_id`, remove via `id` + `_destroy`). To revoke the whole grant, pass its `id` with `_destroy` set to true.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Existing grant ID (for update/removal).
+              _destroy:
+                type: boolean
+                description: Pass true (with id) to revoke the grant.
+              course_id:
+                type: integer
+                description: The ID of the Course to grant access to.
+              included_sections_attributes:
+                type: array
+                description: Specific sections for partial-course access.
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Existing included-section ID (for update/removal).
+                    _destroy:
+                      type: boolean
+                      description: Pass true (with id) to remove the section grant.
+                    courses_section_id:
+                      type: integer
+                      description: The ID of the course section to grant.
+        included_space_groups_attributes:
+          type: array
+          description: Community access to grant. Each entry links a Community Space Group by `communities_space_group_id`; a purchase grants access to the whole group. To revoke, pass the grant's `id` with `_destroy` set to true.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Existing grant ID (for update/removal).
+              _destroy:
+                type: boolean
+                description: Pass true (with id) to revoke the grant.
+              communities_space_group_id:
+                type: integer
+                description: The ID of the Community Space Group to grant access to.
+      example:
+        products_variant:
+          name: Small Aluminum Gloves variant 393f
+          description: Dolore provident unde quas.
+          sku: LxbnGP0kqyqzQDTK
+          product_type: physical
+          out_of_stock_sales: true
+          weight: '24.0'
+          weight_unit: lb
+          height: '96.0'
+          width: '418.0'
+          length: '66.0'
+          dimensions_unit: inches
+          tax_category_id: null
+          has_access_to_all_valid_assets: false
+          asset_ids:
+          - 904
+          included_courses_attributes:
+          - course_id: 42
+          included_space_groups_attributes:
+          - communities_space_group_id: 8
+          taxable: null
+          track_quantity: false
+          archived: false
+          visible: true
+          fulfillment_required: false
+          country_of_manufacture_id: null
+          image_ids: []
+          fulfillments_location_ids: []
   securitySchemes:
     BearerAuth:
       type: http
