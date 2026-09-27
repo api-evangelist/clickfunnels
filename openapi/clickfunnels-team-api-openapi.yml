@@ -308,82 +308,6 @@ paths:
           description: Unprocessable Entity
 components:
   schemas:
-    TeamParametersUpdate:
-      type: object
-      title: Teams
-      description: Teams
-      required: []
-      properties:
-        name:
-          type: string
-          description: The name of your Team
-        time_zone:
-          type:
-          - string
-          - 'null'
-          description: 'The human-readable time zone set manually by a ClickFunnels user or dynamically by the app.
-
-            Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
-
-            '
-        locale:
-          type: string
-          description: The main language used to create a new website.
-          enum:
-          - en
-          - ja
-          - pt
-          default: en
-      example:
-        team:
-          name: Example Team
-          time_zone: Pacific Time (US & Canada)
-          locale: en
-    BillingSubscriptionIncludedPriceAttributes:
-      type: object
-      title: Billing Subscription Included Prices
-      description: A price included in a billing subscription.
-      properties:
-        id:
-          type: integer
-          description: Included price ID
-        subscription_id:
-          type: integer
-          description: The ID of the billing subscription this price belongs to
-        price_id:
-          type: string
-          description: The identifier of the underlying price
-        quantity:
-          type:
-          - integer
-          - 'null'
-          description: The quantity of the price included in the subscription
-        created_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Created
-        updated_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Updated
-      example:
-        id: 9000
-        subscription_id: 8000
-        price_id: price_basic_monthly
-        quantity: 1
-        created_at: '2025-01-01T00:00:00.000Z'
-        updated_at: '2025-01-01T00:00:00.000Z'
-      required:
-      - created_at
-      - id
-      - price_id
-      - quantity
-      - subscription_id
-      - updated_at
     TeamAttributes:
       type: object
       title: Teams
@@ -608,6 +532,119 @@ components:
       - user_id
       - user_last_name
       - user_profile_photo_id
+    BillingSubscriptionAttributes:
+      type: object
+      title: Billing Subscriptions
+      description: A billing subscription for a team. Embedded in the `Team` resource's `billing_subscriptions` array.
+      properties:
+        id:
+          type: integer
+          description: Billing subscription ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Billing subscription public ID
+        team_id:
+          type: integer
+          description: The ID of the team the subscription belongs to
+        status:
+          type:
+          - string
+          - 'null'
+          description: The subscription's current status (e.g. `active`, `canceled`, `delinquent`)
+        cycle_ends_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the current billing cycle ends
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        included_prices:
+          type: array
+          description: The prices included in the subscription
+          items:
+            $ref: '#/components/schemas/BillingSubscriptionIncludedPriceAttributes'
+      example:
+        id: 8000
+        public_id: SbTcfQ
+        team_id: 42000
+        status: active
+        cycle_ends_at: '2025-02-01T00:00:00.000Z'
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        included_prices:
+        - id: 9000
+          subscription_id: 8000
+          price_id: price_basic_monthly
+          quantity: 1
+          created_at: '2025-01-01T00:00:00.000Z'
+          updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - cycle_ends_at
+      - id
+      - included_prices
+      - public_id
+      - status
+      - team_id
+      - updated_at
+    BillingSubscriptionIncludedPriceAttributes:
+      type: object
+      title: Billing Subscription Included Prices
+      description: A price included in a billing subscription.
+      properties:
+        id:
+          type: integer
+          description: Included price ID
+        subscription_id:
+          type: integer
+          description: The ID of the billing subscription this price belongs to
+        price_id:
+          type: string
+          description: The identifier of the underlying price
+        quantity:
+          type:
+          - integer
+          - 'null'
+          description: The quantity of the price included in the subscription
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+      example:
+        id: 9000
+        subscription_id: 8000
+        price_id: price_basic_monthly
+        quantity: 1
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - id
+      - price_id
+      - quantity
+      - subscription_id
+      - updated_at
     UserAttributes:
       type: object
       title: Profile
@@ -680,82 +717,53 @@ components:
       - public_id
       - time_zone
       - updated_at
-    BillingSubscriptionAttributes:
+    TeamParametersUpdate:
       type: object
-      title: Billing Subscriptions
-      description: A billing subscription for a team. Embedded in the `Team` resource's `billing_subscriptions` array.
+      title: Teams
+      description: Teams
+      required: []
       properties:
-        id:
-          type: integer
-          description: Billing subscription ID
-        public_id:
+        name:
+          type: string
+          description: The name of your Team
+        time_zone:
           type:
           - string
           - 'null'
-          description: Billing subscription public ID
-        team_id:
-          type: integer
-          description: The ID of the team the subscription belongs to
-        status:
-          type:
-          - string
-          - 'null'
-          description: The subscription's current status (e.g. `active`, `canceled`, `delinquent`)
-        cycle_ends_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: When the current billing cycle ends
-        created_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Created
-        updated_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Updated
-        included_prices:
-          type: array
-          description: The prices included in the subscription
-          items:
-            $ref: '#/components/schemas/BillingSubscriptionIncludedPriceAttributes'
+          description: 'The human-readable time zone set manually by a ClickFunnels user or dynamically by the app.
+
+            Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
+
+            '
+        locale:
+          type: string
+          description: The main language used to create a new website.
+          enum:
+          - en
+          - ja
+          - pt
+          default: en
       example:
-        id: 8000
-        public_id: SbTcfQ
-        team_id: 42000
-        status: active
-        cycle_ends_at: '2025-02-01T00:00:00.000Z'
-        created_at: '2025-01-01T00:00:00.000Z'
-        updated_at: '2025-01-01T00:00:00.000Z'
-        included_prices:
-        - id: 9000
-          subscription_id: 8000
-          price_id: price_basic_monthly
-          quantity: 1
-          created_at: '2025-01-01T00:00:00.000Z'
-          updated_at: '2025-01-01T00:00:00.000Z'
-      required:
-      - created_at
-      - cycle_ends_at
-      - id
-      - included_prices
-      - public_id
-      - status
-      - team_id
-      - updated_at
-  parameters:
-    after:
-      name: after
-      in: query
-      required: false
+        team:
+          name: Example Team
+          time_zone: Pacific Time (US & Canada)
+          locale: en
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
     sort_property:
       name: sort_property
       in: query
@@ -780,21 +788,13 @@ components:
         enum:
         - asc
         - desc
-    id:
-      name: id
-      in: path
-      required: true
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   securitySchemes:
     BearerAuth:
       type: http

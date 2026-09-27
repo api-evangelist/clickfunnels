@@ -34,6 +34,9 @@ accessModel:
   generated: '2026-07-22'
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/clickfunnels.png
+x-docs-platform: readme
+x-docs-platform-confidence: high
+x-docs-platform-checked: 2026-09-24
 tags:
 - Sales Funnels
 - Landing Pages
@@ -2934,6 +2937,8 @@ apis:
   humanURL: https://developers.myclickfunnels.com/reference
   baseURL: https://{subdomain}.myclickfunnels.com/api/v2
   tags:
+  - Shipping Zone
+  tags_raw:
   - Shipping::Zone
   properties:
   - type: OpenAPI

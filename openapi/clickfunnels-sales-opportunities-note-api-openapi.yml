@@ -322,6 +322,43 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
+    SalesOpportunitiesNoteParametersUpdate:
+      type: object
+      title: Notes
+      description: Notes
+      required: []
+      properties:
+        content:
+          type: string
+          description: Content
+        created_by_id:
+          type: integer
+          description: 'The ID of the Team-Membership that created the note. When creating notes via the API, this defaults to the ClickFunnels API default User''s Membership ID. You can retrieve a list of available Memberships and their id via the Team resource''s memberships property.
+
+            '
+      example:
+        sales_opportunities_note:
+          content: Example Note
+          created_by_id: 42
+    SalesOpportunitiesNoteParameters:
+      type: object
+      title: Notes
+      description: Notes
+      required:
+      - content
+      properties:
+        content:
+          type: string
+          description: Content
+        created_by_id:
+          type: integer
+          description: 'The ID of the Team-Membership that created the note. When creating notes via the API, this defaults to the ClickFunnels API default User''s Membership ID. You can retrieve a list of available Memberships and their id via the Team resource''s memberships property.
+
+            '
+      example:
+        sales_opportunities_note:
+          content: Example note
+          created_by_id: 42
     SalesOpportunitiesNoteAttributes:
       type: object
       title: Notes
@@ -376,43 +413,6 @@ components:
       - opportunity_id
       - public_id
       - updated_at
-    SalesOpportunitiesNoteParametersUpdate:
-      type: object
-      title: Notes
-      description: Notes
-      required: []
-      properties:
-        content:
-          type: string
-          description: Content
-        created_by_id:
-          type: integer
-          description: 'The ID of the Team-Membership that created the note. When creating notes via the API, this defaults to the ClickFunnels API default User''s Membership ID. You can retrieve a list of available Memberships and their id via the Team resource''s memberships property.
-
-            '
-      example:
-        sales_opportunities_note:
-          content: Example Note
-          created_by_id: 42
-    SalesOpportunitiesNoteParameters:
-      type: object
-      title: Notes
-      description: Notes
-      required:
-      - content
-      properties:
-        content:
-          type: string
-          description: Content
-        created_by_id:
-          type: integer
-          description: 'The ID of the Team-Membership that created the note. When creating notes via the API, this defaults to the ClickFunnels API default User''s Membership ID. You can retrieve a list of available Memberships and their id via the Team resource''s memberships property.
-
-            '
-      example:
-        sales_opportunities_note:
-          content: Example note
-          created_by_id: 42
   headers:
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
@@ -423,13 +423,12 @@ components:
       schema:
         type: string
   parameters:
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -454,12 +453,13 @@ components:
         enum:
         - asc
         - desc
-    id:
-      name: id
-      in: path
-      required: true
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   securitySchemes:
     BearerAuth:
       type: http

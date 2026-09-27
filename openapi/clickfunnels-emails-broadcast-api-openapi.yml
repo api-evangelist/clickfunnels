@@ -469,7 +469,212 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
   schemas:
+    EmailsBroadcastParametersUpdate:
+      type: object
+      title: Email Broadcasts
+      description: Email Broadcasts. Only draft broadcasts can be updated.
+      required: []
+      properties:
+        name:
+          type: string
+          description: Internal name for the broadcast
+        subject:
+          type: string
+          description: Email subject line seen by recipients
+        preheadline:
+          type:
+          - string
+          - 'null'
+          description: Preview text shown in email clients before opening. Maximum 150 characters.
+        from_email:
+          type: string
+          description: Sender email address. Must be a verified email address that belongs to the workspace.
+        reply_to_email:
+          type:
+          - string
+          - 'null'
+          description: Reply-to email address. Must be a verified address in the workspace if provided.
+        html_body:
+          type:
+          - string
+          - 'null'
+          description: HTML email body
+        text_body:
+          type:
+          - string
+          - 'null'
+          description: Plain text email body
+        template_id:
+          type:
+          - integer
+          - 'null'
+          description: Numeric id of an existing email template in this workspace to point this draft broadcast at (swaps the referenced template). Takes precedence over an inline html_body/text_body. Only draft broadcasts can be updated; an unknown id returns 422.
+        filter_id:
+          type:
+          - string
+          - integer
+          - 'null'
+          description: 'Contact filter for the broadcast audience. Accepts any of three forms: the numeric `id` or the public id (string) of a saved contact filter (`Refine::StoredFilter`) in this workspace, or a serialized contact filter. The supplied filter is copied onto the broadcast — the broadcast points at its own copy, so later edits to (or deletion of) the saved filter never change this broadcast''s audience. Saved contact filters can be created/listed via the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md). See [Applying filters to email broadcasts](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-email-broadcasts).
+
+            '
+        send_at:
+          type:
+          - string
+          - 'null'
+          description: Scheduled send date
+        send_at_local_time:
+          type:
+          - string
+          - 'null'
+          description: Scheduled send time in HH:MM:SS format
+        time_zone:
+          type:
+          - string
+          - 'null'
+          description: Time zone for scheduling
+        external_id:
+          type:
+          - string
+          - 'null'
+          description: An optional external identifier for your own tracking
+        topic_ids:
+          type: array
+          items:
+            type: integer
+          description: Topic IDs to associate
+      example:
+        emails_broadcast:
+          name: Updated Newsletter
+          subject: Updated Subject
+    EmailsBroadcastParameters:
+      type: object
+      title: Email Broadcasts
+      description: Email Broadcasts
+      required:
+      - name
+      - from_email
+      properties:
+        name:
+          type: string
+          description: Internal name for the broadcast (required)
+        subject:
+          type: string
+          description: Email subject line seen by recipients
+        preheadline:
+          type:
+          - string
+          - 'null'
+          description: Preview text shown in email clients before opening. Maximum 150 characters.
+        from_email:
+          type: string
+          description: 'Sender email address. Required on create. Must be an email address that belongs to the workspace, and it must have `usable_as_sender: true` or the send is rejected with 422. Do not pick by the sending domain''s `verified` flag: that covers email transport only. See GET /workspaces/{workspace_id}/emails/addresses, where a shared workspace-default address is usable only while the workspace has no ready custom sender.'
+        reply_to_email:
+          type:
+          - string
+          - 'null'
+          description: Reply-to email address. Must be an address in the workspace if provided. Pick one whose `usable_as_sender` is `true`.
+        html_body:
+          type:
+          - string
+          - 'null'
+          description: HTML email body. If provided without a template_id, a template is automatically created from this content.
+        text_body:
+          type:
+          - string
+          - 'null'
+          description: Plain text email body
+        template_id:
+          type:
+          - integer
+          - 'null'
+          description: Numeric id of an existing email template in this workspace to use. Alternative to providing html_body/text_body directly; takes precedence when both are given. The broadcast references this template (it is not copied).
+        filter_id:
+          type:
+          - string
+          - integer
+          - 'null'
+          description: 'Contact filter for the broadcast audience. Accepts any of three forms: the numeric `id` or the public id (string) of a saved contact filter (`Refine::StoredFilter`) in this workspace, or a serialized contact filter. The supplied filter is copied onto the broadcast — the broadcast points at its own copy, so later edits to (or deletion of) the saved filter never change this broadcast''s audience. Saved contact filters can be created/listed via the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md). If `recipients` are provided instead, a filter is created automatically from them and takes precedence over `filter_id`. See [Applying filters to email broadcasts](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-email-broadcasts).
+
+            '
+        send_immediately:
+          type: boolean
+          description: Set to true to send the broadcast immediately upon creation. If false, use send_at, send_at_local_time, and time_zone to schedule.
+        send_at:
+          type:
+          - string
+          - 'null'
+          description: Scheduled send date. Required when send_immediately is false.
+        send_at_local_time:
+          type:
+          - string
+          - 'null'
+          description: Scheduled send time in HH:MM:SS format. Defaults to 18:00:00.
+        time_zone:
+          type:
+          - string
+          - 'null'
+          description: Time zone for scheduling (defaults to workspace time zone)
+        external_id:
+          type:
+          - string
+          - 'null'
+          description: An optional external identifier for your own tracking
+        topic_ids:
+          type: array
+          items:
+            type: integer
+          description: Topic IDs to associate. Only topics belonging to the workspace are accepted.
+        recipients:
+          type: array
+          items:
+            type: object
+            required:
+            - email
+            properties:
+              email:
+                type: string
+                description: Recipient email address (required)
+              first_name:
+                type:
+                - string
+                - 'null'
+                description: Recipient first name
+              last_name:
+                type:
+                - string
+                - 'null'
+                description: Recipient last name
+          description: List of recipients (maximum 1,000). Contacts are created or matched by email address.
+      example:
+        emails_broadcast:
+          name: Weekly Newsletter
+          subject: This Week's Updates
+          preheadline: Check out what's new
+          from_email: marketing@example.com
+          reply_to_email: replies@example.com
+          html_body: <h1>Hello World</h1>
+          text_body: Hello World
+          send_immediately: false
+          send_at: '2025-06-01'
+          send_at_local_time: '18:00:00'
+          time_zone: Pacific Time (US & Canada)
+          topic_ids:
+          - 1
+          - 2
+          recipients:
+          - email: user@example.com
+            first_name: Jane
+            last_name: Doe
     EmailsBroadcastAttributes:
       type: object
       title: Email Broadcasts
@@ -668,210 +873,13 @@ components:
       - topic_ids
       - updated_at
       - workspace_id
-    EmailsBroadcastParametersUpdate:
-      type: object
-      title: Email Broadcasts
-      description: Email Broadcasts. Only draft broadcasts can be updated.
-      required: []
-      properties:
-        name:
-          type: string
-          description: Internal name for the broadcast
-        subject:
-          type: string
-          description: Email subject line seen by recipients
-        preheadline:
-          type:
-          - string
-          - 'null'
-          description: Preview text shown in email clients before opening. Maximum 150 characters.
-        from_email:
-          type: string
-          description: Sender email address. Must be a verified email address that belongs to the workspace.
-        reply_to_email:
-          type:
-          - string
-          - 'null'
-          description: Reply-to email address. Must be a verified address in the workspace if provided.
-        html_body:
-          type:
-          - string
-          - 'null'
-          description: HTML email body
-        text_body:
-          type:
-          - string
-          - 'null'
-          description: Plain text email body
-        template_id:
-          type:
-          - integer
-          - 'null'
-          description: Numeric id of an existing email template in this workspace to point this draft broadcast at (swaps the referenced template). Takes precedence over an inline html_body/text_body. Only draft broadcasts can be updated; an unknown id returns 422.
-        filter_id:
-          type:
-          - string
-          - integer
-          - 'null'
-          description: 'Contact filter for the broadcast audience. Accepts any of three forms: the numeric `id` or the public id (string) of a saved contact filter (`Refine::StoredFilter`) in this workspace, or a serialized contact filter. The supplied filter is copied onto the broadcast — the broadcast points at its own copy, so later edits to (or deletion of) the saved filter never change this broadcast''s audience. Saved contact filters can be created/listed via the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md). See [Applying filters to email broadcasts](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-email-broadcasts).
-
-            '
-        send_at:
-          type:
-          - string
-          - 'null'
-          description: Scheduled send date
-        send_at_local_time:
-          type:
-          - string
-          - 'null'
-          description: Scheduled send time in HH:MM:SS format
-        time_zone:
-          type:
-          - string
-          - 'null'
-          description: Time zone for scheduling
-        external_id:
-          type:
-          - string
-          - 'null'
-          description: An optional external identifier for your own tracking
-        topic_ids:
-          type: array
-          items:
-            type: integer
-          description: Topic IDs to associate
-      example:
-        emails_broadcast:
-          name: Updated Newsletter
-          subject: Updated Subject
-    EmailsBroadcastParameters:
-      type: object
-      title: Email Broadcasts
-      description: Email Broadcasts
-      required:
-      - name
-      - from_email
-      properties:
-        name:
-          type: string
-          description: Internal name for the broadcast (required)
-        subject:
-          type: string
-          description: Email subject line seen by recipients
-        preheadline:
-          type:
-          - string
-          - 'null'
-          description: Preview text shown in email clients before opening. Maximum 150 characters.
-        from_email:
-          type: string
-          description: 'Sender email address. Required on create. Must be an email address that belongs to the workspace, and it must have `usable_as_sender: true` or the send is rejected with 422. Do not pick by the sending domain''s `verified` flag: that covers email transport only. See GET /workspaces/{workspace_id}/emails/addresses, where a shared workspace-default address is usable only while the workspace has no ready custom sender.'
-        reply_to_email:
-          type:
-          - string
-          - 'null'
-          description: Reply-to email address. Must be an address in the workspace if provided. Pick one whose `usable_as_sender` is `true`.
-        html_body:
-          type:
-          - string
-          - 'null'
-          description: HTML email body. If provided without a template_id, a template is automatically created from this content.
-        text_body:
-          type:
-          - string
-          - 'null'
-          description: Plain text email body
-        template_id:
-          type:
-          - integer
-          - 'null'
-          description: Numeric id of an existing email template in this workspace to use. Alternative to providing html_body/text_body directly; takes precedence when both are given. The broadcast references this template (it is not copied).
-        filter_id:
-          type:
-          - string
-          - integer
-          - 'null'
-          description: 'Contact filter for the broadcast audience. Accepts any of three forms: the numeric `id` or the public id (string) of a saved contact filter (`Refine::StoredFilter`) in this workspace, or a serialized contact filter. The supplied filter is copied onto the broadcast — the broadcast points at its own copy, so later edits to (or deletion of) the saved filter never change this broadcast''s audience. Saved contact filters can be created/listed via the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md). If `recipients` are provided instead, a filter is created automatically from them and takes precedence over `filter_id`. See [Applying filters to email broadcasts](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-email-broadcasts).
-
-            '
-        send_immediately:
-          type: boolean
-          description: Set to true to send the broadcast immediately upon creation. If false, use send_at, send_at_local_time, and time_zone to schedule.
-        send_at:
-          type:
-          - string
-          - 'null'
-          description: Scheduled send date. Required when send_immediately is false.
-        send_at_local_time:
-          type:
-          - string
-          - 'null'
-          description: Scheduled send time in HH:MM:SS format. Defaults to 18:00:00.
-        time_zone:
-          type:
-          - string
-          - 'null'
-          description: Time zone for scheduling (defaults to workspace time zone)
-        external_id:
-          type:
-          - string
-          - 'null'
-          description: An optional external identifier for your own tracking
-        topic_ids:
-          type: array
-          items:
-            type: integer
-          description: Topic IDs to associate. Only topics belonging to the workspace are accepted.
-        recipients:
-          type: array
-          items:
-            type: object
-            required:
-            - email
-            properties:
-              email:
-                type: string
-                description: Recipient email address (required)
-              first_name:
-                type:
-                - string
-                - 'null'
-                description: Recipient first name
-              last_name:
-                type:
-                - string
-                - 'null'
-                description: Recipient last name
-          description: List of recipients (maximum 1,000). Contacts are created or matched by email address.
-      example:
-        emails_broadcast:
-          name: Weekly Newsletter
-          subject: This Week's Updates
-          preheadline: Check out what's new
-          from_email: marketing@example.com
-          reply_to_email: replies@example.com
-          html_body: <h1>Hello World</h1>
-          text_body: Hello World
-          send_immediately: false
-          send_at: '2025-06-01'
-          send_at_local_time: '18:00:00'
-          time_zone: Pacific Time (US & Canada)
-          topic_ids:
-          - 1
-          - 2
-          recipients:
-          - email: user@example.com
-            first_name: Jane
-            last_name: Doe
   parameters:
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -896,21 +904,13 @@ components:
         enum:
         - asc
         - desc
-    id:
-      name: id
-      in: path
-      required: true
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   securitySchemes:
     BearerAuth:
       type: http

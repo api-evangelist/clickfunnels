@@ -545,124 +545,6 @@ components:
           name: Welcome
           access: 0
           members_can_post: true
-    CommunitiesSpaceParameters:
-      type: object
-      title: Communities::Space
-      description: Communities::Space
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          description: Name
-        access:
-          type:
-          - integer
-          - 'null'
-          description: Access level (0 = open, 1 = private, 2 = secret)
-        current_path:
-          type:
-          - string
-          - 'null'
-          description: Current Path
-        emoji:
-          type:
-          - string
-          - 'null'
-          description: Emoji icon for the space
-        card_image_id:
-          type:
-          - integer
-          - 'null'
-          description: Card Image ID
-        social_image_id:
-          type:
-          - integer
-          - 'null'
-          description: Social Image ID
-        members_can_post:
-          type:
-          - boolean
-          - 'null'
-          description: Whether members can post in this space
-        members_can_invite:
-          type:
-          - boolean
-          - 'null'
-          description: Whether members can invite others to this space
-        allow_post_titles:
-          type:
-          - boolean
-          - 'null'
-          description: Whether posts can have titles
-        allow_cover_images:
-          type:
-          - boolean
-          - 'null'
-          description: Whether posts can have cover images
-        hide_from_featured:
-          type:
-          - boolean
-          - 'null'
-          description: Whether to hide this space from the featured spaces list
-        layout_style:
-          type:
-          - string
-          - 'null'
-          description: Layout style for the space
-        default_tab:
-          type:
-          - string
-          - 'null'
-          description: Default tab shown when viewing the space
-        default_post_sort:
-          type:
-          - string
-          - 'null'
-          description: Default sort order for posts
-        default_comment_sort:
-          type:
-          - string
-          - 'null'
-          description: Default sort order for comments
-        default_member_sort:
-          type:
-          - string
-          - 'null'
-          description: Default sort order for members
-        pinned_posts_label:
-          type:
-          - string
-          - 'null'
-          description: Label for pinned posts section
-        seo_title:
-          type:
-          - string
-          - 'null'
-          description: Seo Title
-        seo_description:
-          type:
-          - string
-          - 'null'
-          description: Seo Description
-        sort_order:
-          type:
-          - integer
-          - 'null'
-          description: Sort order within the space group
-        always_on:
-          type:
-          - boolean
-          - 'null'
-          description: Always On
-        upgrade_url:
-          type:
-          - string
-          - 'null'
-          description: Upgrade URL
-      example:
-        communities_space:
-          name: Welcome
     CommunitiesSpaceAttributes:
       type: object
       title: Communities::Space
@@ -862,14 +744,131 @@ components:
       - updated_at
       - upgrade_url
       - workspace_id
+    CommunitiesSpaceParameters:
+      type: object
+      title: Communities::Space
+      description: Communities::Space
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name
+        access:
+          type:
+          - integer
+          - 'null'
+          description: Access level (0 = open, 1 = private, 2 = secret)
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current Path
+        emoji:
+          type:
+          - string
+          - 'null'
+          description: Emoji icon for the space
+        card_image_id:
+          type:
+          - integer
+          - 'null'
+          description: Card Image ID
+        social_image_id:
+          type:
+          - integer
+          - 'null'
+          description: Social Image ID
+        members_can_post:
+          type:
+          - boolean
+          - 'null'
+          description: Whether members can post in this space
+        members_can_invite:
+          type:
+          - boolean
+          - 'null'
+          description: Whether members can invite others to this space
+        allow_post_titles:
+          type:
+          - boolean
+          - 'null'
+          description: Whether posts can have titles
+        allow_cover_images:
+          type:
+          - boolean
+          - 'null'
+          description: Whether posts can have cover images
+        hide_from_featured:
+          type:
+          - boolean
+          - 'null'
+          description: Whether to hide this space from the featured spaces list
+        layout_style:
+          type:
+          - string
+          - 'null'
+          description: Layout style for the space
+        default_tab:
+          type:
+          - string
+          - 'null'
+          description: Default tab shown when viewing the space
+        default_post_sort:
+          type:
+          - string
+          - 'null'
+          description: Default sort order for posts
+        default_comment_sort:
+          type:
+          - string
+          - 'null'
+          description: Default sort order for comments
+        default_member_sort:
+          type:
+          - string
+          - 'null'
+          description: Default sort order for members
+        pinned_posts_label:
+          type:
+          - string
+          - 'null'
+          description: Label for pinned posts section
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: Seo Title
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: Seo Description
+        sort_order:
+          type:
+          - integer
+          - 'null'
+          description: Sort order within the space group
+        always_on:
+          type:
+          - boolean
+          - 'null'
+          description: Always On
+        upgrade_url:
+          type:
+          - string
+          - 'null'
+          description: Upgrade URL
+      example:
+        communities_space:
+          name: Welcome
   parameters:
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -894,12 +893,13 @@ components:
         enum:
         - asc
         - desc
-    id:
-      name: id
-      in: path
-      required: true
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   securitySchemes:
     BearerAuth:
       type: http

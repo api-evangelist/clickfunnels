@@ -357,6 +357,20 @@ paths:
               example:
                 error: The target variant and price combination is not an allowed upgrade or downgrade for this subscription.
 components:
+  parameters:
+    line_item_id:
+      name: line_item_id
+      in: path
+      required: true
+      description: 'The id of the subscription line item. Accepts either the integer database
+
+        id or the obfuscated `public_id` string returned by line-item endpoints.
+
+        '
+      schema:
+        oneOf:
+        - type: integer
+        - type: string
   schemas:
     OrdersLineItemsChangeRequest:
       type: object
@@ -418,59 +432,6 @@ components:
           products_price_id: 24
           prorate: true
           effective_time: now
-    ProductsPriceMinimal:
-      type: object
-      title: Products Price (Minimal)
-      description: 'Minimal price representation used wherever a price appears as a nested
-
-        attribute (line items, upgrade/downgrade discovery).
-
-        '
-      properties:
-        id:
-          type: integer
-        public_id:
-          type:
-          - string
-          - 'null'
-        name:
-          type:
-          - string
-          - 'null'
-        key:
-          type:
-          - string
-          - 'null'
-        amount:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        duration:
-          type:
-          - integer
-          - 'null'
-        interval:
-          type:
-          - string
-          - 'null'
-        interval_count:
-          type:
-          - integer
-          - 'null'
-      example:
-        id: 24
-        public_id: aBcDeF
-        name: Pro Monthly
-        key: pro_monthly_2024
-        amount: '20.00'
-        currency: USD
-        duration: null
-        interval: months
-        interval_count: 1
     OrdersLineItemAttributes:
       type: object
       title: Line items
@@ -592,6 +553,59 @@ components:
       - public_id
       - quantity
       - updated_at
+    ProductsPriceMinimal:
+      type: object
+      title: Products Price (Minimal)
+      description: 'Minimal price representation used wherever a price appears as a nested
+
+        attribute (line items, upgrade/downgrade discovery).
+
+        '
+      properties:
+        id:
+          type: integer
+        public_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        key:
+          type:
+          - string
+          - 'null'
+        amount:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        duration:
+          type:
+          - integer
+          - 'null'
+        interval:
+          type:
+          - string
+          - 'null'
+        interval_count:
+          type:
+          - integer
+          - 'null'
+      example:
+        id: 24
+        public_id: aBcDeF
+        name: Pro Monthly
+        key: pro_monthly_2024
+        amount: '20.00'
+        currency: USD
+        duration: null
+        interval: months
+        interval_count: 1
     OrdersLineItemsChangeResponse:
       type: object
       title: Line Item Change
@@ -763,20 +777,6 @@ components:
               interval: months
               interval_count: 1
             products_variant: null
-  parameters:
-    line_item_id:
-      name: line_item_id
-      in: path
-      required: true
-      description: 'The id of the subscription line item. Accepts either the integer database
-
-        id or the obfuscated `public_id` string returned by line-item endpoints.
-
-        '
-      schema:
-        oneOf:
-        - type: integer
-        - type: string
   securitySchemes:
     BearerAuth:
       type: http

@@ -370,6 +370,15 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
   schemas:
     ProductsCollectionAttributes:
       type: object
@@ -509,6 +518,83 @@ components:
       - updated_at
       - visible_in_store
       - workspace_id
+    ProductsCollectionParametersUpdate:
+      type: object
+      title: Collections
+      description: Collections
+      required: []
+      properties:
+        name:
+          type: string
+          description: Name of the products collection
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the collection
+        collection_type:
+          type:
+          - string
+          - 'null'
+          description: Type of the collection (manual or automatic)
+        product_ids:
+          type:
+          - array
+          - 'null'
+          description: Array of product IDs in the collection. Updating with invalid or non-workspace product IDs will result in an error. If IDs from existing products in the collection are left out, they will be removed from the collection. You can also remove all the products from a collection by providing an empty array.
+        sort_method:
+          type:
+          - string
+          - 'null'
+          enum:
+          - manually
+          - name_asc
+          - name_desc
+          - price_desc
+          - price_asc
+          - added_at_desc
+          - added_at_asc
+          - created_at_desc
+          - created_at_asc
+          - null
+          description: Method used to sort the products in the collection
+        image_id:
+          type:
+          - string
+          - 'null'
+          description: Collection image
+        visible_in_store:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the collection is visible in the online store
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: Title of the collection for SEO purposes
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: Description of the collection for SEO purposes
+        social_image_id:
+          type:
+          - string
+          - 'null'
+          description: Image for social sharing
+      example:
+        products_collection:
+          name: Example Collection
+          description: Example Description
+          collection_type: manual
+          product_ids: []
+          sort_method: manually
+          image_id: null
+          visible_in_store: true
+          seo_title: Example SEO Title
+          seo_description: Example SEO Description
+          social_image_id: null
     ProductsCollectionParameters:
       type: object
       title: Collections
@@ -587,91 +673,13 @@ components:
           seo_title: Example SEO Title
           seo_description: Example SEO Description
           social_image_id: null
-    ProductsCollectionParametersUpdate:
-      type: object
-      title: Collections
-      description: Collections
-      required: []
-      properties:
-        name:
-          type: string
-          description: Name of the products collection
-        description:
-          type:
-          - string
-          - 'null'
-          description: Description of the collection
-        collection_type:
-          type:
-          - string
-          - 'null'
-          description: Type of the collection (manual or automatic)
-        product_ids:
-          type:
-          - array
-          - 'null'
-          description: Array of product IDs in the collection. Updating with invalid or non-workspace product IDs will result in an error. If IDs from existing products in the collection are left out, they will be removed from the collection. You can also remove all the products from a collection by providing an empty array.
-        sort_method:
-          type:
-          - string
-          - 'null'
-          enum:
-          - manually
-          - name_asc
-          - name_desc
-          - price_desc
-          - price_asc
-          - added_at_desc
-          - added_at_asc
-          - created_at_desc
-          - created_at_asc
-          - null
-          description: Method used to sort the products in the collection
-        image_id:
-          type:
-          - string
-          - 'null'
-          description: Collection image
-        visible_in_store:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the collection is visible in the online store
-        seo_title:
-          type:
-          - string
-          - 'null'
-          description: Title of the collection for SEO purposes
-        seo_description:
-          type:
-          - string
-          - 'null'
-          description: Description of the collection for SEO purposes
-        social_image_id:
-          type:
-          - string
-          - 'null'
-          description: Image for social sharing
-      example:
-        products_collection:
-          name: Example Collection
-          description: Example Description
-          collection_type: manual
-          product_ids: []
-          sort_method: manually
-          image_id: null
-          visible_in_store: true
-          seo_title: Example SEO Title
-          seo_description: Example SEO Description
-          social_image_id: null
   parameters:
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -696,21 +704,13 @@ components:
         enum:
         - asc
         - desc
-    id:
-      name: id
-      in: path
-      required: true
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   securitySchemes:
     BearerAuth:
       type: http

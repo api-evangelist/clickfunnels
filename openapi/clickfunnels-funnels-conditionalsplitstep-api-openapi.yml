@@ -573,6 +573,46 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
+    ConditionalSplitStepParametersUpdate:
+      type: object
+      title: Update Conditional Split Step
+      description: "Update the `condition` and/or attach pages to existing `branches`. At least one of\nthe two must be provided.\n\n- `condition.filter_id` is the public id of a RefineFilter in the same workspace.\n  Create or update filters via the RefineFilter endpoints. See [Attaching a filter](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#attaching-a-filter)\n  and [Applying filters to conditional split steps](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-conditional-split-steps).\n- `branches` must be a 2-entry array (matched, unmatched).\n  - `page_id` (single) — when the branch is empty: attach. When the branch already\n    has show-page-steps: swap the FIRST step's page (subsequent steps preserved).\n  - `page_ids` (array) — APPEND the listed fresh pages to the end of the branch.\n    Use this to grow a branch with more sequential steps over multiple PATCHes.\n  Both forms are mutually exclusive per entry; any page referenced must be a\n  fresh `user_page` in the same workspace with no existing ShowPageStep.\n"
+      properties:
+        conditional_split_step:
+          type: object
+          properties:
+            condition:
+              type: object
+              properties:
+                filter_id:
+                  type: string
+                  description: Public id of a RefineFilter in this workspace.
+            branches:
+              type: array
+              minItems: 2
+              maxItems: 2
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  page_id:
+                    type: integer
+                    description: Page id to attach (currently empty branch) or swap (first step on populated branch). Mutually exclusive with `page_ids`.
+                  page_ids:
+                    type: array
+                    items:
+                      type: integer
+                    description: List of fresh page ids to APPEND to the end of this branch. Mutually exclusive with `page_id`.
+      example:
+        conditional_split_step:
+          condition:
+            filter_id: AbCdEf
+          branches:
+          - page_ids:
+            - 600
+            - 601
+            - 602
+          - page_id: 603
     RefineFilterAttributes:
       type: object
       title: Refine Filter
@@ -720,52 +760,6 @@ components:
           - page_ids:
             - 603
           show_page_step_id: 100
-    RefineFilterCriterion:
-      type: object
-      title: Refine Filter Criterion
-      description: A single filter criterion consisting of an attribute, a comparison clause, and a value.
-      properties:
-        attribute:
-          type: string
-          description: 'The contact attribute to filter on (e.g. `tags.id`, `created_at`, `email_address`).
-
-            The public API restricts attributes to a [safe whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist) — see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for the full reference.
-
-            '
-          example: tags.id
-        clause:
-          type: string
-          description: 'The comparison operator for this criterion (e.g. `in`, `eq`, `gte`, `lte`, `st`, `nst`).
-
-            Allowed clauses depend on the attribute. Text attributes (`email_address`, `first_name`, `last_name`) only accept `eq` and `sw` on the public API; see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist).
-
-            '
-          example: in
-        value:
-          description: "The comparison value. Type depends on the attribute and clause:\n- **Option conditions** (tags, products, etc.): a single opaque public id string, or an array of public id strings.\n- **Date/datetime conditions**: an ISO 8601 date string (`\"2026-01-01\"`) or datetime string (`\"2026-01-01T00:00:00Z\"`).\n  For `between`/`not_between` clauses supply an array of exactly two date strings.\n  For relative `gt`, `lt`, or `exct` clauses supply an object with `days` and a `modifier` of `ago` or `from_now`.\n- **Text/numeric conditions**: a plain string or number.\n- **Set/not-set clauses**: omit `value` entirely.\n"
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-          - type: object
-            required:
-            - days
-            - modifier
-            properties:
-              days:
-                oneOf:
-                - type: string
-                - type: integer
-                description: Number of days used by a relative date clause.
-              modifier:
-                type: string
-                enum:
-                - ago
-                - from_now
-          example:
-          - tag-pub-id-1
-          - tag-pub-id-2
     ConditionalSplitStepAttributes:
       type: object
       title: Conditional Split Step
@@ -915,46 +909,52 @@ components:
       - id
       - public_id
       - updated_at
-    ConditionalSplitStepParametersUpdate:
+    RefineFilterCriterion:
       type: object
-      title: Update Conditional Split Step
-      description: "Update the `condition` and/or attach pages to existing `branches`. At least one of\nthe two must be provided.\n\n- `condition.filter_id` is the public id of a RefineFilter in the same workspace.\n  Create or update filters via the RefineFilter endpoints. See [Attaching a filter](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#attaching-a-filter)\n  and [Applying filters to conditional split steps](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-conditional-split-steps).\n- `branches` must be a 2-entry array (matched, unmatched).\n  - `page_id` (single) — when the branch is empty: attach. When the branch already\n    has show-page-steps: swap the FIRST step's page (subsequent steps preserved).\n  - `page_ids` (array) — APPEND the listed fresh pages to the end of the branch.\n    Use this to grow a branch with more sequential steps over multiple PATCHes.\n  Both forms are mutually exclusive per entry; any page referenced must be a\n  fresh `user_page` in the same workspace with no existing ShowPageStep.\n"
+      title: Refine Filter Criterion
+      description: A single filter criterion consisting of an attribute, a comparison clause, and a value.
       properties:
-        conditional_split_step:
-          type: object
-          properties:
-            condition:
-              type: object
-              properties:
-                filter_id:
-                  type: string
-                  description: Public id of a RefineFilter in this workspace.
-            branches:
-              type: array
-              minItems: 2
-              maxItems: 2
-              items:
-                type: object
-                additionalProperties: false
-                properties:
-                  page_id:
-                    type: integer
-                    description: Page id to attach (currently empty branch) or swap (first step on populated branch). Mutually exclusive with `page_ids`.
-                  page_ids:
-                    type: array
-                    items:
-                      type: integer
-                    description: List of fresh page ids to APPEND to the end of this branch. Mutually exclusive with `page_id`.
-      example:
-        conditional_split_step:
-          condition:
-            filter_id: AbCdEf
-          branches:
-          - page_ids:
-            - 600
-            - 601
-            - 602
-          - page_id: 603
+        attribute:
+          type: string
+          description: 'The contact attribute to filter on (e.g. `tags.id`, `created_at`, `email_address`).
+
+            The public API restricts attributes to a [safe whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist) — see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for the full reference.
+
+            '
+          example: tags.id
+        clause:
+          type: string
+          description: 'The comparison operator for this criterion (e.g. `in`, `eq`, `gte`, `lte`, `st`, `nst`).
+
+            Allowed clauses depend on the attribute. Text attributes (`email_address`, `first_name`, `last_name`) only accept `eq` and `sw` on the public API; see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist).
+
+            '
+          example: in
+        value:
+          description: "The comparison value. Type depends on the attribute and clause:\n- **Option conditions** (tags, products, etc.): a single opaque public id string, or an array of public id strings.\n- **Date/datetime conditions**: an ISO 8601 date string (`\"2026-01-01\"`) or datetime string (`\"2026-01-01T00:00:00Z\"`).\n  For `between`/`not_between` clauses supply an array of exactly two date strings.\n  For relative `gt`, `lt`, or `exct` clauses supply an object with `days` and a `modifier` of `ago` or `from_now`.\n- **Text/numeric conditions**: a plain string or number.\n- **Set/not-set clauses**: omit `value` entirely.\n"
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+          - type: object
+            required:
+            - days
+            - modifier
+            properties:
+              days:
+                oneOf:
+                - type: string
+                - type: integer
+                description: Number of days used by a relative date clause.
+              modifier:
+                type: string
+                enum:
+                - ago
+                - from_now
+          example:
+          - tag-pub-id-1
+          - tag-pub-id-2
   securitySchemes:
     BearerAuth:
       type: http

@@ -330,13 +330,6 @@ components:
       schema:
         type: string
   parameters:
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     id:
       name: id
       in: path
@@ -367,12 +360,20 @@ components:
         enum:
         - asc
         - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
-    EmailsTopicParametersUpdate:
+    EmailsTopicParameters:
       type: object
       title: Email Topics
       description: Email Topics
-      required: []
+      required:
+      - name
       properties:
         name:
           type: string
@@ -384,8 +385,8 @@ components:
           description: Topic description
       example:
         emails_topic:
-          name: Renamed Topic
-          description: Updated description
+          name: Product Updates
+          description: Updates about our products
     EmailsTopicAttributes:
       type: object
       title: Email Topics
@@ -438,12 +439,11 @@ components:
       - public_id
       - updated_at
       - workspace_id
-    EmailsTopicParameters:
+    EmailsTopicParametersUpdate:
       type: object
       title: Email Topics
       description: Email Topics
-      required:
-      - name
+      required: []
       properties:
         name:
           type: string
@@ -455,8 +455,8 @@ components:
           description: Topic description
       example:
         emails_topic:
-          name: Product Updates
-          description: Updates about our products
+          name: Renamed Topic
+          description: Updated description
   securitySchemes:
     BearerAuth:
       type: http

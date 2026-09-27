@@ -1639,6 +1639,557 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
+    OrderVisitsAttributes:
+      type: object
+      title: Order Visits
+      description: Visit tracking records for orders and invoices. Contains last_visit and last_visit_with_utm only (first_visit belongs to the contact).
+      properties:
+        last_visit:
+          description: The most recent visit associated with this order.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit_with_utm:
+          description: The most recent visit that contains UTM parameters.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+      example:
+        last_visit: null
+        last_visit_with_utm:
+          uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+          utm_source: google
+          utm_medium: cpc
+          utm_campaign: spring_sale
+          utm_term: running shoes
+          utm_content: ad_variant_a
+          ip: 192.168.1.1
+          user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+          referrer: https://www.google.com/search?q=example
+          referring_domain: google.com
+          landing_page: https://example.com/products/shoes
+          browser: Chrome
+          os: Mac OS X
+          device_type: desktop
+          started_at: '2026-01-09T14:23:45.123Z'
+          created_at: '2026-01-09T14:23:45.123Z'
+          updated_at: '2026-01-09T14:23:45.123Z'
+      required:
+      - last_visit
+      - last_visit_with_utm
+    OrdersInvoiceAttributes:
+      type: object
+      title: Invoices
+      description: Invoices
+      properties:
+        id:
+          type: integer
+          description: Invoice ID
+        public_id:
+          type: string
+          description: Invoice public ID
+        order_id:
+          type: integer
+          description: Order ID
+        status:
+          type: string
+          description: 'The billing status reflects the status of the invoice''s payment.
+
+            Billing status can be one of the following for Payments AI orders: `draft`, `paid`, `unpaid`, `partially-refunded`, `refunded`, `voided`, `disputed`, `past-due`.
+
+
+            External invoice statuses of external one-time orders can be one of the following: `unpaid`, `paid`, `voided` and `refunded`, `disputed`, `past-due`.
+
+            A change in status will update the `billing_status` of the parent order. If the status of a one-time order is changed to `paid`, the order''s `service_status` will also be flipped to `completed`.
+
+            '
+        due_amount:
+          type:
+          - string
+          - 'null'
+          description: Due Amount
+        total_amount:
+          type:
+          - string
+          - 'null'
+          description: Total Amt
+        subtotal_amount:
+          type:
+          - string
+          - 'null'
+          description: Subtotal Amount
+        tax_amount:
+          type:
+          - string
+          - 'null'
+          description: Tax Amount
+        shipping_amount:
+          type:
+          - string
+          - 'null'
+          description: Invoiced shipping amount. Cannot be negative.
+        discount_amount:
+          type:
+          - string
+          - 'null'
+          description: Discount Amount
+        currency:
+          type:
+          - string
+          - 'null'
+          description: Currency
+        issued_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: 'The date the invoice was issued.
+
+            '
+        due_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice is due.
+        paid_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice was paid.
+        invoice_type:
+          type:
+          - string
+          - 'null'
+          enum:
+          - initial
+          - renewal
+          - interim
+          - cancellation
+          - one_time
+          - refund
+          - charge
+          - one_time_sale
+          - null
+          description: Invoice Type
+        invoice_number:
+          type: string
+          description: The number of the invoice. Usually, this is a sequential number in a certain format to be used for bookkeeping purposes.
+        fulfillment_status:
+          type:
+          - string
+          - 'null'
+          description: "The fulfillment status of the invoice.\nThis can be one of:\n - `not_applicable` - the invoice is not eligible for fulfillment\n - `unfulfilled` - the entire invoice needs to be fulfilled\n - `partial` - some items have been fulfilled, but some are pending or restocked\n - `complete` - all items are fulfilled\n"
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        external_id:
+          type:
+          - string
+          - 'null'
+          description: External ID
+        payment_processor:
+          type:
+          - string
+          - 'null'
+          description: The payment processor of the invoice's order. Currently, it can be one of `payments_ai` and `external`.
+        eligible_for_fulfillment:
+          type:
+          - boolean
+          - 'null'
+          description: Invoice has been paid so is eligible for fulfillment (does not indicate if the invoice has any fulfillable items)
+        line_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrdersInvoicesLineItemAttributes'
+          description: Invoice Line Items
+        order:
+          $ref: '#/components/schemas/OrderBaseAttributes'
+        visits:
+          allOf:
+          - $ref: '#/components/schemas/OrderVisitsAttributes'
+          description: Visit tracking information from the parent order. Contains last_visit and last_visit_with_utm (but not first_visit, which belongs to the contact).
+      example:
+        id: 838
+        public_id: WNrMnJ
+        order_id: 22642
+        status: paid
+        due_amount: '13.00'
+        total_amount: '13.00'
+        subtotal_amount: '3.00'
+        tax_amount: '0.00'
+        shipping_amount: '10.00'
+        discount_amount: '0.00'
+        currency: USD
+        issued_at: '2023-10-01T12:43:55.000Z'
+        due_at: '2023-10-15T00:00:00.000Z'
+        paid_at: '2025-10-10T08:04:02.000Z'
+        invoice_type: one_time_sale
+        invoice_number: '3'
+        fulfillment_status: not_applicable
+        created_at: '2026-01-10T20:16:16.536Z'
+        updated_at: '2026-01-10T20:16:16.536Z'
+        external_id: tffv2w34qv
+        payment_processor: external
+        eligible_for_fulfillment: true
+        line_items:
+        - id: 682
+          public_id: RegpVj
+          invoice_id: 838
+          external_id: null
+          payment_type: null
+          description: null
+          quantity: 1
+          fulfillment_status: unfulfilled
+          external_product_id: null
+          discount_amount: '0.0'
+          state_tax_amount: '0.0'
+          county_tax_amount: '0.0'
+          city_tax_amount: '0.0'
+          district_tax_amount: '0.0'
+          state_tax_rate: '0.0'
+          county_tax_rate: '0.0'
+          city_tax_rate: '0.0'
+          district_tax_rate: '0.0'
+          country_tax_jurisdiction: null
+          state_tax_jurisdiction: null
+          county_tax_jurisdiction: null
+          city_tax_jurisdiction: null
+          period_start_at: null
+          period_end_at: null
+          period_number: null
+          created_at: '2026-01-10T20:16:16.538Z'
+          updated_at: '2026-01-10T20:16:16.538Z'
+          amount: '3.00'
+          products_price:
+            id: 22229
+            public_id: YqEWxY
+            amount: '198.00'
+            currency: usd
+            duration: null
+            interval: null
+            interval_count: null
+          products_variant:
+            id: 22228
+            public_id: JdknyN
+            product_id: 6512
+            name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+            description: null
+            sku: SIYP-BLACK-PREMIUM-001
+            fulfillment_required: false
+        order:
+          id: 22642
+          public_id: JmRRyN
+          order_number: '#2146'
+          total_amount: '396.00'
+          origination_channel_id: 11
+          origination_channel_type: Platform::Application
+          notes: For Fulfillment
+          live_mode: true
+          in_trial: false
+          billing_status: paid
+          service_status: completed
+          order_type: one-time-order
+          next_charge_at: null
+          trial_end_at: null
+          tag_ids: []
+          activated_at: null
+          canceled_at: null
+          canceled_by: null
+          cancel_reason: null
+          cancel_description: null
+          churned_at: null
+          shipping_address_first_name: Caroll
+          shipping_address_last_name: Kirlin
+          shipping_address_organization_name: Testing, Inc.
+          shipping_address_phone_number: '+19053871234'
+          shipping_address_street_one: 3443 W Bavaria St
+          shipping_address_street_two: ''
+          shipping_address_city: Eagle
+          shipping_address_region: ID
+          shipping_address_country: US
+          shipping_address_postal_code: '83616'
+          billing_address_street_one: 3443 W Bavaria St
+          billing_address_street_two: ''
+          billing_address_city: Eagle
+          billing_address_region: ID
+          billing_address_country: US
+          billing_address_postal_code: '83616'
+          recurring_invoices_paid_count: 1
+          origination_channel_name: Default API Client
+          origination_channel_public_id: vNWWMb
+          contact:
+            id: 24359
+            public_id: vQxYMj
+            workspace_id: 4
+            anonymous: 0
+            email_address: jane.doe@example.com
+            first_name: Jane
+            last_name: Doe
+            phone_number: '+18005550199'
+            time_zone: Madrid
+            uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+            unsubscribed_at: null
+            last_notification_email_sent_at: null
+            email_suppression_reason: null
+            is_active: true
+            fb_url: null
+            twitter_url: null
+            instagram_url: null
+            linkedin_url: null
+            website_url: null
+            created_at: '2026-01-09T15:27:56.647Z'
+            updated_at: '2026-01-09T15:28:08.075Z'
+            tags: []
+            custom_attributes: {}
+            visits:
+              first_visit:
+                uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                utm_source: google
+                utm_medium: cpc
+                utm_campaign: spring_sale
+                utm_term: running shoes
+                utm_content: ad_variant_a
+                ip: 192.168.1.1
+                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                referrer: https://www.google.com/search?q=example
+                referring_domain: google.com
+                landing_page: https://example.com/products/shoes
+                browser: Chrome
+                os: Mac OS X
+                device_type: desktop
+                started_at: '2026-01-09T14:23:45.123Z'
+                created_at: '2026-01-09T14:23:45.123Z'
+                updated_at: '2026-01-09T14:23:45.123Z'
+              last_visit: null
+              last_visit_with_utm:
+                uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                utm_source: google
+                utm_medium: cpc
+                utm_campaign: spring_sale
+                utm_term: running shoes
+                utm_content: ad_variant_a
+                ip: 192.168.1.1
+                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                referrer: https://www.google.com/search?q=example
+                referring_domain: google.com
+                landing_page: https://example.com/products/shoes
+                browser: Chrome
+                os: Mac OS X
+                device_type: desktop
+                started_at: '2026-01-09T14:23:45.123Z'
+                created_at: '2026-01-09T14:23:45.123Z'
+                updated_at: '2026-01-09T14:23:45.123Z'
+          affiliate: null
+          referral_code: null
+          order_page: null
+        visits:
+          last_visit:
+            uuid: 7a3f9c11-2d45-4e23-88d2-1bef9acd44fa
+            utm_source: null
+            utm_medium: null
+            utm_campaign: null
+            utm_term: null
+            utm_content: null
+            ip: 192.168.1.1
+            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+            referrer: https://www.clickfunnels.com/products
+            referring_domain: clickfunnels.com
+            landing_page: https://example.com/checkout
+            browser: Chrome
+            os: Mac OS X
+            device_type: desktop
+            started_at: '2026-01-10T20:10:15.234Z'
+            created_at: '2026-01-10T20:10:15.234Z'
+            updated_at: '2026-01-10T20:10:15.234Z'
+          last_visit_with_utm:
+            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+            utm_source: google
+            utm_medium: cpc
+            utm_campaign: spring_sale
+            utm_term: running shoes
+            utm_content: ad_variant_a
+            ip: 192.168.1.1
+            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+            referrer: https://www.google.com/search?q=example
+            referring_domain: google.com
+            landing_page: https://example.com/products/shoes
+            browser: Chrome
+            os: Mac OS X
+            device_type: desktop
+            started_at: '2026-01-09T14:23:45.123Z'
+            created_at: '2026-01-09T14:23:45.123Z'
+            updated_at: '2026-01-09T14:23:45.123Z'
+      required:
+      - created_at
+      - currency
+      - discount_amount
+      - due_amount
+      - due_at
+      - eligible_for_fulfillment
+      - external_id
+      - fulfillment_status
+      - id
+      - invoice_number
+      - invoice_type
+      - issued_at
+      - line_items
+      - order
+      - order_id
+      - paid_at
+      - payment_processor
+      - public_id
+      - shipping_amount
+      - status
+      - subtotal_amount
+      - tax_amount
+      - total_amount
+      - updated_at
+      - visits
+    OrdersInvoiceParametersUpdate:
+      type: object
+      title: External Invoice Update
+      description: 'Parameters for updating an external invoice. Only external orders support invoice updates via the API.
+
+        Note: The `invoice_type` cannot be changed after creation. New line items cannot be added during update;
+
+        only existing line items can be modified by providing their `id`.
+
+        '
+      properties:
+        status:
+          type: string
+          description: 'The billing status of the invoice.
+
+
+            For external orders, valid statuses are: `unpaid`, `paid`, `voided`, `refunded`, `disputed`, `past-due`.
+
+
+            When changing status to `paid`, you must also provide `paid_at`.
+
+            A change in status will update the `billing_status` of the parent order.
+
+            If a one-time order''s invoice status is changed to `paid`, the order''s `service_status` will also flip to `completed`.
+
+            '
+          enum:
+          - unpaid
+          - paid
+          - voided
+          - refunded
+          - disputed
+          - past-due
+        external_id:
+          type: string
+          description: 'The unique identifier for this invoice in your external system.
+
+            This ID allows you to correlate ClickFunnels invoices with records in your payment processor.
+
+            '
+        invoice_number:
+          type:
+          - string
+          - 'null'
+          description: 'A sequential number for bookkeeping purposes.
+
+            '
+        shipping_amount:
+          type:
+          - string
+          - 'null'
+          description: Invoiced shipping amount. Cannot be negative.
+        issued_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice was issued.
+        due_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice is due.
+        paid_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: 'The date the invoice was paid. Required when changing `status` to `paid`.
+
+            '
+        line_items_attributes:
+          type: array
+          description: 'Update existing line items. Only line items with an `id` will be processed;
+
+            new line items (without `id`) are ignored during updates.
+
+            '
+          items:
+            type: object
+            required:
+            - id
+            properties:
+              id:
+                type: integer
+                description: 'Required. The ID of the existing line item to update.
+
+                  Line items without an ID are ignored during updates.
+
+                  '
+              amount:
+                type: string
+                description: The price amount for this line item.
+              quantity:
+                type: integer
+                description: The quantity of items.
+              description:
+                type:
+                - string
+                - 'null'
+                description: Optional description for the line item.
+      example:
+        orders_invoice:
+          status: paid
+          paid_at: '2025-01-10T00:00:00.000Z'
+          line_items_attributes:
+          - id: 682
+            amount: '99.00'
+            quantity: 2
+    VisitsAttributes:
+      type: object
+      title: Visits
+      description: Collection of visit tracking records for a contact, including first visit, last visit, and last visit with UTM parameters
+      properties:
+        first_visit:
+          description: The first visit associated with this contact.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit:
+          description: The most recent visit. May be null if it is identical to first_visit (to avoid duplication).
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit_with_utm:
+          description: The most recent visit that contains UTM parameters.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+      required:
+      - first_visit
+      - last_visit
+      - last_visit_with_utm
     OrdersInvoicesLineItemAttributes:
       type: object
       title: Line items
@@ -1920,167 +2471,6 @@ components:
       - state_tax_jurisdiction
       - state_tax_rate
       - updated_at
-    VisitAttributes:
-      type: object
-      title: Visit
-      description: Visit tracking information including UTM parameters and device data
-      properties:
-        uuid:
-          type: string
-          description: Unique identifier for the visit
-        utm_source:
-          type:
-          - string
-          - 'null'
-          description: UTM source parameter from the visit URL
-        utm_medium:
-          type:
-          - string
-          - 'null'
-          description: UTM medium parameter from the visit URL
-        utm_campaign:
-          type:
-          - string
-          - 'null'
-          description: UTM campaign parameter from the visit URL
-        utm_term:
-          type:
-          - string
-          - 'null'
-          description: UTM term parameter from the visit URL
-        utm_content:
-          type:
-          - string
-          - 'null'
-          description: UTM content parameter from the visit URL
-        ip:
-          type:
-          - string
-          - 'null'
-          description: IP address of the visitor
-        user_agent:
-          type:
-          - string
-          - 'null'
-          description: User agent string from the visitor's browser
-        referrer:
-          type:
-          - string
-          - 'null'
-          description: HTTP referrer URL
-        referring_domain:
-          type:
-          - string
-          - 'null'
-          description: Domain extracted from the referrer URL
-        landing_page:
-          type:
-          - string
-          - 'null'
-          description: The first page URL visited in this session
-        browser:
-          type:
-          - string
-          - 'null'
-          description: Browser name detected from user agent
-        os:
-          type:
-          - string
-          - 'null'
-          description: Operating system detected from user agent
-        device_type:
-          type:
-          - string
-          - 'null'
-          description: Device type (e.g., desktop, mobile, tablet)
-        started_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Timestamp when the visit session started
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp when the visit record was created
-        updated_at:
-          type: string
-          format: date-time
-          description: Timestamp when the visit record was last updated
-      example:
-        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-        utm_source: google
-        utm_medium: cpc
-        utm_campaign: spring_sale
-        utm_term: running shoes
-        utm_content: ad_variant_a
-        ip: 192.168.1.1
-        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-        referrer: https://www.google.com/search?q=example
-        referring_domain: google.com
-        landing_page: https://example.com/products/shoes
-        browser: Chrome
-        os: Mac OS X
-        device_type: desktop
-        started_at: '2026-01-09T14:23:45.123Z'
-        created_at: '2026-01-09T14:23:45.123Z'
-        updated_at: '2026-01-09T14:23:45.123Z'
-      required:
-      - browser
-      - created_at
-      - device_type
-      - ip
-      - landing_page
-      - os
-      - referrer
-      - referring_domain
-      - started_at
-      - updated_at
-      - user_agent
-      - utm_campaign
-      - utm_content
-      - utm_medium
-      - utm_source
-      - utm_term
-      - uuid
-    OrderVisitsAttributes:
-      type: object
-      title: Order Visits
-      description: Visit tracking records for orders and invoices. Contains last_visit and last_visit_with_utm only (first_visit belongs to the contact).
-      properties:
-        last_visit:
-          description: The most recent visit associated with this order.
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-        last_visit_with_utm:
-          description: The most recent visit that contains UTM parameters.
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-      example:
-        last_visit: null
-        last_visit_with_utm:
-          uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-          utm_source: google
-          utm_medium: cpc
-          utm_campaign: spring_sale
-          utm_term: running shoes
-          utm_content: ad_variant_a
-          ip: 192.168.1.1
-          user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-          referrer: https://www.google.com/search?q=example
-          referring_domain: google.com
-          landing_page: https://example.com/products/shoes
-          browser: Chrome
-          os: Mac OS X
-          device_type: desktop
-          started_at: '2026-01-09T14:23:45.123Z'
-          created_at: '2026-01-09T14:23:45.123Z'
-          updated_at: '2026-01-09T14:23:45.123Z'
-      required:
-      - last_visit
-      - last_visit_with_utm
     OrderBaseAttributes:
       type: object
       title: Order (Base)
@@ -2492,409 +2882,6 @@ components:
       - tag_ids
       - total_amount
       - trial_end_at
-    VisitsAttributes:
-      type: object
-      title: Visits
-      description: Collection of visit tracking records for a contact, including first visit, last visit, and last visit with UTM parameters
-      properties:
-        first_visit:
-          description: The first visit associated with this contact.
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-        last_visit:
-          description: The most recent visit. May be null if it is identical to first_visit (to avoid duplication).
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-        last_visit_with_utm:
-          description: The most recent visit that contains UTM parameters.
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-      required:
-      - first_visit
-      - last_visit
-      - last_visit_with_utm
-    OrdersInvoiceAttributes:
-      type: object
-      title: Invoices
-      description: Invoices
-      properties:
-        id:
-          type: integer
-          description: Invoice ID
-        public_id:
-          type: string
-          description: Invoice public ID
-        order_id:
-          type: integer
-          description: Order ID
-        status:
-          type: string
-          description: 'The billing status reflects the status of the invoice''s payment.
-
-            Billing status can be one of the following for Payments AI orders: `draft`, `paid`, `unpaid`, `partially-refunded`, `refunded`, `voided`, `disputed`, `past-due`.
-
-
-            External invoice statuses of external one-time orders can be one of the following: `unpaid`, `paid`, `voided` and `refunded`, `disputed`, `past-due`.
-
-            A change in status will update the `billing_status` of the parent order. If the status of a one-time order is changed to `paid`, the order''s `service_status` will also be flipped to `completed`.
-
-            '
-        due_amount:
-          type:
-          - string
-          - 'null'
-          description: Due Amount
-        total_amount:
-          type:
-          - string
-          - 'null'
-          description: Total Amt
-        subtotal_amount:
-          type:
-          - string
-          - 'null'
-          description: Subtotal Amount
-        tax_amount:
-          type:
-          - string
-          - 'null'
-          description: Tax Amount
-        shipping_amount:
-          type:
-          - string
-          - 'null'
-          description: Invoiced shipping amount. Cannot be negative.
-        discount_amount:
-          type:
-          - string
-          - 'null'
-          description: Discount Amount
-        currency:
-          type:
-          - string
-          - 'null'
-          description: Currency
-        issued_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: 'The date the invoice was issued.
-
-            '
-        due_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: The date the invoice is due.
-        paid_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: The date the invoice was paid.
-        invoice_type:
-          type:
-          - string
-          - 'null'
-          enum:
-          - initial
-          - renewal
-          - interim
-          - cancellation
-          - one_time
-          - refund
-          - charge
-          - one_time_sale
-          - null
-          description: Invoice Type
-        invoice_number:
-          type: string
-          description: The number of the invoice. Usually, this is a sequential number in a certain format to be used for bookkeeping purposes.
-        fulfillment_status:
-          type:
-          - string
-          - 'null'
-          description: "The fulfillment status of the invoice.\nThis can be one of:\n - `not_applicable` - the invoice is not eligible for fulfillment\n - `unfulfilled` - the entire invoice needs to be fulfilled\n - `partial` - some items have been fulfilled, but some are pending or restocked\n - `complete` - all items are fulfilled\n"
-        created_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Added
-        updated_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Updated
-        external_id:
-          type:
-          - string
-          - 'null'
-          description: External ID
-        payment_processor:
-          type:
-          - string
-          - 'null'
-          description: The payment processor of the invoice's order. Currently, it can be one of `payments_ai` and `external`.
-        eligible_for_fulfillment:
-          type:
-          - boolean
-          - 'null'
-          description: Invoice has been paid so is eligible for fulfillment (does not indicate if the invoice has any fulfillable items)
-        line_items:
-          type: array
-          items:
-            $ref: '#/components/schemas/OrdersInvoicesLineItemAttributes'
-          description: Invoice Line Items
-        order:
-          $ref: '#/components/schemas/OrderBaseAttributes'
-        visits:
-          allOf:
-          - $ref: '#/components/schemas/OrderVisitsAttributes'
-          description: Visit tracking information from the parent order. Contains last_visit and last_visit_with_utm (but not first_visit, which belongs to the contact).
-      example:
-        id: 838
-        public_id: WNrMnJ
-        order_id: 22642
-        status: paid
-        due_amount: '13.00'
-        total_amount: '13.00'
-        subtotal_amount: '3.00'
-        tax_amount: '0.00'
-        shipping_amount: '10.00'
-        discount_amount: '0.00'
-        currency: USD
-        issued_at: '2023-10-01T12:43:55.000Z'
-        due_at: '2023-10-15T00:00:00.000Z'
-        paid_at: '2025-10-10T08:04:02.000Z'
-        invoice_type: one_time_sale
-        invoice_number: '3'
-        fulfillment_status: not_applicable
-        created_at: '2026-01-10T20:16:16.536Z'
-        updated_at: '2026-01-10T20:16:16.536Z'
-        external_id: tffv2w34qv
-        payment_processor: external
-        eligible_for_fulfillment: true
-        line_items:
-        - id: 682
-          public_id: RegpVj
-          invoice_id: 838
-          external_id: null
-          payment_type: null
-          description: null
-          quantity: 1
-          fulfillment_status: unfulfilled
-          external_product_id: null
-          discount_amount: '0.0'
-          state_tax_amount: '0.0'
-          county_tax_amount: '0.0'
-          city_tax_amount: '0.0'
-          district_tax_amount: '0.0'
-          state_tax_rate: '0.0'
-          county_tax_rate: '0.0'
-          city_tax_rate: '0.0'
-          district_tax_rate: '0.0'
-          country_tax_jurisdiction: null
-          state_tax_jurisdiction: null
-          county_tax_jurisdiction: null
-          city_tax_jurisdiction: null
-          period_start_at: null
-          period_end_at: null
-          period_number: null
-          created_at: '2026-01-10T20:16:16.538Z'
-          updated_at: '2026-01-10T20:16:16.538Z'
-          amount: '3.00'
-          products_price:
-            id: 22229
-            public_id: YqEWxY
-            amount: '198.00'
-            currency: usd
-            duration: null
-            interval: null
-            interval_count: null
-          products_variant:
-            id: 22228
-            public_id: JdknyN
-            product_id: 6512
-            name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
-            description: null
-            sku: SIYP-BLACK-PREMIUM-001
-            fulfillment_required: false
-        order:
-          id: 22642
-          public_id: JmRRyN
-          order_number: '#2146'
-          total_amount: '396.00'
-          origination_channel_id: 11
-          origination_channel_type: Platform::Application
-          notes: For Fulfillment
-          live_mode: true
-          in_trial: false
-          billing_status: paid
-          service_status: completed
-          order_type: one-time-order
-          next_charge_at: null
-          trial_end_at: null
-          tag_ids: []
-          activated_at: null
-          canceled_at: null
-          canceled_by: null
-          cancel_reason: null
-          cancel_description: null
-          churned_at: null
-          shipping_address_first_name: Caroll
-          shipping_address_last_name: Kirlin
-          shipping_address_organization_name: Testing, Inc.
-          shipping_address_phone_number: '+19053871234'
-          shipping_address_street_one: 3443 W Bavaria St
-          shipping_address_street_two: ''
-          shipping_address_city: Eagle
-          shipping_address_region: ID
-          shipping_address_country: US
-          shipping_address_postal_code: '83616'
-          billing_address_street_one: 3443 W Bavaria St
-          billing_address_street_two: ''
-          billing_address_city: Eagle
-          billing_address_region: ID
-          billing_address_country: US
-          billing_address_postal_code: '83616'
-          recurring_invoices_paid_count: 1
-          origination_channel_name: Default API Client
-          origination_channel_public_id: vNWWMb
-          contact:
-            id: 24359
-            public_id: vQxYMj
-            workspace_id: 4
-            anonymous: 0
-            email_address: jane.doe@example.com
-            first_name: Jane
-            last_name: Doe
-            phone_number: '+18005550199'
-            time_zone: Madrid
-            uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
-            unsubscribed_at: null
-            last_notification_email_sent_at: null
-            email_suppression_reason: null
-            is_active: true
-            fb_url: null
-            twitter_url: null
-            instagram_url: null
-            linkedin_url: null
-            website_url: null
-            created_at: '2026-01-09T15:27:56.647Z'
-            updated_at: '2026-01-09T15:28:08.075Z'
-            tags: []
-            custom_attributes: {}
-            visits:
-              first_visit:
-                uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-                utm_source: google
-                utm_medium: cpc
-                utm_campaign: spring_sale
-                utm_term: running shoes
-                utm_content: ad_variant_a
-                ip: 192.168.1.1
-                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-                referrer: https://www.google.com/search?q=example
-                referring_domain: google.com
-                landing_page: https://example.com/products/shoes
-                browser: Chrome
-                os: Mac OS X
-                device_type: desktop
-                started_at: '2026-01-09T14:23:45.123Z'
-                created_at: '2026-01-09T14:23:45.123Z'
-                updated_at: '2026-01-09T14:23:45.123Z'
-              last_visit: null
-              last_visit_with_utm:
-                uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-                utm_source: google
-                utm_medium: cpc
-                utm_campaign: spring_sale
-                utm_term: running shoes
-                utm_content: ad_variant_a
-                ip: 192.168.1.1
-                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-                referrer: https://www.google.com/search?q=example
-                referring_domain: google.com
-                landing_page: https://example.com/products/shoes
-                browser: Chrome
-                os: Mac OS X
-                device_type: desktop
-                started_at: '2026-01-09T14:23:45.123Z'
-                created_at: '2026-01-09T14:23:45.123Z'
-                updated_at: '2026-01-09T14:23:45.123Z'
-          affiliate: null
-          referral_code: null
-          order_page: null
-        visits:
-          last_visit:
-            uuid: 7a3f9c11-2d45-4e23-88d2-1bef9acd44fa
-            utm_source: null
-            utm_medium: null
-            utm_campaign: null
-            utm_term: null
-            utm_content: null
-            ip: 192.168.1.1
-            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-            referrer: https://www.clickfunnels.com/products
-            referring_domain: clickfunnels.com
-            landing_page: https://example.com/checkout
-            browser: Chrome
-            os: Mac OS X
-            device_type: desktop
-            started_at: '2026-01-10T20:10:15.234Z'
-            created_at: '2026-01-10T20:10:15.234Z'
-            updated_at: '2026-01-10T20:10:15.234Z'
-          last_visit_with_utm:
-            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-            utm_source: google
-            utm_medium: cpc
-            utm_campaign: spring_sale
-            utm_term: running shoes
-            utm_content: ad_variant_a
-            ip: 192.168.1.1
-            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-            referrer: https://www.google.com/search?q=example
-            referring_domain: google.com
-            landing_page: https://example.com/products/shoes
-            browser: Chrome
-            os: Mac OS X
-            device_type: desktop
-            started_at: '2026-01-09T14:23:45.123Z'
-            created_at: '2026-01-09T14:23:45.123Z'
-            updated_at: '2026-01-09T14:23:45.123Z'
-      required:
-      - created_at
-      - currency
-      - discount_amount
-      - due_amount
-      - due_at
-      - eligible_for_fulfillment
-      - external_id
-      - fulfillment_status
-      - id
-      - invoice_number
-      - invoice_type
-      - issued_at
-      - line_items
-      - order
-      - order_id
-      - paid_at
-      - payment_processor
-      - public_id
-      - shipping_amount
-      - status
-      - subtotal_amount
-      - tax_amount
-      - total_amount
-      - updated_at
-      - visits
     OrdersInvoiceParameters:
       type: object
       title: External Invoice
@@ -3268,124 +3255,145 @@ components:
       - visits
       - website_url
       - workspace_id
-    OrdersInvoiceParametersUpdate:
+    VisitAttributes:
       type: object
-      title: External Invoice Update
-      description: 'Parameters for updating an external invoice. Only external orders support invoice updates via the API.
-
-        Note: The `invoice_type` cannot be changed after creation. New line items cannot be added during update;
-
-        only existing line items can be modified by providing their `id`.
-
-        '
+      title: Visit
+      description: Visit tracking information including UTM parameters and device data
       properties:
-        status:
+        uuid:
           type: string
-          description: 'The billing status of the invoice.
-
-
-            For external orders, valid statuses are: `unpaid`, `paid`, `voided`, `refunded`, `disputed`, `past-due`.
-
-
-            When changing status to `paid`, you must also provide `paid_at`.
-
-            A change in status will update the `billing_status` of the parent order.
-
-            If a one-time order''s invoice status is changed to `paid`, the order''s `service_status` will also flip to `completed`.
-
-            '
-          enum:
-          - unpaid
-          - paid
-          - voided
-          - refunded
-          - disputed
-          - past-due
-        external_id:
+          description: Unique identifier for the visit
+        utm_source:
+          type:
+          - string
+          - 'null'
+          description: UTM source parameter from the visit URL
+        utm_medium:
+          type:
+          - string
+          - 'null'
+          description: UTM medium parameter from the visit URL
+        utm_campaign:
+          type:
+          - string
+          - 'null'
+          description: UTM campaign parameter from the visit URL
+        utm_term:
+          type:
+          - string
+          - 'null'
+          description: UTM term parameter from the visit URL
+        utm_content:
+          type:
+          - string
+          - 'null'
+          description: UTM content parameter from the visit URL
+        ip:
+          type:
+          - string
+          - 'null'
+          description: IP address of the visitor
+        user_agent:
+          type:
+          - string
+          - 'null'
+          description: User agent string from the visitor's browser
+        referrer:
+          type:
+          - string
+          - 'null'
+          description: HTTP referrer URL
+        referring_domain:
+          type:
+          - string
+          - 'null'
+          description: Domain extracted from the referrer URL
+        landing_page:
+          type:
+          - string
+          - 'null'
+          description: The first page URL visited in this session
+        browser:
+          type:
+          - string
+          - 'null'
+          description: Browser name detected from user agent
+        os:
+          type:
+          - string
+          - 'null'
+          description: Operating system detected from user agent
+        device_type:
+          type:
+          - string
+          - 'null'
+          description: Device type (e.g., desktop, mobile, tablet)
+        started_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the visit session started
+        created_at:
           type: string
-          description: 'The unique identifier for this invoice in your external system.
-
-            This ID allows you to correlate ClickFunnels invoices with records in your payment processor.
-
-            '
-        invoice_number:
-          type:
-          - string
-          - 'null'
-          description: 'A sequential number for bookkeeping purposes.
-
-            '
-        shipping_amount:
-          type:
-          - string
-          - 'null'
-          description: Invoiced shipping amount. Cannot be negative.
-        issued_at:
-          type:
-          - string
-          - 'null'
           format: date-time
-          description: The date the invoice was issued.
-        due_at:
-          type:
-          - string
-          - 'null'
+          description: Timestamp when the visit record was created
+        updated_at:
+          type: string
           format: date-time
-          description: The date the invoice is due.
-        paid_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: 'The date the invoice was paid. Required when changing `status` to `paid`.
-
-            '
-        line_items_attributes:
-          type: array
-          description: 'Update existing line items. Only line items with an `id` will be processed;
-
-            new line items (without `id`) are ignored during updates.
-
-            '
-          items:
-            type: object
-            required:
-            - id
-            properties:
-              id:
-                type: integer
-                description: 'Required. The ID of the existing line item to update.
-
-                  Line items without an ID are ignored during updates.
-
-                  '
-              amount:
-                type: string
-                description: The price amount for this line item.
-              quantity:
-                type: integer
-                description: The quantity of items.
-              description:
-                type:
-                - string
-                - 'null'
-                description: Optional description for the line item.
+          description: Timestamp when the visit record was last updated
       example:
-        orders_invoice:
-          status: paid
-          paid_at: '2025-01-10T00:00:00.000Z'
-          line_items_attributes:
-          - id: 682
-            amount: '99.00'
-            quantity: 2
-  parameters:
-    after:
-      name: after
-      in: query
-      required: false
+        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+        utm_source: google
+        utm_medium: cpc
+        utm_campaign: spring_sale
+        utm_term: running shoes
+        utm_content: ad_variant_a
+        ip: 192.168.1.1
+        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+        referrer: https://www.google.com/search?q=example
+        referring_domain: google.com
+        landing_page: https://example.com/products/shoes
+        browser: Chrome
+        os: Mac OS X
+        device_type: desktop
+        started_at: '2026-01-09T14:23:45.123Z'
+        created_at: '2026-01-09T14:23:45.123Z'
+        updated_at: '2026-01-09T14:23:45.123Z'
+      required:
+      - browser
+      - created_at
+      - device_type
+      - ip
+      - landing_page
+      - os
+      - referrer
+      - referring_domain
+      - started_at
+      - updated_at
+      - user_agent
+      - utm_campaign
+      - utm_content
+      - utm_medium
+      - utm_source
+      - utm_term
+      - uuid
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
     InvoiceFilter:
       name: filter
       in: query
@@ -3442,21 +3450,13 @@ components:
         enum:
         - asc
         - desc
-    id:
-      name: id
-      in: path
-      required: true
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   securitySchemes:
     BearerAuth:
       type: http

@@ -854,177 +854,30 @@ components:
           value: '100.0'
           closed_at: '2025-01-01T00:00:00.000Z'
           assignee_id: 42
-    VisitAttributes:
+    VisitsAttributes:
       type: object
-      title: Visit
-      description: Visit tracking information including UTM parameters and device data
+      title: Visits
+      description: Collection of visit tracking records for a contact, including first visit, last visit, and last visit with UTM parameters
       properties:
-        uuid:
-          type: string
-          description: Unique identifier for the visit
-        utm_source:
-          type:
-          - string
-          - 'null'
-          description: UTM source parameter from the visit URL
-        utm_medium:
-          type:
-          - string
-          - 'null'
-          description: UTM medium parameter from the visit URL
-        utm_campaign:
-          type:
-          - string
-          - 'null'
-          description: UTM campaign parameter from the visit URL
-        utm_term:
-          type:
-          - string
-          - 'null'
-          description: UTM term parameter from the visit URL
-        utm_content:
-          type:
-          - string
-          - 'null'
-          description: UTM content parameter from the visit URL
-        ip:
-          type:
-          - string
-          - 'null'
-          description: IP address of the visitor
-        user_agent:
-          type:
-          - string
-          - 'null'
-          description: User agent string from the visitor's browser
-        referrer:
-          type:
-          - string
-          - 'null'
-          description: HTTP referrer URL
-        referring_domain:
-          type:
-          - string
-          - 'null'
-          description: Domain extracted from the referrer URL
-        landing_page:
-          type:
-          - string
-          - 'null'
-          description: The first page URL visited in this session
-        browser:
-          type:
-          - string
-          - 'null'
-          description: Browser name detected from user agent
-        os:
-          type:
-          - string
-          - 'null'
-          description: Operating system detected from user agent
-        device_type:
-          type:
-          - string
-          - 'null'
-          description: Device type (e.g., desktop, mobile, tablet)
-        started_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Timestamp when the visit session started
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp when the visit record was created
-        updated_at:
-          type: string
-          format: date-time
-          description: Timestamp when the visit record was last updated
-      example:
-        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-        utm_source: google
-        utm_medium: cpc
-        utm_campaign: spring_sale
-        utm_term: running shoes
-        utm_content: ad_variant_a
-        ip: 192.168.1.1
-        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-        referrer: https://www.google.com/search?q=example
-        referring_domain: google.com
-        landing_page: https://example.com/products/shoes
-        browser: Chrome
-        os: Mac OS X
-        device_type: desktop
-        started_at: '2026-01-09T14:23:45.123Z'
-        created_at: '2026-01-09T14:23:45.123Z'
-        updated_at: '2026-01-09T14:23:45.123Z'
+        first_visit:
+          description: The first visit associated with this contact.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit:
+          description: The most recent visit. May be null if it is identical to first_visit (to avoid duplication).
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit_with_utm:
+          description: The most recent visit that contains UTM parameters.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
       required:
-      - browser
-      - created_at
-      - device_type
-      - ip
-      - landing_page
-      - os
-      - referrer
-      - referring_domain
-      - started_at
-      - updated_at
-      - user_agent
-      - utm_campaign
-      - utm_content
-      - utm_medium
-      - utm_source
-      - utm_term
-      - uuid
-    SalesOpportunityParametersUpdate:
-      type: object
-      title: Opportunities
-      description: Opportunities
-      required: []
-      properties:
-        name:
-          type: string
-          description: Name
-        pipelines_stage_id:
-          type: integer
-          description: Pipeline Stage ID
-        primary_contact_id:
-          type: integer
-          description: Primary Contact ID
-        value:
-          type:
-          - number
-          - 'null'
-          description: The potential value of this opportunity in the default currency of the workspace
-        closed_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Close date
-        assignee_id:
-          type: integer
-          description: 'The ID of the Team `Membership` to assign the Opportunity to.
-
-            An Opportunity can be assigned to any Team member since they have access to all your workspaces.
-
-            You can get a list of available Memberships and their `id` via the `Team` resource''s `memberships` property.
-
-
-            If the opportunity is already assigned to a team member, the assignee will be updated.
-
-            You can unset the assignee by passing a `null` value for `assignee_id`.
-
-            '
-      example:
-        sales_opportunity:
-          name: Example Opportunity
-          pipelines_stage_id: 123
-          primary_contact_id: 123
-          value: '100.0'
-          closed_at: '2025-01-01T00:00:00.000Z'
-          assignee_id: 42
+      - first_visit
+      - last_visit
+      - last_visit_with_utm
     SalesOpportunityAttributes:
       type: object
       title: Opportunities
@@ -1404,38 +1257,187 @@ components:
       - updated_at
       - value
       - workspace_id
-    VisitsAttributes:
+    VisitAttributes:
       type: object
-      title: Visits
-      description: Collection of visit tracking records for a contact, including first visit, last visit, and last visit with UTM parameters
+      title: Visit
+      description: Visit tracking information including UTM parameters and device data
       properties:
-        first_visit:
-          description: The first visit associated with this contact.
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-        last_visit:
-          description: The most recent visit. May be null if it is identical to first_visit (to avoid duplication).
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-        last_visit_with_utm:
-          description: The most recent visit that contains UTM parameters.
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
+        uuid:
+          type: string
+          description: Unique identifier for the visit
+        utm_source:
+          type:
+          - string
+          - 'null'
+          description: UTM source parameter from the visit URL
+        utm_medium:
+          type:
+          - string
+          - 'null'
+          description: UTM medium parameter from the visit URL
+        utm_campaign:
+          type:
+          - string
+          - 'null'
+          description: UTM campaign parameter from the visit URL
+        utm_term:
+          type:
+          - string
+          - 'null'
+          description: UTM term parameter from the visit URL
+        utm_content:
+          type:
+          - string
+          - 'null'
+          description: UTM content parameter from the visit URL
+        ip:
+          type:
+          - string
+          - 'null'
+          description: IP address of the visitor
+        user_agent:
+          type:
+          - string
+          - 'null'
+          description: User agent string from the visitor's browser
+        referrer:
+          type:
+          - string
+          - 'null'
+          description: HTTP referrer URL
+        referring_domain:
+          type:
+          - string
+          - 'null'
+          description: Domain extracted from the referrer URL
+        landing_page:
+          type:
+          - string
+          - 'null'
+          description: The first page URL visited in this session
+        browser:
+          type:
+          - string
+          - 'null'
+          description: Browser name detected from user agent
+        os:
+          type:
+          - string
+          - 'null'
+          description: Operating system detected from user agent
+        device_type:
+          type:
+          - string
+          - 'null'
+          description: Device type (e.g., desktop, mobile, tablet)
+        started_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the visit session started
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the visit record was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the visit record was last updated
+      example:
+        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+        utm_source: google
+        utm_medium: cpc
+        utm_campaign: spring_sale
+        utm_term: running shoes
+        utm_content: ad_variant_a
+        ip: 192.168.1.1
+        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+        referrer: https://www.google.com/search?q=example
+        referring_domain: google.com
+        landing_page: https://example.com/products/shoes
+        browser: Chrome
+        os: Mac OS X
+        device_type: desktop
+        started_at: '2026-01-09T14:23:45.123Z'
+        created_at: '2026-01-09T14:23:45.123Z'
+        updated_at: '2026-01-09T14:23:45.123Z'
       required:
-      - first_visit
-      - last_visit
-      - last_visit_with_utm
-  parameters:
-    after:
-      name: after
-      in: query
-      required: false
+      - browser
+      - created_at
+      - device_type
+      - ip
+      - landing_page
+      - os
+      - referrer
+      - referring_domain
+      - started_at
+      - updated_at
+      - user_agent
+      - utm_campaign
+      - utm_content
+      - utm_medium
+      - utm_source
+      - utm_term
+      - uuid
+    SalesOpportunityParametersUpdate:
+      type: object
+      title: Opportunities
+      description: Opportunities
+      required: []
+      properties:
+        name:
+          type: string
+          description: Name
+        pipelines_stage_id:
+          type: integer
+          description: Pipeline Stage ID
+        primary_contact_id:
+          type: integer
+          description: Primary Contact ID
+        value:
+          type:
+          - number
+          - 'null'
+          description: The potential value of this opportunity in the default currency of the workspace
+        closed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Close date
+        assignee_id:
+          type: integer
+          description: 'The ID of the Team `Membership` to assign the Opportunity to.
+
+            An Opportunity can be assigned to any Team member since they have access to all your workspaces.
+
+            You can get a list of available Memberships and their `id` via the `Team` resource''s `memberships` property.
+
+
+            If the opportunity is already assigned to a team member, the assignee will be updated.
+
+            You can unset the assignee by passing a `null` value for `assignee_id`.
+
+            '
+      example:
+        sales_opportunity:
+          name: Example Opportunity
+          pipelines_stage_id: 123
+          primary_contact_id: 123
+          value: '100.0'
+          closed_at: '2025-01-01T00:00:00.000Z'
+          assignee_id: 42
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
     id:
       name: id
       in: path
@@ -1452,15 +1454,13 @@ components:
         enum:
         - asc
         - desc
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   securitySchemes:
     BearerAuth:
       type: http

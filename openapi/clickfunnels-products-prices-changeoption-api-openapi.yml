@@ -133,116 +133,6 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
-    ProductsPriceMinimal:
-      type: object
-      title: Products Price (Minimal)
-      description: 'Minimal price representation used wherever a price appears as a nested
-
-        attribute (line items, upgrade/downgrade discovery).
-
-        '
-      properties:
-        id:
-          type: integer
-        public_id:
-          type:
-          - string
-          - 'null'
-        name:
-          type:
-          - string
-          - 'null'
-        key:
-          type:
-          - string
-          - 'null'
-        amount:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        duration:
-          type:
-          - integer
-          - 'null'
-        interval:
-          type:
-          - string
-          - 'null'
-        interval_count:
-          type:
-          - integer
-          - 'null'
-      example:
-        id: 24
-        public_id: aBcDeF
-        name: Pro Monthly
-        key: pro_monthly_2024
-        amount: '20.00'
-        currency: USD
-        duration: null
-        interval: months
-        interval_count: 1
-    ProductsPricesChangeOptionsVariantGroup:
-      type: object
-      title: Variant Group of Upgrade/Downgrade Prices
-      description: 'A target variant and the prices on that variant the source price may switch to.
-
-        Multiple prices can share the same target variant when the underlying
-
-        upgrade/downgrade configuration allows several billing options on the new variant.
-
-        '
-      properties:
-        products_variant:
-          type: object
-          properties:
-            id:
-              type: integer
-            public_id:
-              type:
-              - string
-              - 'null'
-            name:
-              type:
-              - string
-              - 'null'
-            product_id:
-              type:
-              - integer
-              - 'null'
-            prices:
-              type: array
-              items:
-                $ref: '#/components/schemas/ProductsPriceMinimal'
-      example:
-        products_variant:
-          id: 124
-          public_id: k7xQzR
-          name: Pro
-          product_id: 88
-          prices:
-          - id: 456
-            public_id: aBcDeF
-            name: Pro Monthly
-            key: pro_monthly_2024
-            amount: '20.00'
-            currency: USD
-            duration: null
-            interval: months
-            interval_count: 1
-          - id: 457
-            public_id: gHiJkL
-            name: Pro Annual
-            key: pro_annual_2024
-            amount: '200.00'
-            currency: USD
-            duration: null
-            interval: years
-            interval_count: 1
     ProductsPricesChangeOptionsResponse:
       type: object
       title: Price Change Options
@@ -308,6 +198,116 @@ components:
                 duration: null
                 interval: months
                 interval_count: 1
+    ProductsPricesChangeOptionsVariantGroup:
+      type: object
+      title: Variant Group of Upgrade/Downgrade Prices
+      description: 'A target variant and the prices on that variant the source price may switch to.
+
+        Multiple prices can share the same target variant when the underlying
+
+        upgrade/downgrade configuration allows several billing options on the new variant.
+
+        '
+      properties:
+        products_variant:
+          type: object
+          properties:
+            id:
+              type: integer
+            public_id:
+              type:
+              - string
+              - 'null'
+            name:
+              type:
+              - string
+              - 'null'
+            product_id:
+              type:
+              - integer
+              - 'null'
+            prices:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductsPriceMinimal'
+      example:
+        products_variant:
+          id: 124
+          public_id: k7xQzR
+          name: Pro
+          product_id: 88
+          prices:
+          - id: 456
+            public_id: aBcDeF
+            name: Pro Monthly
+            key: pro_monthly_2024
+            amount: '20.00'
+            currency: USD
+            duration: null
+            interval: months
+            interval_count: 1
+          - id: 457
+            public_id: gHiJkL
+            name: Pro Annual
+            key: pro_annual_2024
+            amount: '200.00'
+            currency: USD
+            duration: null
+            interval: years
+            interval_count: 1
+    ProductsPriceMinimal:
+      type: object
+      title: Products Price (Minimal)
+      description: 'Minimal price representation used wherever a price appears as a nested
+
+        attribute (line items, upgrade/downgrade discovery).
+
+        '
+      properties:
+        id:
+          type: integer
+        public_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        key:
+          type:
+          - string
+          - 'null'
+        amount:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        duration:
+          type:
+          - integer
+          - 'null'
+        interval:
+          type:
+          - string
+          - 'null'
+        interval_count:
+          type:
+          - integer
+          - 'null'
+      example:
+        id: 24
+        public_id: aBcDeF
+        name: Pro Monthly
+        key: pro_monthly_2024
+        amount: '20.00'
+        currency: USD
+        duration: null
+        interval: months
+        interval_count: 1
   securitySchemes:
     BearerAuth:
       type: http

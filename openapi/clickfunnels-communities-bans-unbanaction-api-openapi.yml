@@ -147,25 +147,6 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
-    CommunitiesBansUnbanActionParameters:
-      type: object
-      title: Communities::Bans::UnbanAction
-      description: Communities::Bans::UnbanAction
-      properties:
-        target_all:
-          type: boolean
-          description: When true, unban all banned contacts in the community (target_ids is ignored)
-        target_ids:
-          type: array
-          description: Array of ban public IDs to unban. Required when target_all is false.
-          items:
-            type: string
-      example:
-        communities_bans_unban_action:
-          target_all: false
-          target_ids:
-          - MnOpQr
-          - StUvWx
     CommunitiesActionAttributes:
       type: object
       title: Async Action
@@ -248,6 +229,25 @@ components:
       - target_count
       - target_ids
       - updated_at
+    CommunitiesBansUnbanActionParameters:
+      type: object
+      title: Communities::Bans::UnbanAction
+      description: Communities::Bans::UnbanAction
+      properties:
+        target_all:
+          type: boolean
+          description: When true, unban all banned contacts in the community (target_ids is ignored)
+        target_ids:
+          type: array
+          description: Array of ban public IDs to unban. Required when target_all is false.
+          items:
+            type: string
+      example:
+        communities_bans_unban_action:
+          target_all: false
+          target_ids:
+          - MnOpQr
+          - StUvWx
     CommunitiesBansUnbanActionAttributes:
       type: object
       title: Communities::Bans::UnbanAction

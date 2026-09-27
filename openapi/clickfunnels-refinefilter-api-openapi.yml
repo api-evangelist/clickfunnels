@@ -518,52 +518,80 @@ components:
       - public_id
       - updated_at
       - workspace_id
-    RefineFilterCriterion:
+    RefineFilterParametersUpdate:
       type: object
-      title: Refine Filter Criterion
-      description: A single filter criterion consisting of an attribute, a comparison clause, and a value.
+      title: Update Refine Filter
+      description: 'Parameters for updating an existing RefineFilter. All fields are optional — only provided
+
+        fields are updated. When `criteria` is supplied it **replaces** the entire criteria set.
+
+
+        Replacement criteria must satisfy the same safe-condition whitelist enforced on create.
+
+        See [Safe condition whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist) for the full reference.
+
+        '
+      required:
+      - refine_filter
       properties:
-        attribute:
-          type: string
-          description: 'The contact attribute to filter on (e.g. `tags.id`, `created_at`, `email_address`).
-
-            The public API restricts attributes to a [safe whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist) — see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for the full reference.
-
-            '
-          example: tags.id
-        clause:
-          type: string
-          description: 'The comparison operator for this criterion (e.g. `in`, `eq`, `gte`, `lte`, `st`, `nst`).
-
-            Allowed clauses depend on the attribute. Text attributes (`email_address`, `first_name`, `last_name`) only accept `eq` and `sw` on the public API; see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist).
-
-            '
-          example: in
-        value:
-          description: "The comparison value. Type depends on the attribute and clause:\n- **Option conditions** (tags, products, etc.): a single opaque public id string, or an array of public id strings.\n- **Date/datetime conditions**: an ISO 8601 date string (`\"2026-01-01\"`) or datetime string (`\"2026-01-01T00:00:00Z\"`).\n  For `between`/`not_between` clauses supply an array of exactly two date strings.\n  For relative `gt`, `lt`, or `exct` clauses supply an object with `days` and a `modifier` of `ago` or `from_now`.\n- **Text/numeric conditions**: a plain string or number.\n- **Set/not-set clauses**: omit `value` entirely.\n"
-          oneOf:
-          - type: string
-          - type: array
-            items:
+        refine_filter:
+          type: object
+          properties:
+            name:
               type: string
-          - type: object
-            required:
-            - days
-            - modifier
-            properties:
-              days:
-                oneOf:
-                - type: string
-                - type: integer
-                description: Number of days used by a relative date clause.
-              modifier:
-                type: string
-                enum:
-                - ago
-                - from_now
-          example:
-          - tag-pub-id-1
-          - tag-pub-id-2
+              description: New name for the filter. Must be unique within the workspace.
+            conjunction:
+              type: string
+              enum:
+              - and
+              - or
+              description: Replacement join operator for all criteria.
+            criteria:
+              type: array
+              minItems: 1
+              description: Replacement criteria array. Must contain at least one entry.
+              items:
+                type: object
+                required:
+                - attribute
+                - clause
+                properties:
+                  attribute:
+                    type: string
+                  clause:
+                    type: string
+                  value:
+                    description: Comparison value. Relative date clauses use an object with `days` and `modifier`. Omit for set/not-set clauses.
+                    oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                    - type: object
+                      required:
+                      - days
+                      - modifier
+                      properties:
+                        days:
+                          oneOf:
+                          - type: string
+                          - type: integer
+                        modifier:
+                          type: string
+                          enum:
+                          - ago
+                          - from_now
+      example:
+        refine_filter:
+          conjunction: and
+          criteria:
+          - attribute: tags.id
+            clause: in
+            value:
+            - tag-pub-id-1
+          - attribute: created_at
+            clause: gte
+            value: '2026-01-01'
     RefineFilterParametersCreate:
       type: object
       title: Create Refine Filter
@@ -684,88 +712,62 @@ components:
           - attribute: created_at
             clause: gte
             value: '2026-01-01T00:00:00Z'
-    RefineFilterParametersUpdate:
+    RefineFilterCriterion:
       type: object
-      title: Update Refine Filter
-      description: 'Parameters for updating an existing RefineFilter. All fields are optional — only provided
-
-        fields are updated. When `criteria` is supplied it **replaces** the entire criteria set.
-
-
-        Replacement criteria must satisfy the same safe-condition whitelist enforced on create.
-
-        See [Safe condition whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist) for the full reference.
-
-        '
-      required:
-      - refine_filter
+      title: Refine Filter Criterion
+      description: A single filter criterion consisting of an attribute, a comparison clause, and a value.
       properties:
-        refine_filter:
-          type: object
-          properties:
-            name:
+        attribute:
+          type: string
+          description: 'The contact attribute to filter on (e.g. `tags.id`, `created_at`, `email_address`).
+
+            The public API restricts attributes to a [safe whitelist](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist) — see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md) for the full reference.
+
+            '
+          example: tags.id
+        clause:
+          type: string
+          description: 'The comparison operator for this criterion (e.g. `in`, `eq`, `gte`, `lte`, `st`, `nst`).
+
+            Allowed clauses depend on the attribute. Text attributes (`email_address`, `first_name`, `last_name`) only accept `eq` and `sw` on the public API; see the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#safe-condition-whitelist).
+
+            '
+          example: in
+        value:
+          description: "The comparison value. Type depends on the attribute and clause:\n- **Option conditions** (tags, products, etc.): a single opaque public id string, or an array of public id strings.\n- **Date/datetime conditions**: an ISO 8601 date string (`\"2026-01-01\"`) or datetime string (`\"2026-01-01T00:00:00Z\"`).\n  For `between`/`not_between` clauses supply an array of exactly two date strings.\n  For relative `gt`, `lt`, or `exct` clauses supply an object with `days` and a `modifier` of `ago` or `from_now`.\n- **Text/numeric conditions**: a plain string or number.\n- **Set/not-set clauses**: omit `value` entirely.\n"
+          oneOf:
+          - type: string
+          - type: array
+            items:
               type: string
-              description: New name for the filter. Must be unique within the workspace.
-            conjunction:
-              type: string
-              enum:
-              - and
-              - or
-              description: Replacement join operator for all criteria.
-            criteria:
-              type: array
-              minItems: 1
-              description: Replacement criteria array. Must contain at least one entry.
-              items:
-                type: object
-                required:
-                - attribute
-                - clause
-                properties:
-                  attribute:
-                    type: string
-                  clause:
-                    type: string
-                  value:
-                    description: Comparison value. Relative date clauses use an object with `days` and `modifier`. Omit for set/not-set clauses.
-                    oneOf:
-                    - type: string
-                    - type: array
-                      items:
-                        type: string
-                    - type: object
-                      required:
-                      - days
-                      - modifier
-                      properties:
-                        days:
-                          oneOf:
-                          - type: string
-                          - type: integer
-                        modifier:
-                          type: string
-                          enum:
-                          - ago
-                          - from_now
-      example:
-        refine_filter:
-          conjunction: and
-          criteria:
-          - attribute: tags.id
-            clause: in
-            value:
-            - tag-pub-id-1
-          - attribute: created_at
-            clause: gte
-            value: '2026-01-01'
-  parameters:
-    after:
-      name: after
-      in: query
-      required: false
+          - type: object
+            required:
+            - days
+            - modifier
+            properties:
+              days:
+                oneOf:
+                - type: string
+                - type: integer
+                description: Number of days used by a relative date clause.
+              modifier:
+                type: string
+                enum:
+                - ago
+                - from_now
+          example:
+          - tag-pub-id-1
+          - tag-pub-id-2
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+  parameters:
     sort_order:
       name: sort_order
       in: query
@@ -776,15 +778,13 @@ components:
         enum:
         - asc
         - desc
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   securitySchemes:
     BearerAuth:
       type: http
