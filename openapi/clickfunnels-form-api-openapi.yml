@@ -304,6 +304,29 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -318,29 +341,6 @@ components:
         enum:
         - id
         - updated_at
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   headers:
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
@@ -351,18 +351,6 @@ components:
       schema:
         type: string
   schemas:
-    FormParametersUpdate:
-      type: object
-      title: Forms
-      description: Forms
-      required: []
-      properties:
-        name:
-          type: string
-          description: Name
-      example:
-        form:
-          name: Example Form
     FormAttributes:
       type: object
       title: Forms
@@ -414,6 +402,18 @@ components:
       description: Forms
       required:
       - name
+      properties:
+        name:
+          type: string
+          description: Name
+      example:
+        form:
+          name: Example Form
+    FormParametersUpdate:
+      type: object
+      title: Forms
+      description: Forms
+      required: []
       properties:
         name:
           type: string

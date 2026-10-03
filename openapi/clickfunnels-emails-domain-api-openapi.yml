@@ -522,6 +522,38 @@ components:
           description: A valid public bare root domain name to provision as a sending domain (e.g. `example.com`), with no URL scheme, port, path, or whitespace. Ownership is confirmed at the root domain, so a subdomain such as `mail.example.com` is rejected with `422` naming the root domain to use instead. The name is trimmed and lowercased before it is matched or created. If a sending domain with this name already exists for the workspace, it is returned as-is rather than creating a duplicate.
       example:
         name: example.com
+    DnsRecord:
+      type: object
+      title: DNS Record
+      description: A single DNS record to add at the domain's DNS provider to configure email transport (or, for the return path, bounce handling).
+      properties:
+        type:
+          type: string
+          description: The DNS record type (e.g. `TXT`, `CNAME`).
+        name:
+          type: string
+          description: The DNS host/name to create the record on (e.g. `example.com` or `_dmarc.example.com`).
+        value:
+          type: string
+          description: The exact value to paste at the registrar for this record.
+        ttl:
+          type: integer
+          description: Recommended TTL, in seconds, for the record.
+        verified:
+          type: boolean
+          description: Whether this specific record has been confirmed live at the DNS provider. It reflects stored DNS verification state; call `verifyEmailsDomains` to re-check.
+      example:
+        type: TXT
+        name: _dmarc.example.com
+        value: v=DMARC1; p=none;
+        ttl: 300
+        verified: false
+      required:
+      - name
+      - ttl
+      - type
+      - value
+      - verified
     EmailsDomainAttributes:
       type: object
       title: Email Domains
@@ -667,47 +699,6 @@ components:
       - updated_at
       - verified
       - workspace_id
-    DnsRecord:
-      type: object
-      title: DNS Record
-      description: A single DNS record to add at the domain's DNS provider to configure email transport (or, for the return path, bounce handling).
-      properties:
-        type:
-          type: string
-          description: The DNS record type (e.g. `TXT`, `CNAME`).
-        name:
-          type: string
-          description: The DNS host/name to create the record on (e.g. `example.com` or `_dmarc.example.com`).
-        value:
-          type: string
-          description: The exact value to paste at the registrar for this record.
-        ttl:
-          type: integer
-          description: Recommended TTL, in seconds, for the record.
-        verified:
-          type: boolean
-          description: Whether this specific record has been confirmed live at the DNS provider. It reflects stored DNS verification state; call `verifyEmailsDomains` to re-check.
-      example:
-        type: TXT
-        name: _dmarc.example.com
-        value: v=DMARC1; p=none;
-        ttl: 300
-        verified: false
-      required:
-      - name
-      - ttl
-      - type
-      - value
-      - verified
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   parameters:
     id:
       name: id
@@ -715,6 +706,23 @@ components:
       required: true
       schema:
         type: string
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
     sort_property:
       name: sort_property
       in: query
@@ -729,23 +737,15 @@ components:
         enum:
         - id
         - updated_at
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
-        enum:
-        - asc
-        - desc
-    after:
-      name: after
-      in: query
-      required: false
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   securitySchemes:
     BearerAuth:
       type: http

@@ -337,6 +337,29 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -351,29 +374,6 @@ components:
         enum:
         - id
         - updated_at
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   headers:
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
@@ -384,6 +384,50 @@ components:
       schema:
         type: string
   schemas:
+    CoursesSectionsPublishActionParameters:
+      type: object
+      title: Course Section Publish Actions
+      description: 'Parameters for creating a course-section publish action. Select exactly one of a nonempty `target_ids` array or `target_all: true`.'
+      properties:
+        target_all:
+          type: boolean
+          description: Set to `true` to publish every unpublished non-root section of the course. Mutually exclusive with `target_ids`. Exactly one of `target_all` or `target_ids` must be supplied.
+        target_ids:
+          type: array
+          items:
+            type: string
+          description: Array of course-section public IDs to publish. Mutually exclusive with `target_all`. Exactly one of `target_ids` or `target_all` must be supplied.
+        auto_enroll:
+          type: boolean
+          description: When `true`, existing course enrollees are granted access to the newly published sections automatically.
+        send_email:
+          type: boolean
+          description: 'When `true` (requires `auto_enroll: true`), enrolled contacts receive an email notification about the newly published sections.'
+        offer_new_section_via_all_access_products:
+          type: boolean
+          description: When `true`, products that grant full course access are updated to also include the newly published sections.
+        scheduled_for:
+          type: string
+          format: date-time
+          description: Optional ISO 8601 datetime. The publish is deferred until this time. Must be a future datetime. Omit to publish immediately.
+      example:
+        target_ids:
+        - sSwcZK
+        auto_enroll: true
+        send_email: true
+      oneOf:
+      - title: Publish specific sections
+        required:
+        - target_ids
+        properties:
+          target_ids:
+            minItems: 1
+      - title: Publish all sections
+        required:
+        - target_all
+        properties:
+          target_all:
+            const: true
     CoursesSectionsPublishActionAttributes:
       type: object
       title: Course Section Publish Actions
@@ -532,50 +576,6 @@ components:
       - target_count
       - target_ids
       - updated_at
-    CoursesSectionsPublishActionParameters:
-      type: object
-      title: Course Section Publish Actions
-      description: 'Parameters for creating a course-section publish action. Select exactly one of a nonempty `target_ids` array or `target_all: true`.'
-      properties:
-        target_all:
-          type: boolean
-          description: Set to `true` to publish every unpublished non-root section of the course. Mutually exclusive with `target_ids`. Exactly one of `target_all` or `target_ids` must be supplied.
-        target_ids:
-          type: array
-          items:
-            type: string
-          description: Array of course-section public IDs to publish. Mutually exclusive with `target_all`. Exactly one of `target_ids` or `target_all` must be supplied.
-        auto_enroll:
-          type: boolean
-          description: When `true`, existing course enrollees are granted access to the newly published sections automatically.
-        send_email:
-          type: boolean
-          description: 'When `true` (requires `auto_enroll: true`), enrolled contacts receive an email notification about the newly published sections.'
-        offer_new_section_via_all_access_products:
-          type: boolean
-          description: When `true`, products that grant full course access are updated to also include the newly published sections.
-        scheduled_for:
-          type: string
-          format: date-time
-          description: Optional ISO 8601 datetime. The publish is deferred until this time. Must be a future datetime. Omit to publish immediately.
-      example:
-        target_ids:
-        - sSwcZK
-        auto_enroll: true
-        send_email: true
-      oneOf:
-      - title: Publish specific sections
-        required:
-        - target_ids
-        properties:
-          target_ids:
-            minItems: 1
-      - title: Publish all sections
-        required:
-        - target_all
-        properties:
-          target_all:
-            const: true
   securitySchemes:
     BearerAuth:
       type: http

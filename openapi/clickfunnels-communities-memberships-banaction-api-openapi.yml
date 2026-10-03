@@ -161,6 +161,76 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
+    CommunitiesMembershipsBanActionAttributes:
+      type: object
+      title: Communities::Memberships::BanAction
+      description: Communities::Memberships::BanAction
+      allOf:
+      - $ref: '#/components/schemas/CommunitiesActionAttributes'
+      - type: object
+        properties:
+          reason:
+            type:
+            - string
+            - 'null'
+            description: Optional reason applied to each ban created by this action
+      example:
+        id: 501
+        public_id: BnAcT1
+        community_id: 1
+        target_all: false
+        target_ids:
+        - 101
+        - 102
+        failed_ids: []
+        target_count: 2
+        performed_count: 2
+        started_at: '2025-01-01T00:01:00.000Z'
+        completed_at: '2025-01-01T00:01:05.000Z'
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:01:05.000Z'
+        status: completed
+        reason: Violated community guidelines
+      required:
+      - community_id
+      - completed_at
+      - created_at
+      - failed_ids
+      - id
+      - performed_count
+      - public_id
+      - reason
+      - started_at
+      - status
+      - target_all
+      - target_count
+      - target_ids
+      - updated_at
+    CommunitiesMembershipsBanActionParameters:
+      type: object
+      title: Communities::Memberships::BanAction
+      description: Communities::Memberships::BanAction
+      properties:
+        target_all:
+          type: boolean
+          description: When true, ban all members in the community (target_ids is ignored)
+        target_ids:
+          type: array
+          description: Array of membership public IDs to ban. Required when target_all is false.
+          items:
+            type: string
+        reason:
+          type:
+          - string
+          - 'null'
+          description: Optional reason applied to each ban
+      example:
+        communities_memberships_ban_action:
+          target_all: false
+          target_ids:
+          - AbCdEf
+          - GhIjKl
+          reason: Violated community guidelines
     CommunitiesActionAttributes:
       type: object
       title: Async Action
@@ -243,76 +313,6 @@ components:
       - target_count
       - target_ids
       - updated_at
-    CommunitiesMembershipsBanActionAttributes:
-      type: object
-      title: Communities::Memberships::BanAction
-      description: Communities::Memberships::BanAction
-      allOf:
-      - $ref: '#/components/schemas/CommunitiesActionAttributes'
-      - type: object
-        properties:
-          reason:
-            type:
-            - string
-            - 'null'
-            description: Optional reason applied to each ban created by this action
-      example:
-        id: 501
-        public_id: BnAcT1
-        community_id: 1
-        target_all: false
-        target_ids:
-        - 101
-        - 102
-        failed_ids: []
-        target_count: 2
-        performed_count: 2
-        started_at: '2025-01-01T00:01:00.000Z'
-        completed_at: '2025-01-01T00:01:05.000Z'
-        created_at: '2025-01-01T00:00:00.000Z'
-        updated_at: '2025-01-01T00:01:05.000Z'
-        status: completed
-        reason: Violated community guidelines
-      required:
-      - community_id
-      - completed_at
-      - created_at
-      - failed_ids
-      - id
-      - performed_count
-      - public_id
-      - reason
-      - started_at
-      - status
-      - target_all
-      - target_count
-      - target_ids
-      - updated_at
-    CommunitiesMembershipsBanActionParameters:
-      type: object
-      title: Communities::Memberships::BanAction
-      description: Communities::Memberships::BanAction
-      properties:
-        target_all:
-          type: boolean
-          description: When true, ban all members in the community (target_ids is ignored)
-        target_ids:
-          type: array
-          description: Array of membership public IDs to ban. Required when target_all is false.
-          items:
-            type: string
-        reason:
-          type:
-          - string
-          - 'null'
-          description: Optional reason applied to each ban
-      example:
-        communities_memberships_ban_action:
-          target_all: false
-          target_ids:
-          - AbCdEf
-          - GhIjKl
-          reason: Violated community guidelines
   parameters:
     id:
       name: id

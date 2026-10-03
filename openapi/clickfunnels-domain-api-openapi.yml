@@ -150,6 +150,13 @@ components:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
   schemas:
     DomainAttributes:
       type: object
@@ -207,13 +214,6 @@ components:
       - status
       - updated_at
       - workspace_id
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http

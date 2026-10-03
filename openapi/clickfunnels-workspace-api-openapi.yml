@@ -223,6 +223,30 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
+  parameters:
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   headers:
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
@@ -233,6 +257,22 @@ components:
       schema:
         type: string
   schemas:
+    WorkspaceParametersUpdate:
+      type: object
+      title: Workspaces
+      description: Workspaces
+      required: []
+      properties:
+        name:
+          type: string
+          description: Workspace Name
+        subdomain:
+          type: string
+          description: The subdomain can currently only be changed in rare cases right after the creation of your new workspace.
+      example:
+        workspace:
+          name: My Workspace
+          subdomain: mysubdomain
     WorkspaceAttributes:
       type: object
       title: Workspaces
@@ -283,46 +323,6 @@ components:
       - subdomain
       - team_id
       - updated_at
-    WorkspaceParametersUpdate:
-      type: object
-      title: Workspaces
-      description: Workspaces
-      required: []
-      properties:
-        name:
-          type: string
-          description: Workspace Name
-        subdomain:
-          type: string
-          description: The subdomain can currently only be changed in rare cases right after the creation of your new workspace.
-      example:
-        workspace:
-          name: My Workspace
-          subdomain: mysubdomain
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   securitySchemes:
     BearerAuth:
       type: http

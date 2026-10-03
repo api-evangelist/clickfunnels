@@ -494,6 +494,153 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
+    WorkflowsTriggerParametersCreate:
+      type: object
+      title: Create Workflows::Trigger
+      description: 'Parameters for creating a new trigger on a workflow. `event_type_key` is
+
+        required; all condition FK fields accept either the integer id or obfuscated
+
+        `public_id` string for a resource in the same workspace/team scope.
+
+
+        An invalid `event_type_key` returns 422.
+
+        '
+      required:
+      - workflows_trigger
+      properties:
+        workflows_trigger:
+          type: object
+          required:
+          - event_type_key
+          properties:
+            event_type_key:
+              type: string
+              description: The event key that fires this trigger (e.g. `$contact.tag_applied`). Must be one of the enumerated keys.
+              enum:
+              - $appointments.appointment_scheduled
+              - $calendar_event.contact_registered
+              - $community.join
+              - $community.group_join
+              - $community.topic_join
+              - $community.post
+              - $community.ban
+              - $community.unban
+              - $community.post_view
+              - $contact.tag_applied
+              - $contact.tag_removed
+              - $course.complete
+              - $course.enroll
+              - $course.unenroll
+              - $course.lesson_complete
+              - $course.lesson_view
+              - $course.section_complete
+              - $email.bounce
+              - $email.click
+              - $email.open
+              - $email.sent
+              - $email.spam_complaint
+              - $send_email_step.bounce
+              - $send_email_step.click
+              - $send_email_step.open
+              - $send_email_step.sent
+              - $send_email_step.spam_complaint
+              - $order.successful_purchase
+              - $order.cancelled
+              - $order.churned
+              - $subscription.upgraded
+              - $subscription.downgraded
+              - $transaction.renewal_failed
+              - $sales.contact_entered_stage
+              - $sales.contact_exited_stage
+              - $optin
+              - $view
+              - $message_hub_event.contact_conversation_started
+              - $message_hub_event.agent_conversation_started
+              - $message_hub_event.contact_responded
+              - $message_hub_event.agent_responded
+              - $survey.complete
+            active:
+              type: boolean
+              description: Whether the trigger is active. Defaults to `true` when omitted.
+            allow_anonymous_contacts:
+              type: boolean
+              description: Whether to fire for anonymous contacts.
+            subscription_cancelation_reason:
+              type: string
+              description: Reason filter for `$order.cancelled` subscription cancellation triggers.
+            contacts_tag_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Contacts::Tag id or public_id.
+            funnel_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Funnel id or public_id.
+            page_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Page id or public_id.
+            product_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Product id or public_id.
+            cancellation_product_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Product id or public_id for cancellation condition.
+            product_variant_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Products::Variant id or public_id.
+            cancellation_product_variant_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Products::Variant id or public_id for cancellation.
+            subscription_variant_to_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Products::Variant id or public_id for subscription upgrade/downgrade.
+            sales_pipelines_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Sales::Pipeline id or public_id.
+            current_sales_pipelines_stage_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Sales::Pipelines::Stage id or public_id.
+            appointments_calendar_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Appointments::Calendar id or public_id.
+            appointments_event_type_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Appointments::EventType id or public_id.
+            course_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Course id or public_id.
+            courses_lesson_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Courses::Lesson id or public_id.
+            courses_section_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Courses::Section id or public_id.
+            community_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Community id or public_id.
+            communities_space_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Communities::Space id or public_id.
+            communities_space_group_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Communities::SpaceGroup id or public_id.
+            emails_broadcasts_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Emails::Broadcast id or public_id.
+            calendar_event_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: CalendarEvent id or public_id.
+            survey_workflow_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: SurveyWorkflow id or public_id.
+            workflows_step_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Workflows::Step id or public_id.
+      example:
+        workflows_trigger:
+          event_type_key: $contact.tag_applied
+          active: true
+          contacts_tag_id: 7001
     WorkflowsTriggerParametersUpdate:
       type: object
       title: Update Workflows::Trigger
@@ -609,6 +756,11 @@ components:
       example:
         workflows_trigger:
           active: false
+    IntegerOrPublicId:
+      type:
+      - integer
+      - string
+      description: Integer database id or obfuscated public_id.
     WorkflowsTriggerAttributes:
       type: object
       title: Workflows::Trigger
@@ -838,167 +990,6 @@ components:
       - updated_at
       - workflow_id
       - workflows_step_id
-    WorkflowsTriggerParametersCreate:
-      type: object
-      title: Create Workflows::Trigger
-      description: 'Parameters for creating a new trigger on a workflow. `event_type_key` is
-
-        required; all condition FK fields accept either the integer id or obfuscated
-
-        `public_id` string for a resource in the same workspace/team scope.
-
-
-        An invalid `event_type_key` returns 422.
-
-        '
-      required:
-      - workflows_trigger
-      properties:
-        workflows_trigger:
-          type: object
-          required:
-          - event_type_key
-          properties:
-            event_type_key:
-              type: string
-              description: The event key that fires this trigger (e.g. `$contact.tag_applied`). Must be one of the enumerated keys.
-              enum:
-              - $appointments.appointment_scheduled
-              - $calendar_event.contact_registered
-              - $community.join
-              - $community.group_join
-              - $community.topic_join
-              - $community.post
-              - $community.ban
-              - $community.unban
-              - $community.post_view
-              - $contact.tag_applied
-              - $contact.tag_removed
-              - $course.complete
-              - $course.enroll
-              - $course.unenroll
-              - $course.lesson_complete
-              - $course.lesson_view
-              - $course.section_complete
-              - $email.bounce
-              - $email.click
-              - $email.open
-              - $email.sent
-              - $email.spam_complaint
-              - $send_email_step.bounce
-              - $send_email_step.click
-              - $send_email_step.open
-              - $send_email_step.sent
-              - $send_email_step.spam_complaint
-              - $order.successful_purchase
-              - $order.cancelled
-              - $order.churned
-              - $subscription.upgraded
-              - $subscription.downgraded
-              - $transaction.renewal_failed
-              - $sales.contact_entered_stage
-              - $sales.contact_exited_stage
-              - $optin
-              - $view
-              - $message_hub_event.contact_conversation_started
-              - $message_hub_event.agent_conversation_started
-              - $message_hub_event.contact_responded
-              - $message_hub_event.agent_responded
-              - $survey.complete
-            active:
-              type: boolean
-              description: Whether the trigger is active. Defaults to `true` when omitted.
-            allow_anonymous_contacts:
-              type: boolean
-              description: Whether to fire for anonymous contacts.
-            subscription_cancelation_reason:
-              type: string
-              description: Reason filter for `$order.cancelled` subscription cancellation triggers.
-            contacts_tag_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Contacts::Tag id or public_id.
-            funnel_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Funnel id or public_id.
-            page_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Page id or public_id.
-            product_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Product id or public_id.
-            cancellation_product_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Product id or public_id for cancellation condition.
-            product_variant_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Products::Variant id or public_id.
-            cancellation_product_variant_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Products::Variant id or public_id for cancellation.
-            subscription_variant_to_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Products::Variant id or public_id for subscription upgrade/downgrade.
-            sales_pipelines_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Sales::Pipeline id or public_id.
-            current_sales_pipelines_stage_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Sales::Pipelines::Stage id or public_id.
-            appointments_calendar_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Appointments::Calendar id or public_id.
-            appointments_event_type_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Appointments::EventType id or public_id.
-            course_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Course id or public_id.
-            courses_lesson_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Courses::Lesson id or public_id.
-            courses_section_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Courses::Section id or public_id.
-            community_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Community id or public_id.
-            communities_space_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Communities::Space id or public_id.
-            communities_space_group_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Communities::SpaceGroup id or public_id.
-            emails_broadcasts_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Emails::Broadcast id or public_id.
-            calendar_event_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: CalendarEvent id or public_id.
-            survey_workflow_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: SurveyWorkflow id or public_id.
-            workflows_step_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Workflows::Step id or public_id.
-      example:
-        workflows_trigger:
-          event_type_key: $contact.tag_applied
-          active: true
-          contacts_tag_id: 7001
-    IntegerOrPublicId:
-      type:
-      - integer
-      - string
-      description: Integer database id or obfuscated public_id.
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   parameters:
     id:
       name: id
@@ -1006,6 +997,23 @@ components:
       required: true
       schema:
         type: string
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
     sort_property:
       name: sort_property
       in: query
@@ -1020,23 +1028,15 @@ components:
         enum:
         - id
         - updated_at
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
-        enum:
-        - asc
-        - desc
-    after:
-      name: after
-      in: query
-      required: false
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   securitySchemes:
     BearerAuth:
       type: http

@@ -133,71 +133,6 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
-    ProductsPricesChangeOptionsResponse:
-      type: object
-      title: Price Change Options
-      description: 'Allowed upgrade and downgrade target variants for a source price.
-
-        Each group lists a target variant alongside the prices on that variant
-
-        a subscription using this source price may switch to.
-
-        '
-      properties:
-        products_prices_change_options:
-          type: object
-          properties:
-            upgrade:
-              type: array
-              items:
-                $ref: '#/components/schemas/ProductsPricesChangeOptionsVariantGroup'
-            downgrade:
-              type: array
-              items:
-                $ref: '#/components/schemas/ProductsPricesChangeOptionsVariantGroup'
-      example:
-        products_prices_change_options:
-          upgrade:
-          - products_variant:
-              id: 124
-              public_id: k7xQzR
-              name: Pro
-              product_id: 88
-              prices:
-              - id: 456
-                public_id: aBcDeF
-                name: Pro Monthly
-                key: pro_monthly_2024
-                amount: '20.00'
-                currency: USD
-                duration: null
-                interval: months
-                interval_count: 1
-              - id: 457
-                public_id: gHiJkL
-                name: Pro Annual
-                key: pro_annual_2024
-                amount: '200.00'
-                currency: USD
-                duration: null
-                interval: years
-                interval_count: 1
-          downgrade:
-          - products_variant:
-              id: 125
-              public_id: m2qYpA
-              name: Basic
-              product_id: 88
-              prices:
-              - id: 789
-                public_id: sTuVwX
-                name: Basic Monthly
-                key: basic_monthly_2024
-                amount: '5.00'
-                currency: USD
-                duration: null
-                interval: months
-                interval_count: 1
     ProductsPricesChangeOptionsVariantGroup:
       type: object
       title: Variant Group of Upgrade/Downgrade Prices
@@ -308,6 +243,71 @@ components:
         duration: null
         interval: months
         interval_count: 1
+    ProductsPricesChangeOptionsResponse:
+      type: object
+      title: Price Change Options
+      description: 'Allowed upgrade and downgrade target variants for a source price.
+
+        Each group lists a target variant alongside the prices on that variant
+
+        a subscription using this source price may switch to.
+
+        '
+      properties:
+        products_prices_change_options:
+          type: object
+          properties:
+            upgrade:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductsPricesChangeOptionsVariantGroup'
+            downgrade:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductsPricesChangeOptionsVariantGroup'
+      example:
+        products_prices_change_options:
+          upgrade:
+          - products_variant:
+              id: 124
+              public_id: k7xQzR
+              name: Pro
+              product_id: 88
+              prices:
+              - id: 456
+                public_id: aBcDeF
+                name: Pro Monthly
+                key: pro_monthly_2024
+                amount: '20.00'
+                currency: USD
+                duration: null
+                interval: months
+                interval_count: 1
+              - id: 457
+                public_id: gHiJkL
+                name: Pro Annual
+                key: pro_annual_2024
+                amount: '200.00'
+                currency: USD
+                duration: null
+                interval: years
+                interval_count: 1
+          downgrade:
+          - products_variant:
+              id: 125
+              public_id: m2qYpA
+              name: Basic
+              product_id: 88
+              prices:
+              - id: 789
+                public_id: sTuVwX
+                name: Basic Monthly
+                key: basic_monthly_2024
+                amount: '5.00'
+                currency: USD
+                duration: null
+                interval: months
+                interval_count: 1
   securitySchemes:
     BearerAuth:
       type: http

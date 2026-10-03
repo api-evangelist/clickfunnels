@@ -249,33 +249,6 @@ components:
       - target_count
       - target_ids
       - updated_at
-    CommunitiesMembershipsAddToGroupActionParameters:
-      type: object
-      title: Communities::Memberships::AddToGroupAction
-      description: Communities::Memberships::AddToGroupAction
-      properties:
-        target_all:
-          type: boolean
-          description: When true, add all members in the community to the specified spaces (target_ids is ignored)
-        target_ids:
-          type: array
-          description: Array of membership public IDs to add to the spaces. Required when target_all is false.
-          items:
-            type: string
-        space_ids:
-          type: array
-          description: Array of space public IDs to add the members to
-          items:
-            type: string
-      example:
-        communities_memberships_add_to_group_action:
-          target_all: false
-          target_ids:
-          - AbCdEf
-          - GhIjKl
-          space_ids:
-          - SpAcEa
-          - SpAcEb
     CommunitiesMembershipsAddToGroupActionAttributes:
       type: object
       title: Communities::Memberships::AddToGroupAction
@@ -323,6 +296,33 @@ components:
       - target_count
       - target_ids
       - updated_at
+    CommunitiesMembershipsAddToGroupActionParameters:
+      type: object
+      title: Communities::Memberships::AddToGroupAction
+      description: Communities::Memberships::AddToGroupAction
+      properties:
+        target_all:
+          type: boolean
+          description: When true, add all members in the community to the specified spaces (target_ids is ignored)
+        target_ids:
+          type: array
+          description: Array of membership public IDs to add to the spaces. Required when target_all is false.
+          items:
+            type: string
+        space_ids:
+          type: array
+          description: Array of space public IDs to add the members to
+          items:
+            type: string
+      example:
+        communities_memberships_add_to_group_action:
+          target_all: false
+          target_ids:
+          - AbCdEf
+          - GhIjKl
+          space_ids:
+          - SpAcEa
+          - SpAcEb
   parameters:
     id:
       name: id

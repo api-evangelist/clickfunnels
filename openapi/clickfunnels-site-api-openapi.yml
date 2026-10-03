@@ -174,47 +174,21 @@ paths:
               example:
                 error: Validation failed
 components:
+  parameters:
+    ExpandCodeFields:
+      name: expand[]
+      in: query
+      description: Expand additional data in the response. Use `expand[]=field_name` to include optional fields (e.g., `expand[]=head_code&expand[]=footer_code`). See the [Expanding guide](https://developers.myclickfunnels.com/docs/expand) for available fields and examples.
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - head_code
+          - footer_code
+          - markup
   schemas:
-    SiteParametersUpdate:
-      type: object
-      title: Sites
-      description: Sites
-      required: []
-      properties:
-        name:
-          type: string
-          description: Name of the site.
-        head_code:
-          type:
-          - string
-          - 'null'
-          description: Custom code to inject into the site's <head> section. Content should be wrapped in appropriate HTML tags such as <script>, <link>, <meta>, or <style>. Set to null to clear existing code.
-        head_code_mode:
-          type: string
-          enum:
-          - append
-          - replace
-          description: How to handle head_code. 'append' adds to existing code (default), 'replace' overwrites.
-        footer_code:
-          type:
-          - string
-          - 'null'
-          description: Custom code to inject before the closing </body> tag. JavaScript should be wrapped in <script> tags. Set to null to clear existing code.
-        footer_code_mode:
-          type: string
-          enum:
-          - append
-          - replace
-          description: How to handle footer_code. 'append' adds to existing code (default), 'replace' overwrites.
-        homepage_id:
-          type: string
-          description: 'Set which page is served at the site''s root path ("/"). Pass the page''s public id, or an empty string to clear the homepage. Important: a page cannot become the homepage by setting its own path to "/" — this parameter is the only way to designate a page as the homepage. The theme_id, blog_theme_id, and store_theme_id fields are read-only in this endpoint; to change the default theme, use the theme set_default action.'
-      example:
-        site:
-          name: My Updated Website
-          head_code: <script>console.log('site');</script>
-          head_code_mode: append
-          homepage_id: RcHPAt
     SiteAttributes:
       type: object
       title: Sites
@@ -292,20 +266,46 @@ components:
       - theme_id
       - updated_at
       - workspace_id
-  parameters:
-    ExpandCodeFields:
-      name: expand[]
-      in: query
-      description: Expand additional data in the response. Use `expand[]=field_name` to include optional fields (e.g., `expand[]=head_code&expand[]=footer_code`). See the [Expanding guide](https://developers.myclickfunnels.com/docs/expand) for available fields and examples.
-      required: false
-      schema:
-        type: array
-        items:
+    SiteParametersUpdate:
+      type: object
+      title: Sites
+      description: Sites
+      required: []
+      properties:
+        name:
+          type: string
+          description: Name of the site.
+        head_code:
+          type:
+          - string
+          - 'null'
+          description: Custom code to inject into the site's <head> section. Content should be wrapped in appropriate HTML tags such as <script>, <link>, <meta>, or <style>. Set to null to clear existing code.
+        head_code_mode:
           type: string
           enum:
-          - head_code
-          - footer_code
-          - markup
+          - append
+          - replace
+          description: How to handle head_code. 'append' adds to existing code (default), 'replace' overwrites.
+        footer_code:
+          type:
+          - string
+          - 'null'
+          description: Custom code to inject before the closing </body> tag. JavaScript should be wrapped in <script> tags. Set to null to clear existing code.
+        footer_code_mode:
+          type: string
+          enum:
+          - append
+          - replace
+          description: How to handle footer_code. 'append' adds to existing code (default), 'replace' overwrites.
+        homepage_id:
+          type: string
+          description: 'Set which page is served at the site''s root path ("/"). Pass the page''s public id, or an empty string to clear the homepage. Important: a page cannot become the homepage by setting its own path to "/" — this parameter is the only way to designate a page as the homepage. The theme_id, blog_theme_id, and store_theme_id fields are read-only in this endpoint; to change the default theme, use the theme set_default action.'
+      example:
+        site:
+          name: My Updated Website
+          head_code: <script>console.log('site');</script>
+          head_code_mode: append
+          homepage_id: RcHPAt
   securitySchemes:
     BearerAuth:
       type: http

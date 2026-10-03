@@ -395,16 +395,107 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   schemas:
+    CommunitiesSpaceGroupParametersUpdate:
+      type: object
+      title: Communities::SpaceGroup
+      description: Communities::SpaceGroup
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: Name
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description
+        access:
+          type:
+          - integer
+          - 'null'
+          description: Access level (0 = open, 1 = private, 2 = secret)
+        group_type:
+          type:
+          - integer
+          - 'null'
+          description: Group type (integer enum)
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current Path
+        emoji:
+          type:
+          - string
+          - 'null'
+          description: Emoji icon for the group
+        card_image_id:
+          type:
+          - integer
+          - 'null'
+          description: Card Image ID
+        auto_add_to_spaces:
+          type:
+          - boolean
+          - 'null'
+          description: Automatically add members to new Topics within this Group
+        approval_terms:
+          type:
+          - string
+          - 'null'
+          description: Approval Terms
+        require_post_approvals:
+          type:
+          - boolean
+          - 'null'
+          description: Require approvals for posts in this Group?
+        require_post_approvals_override:
+          type:
+          - boolean
+          - 'null'
+          description: Override community-level post approval setting for this group
+        require_comment_approvals:
+          type:
+          - boolean
+          - 'null'
+          description: Require approvals for comments in this Group?
+        require_comment_approvals_override:
+          type:
+          - boolean
+          - 'null'
+          description: Override community-level comment approval setting for this group
+        is_hidden:
+          type:
+          - boolean
+          - 'null'
+          description: Only show joined Topics
+        is_hidden_from_non_members:
+          type:
+          - boolean
+          - 'null'
+          description: Hide from non-members
+        always_on:
+          type:
+          - boolean
+          - 'null'
+          description: Always On
+        upgrade_url:
+          type:
+          - string
+          - 'null'
+          description: Upgrade URL
+        sort_order:
+          type:
+          - integer
+          - 'null'
+          description: Sort order within the community
+      example:
+        communities_space_group:
+          name: General
+          access: 0
+          is_hidden: false
     CommunitiesSpaceGroupParameters:
       type: object
       title: Communities::SpaceGroup
@@ -671,113 +762,30 @@ components:
       - updated_at
       - upgrade_url
       - workspace_id
-    CommunitiesSpaceGroupParametersUpdate:
-      type: object
-      title: Communities::SpaceGroup
-      description: Communities::SpaceGroup
-      properties:
-        name:
-          type:
-          - string
-          - 'null'
-          description: Name
-        description:
-          type:
-          - string
-          - 'null'
-          description: Description
-        access:
-          type:
-          - integer
-          - 'null'
-          description: Access level (0 = open, 1 = private, 2 = secret)
-        group_type:
-          type:
-          - integer
-          - 'null'
-          description: Group type (integer enum)
-        current_path:
-          type:
-          - string
-          - 'null'
-          description: Current Path
-        emoji:
-          type:
-          - string
-          - 'null'
-          description: Emoji icon for the group
-        card_image_id:
-          type:
-          - integer
-          - 'null'
-          description: Card Image ID
-        auto_add_to_spaces:
-          type:
-          - boolean
-          - 'null'
-          description: Automatically add members to new Topics within this Group
-        approval_terms:
-          type:
-          - string
-          - 'null'
-          description: Approval Terms
-        require_post_approvals:
-          type:
-          - boolean
-          - 'null'
-          description: Require approvals for posts in this Group?
-        require_post_approvals_override:
-          type:
-          - boolean
-          - 'null'
-          description: Override community-level post approval setting for this group
-        require_comment_approvals:
-          type:
-          - boolean
-          - 'null'
-          description: Require approvals for comments in this Group?
-        require_comment_approvals_override:
-          type:
-          - boolean
-          - 'null'
-          description: Override community-level comment approval setting for this group
-        is_hidden:
-          type:
-          - boolean
-          - 'null'
-          description: Only show joined Topics
-        is_hidden_from_non_members:
-          type:
-          - boolean
-          - 'null'
-          description: Hide from non-members
-        always_on:
-          type:
-          - boolean
-          - 'null'
-          description: Always On
-        upgrade_url:
-          type:
-          - string
-          - 'null'
-          description: Upgrade URL
-        sort_order:
-          type:
-          - integer
-          - 'null'
-          description: Sort order within the community
-      example:
-        communities_space_group:
-          name: General
-          access: 0
-          is_hidden: false
   parameters:
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
     id:
       name: id
       in: path
       required: true
       schema:
         type: string
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -792,23 +800,15 @@ components:
         enum:
         - id
         - updated_at
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
+  headers:
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
-        enum:
-        - asc
-        - desc
-    after:
-      name: after
-      in: query
-      required: false
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   securitySchemes:
     BearerAuth:
       type: http
