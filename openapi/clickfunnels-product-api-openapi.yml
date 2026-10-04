@@ -553,19 +553,6 @@ components:
         enum:
         - asc
         - desc
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -580,195 +567,29 @@ components:
         enum:
         - id
         - updated_at
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
       schema:
         type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
   schemas:
-    ProductAttributes:
-      type: object
-      title: Products
-      description: Products
-      properties:
-        id:
-          type: integer
-          description: ID
-        public_id:
-          type:
-          - string
-          - 'null'
-          description: Product Public ID
-        workspace_id:
-          type: integer
-          description: Workspace ID
-        name:
-          type: string
-          description: Product name
-        current_path:
-          type:
-          - string
-          - 'null'
-          description: Current Path
-        archived:
-          type:
-          - boolean
-          - 'null'
-          description: Archived
-        visible_in_store:
-          type:
-          - boolean
-          - 'null'
-          description: Visible in Store
-        visible_in_customer_center:
-          type:
-          - boolean
-          - 'null'
-          description: Visible in Customer Center
-        image_id:
-          type:
-          - string
-          - 'null'
-          description: Image
-        seo_title:
-          type:
-          - string
-          - 'null'
-          description: A clear title without branding or mentioning the domain itself. Longer is better, but max is 60 characters.
-        seo_description:
-          type:
-          - string
-          - 'null'
-          description: A clear SEO description, at least two sentences long. Longer is better, but max is 160 characters. You will find the actual user-facing description on the **default variant of the product** (see the `Products::Variant` resource).
-        seo_image_id:
-          type:
-          - string
-          - 'null'
-          description: SEO image
-        commissionable:
-          type:
-          - boolean
-          - 'null'
-          description: Commissionable
-        image_ids:
-          type:
-          - array
-          - 'null'
-          description: Images
-        default_variant_id:
-          type: integer
-          description: The ID of the default variant of the product
-        variant_ids:
-          type:
-          - array
-          - 'null'
-          minContains: 0
-          contains:
-            type: integer
-          description: Variant IDs
-        price_ids:
-          type:
-          - array
-          - 'null'
-          description: Price IDs
-        tag_ids:
-          type:
-          - array
-          - 'null'
-          description: Any valid array, empty or with valid tags will overwrite existing values. To avoid losing existing tags first use the Fetch Product endpoint, then be sure to include the existing tags in your payload along with any new addition(s)
-        redirect_funnel_id:
-          type:
-          - string
-          - 'null'
-          description: Redirect funnel
-        cancellation_funnel_url:
-          type:
-          - string
-          - 'null'
-          description: Cancellation Funnel Url
-        created_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Added
-        updated_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Updated
-        variant_properties:
-          type:
-          - array
-          - 'null'
-          items:
-            type: object
-            title: Product Properties
-            description: Properties
-            properties:
-              id:
-                type: integer
-                description: ID
-              name:
-                type: string
-                description: Name
-          description: Properties that are specific to the default variant of a product
-      example:
-        id: 22
-        public_id: RTWMAd
-        workspace_id: 42000
-        name: Sample Product
-        current_path: null
-        archived: false
-        visible_in_store: true
-        visible_in_customer_center: true
-        image_id: null
-        seo_title: Buy Sample Product Online
-        seo_description: This is a sample product.
-        seo_image_id: null
-        commissionable: true
-        image_ids: []
-        default_variant_id: 22
-        variant_ids:
-        - 22
-        price_ids: []
-        tag_ids: []
-        redirect_funnel_id: null
-        cancellation_funnel_url: null
-        created_at: '2025-01-01T00:00:00.000Z'
-        updated_at: '2025-01-01T00:00:00.000Z'
-        variant_properties:
-        - id: 22
-          name: Color
-      required:
-      - archived
-      - cancellation_funnel_url
-      - commissionable
-      - created_at
-      - current_path
-      - default_variant_id
-      - id
-      - image_id
-      - image_ids
-      - name
-      - price_ids
-      - public_id
-      - redirect_funnel_id
-      - seo_description
-      - seo_image_id
-      - seo_title
-      - tag_ids
-      - updated_at
-      - variant_ids
-      - variant_properties
-      - visible_in_customer_center
-      - visible_in_store
-      - workspace_id
     ProductParametersUpdate:
       type: object
       title: Products
@@ -982,6 +803,185 @@ components:
             name: Size
           - id: 2
             name: Color
+    ProductAttributes:
+      type: object
+      title: Products
+      description: Products
+      properties:
+        id:
+          type: integer
+          description: ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Product Public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        name:
+          type: string
+          description: Product name
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current Path
+        archived:
+          type:
+          - boolean
+          - 'null'
+          description: Archived
+        visible_in_store:
+          type:
+          - boolean
+          - 'null'
+          description: Visible in Store
+        visible_in_customer_center:
+          type:
+          - boolean
+          - 'null'
+          description: Visible in Customer Center
+        image_id:
+          type:
+          - string
+          - 'null'
+          description: Image
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: A clear title without branding or mentioning the domain itself. Longer is better, but max is 60 characters.
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: A clear SEO description, at least two sentences long. Longer is better, but max is 160 characters. You will find the actual user-facing description on the **default variant of the product** (see the `Products::Variant` resource).
+        seo_image_id:
+          type:
+          - string
+          - 'null'
+          description: SEO image
+        commissionable:
+          type:
+          - boolean
+          - 'null'
+          description: Commissionable
+        image_ids:
+          type:
+          - array
+          - 'null'
+          description: Images
+        default_variant_id:
+          type: integer
+          description: The ID of the default variant of the product
+        variant_ids:
+          type:
+          - array
+          - 'null'
+          minContains: 0
+          contains:
+            type: integer
+          description: Variant IDs
+        price_ids:
+          type:
+          - array
+          - 'null'
+          description: Price IDs
+        tag_ids:
+          type:
+          - array
+          - 'null'
+          description: Any valid array, empty or with valid tags will overwrite existing values. To avoid losing existing tags first use the Fetch Product endpoint, then be sure to include the existing tags in your payload along with any new addition(s)
+        redirect_funnel_id:
+          type:
+          - string
+          - 'null'
+          description: Redirect funnel
+        cancellation_funnel_url:
+          type:
+          - string
+          - 'null'
+          description: Cancellation Funnel Url
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        variant_properties:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            title: Product Properties
+            description: Properties
+            properties:
+              id:
+                type: integer
+                description: ID
+              name:
+                type: string
+                description: Name
+          description: Properties that are specific to the default variant of a product
+      example:
+        id: 22
+        public_id: RTWMAd
+        workspace_id: 42000
+        name: Sample Product
+        current_path: null
+        archived: false
+        visible_in_store: true
+        visible_in_customer_center: true
+        image_id: null
+        seo_title: Buy Sample Product Online
+        seo_description: This is a sample product.
+        seo_image_id: null
+        commissionable: true
+        image_ids: []
+        default_variant_id: 22
+        variant_ids:
+        - 22
+        price_ids: []
+        tag_ids: []
+        redirect_funnel_id: null
+        cancellation_funnel_url: null
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        variant_properties:
+        - id: 22
+          name: Color
+      required:
+      - archived
+      - cancellation_funnel_url
+      - commissionable
+      - created_at
+      - current_path
+      - default_variant_id
+      - id
+      - image_id
+      - image_ids
+      - name
+      - price_ids
+      - public_id
+      - redirect_funnel_id
+      - seo_description
+      - seo_image_id
+      - seo_title
+      - tag_ids
+      - updated_at
+      - variant_ids
+      - variant_properties
+      - visible_in_customer_center
+      - visible_in_store
+      - workspace_id
   securitySchemes:
     BearerAuth:
       type: http

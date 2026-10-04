@@ -185,6 +185,80 @@ paths:
                 error: Address is incomplete
 components:
   schemas:
+    EmailsSettingsParameters:
+      type: object
+      title: Email Settings
+      description: Email/marketing settings for a workspace
+      required: []
+      properties:
+        name:
+          type: string
+          description: Business/sender name shown on email broadcasts
+        address_single_line:
+          type: boolean
+          description: Render the marketing address on a single line
+        hide_branding:
+          type: boolean
+          description: Hide ClickFunnels branding in the email footer
+        unsubscribe_footer:
+          type: string
+          description: Custom unsubscribe footer text
+        footer_alignment:
+          type: string
+          description: Alignment of the email footer
+        system_emails_from_address_id:
+          type:
+          - integer
+          - 'null'
+          description: An Emails::Address id used as the from address for system emails
+        system_emails_reply_to_address_id:
+          type:
+          - integer
+          - 'null'
+          description: An Emails::Address id used as the reply-to address for system emails
+        marketing_emails_from_address_id:
+          type:
+          - integer
+          - 'null'
+          description: An Emails::Address id used as the from address for marketing emails
+        marketing_emails_reply_to_address_id:
+          type:
+          - integer
+          - 'null'
+          description: An Emails::Address id used as the reply-to address for marketing emails
+        address:
+          type: object
+          description: The marketing (business) address. This workspace-wide prerequisite must be complete before creating a broadcast or workflow send-email step, and before sending a broadcast.
+          properties:
+            address_one:
+              type: string
+              description: Street address line one
+            address_two:
+              type:
+              - string
+              - 'null'
+              description: Street address line two
+            city:
+              type: string
+              description: City
+            postal_code:
+              type: string
+              description: Postal/ZIP code
+            country_code:
+              type: string
+              description: ISO 3166-1 alpha-2 country code, e.g. "US"
+            region:
+              type: string
+              description: State/region by its code (e.g. "CA") or name
+      example:
+        marketing_setting:
+          name: Acme Inc.
+          address:
+            address_one: 123 Main St
+            city: San Francisco
+            postal_code: '94105'
+            country_code: US
+            region: CA
     EmailsSettingsAttributes:
       type: object
       title: Email Settings
@@ -316,80 +390,6 @@ components:
       - system_emails_from_address
       - system_emails_reply_to_address
       - workspace_id
-    EmailsSettingsParameters:
-      type: object
-      title: Email Settings
-      description: Email/marketing settings for a workspace
-      required: []
-      properties:
-        name:
-          type: string
-          description: Business/sender name shown on email broadcasts
-        address_single_line:
-          type: boolean
-          description: Render the marketing address on a single line
-        hide_branding:
-          type: boolean
-          description: Hide ClickFunnels branding in the email footer
-        unsubscribe_footer:
-          type: string
-          description: Custom unsubscribe footer text
-        footer_alignment:
-          type: string
-          description: Alignment of the email footer
-        system_emails_from_address_id:
-          type:
-          - integer
-          - 'null'
-          description: An Emails::Address id used as the from address for system emails
-        system_emails_reply_to_address_id:
-          type:
-          - integer
-          - 'null'
-          description: An Emails::Address id used as the reply-to address for system emails
-        marketing_emails_from_address_id:
-          type:
-          - integer
-          - 'null'
-          description: An Emails::Address id used as the from address for marketing emails
-        marketing_emails_reply_to_address_id:
-          type:
-          - integer
-          - 'null'
-          description: An Emails::Address id used as the reply-to address for marketing emails
-        address:
-          type: object
-          description: The marketing (business) address. This workspace-wide prerequisite must be complete before creating a broadcast or workflow send-email step, and before sending a broadcast.
-          properties:
-            address_one:
-              type: string
-              description: Street address line one
-            address_two:
-              type:
-              - string
-              - 'null'
-              description: Street address line two
-            city:
-              type: string
-              description: City
-            postal_code:
-              type: string
-              description: Postal/ZIP code
-            country_code:
-              type: string
-              description: ISO 3166-1 alpha-2 country code, e.g. "US"
-            region:
-              type: string
-              description: State/region by its code (e.g. "CA") or name
-      example:
-        marketing_setting:
-          name: Acme Inc.
-          address:
-            address_one: 123 Main St
-            city: San Francisco
-            postal_code: '94105'
-            country_code: US
-            region: CA
   securitySchemes:
     BearerAuth:
       type: http

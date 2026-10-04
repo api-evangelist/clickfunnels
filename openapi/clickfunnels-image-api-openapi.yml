@@ -320,19 +320,6 @@ components:
         enum:
         - asc
         - desc
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
     sort_property:
       name: sort_property
       in: query
@@ -347,12 +334,35 @@ components:
         enum:
         - id
         - updated_at
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
   schemas:
-    ImageParametersUpdate:
+    ImageParameters:
       type: object
       title: Images
       description: Images
-      required: []
+      required:
+      - upload_source_url
       properties:
         alt_text:
           type:
@@ -431,12 +441,11 @@ components:
       - updated_at
       - url
       - workspace_id
-    ImageParameters:
+    ImageParametersUpdate:
       type: object
       title: Images
       description: Images
-      required:
-      - upload_source_url
+      required: []
       properties:
         alt_text:
           type:
@@ -456,15 +465,6 @@ components:
           alt_text: Alt text of the image
           name: Amazing Shot
           upload_source_url: https://image-hosting-x.com/cdn/123
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http

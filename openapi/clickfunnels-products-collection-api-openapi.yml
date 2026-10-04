@@ -371,6 +371,12 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
     sort_order:
       name: sort_order
       in: query
@@ -381,19 +387,6 @@ components:
         enum:
         - asc
         - desc
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -408,154 +401,23 @@ components:
         enum:
         - id
         - updated_at
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
       schema:
         type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
   schemas:
-    ProductsCollectionAttributes:
-      type: object
-      title: Collections
-      description: Collections
-      properties:
-        id:
-          type: integer
-          description: Numeric ID of the collection
-        public_id:
-          type:
-          - string
-          - 'null'
-          description: Public ID is a string version of the numeric ID
-        workspace_id:
-          type: integer
-          description: ID reference to the workspace to which the collection belongs
-        name:
-          type: string
-          description: Name of the products collection
-        description:
-          type:
-          - string
-          - 'null'
-          description: Description of the collection
-        collection_type:
-          type:
-          - string
-          - 'null'
-          description: Type of the collection (manual or automatic)
-        product_ids:
-          type:
-          - array
-          - 'null'
-          description: Array of product IDs in the collection. Updating with invalid or non-workspace product IDs will result in an error. If IDs from existing products in the collection are left out, they will be removed from the collection. You can also remove all the products from a collection by providing an empty array.
-        sort_method:
-          type:
-          - string
-          - 'null'
-          enum:
-          - manually
-          - name_asc
-          - name_desc
-          - price_desc
-          - price_asc
-          - added_at_desc
-          - added_at_asc
-          - created_at_desc
-          - created_at_asc
-          - null
-          description: Method used to sort the products in the collection
-        archived:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the collection is archived
-        image_id:
-          type:
-          - string
-          - 'null'
-          description: Collection image
-        visible_in_store:
-          type:
-          - boolean
-          - 'null'
-          description: Whether the collection is visible in the online store
-        current_path:
-          type:
-          - string
-          - 'null'
-          description: Current path of the collection
-        seo_title:
-          type:
-          - string
-          - 'null'
-          description: Title of the collection for SEO purposes
-        seo_description:
-          type:
-          - string
-          - 'null'
-          description: Description of the collection for SEO purposes
-        seo_indexable:
-          type:
-          - string
-          - 'null'
-          description: Whether the collection is indexable by search engines
-        social_image_id:
-          type:
-          - string
-          - 'null'
-          description: Image for social sharing
-        created_at:
-          type:
-          - string
-          - 'null'
-          description: Date and time the collection was created
-        updated_at:
-          type:
-          - string
-          - 'null'
-          description: Date and time the collection was last updated
-      example:
-        id: 1
-        public_id: bkDhwu
-        workspace_id: 42000
-        name: Example Collection
-        description: Example Description
-        collection_type: manual
-        product_ids: []
-        sort_method: manually
-        archived: false
-        image_id: null
-        visible_in_store: true
-        current_path: null
-        seo_title: Example SEO Title
-        seo_description: Example SEO Description
-        seo_indexable: null
-        social_image_id: null
-        created_at: null
-        updated_at: null
-      required:
-      - archived
-      - collection_type
-      - created_at
-      - current_path
-      - description
-      - id
-      - image_id
-      - name
-      - product_ids
-      - public_id
-      - seo_description
-      - seo_indexable
-      - seo_title
-      - social_image_id
-      - sort_method
-      - updated_at
-      - visible_in_store
-      - workspace_id
     ProductsCollectionParametersUpdate:
       type: object
       title: Collections
@@ -711,6 +573,144 @@ components:
           seo_title: Example SEO Title
           seo_description: Example SEO Description
           social_image_id: null
+    ProductsCollectionAttributes:
+      type: object
+      title: Collections
+      description: Collections
+      properties:
+        id:
+          type: integer
+          description: Numeric ID of the collection
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Public ID is a string version of the numeric ID
+        workspace_id:
+          type: integer
+          description: ID reference to the workspace to which the collection belongs
+        name:
+          type: string
+          description: Name of the products collection
+        description:
+          type:
+          - string
+          - 'null'
+          description: Description of the collection
+        collection_type:
+          type:
+          - string
+          - 'null'
+          description: Type of the collection (manual or automatic)
+        product_ids:
+          type:
+          - array
+          - 'null'
+          description: Array of product IDs in the collection. Updating with invalid or non-workspace product IDs will result in an error. If IDs from existing products in the collection are left out, they will be removed from the collection. You can also remove all the products from a collection by providing an empty array.
+        sort_method:
+          type:
+          - string
+          - 'null'
+          enum:
+          - manually
+          - name_asc
+          - name_desc
+          - price_desc
+          - price_asc
+          - added_at_desc
+          - added_at_asc
+          - created_at_desc
+          - created_at_asc
+          - null
+          description: Method used to sort the products in the collection
+        archived:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the collection is archived
+        image_id:
+          type:
+          - string
+          - 'null'
+          description: Collection image
+        visible_in_store:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the collection is visible in the online store
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current path of the collection
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: Title of the collection for SEO purposes
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: Description of the collection for SEO purposes
+        seo_indexable:
+          type:
+          - string
+          - 'null'
+          description: Whether the collection is indexable by search engines
+        social_image_id:
+          type:
+          - string
+          - 'null'
+          description: Image for social sharing
+        created_at:
+          type:
+          - string
+          - 'null'
+          description: Date and time the collection was created
+        updated_at:
+          type:
+          - string
+          - 'null'
+          description: Date and time the collection was last updated
+      example:
+        id: 1
+        public_id: bkDhwu
+        workspace_id: 42000
+        name: Example Collection
+        description: Example Description
+        collection_type: manual
+        product_ids: []
+        sort_method: manually
+        archived: false
+        image_id: null
+        visible_in_store: true
+        current_path: null
+        seo_title: Example SEO Title
+        seo_description: Example SEO Description
+        seo_indexable: null
+        social_image_id: null
+        created_at: null
+        updated_at: null
+      required:
+      - archived
+      - collection_type
+      - created_at
+      - current_path
+      - description
+      - id
+      - image_id
+      - name
+      - product_ids
+      - public_id
+      - seo_description
+      - seo_indexable
+      - seo_title
+      - social_image_id
+      - sort_method
+      - updated_at
+      - visible_in_store
+      - workspace_id
   securitySchemes:
     BearerAuth:
       type: http

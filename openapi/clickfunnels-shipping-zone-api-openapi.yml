@@ -526,54 +526,79 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
-  parameters:
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    sort_property:
-      name: sort_property
-      in: query
-      description: 'Sort property of a list response. The default is id and thus the created_at order.
-
-        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
-
-        '
-      required: false
-      schema:
-        type: string
-        enum:
-        - id
-        - updated_at
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
   schemas:
+    ShippingZoneAttributes:
+      type: object
+      title: Zones
+      description: Zones
+      properties:
+        id:
+          type: integer
+          description: Zone ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Zone public ID
+        location_group_id:
+          type: integer
+          description: Location group ID
+        name:
+          type: string
+          description: Name
+        address_filter_id:
+          type:
+          - string
+          - 'null'
+          description: Zone
+        region_ids:
+          type:
+          - array
+          - 'null'
+          description: Region IDs
+        country_ids:
+          type:
+          - array
+          - 'null'
+          description: Country IDs
+        includes_rest_of_world:
+          type:
+          - boolean
+          - 'null'
+          description: Includes Rest of the World
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          description: Updated
+      example:
+        id: 2
+        public_id: iYwKFa
+        location_group_id: 3
+        name: Example Shipping Zone
+        address_filter_id: null
+        region_ids: []
+        country_ids: []
+        includes_rest_of_world: false
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: null
+      required:
+      - address_filter_id
+      - country_ids
+      - created_at
+      - id
+      - includes_rest_of_world
+      - location_group_id
+      - name
+      - public_id
+      - region_ids
+      - updated_at
     ShippingZoneParameters:
       type: object
       title: Zones
@@ -647,78 +672,53 @@ components:
           region_ids: []
           country_ids: []
           includes_rest_of_world: false
-    ShippingZoneAttributes:
-      type: object
-      title: Zones
-      description: Zones
-      properties:
-        id:
-          type: integer
-          description: Zone ID
-        public_id:
-          type:
-          - string
-          - 'null'
-          description: Zone public ID
-        location_group_id:
-          type: integer
-          description: Location group ID
-        name:
-          type: string
-          description: Name
-        address_filter_id:
-          type:
-          - string
-          - 'null'
-          description: Zone
-        region_ids:
-          type:
-          - array
-          - 'null'
-          description: Region IDs
-        country_ids:
-          type:
-          - array
-          - 'null'
-          description: Country IDs
-        includes_rest_of_world:
-          type:
-          - boolean
-          - 'null'
-          description: Includes Rest of the World
-        created_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Added
-        updated_at:
-          type:
-          - string
-          - 'null'
-          description: Updated
-      example:
-        id: 2
-        public_id: iYwKFa
-        location_group_id: 3
-        name: Example Shipping Zone
-        address_filter_id: null
-        region_ids: []
-        country_ids: []
-        includes_rest_of_world: false
-        created_at: '2025-01-01T00:00:00.000Z'
-        updated_at: null
-      required:
-      - address_filter_id
-      - country_ids
-      - created_at
-      - id
-      - includes_rest_of_world
-      - location_group_id
-      - name
-      - public_id
-      - region_ids
-      - updated_at
+  parameters:
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
   securitySchemes:
     BearerAuth:
       type: http

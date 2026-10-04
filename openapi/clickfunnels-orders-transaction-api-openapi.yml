@@ -348,41 +348,54 @@ paths:
                   value:
                     error: 'Request unprocessable: Transaction not found.'
 components:
+  parameters:
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
   schemas:
-    OrdersTransactionParametersRefund:
-      type: object
-      title: Refund Transaction
-      description: 'Parameters for `POST /orders/transactions/{id}/refund`. Every field is optional - a bare POST
-
-        (or `{"orders_transaction": {}}`) refunds the addressed charge with defaults.
-
-
-        The refund is always for the charge''s full outstanding amount, so there is no amount to send.
-
-        Partial refunds are deliberately not offered here: they are a human-gated exception, handled in
-
-        the ClickFunnels admin.'
-      required: []
-      properties:
-        reason:
-          type: string
-          description: 'Defaults to `requested_by_customer`.
-
-
-            Stripe orders accept only `duplicate`, `fraudulent`, or `requested_by_customer`; any other
-
-            value returns 422 listing the accepted set. Payments AI (Rebilly) orders treat this as a
-
-            free-text description that is recorded on the refund and the order timeline.'
-        partial:
-          type: boolean
-          description: 'Must be `false` or omitted. Sending `true` returns 422 rather than silently refunding the
-
-            full charge. An `amount` field is rejected the same way - honoring it would be a partial
-
-            refund, and ignoring it would refund more than you asked for.'
-      example:
-        reason: requested_by_customer
     OrdersTransactionAttributes:
       type: object
       title: Payments
@@ -506,53 +519,40 @@ components:
       - result
       - status
       - updated_at
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    sort_property:
-      name: sort_property
-      in: query
-      description: 'Sort property of a list response. The default is id and thus the created_at order.
+    OrdersTransactionParametersRefund:
+      type: object
+      title: Refund Transaction
+      description: 'Parameters for `POST /orders/transactions/{id}/refund`. Every field is optional - a bare POST
 
-        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+        (or `{"orders_transaction": {}}`) refunds the addressed charge with defaults.
 
-        '
-      required: false
-      schema:
-        type: string
-        enum:
-        - id
-        - updated_at
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
+
+        The refund is always for the charge''s full outstanding amount, so there is no amount to send.
+
+        Partial refunds are deliberately not offered here: they are a human-gated exception, handled in
+
+        the ClickFunnels admin.'
+      required: []
+      properties:
+        reason:
+          type: string
+          description: 'Defaults to `requested_by_customer`.
+
+
+            Stripe orders accept only `duplicate`, `fraudulent`, or `requested_by_customer`; any other
+
+            value returns 422 listing the accepted set. Payments AI (Rebilly) orders treat this as a
+
+            free-text description that is recorded on the refund and the order timeline.'
+        partial:
+          type: boolean
+          description: 'Must be `false` or omitted. Sending `true` returns 422 rather than silently refunding the
+
+            full charge. An `amount` field is rejected the same way - honoring it would be a partial
+
+            refund, and ignoring it would refund more than you asked for.'
+      example:
+        reason: requested_by_customer
   securitySchemes:
     BearerAuth:
       type: http

@@ -163,6 +163,13 @@ paths:
               example:
                 error: 'Not found: Record missing'
 components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
   schemas:
     CommunitiesActionAttributes:
       type: object
@@ -246,6 +253,32 @@ components:
       - target_count
       - target_ids
       - updated_at
+    CommunitiesMembershipsRemoveFromGroupActionParameters:
+      type: object
+      title: Communities::Memberships::RemoveFromGroupAction
+      description: Communities::Memberships::RemoveFromGroupAction
+      properties:
+        target_all:
+          type: boolean
+          description: When true, remove all members in the community from the specified spaces (target_ids is ignored)
+        target_ids:
+          type: array
+          description: Array of membership public IDs to remove from the spaces. Required when target_all is false.
+          items:
+            type: string
+        space_ids:
+          type: array
+          description: Array of space public IDs to remove the members from
+          items:
+            type: string
+      example:
+        communities_memberships_remove_from_group_action:
+          target_all: false
+          target_ids:
+          - AbCdEf
+          - GhIjKl
+          space_ids:
+          - SpAcEa
     CommunitiesMembershipsRemoveFromGroupActionAttributes:
       type: object
       title: Communities::Memberships::RemoveFromGroupAction
@@ -293,39 +326,6 @@ components:
       - target_count
       - target_ids
       - updated_at
-    CommunitiesMembershipsRemoveFromGroupActionParameters:
-      type: object
-      title: Communities::Memberships::RemoveFromGroupAction
-      description: Communities::Memberships::RemoveFromGroupAction
-      properties:
-        target_all:
-          type: boolean
-          description: When true, remove all members in the community from the specified spaces (target_ids is ignored)
-        target_ids:
-          type: array
-          description: Array of membership public IDs to remove from the spaces. Required when target_all is false.
-          items:
-            type: string
-        space_ids:
-          type: array
-          description: Array of space public IDs to remove the members from
-          items:
-            type: string
-      example:
-        communities_memberships_remove_from_group_action:
-          target_all: false
-          target_ids:
-          - AbCdEf
-          - GhIjKl
-          space_ids:
-          - SpAcEa
-  parameters:
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http

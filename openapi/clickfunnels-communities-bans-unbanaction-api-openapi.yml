@@ -147,42 +147,6 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
-    CommunitiesBansUnbanActionAttributes:
-      type: object
-      title: Communities::Bans::UnbanAction
-      description: Communities::Bans::UnbanAction
-      allOf:
-      - $ref: '#/components/schemas/CommunitiesActionAttributes'
-      example:
-        id: 505
-        public_id: UnBn01
-        community_id: 1
-        target_all: false
-        target_ids:
-        - 201
-        - 202
-        failed_ids: []
-        target_count: 2
-        performed_count: 2
-        started_at: '2025-01-01T00:01:00.000Z'
-        completed_at: '2025-01-01T00:01:05.000Z'
-        created_at: '2025-01-01T00:00:00.000Z'
-        updated_at: '2025-01-01T00:01:05.000Z'
-        status: completed
-      required:
-      - community_id
-      - completed_at
-      - created_at
-      - failed_ids
-      - id
-      - performed_count
-      - public_id
-      - started_at
-      - status
-      - target_all
-      - target_count
-      - target_ids
-      - updated_at
     CommunitiesActionAttributes:
       type: object
       title: Async Action
@@ -251,6 +215,42 @@ components:
           - processing
           - completed
           description: 'Current status of the async action. Progresses: queued → processing → completed.'
+      required:
+      - community_id
+      - completed_at
+      - created_at
+      - failed_ids
+      - id
+      - performed_count
+      - public_id
+      - started_at
+      - status
+      - target_all
+      - target_count
+      - target_ids
+      - updated_at
+    CommunitiesBansUnbanActionAttributes:
+      type: object
+      title: Communities::Bans::UnbanAction
+      description: Communities::Bans::UnbanAction
+      allOf:
+      - $ref: '#/components/schemas/CommunitiesActionAttributes'
+      example:
+        id: 505
+        public_id: UnBn01
+        community_id: 1
+        target_all: false
+        target_ids:
+        - 201
+        - 202
+        failed_ids: []
+        target_count: 2
+        performed_count: 2
+        started_at: '2025-01-01T00:01:00.000Z'
+        completed_at: '2025-01-01T00:01:05.000Z'
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:01:05.000Z'
+        status: completed
       required:
       - community_id
       - completed_at

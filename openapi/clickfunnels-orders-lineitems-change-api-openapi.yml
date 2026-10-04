@@ -357,134 +357,7 @@ paths:
               example:
                 error: The target variant and price combination is not an allowed upgrade or downgrade for this subscription.
 components:
-  parameters:
-    line_item_id:
-      name: line_item_id
-      in: path
-      required: true
-      description: 'The id of the subscription line item. Accepts either the integer database
-
-        id or the obfuscated `public_id` string returned by line-item endpoints.
-
-        '
-      schema:
-        oneOf:
-        - type: integer
-        - type: string
   schemas:
-    OrdersLineItemsChangeRequest:
-      type: object
-      title: Line Item Change Request
-      description: Parameters to preview or commit a subscription line item variant/price change
-      required:
-      - orders_line_items_change
-      properties:
-        orders_line_items_change:
-          type: object
-          required:
-          - products_price_id
-          properties:
-            products_price_id:
-              oneOf:
-              - type: integer
-              - type: string
-              description: 'Target price. Accepts either the integer database id or the obfuscated
-
-                `public_id` string returned by the discovery endpoint. The target variant is
-
-                derived from the price''s `variant` association.
-
-                '
-            prorate:
-              type:
-              - boolean
-              - 'null'
-              description: 'Optional override for proration. Accepts `true`, `false`, `"true"`, `"false"`,
-
-                `"1"`, `"0"`, `1`, or `0`. When omitted, the in-app default is used:
-
-                upgrades are prorated and applied immediately; downgrades are not prorated and
-
-                take effect at the end of the current billing cycle. Forced to `false` for
-
-                physical line items regardless of the value sent. Any other value returns 422.
-
-                '
-            effective_time:
-              type:
-              - string
-              - 'null'
-              enum:
-              - now
-              - next_renewal
-              - null
-              description: 'Optional override for when the change takes effect. When omitted (or `null`,
-
-                or an empty string), the in-app default is used: upgrades take effect now,
-
-                downgrades at the next renewal. Any other value (e.g. `end_of_period` or a
-
-                literal timestamp) returns 422.
-
-                '
-      example:
-        orders_line_items_change:
-          products_price_id: 24
-          prorate: true
-          effective_time: now
-    ProductsPriceMinimal:
-      type: object
-      title: Products Price (Minimal)
-      description: 'Minimal price representation used wherever a price appears as a nested
-
-        attribute (line items, upgrade/downgrade discovery).
-
-        '
-      properties:
-        id:
-          type: integer
-        public_id:
-          type:
-          - string
-          - 'null'
-        name:
-          type:
-          - string
-          - 'null'
-        key:
-          type:
-          - string
-          - 'null'
-        amount:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        duration:
-          type:
-          - integer
-          - 'null'
-        interval:
-          type:
-          - string
-          - 'null'
-        interval_count:
-          type:
-          - integer
-          - 'null'
-      example:
-        id: 24
-        public_id: aBcDeF
-        name: Pro Monthly
-        key: pro_monthly_2024
-        amount: '20.00'
-        currency: USD
-        duration: null
-        interval: months
-        interval_count: 1
     OrdersLineItemsChangeResponse:
       type: object
       title: Line Item Change
@@ -656,6 +529,66 @@ components:
               interval: months
               interval_count: 1
             products_variant: null
+    OrdersLineItemsChangeRequest:
+      type: object
+      title: Line Item Change Request
+      description: Parameters to preview or commit a subscription line item variant/price change
+      required:
+      - orders_line_items_change
+      properties:
+        orders_line_items_change:
+          type: object
+          required:
+          - products_price_id
+          properties:
+            products_price_id:
+              oneOf:
+              - type: integer
+              - type: string
+              description: 'Target price. Accepts either the integer database id or the obfuscated
+
+                `public_id` string returned by the discovery endpoint. The target variant is
+
+                derived from the price''s `variant` association.
+
+                '
+            prorate:
+              type:
+              - boolean
+              - 'null'
+              description: 'Optional override for proration. Accepts `true`, `false`, `"true"`, `"false"`,
+
+                `"1"`, `"0"`, `1`, or `0`. When omitted, the in-app default is used:
+
+                upgrades are prorated and applied immediately; downgrades are not prorated and
+
+                take effect at the end of the current billing cycle. Forced to `false` for
+
+                physical line items regardless of the value sent. Any other value returns 422.
+
+                '
+            effective_time:
+              type:
+              - string
+              - 'null'
+              enum:
+              - now
+              - next_renewal
+              - null
+              description: 'Optional override for when the change takes effect. When omitted (or `null`,
+
+                or an empty string), the in-app default is used: upgrades take effect now,
+
+                downgrades at the next renewal. Any other value (e.g. `end_of_period` or a
+
+                literal timestamp) returns 422.
+
+                '
+      example:
+        orders_line_items_change:
+          products_price_id: 24
+          prorate: true
+          effective_time: now
     OrdersLineItemAttributes:
       type: object
       title: Line items
@@ -777,6 +710,73 @@ components:
       - public_id
       - quantity
       - updated_at
+    ProductsPriceMinimal:
+      type: object
+      title: Products Price (Minimal)
+      description: 'Minimal price representation used wherever a price appears as a nested
+
+        attribute (line items, upgrade/downgrade discovery).
+
+        '
+      properties:
+        id:
+          type: integer
+        public_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        key:
+          type:
+          - string
+          - 'null'
+        amount:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        duration:
+          type:
+          - integer
+          - 'null'
+        interval:
+          type:
+          - string
+          - 'null'
+        interval_count:
+          type:
+          - integer
+          - 'null'
+      example:
+        id: 24
+        public_id: aBcDeF
+        name: Pro Monthly
+        key: pro_monthly_2024
+        amount: '20.00'
+        currency: USD
+        duration: null
+        interval: months
+        interval_count: 1
+  parameters:
+    line_item_id:
+      name: line_item_id
+      in: path
+      required: true
+      description: 'The id of the subscription line item. Accepts either the integer database
+
+        id or the obfuscated `public_id` string returned by line-item endpoints.
+
+        '
+      schema:
+        oneOf:
+        - type: integer
+        - type: string
   securitySchemes:
     BearerAuth:
       type: http

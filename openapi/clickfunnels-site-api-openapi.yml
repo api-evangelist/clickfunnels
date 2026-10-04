@@ -174,20 +174,6 @@ paths:
               example:
                 error: Validation failed
 components:
-  parameters:
-    ExpandCodeFields:
-      name: expand[]
-      in: query
-      description: Expand additional data in the response. Use `expand[]=field_name` to include optional fields (e.g., `expand[]=head_code&expand[]=footer_code`). See the [Expanding guide](https://developers.myclickfunnels.com/docs/expand) for available fields and examples.
-      required: false
-      schema:
-        type: array
-        items:
-          type: string
-          enum:
-          - head_code
-          - footer_code
-          - markup
   schemas:
     SiteAttributes:
       type: object
@@ -306,6 +292,20 @@ components:
           head_code: <script>console.log('site');</script>
           head_code_mode: append
           homepage_id: RcHPAt
+  parameters:
+    ExpandCodeFields:
+      name: expand[]
+      in: query
+      description: Expand additional data in the response. Use `expand[]=field_name` to include optional fields (e.g., `expand[]=head_code&expand[]=footer_code`). See the [Expanding guide](https://developers.myclickfunnels.com/docs/expand) for available fields and examples.
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - head_code
+          - footer_code
+          - markup
   securitySchemes:
     BearerAuth:
       type: http

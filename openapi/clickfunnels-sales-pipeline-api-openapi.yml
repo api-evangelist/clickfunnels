@@ -418,13 +418,11 @@ paths:
                 error: 'Not found: Record missing'
 components:
   schemas:
-    SalesPipelineParameters:
+    SalesPipelineParametersUpdate:
       type: object
       title: Pipelines
       description: Pipelines
-      required:
-      - name
-      - stages_attributes
+      required: []
       properties:
         name:
           type: string
@@ -444,11 +442,13 @@ components:
       example:
         sales_pipeline:
           name: Example Pipeline
-    SalesPipelineParametersUpdate:
+    SalesPipelineParameters:
       type: object
       title: Pipelines
       description: Pipelines
-      required: []
+      required:
+      - name
+      - stages_attributes
       properties:
         name:
           type: string
@@ -612,19 +612,6 @@ components:
         enum:
         - asc
         - desc
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -639,13 +626,26 @@ components:
         enum:
         - id
         - updated_at
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
   securitySchemes:

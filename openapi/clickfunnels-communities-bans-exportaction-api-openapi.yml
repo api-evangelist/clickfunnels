@@ -247,19 +247,6 @@ components:
         enum:
         - asc
         - desc
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -274,90 +261,20 @@ components:
         enum:
         - id
         - updated_at
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
-    CommunitiesBansExportActionAttributes:
-      type: object
-      title: Communities::Bans::ExportAction
-      description: Communities::Bans::ExportAction
-      allOf:
-      - $ref: '#/components/schemas/CommunitiesActionAttributes'
-      - type: object
-        properties:
-          fields:
-            type: array
-            description: Column names included in the export file
-            items:
-              type: string
-      example:
-        id: 506
-        public_id: BnExP1
-        community_id: 1
-        target_all: true
-        target_ids: []
-        failed_ids: []
-        target_count: 50
-        performed_count: 50
-        started_at: '2025-01-01T00:01:00.000Z'
-        completed_at: '2025-01-01T00:01:15.000Z'
-        created_at: '2025-01-01T00:00:00.000Z'
-        updated_at: '2025-01-01T00:01:15.000Z'
-        status: completed
-        fields:
-        - contact_name
-        - contact_email
-        - reason
-        - created_at
-      required:
-      - community_id
-      - completed_at
-      - created_at
-      - failed_ids
-      - fields
-      - id
-      - performed_count
-      - public_id
-      - started_at
-      - status
-      - target_all
-      - target_count
-      - target_ids
-      - updated_at
-    CommunitiesBansExportActionParameters:
-      type: object
-      title: Communities::Bans::ExportAction
-      description: Communities::Bans::ExportAction
-      properties:
-        target_all:
-          type: boolean
-          description: When true, export all bans in the community (target_ids is ignored)
-        target_ids:
-          type: array
-          description: Array of ban public IDs to export. Required when target_all is false.
-          items:
-            type: string
-        fields:
-          type: array
-          description: Array of column names to include in the export
-          items:
-            type: string
-      example:
-        communities_bans_export_action:
-          target_all: true
-          target_ids: []
-          fields:
-          - contact_name
-          - contact_email
-          - reason
-          - created_at
     CommunitiesActionAttributes:
       type: object
       title: Async Action
@@ -440,6 +357,89 @@ components:
       - target_count
       - target_ids
       - updated_at
+    CommunitiesBansExportActionAttributes:
+      type: object
+      title: Communities::Bans::ExportAction
+      description: Communities::Bans::ExportAction
+      allOf:
+      - $ref: '#/components/schemas/CommunitiesActionAttributes'
+      - type: object
+        properties:
+          fields:
+            type: array
+            description: Column names included in the export file
+            items:
+              type: string
+      example:
+        id: 506
+        public_id: BnExP1
+        community_id: 1
+        target_all: true
+        target_ids: []
+        failed_ids: []
+        target_count: 50
+        performed_count: 50
+        started_at: '2025-01-01T00:01:00.000Z'
+        completed_at: '2025-01-01T00:01:15.000Z'
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:01:15.000Z'
+        status: completed
+        fields:
+        - contact_name
+        - contact_email
+        - reason
+        - created_at
+      required:
+      - community_id
+      - completed_at
+      - created_at
+      - failed_ids
+      - fields
+      - id
+      - performed_count
+      - public_id
+      - started_at
+      - status
+      - target_all
+      - target_count
+      - target_ids
+      - updated_at
+    CommunitiesBansExportActionParameters:
+      type: object
+      title: Communities::Bans::ExportAction
+      description: Communities::Bans::ExportAction
+      properties:
+        target_all:
+          type: boolean
+          description: When true, export all bans in the community (target_ids is ignored)
+        target_ids:
+          type: array
+          description: Array of ban public IDs to export. Required when target_all is false.
+          items:
+            type: string
+        fields:
+          type: array
+          description: Array of column names to include in the export
+          items:
+            type: string
+      example:
+        communities_bans_export_action:
+          target_all: true
+          target_ids: []
+          fields:
+          - contact_name
+          - contact_email
+          - reason
+          - created_at
+  headers:
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
   securitySchemes:
     BearerAuth:
       type: http

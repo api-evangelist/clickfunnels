@@ -569,19 +569,6 @@ components:
         enum:
         - asc
         - desc
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_property:
       name: sort_property
       in: query
@@ -596,13 +583,26 @@ components:
         enum:
         - id
         - updated_at
-  headers:
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
   schemas:
@@ -691,6 +691,81 @@ components:
         discount_method: percentage
         percent: '20.0'
         applies_to: all_products
+    DiscountParametersUpdate:
+      type: object
+      title: Discount
+      description: 'Fields accepted when updating a discount. Two lock-out rules apply, in this order: once the discount has been redeemed on an order its money-affecting fields (amount, percent, discount_method, applies_to, apply_from, the scoping arrays, limit_1_per_customer, discounts_per_redemption) are locked and return 422, while renaming and expiring still work; a discount that is already expired freezes its other fields and returns 422 (`Discount cannot be changed because it has expired`). Expiring is reversible - `expired: false` clears the end date and a future `apply_until` pushes it out, either of which makes the discount live again - so editing an expired discount means lifting the expiry first. Expiring a discount and renaming it in the same request is fine; it is a rename sent to a discount that is already expired that gets refused.'
+      required: []
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+          pattern: ^[a-zA-Z0-9-]+$
+          description: Letters, numbers and hyphens only. Uppercased on save; must be unique within the workspace.
+        discount_type:
+          type: string
+          enum:
+          - code
+          - automatic
+          - sale
+          description: '`code` is a redeemable coupon code. `automatic` and `sale` are deprecated.'
+        discount_method:
+          type: string
+          enum:
+          - percentage
+          - fixed
+          - shipping
+          - bogo
+        percent:
+          type: string
+        amount:
+          type: string
+        currency:
+          type: string
+          description: ISO currency code. Locked once the discount has been applied to an order.
+        applies_to:
+          type: string
+          enum:
+          - all_products
+          - specific_products
+          - specific_variants
+          - specific_collections
+        apply_from:
+          type: string
+          format: date-time
+        apply_until:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: 'Schedule a future end date. Must be after `apply_from`; a past date returns 422. To expire a live discount now, use `expired: true` instead.'
+        expired:
+          type: boolean
+          description: 'Virtual switch over `apply_until`, accepted on update only (sending it on create returns 422). `true` expires the discount immediately by setting `apply_until` to now; `false` lifts an expiry by clearing `apply_until`, the same as Remove Expiration in the app. It ends a discount that has not started yet (`scheduled: true`) as well, discarding the future `apply_from`, since nothing can end before it starts. A discount that has been redeemed cannot be un-expired and returns 422. Sending the state the discount is already in changes nothing and returns 200 without moving `apply_until`, so echoing a serialized discount back in a routine update cannot clear a scheduled end date - to remove a future end date, PATCH `apply_until` to null instead. Only `true` and `false` are accepted; any other value returns 422 rather than being read as "expire it".'
+        limit_1_per_customer:
+          type: boolean
+        require_minimum_spend:
+          type: boolean
+        require_minimum_spend_amount:
+          type: integer
+          description: Minimum order subtotal, in whole currency units rather than cents - `50` on a `usd` discount means $50.
+        discounts_per_redemption:
+          type: integer
+        product_ids:
+          type: array
+          items:
+            type: integer
+        variant_ids:
+          type: array
+          items:
+            type: integer
+        products_collection_ids:
+          type: array
+          items:
+            type: integer
+      example:
+        expired: true
     DiscountAttributes:
       type: object
       title: Discount
@@ -868,81 +943,6 @@ components:
       - updated_at
       - variant_ids
       - workspace_id
-    DiscountParametersUpdate:
-      type: object
-      title: Discount
-      description: 'Fields accepted when updating a discount. Two lock-out rules apply, in this order: once the discount has been redeemed on an order its money-affecting fields (amount, percent, discount_method, applies_to, apply_from, the scoping arrays, limit_1_per_customer, discounts_per_redemption) are locked and return 422, while renaming and expiring still work; a discount that is already expired freezes its other fields and returns 422 (`Discount cannot be changed because it has expired`). Expiring is reversible - `expired: false` clears the end date and a future `apply_until` pushes it out, either of which makes the discount live again - so editing an expired discount means lifting the expiry first. Expiring a discount and renaming it in the same request is fine; it is a rename sent to a discount that is already expired that gets refused.'
-      required: []
-      properties:
-        name:
-          type: string
-        code:
-          type: string
-          pattern: ^[a-zA-Z0-9-]+$
-          description: Letters, numbers and hyphens only. Uppercased on save; must be unique within the workspace.
-        discount_type:
-          type: string
-          enum:
-          - code
-          - automatic
-          - sale
-          description: '`code` is a redeemable coupon code. `automatic` and `sale` are deprecated.'
-        discount_method:
-          type: string
-          enum:
-          - percentage
-          - fixed
-          - shipping
-          - bogo
-        percent:
-          type: string
-        amount:
-          type: string
-        currency:
-          type: string
-          description: ISO currency code. Locked once the discount has been applied to an order.
-        applies_to:
-          type: string
-          enum:
-          - all_products
-          - specific_products
-          - specific_variants
-          - specific_collections
-        apply_from:
-          type: string
-          format: date-time
-        apply_until:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: 'Schedule a future end date. Must be after `apply_from`; a past date returns 422. To expire a live discount now, use `expired: true` instead.'
-        expired:
-          type: boolean
-          description: 'Virtual switch over `apply_until`, accepted on update only (sending it on create returns 422). `true` expires the discount immediately by setting `apply_until` to now; `false` lifts an expiry by clearing `apply_until`, the same as Remove Expiration in the app. It ends a discount that has not started yet (`scheduled: true`) as well, discarding the future `apply_from`, since nothing can end before it starts. A discount that has been redeemed cannot be un-expired and returns 422. Sending the state the discount is already in changes nothing and returns 200 without moving `apply_until`, so echoing a serialized discount back in a routine update cannot clear a scheduled end date - to remove a future end date, PATCH `apply_until` to null instead. Only `true` and `false` are accepted; any other value returns 422 rather than being read as "expire it".'
-        limit_1_per_customer:
-          type: boolean
-        require_minimum_spend:
-          type: boolean
-        require_minimum_spend_amount:
-          type: integer
-          description: Minimum order subtotal, in whole currency units rather than cents - `50` on a `usd` discount means $50.
-        discounts_per_redemption:
-          type: integer
-        product_ids:
-          type: array
-          items:
-            type: integer
-        variant_ids:
-          type: array
-          items:
-            type: integer
-        products_collection_ids:
-          type: array
-          items:
-            type: integer
-      example:
-        expired: true
   securitySchemes:
     BearerAuth:
       type: http

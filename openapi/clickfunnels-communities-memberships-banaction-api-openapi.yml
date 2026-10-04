@@ -206,31 +206,6 @@ components:
       - target_count
       - target_ids
       - updated_at
-    CommunitiesMembershipsBanActionParameters:
-      type: object
-      title: Communities::Memberships::BanAction
-      description: Communities::Memberships::BanAction
-      properties:
-        target_all:
-          type: boolean
-          description: When true, ban all members in the community (target_ids is ignored)
-        target_ids:
-          type: array
-          description: Array of membership public IDs to ban. Required when target_all is false.
-          items:
-            type: string
-        reason:
-          type:
-          - string
-          - 'null'
-          description: Optional reason applied to each ban
-      example:
-        communities_memberships_ban_action:
-          target_all: false
-          target_ids:
-          - AbCdEf
-          - GhIjKl
-          reason: Violated community guidelines
     CommunitiesActionAttributes:
       type: object
       title: Async Action
@@ -313,6 +288,31 @@ components:
       - target_count
       - target_ids
       - updated_at
+    CommunitiesMembershipsBanActionParameters:
+      type: object
+      title: Communities::Memberships::BanAction
+      description: Communities::Memberships::BanAction
+      properties:
+        target_all:
+          type: boolean
+          description: When true, ban all members in the community (target_ids is ignored)
+        target_ids:
+          type: array
+          description: Array of membership public IDs to ban. Required when target_all is false.
+          items:
+            type: string
+        reason:
+          type:
+          - string
+          - 'null'
+          description: Optional reason applied to each ban
+      example:
+        communities_memberships_ban_action:
+          target_all: false
+          target_ids:
+          - AbCdEf
+          - GhIjKl
+          reason: Violated community guidelines
   parameters:
     id:
       name: id
