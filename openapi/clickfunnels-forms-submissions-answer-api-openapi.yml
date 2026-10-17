@@ -322,6 +322,13 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -352,45 +359,7 @@ components:
       required: true
       schema:
         type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
-    FormsSubmissionsAnswerParameters:
-      type: object
-      title: Answers
-      description: Answers
-      required:
-      - field_id
-      properties:
-        field_id:
-          type: integer
-          description: Field
-        fields_option_id:
-          type:
-          - integer
-          - 'null'
-          description: ID of a record from the Forms::Fields::Option API.
-        entry:
-          type:
-          - string
-          - 'null'
-          description: Entry
-        fields_option_ids:
-          type:
-          - array
-          - 'null'
-          description: Fields Options
-      example:
-        forms_submissions_answer:
-          field_id: 20
-          fields_option_id: 56
-          entry: MyText
-          fields_option_ids: []
     FormsSubmissionsAnswerParametersUpdate:
       type: object
       title: Answers
@@ -487,6 +456,37 @@ components:
       - public_id
       - submission_id
       - updated_at
+    FormsSubmissionsAnswerParameters:
+      type: object
+      title: Answers
+      description: Answers
+      required:
+      - field_id
+      properties:
+        field_id:
+          type: integer
+          description: Field
+        fields_option_id:
+          type:
+          - integer
+          - 'null'
+          description: ID of a record from the Forms::Fields::Option API.
+        entry:
+          type:
+          - string
+          - 'null'
+          description: Entry
+        fields_option_ids:
+          type:
+          - array
+          - 'null'
+          description: Fields Options
+      example:
+        forms_submissions_answer:
+          field_id: 20
+          fields_option_id: 56
+          entry: MyText
+          fields_option_ids: []
   headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.

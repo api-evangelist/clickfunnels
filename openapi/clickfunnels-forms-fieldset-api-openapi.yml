@@ -301,6 +301,13 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -331,13 +338,6 @@ components:
       required: true
       schema:
         type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
     FormsFieldSetAttributes:
       type: object
@@ -384,11 +384,12 @@ components:
       - public_id
       - title
       - updated_at
-    FormsFieldSetParametersUpdate:
+    FormsFieldSetParameters:
       type: object
       title: Field sets
       description: Field sets
-      required: []
+      required:
+      - title
       properties:
         title:
           type: string
@@ -396,12 +397,11 @@ components:
       example:
         forms_field_set:
           title: Example Field Set
-    FormsFieldSetParameters:
+    FormsFieldSetParametersUpdate:
       type: object
       title: Field sets
       description: Field sets
-      required:
-      - title
+      required: []
       properties:
         title:
           type: string

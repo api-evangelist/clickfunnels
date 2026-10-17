@@ -233,6 +233,13 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -263,13 +270,6 @@ components:
       required: true
       schema:
         type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
     CommunitiesActionAttributes:
       type: object
@@ -353,32 +353,6 @@ components:
       - target_count
       - target_ids
       - updated_at
-    CommunitiesMembershipsExportActionParameters:
-      type: object
-      title: Communities::Memberships::ExportAction
-      description: Communities::Memberships::ExportAction
-      properties:
-        target_all:
-          type: boolean
-          description: When true, export all members in the community (target_ids is ignored)
-        target_ids:
-          type: array
-          description: Array of membership public IDs to export. Required when target_all is false.
-          items:
-            type: string
-        fields:
-          type: array
-          description: Array of column names to include in the export
-          items:
-            type: string
-      example:
-        communities_memberships_export_action:
-          target_all: true
-          target_ids: []
-          fields:
-          - name
-          - email
-          - joined_at
     CommunitiesMembershipsExportActionAttributes:
       type: object
       title: Communities::Memberships::ExportAction
@@ -425,6 +399,32 @@ components:
       - target_count
       - target_ids
       - updated_at
+    CommunitiesMembershipsExportActionParameters:
+      type: object
+      title: Communities::Memberships::ExportAction
+      description: Communities::Memberships::ExportAction
+      properties:
+        target_all:
+          type: boolean
+          description: When true, export all members in the community (target_ids is ignored)
+        target_ids:
+          type: array
+          description: Array of membership public IDs to export. Required when target_all is false.
+          items:
+            type: string
+        fields:
+          type: array
+          description: Array of column names to include in the export
+          items:
+            type: string
+      example:
+        communities_memberships_export_action:
+          target_all: true
+          target_ids: []
+          fields:
+          - name
+          - email
+          - joined_at
   headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.

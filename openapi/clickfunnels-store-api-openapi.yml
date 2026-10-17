@@ -338,6 +338,13 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -368,66 +375,7 @@ components:
       required: true
       schema:
         type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
-    StoreParametersUpdate:
-      type: object
-      title: Stores
-      description: Stores
-      required: []
-      properties:
-        name:
-          type: string
-          description: Name
-        current_path:
-          type:
-          - string
-          - 'null'
-          description: Current path
-        seo_title:
-          type:
-          - string
-          - 'null'
-          description: SEO title
-        seo_description:
-          type:
-          - string
-          - 'null'
-          description: SEO description
-        seo_indexable:
-          type:
-          - boolean
-          - 'null'
-          description: SEO Indexable
-        social_image_id:
-          type:
-          - string
-          - 'null'
-          description: Social image
-        status:
-          type:
-          - string
-          - 'null'
-          enum:
-          - draft
-          - published
-          - null
-          description: Store Status
-      example:
-        store:
-          name: Example Store
-          current_path: /example-store
-          seo_title: Example Store
-          seo_description: Example Store
-          seo_indexable: true
-          social_image_id: null
-          status: draft
     StoreAttributes:
       type: object
       title: Stores
@@ -519,6 +467,58 @@ components:
       - status
       - updated_at
       - workspace_id
+    StoreParametersUpdate:
+      type: object
+      title: Stores
+      description: Stores
+      required: []
+      properties:
+        name:
+          type: string
+          description: Name
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current path
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: SEO title
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: SEO description
+        seo_indexable:
+          type:
+          - boolean
+          - 'null'
+          description: SEO Indexable
+        social_image_id:
+          type:
+          - string
+          - 'null'
+          description: Social image
+        status:
+          type:
+          - string
+          - 'null'
+          enum:
+          - draft
+          - published
+          - null
+          description: Store Status
+      example:
+        store:
+          name: Example Store
+          current_path: /example-store
+          seo_title: Example Store
+          seo_description: Example Store
+          seo_indexable: true
+          social_image_id: null
+          status: draft
     StoreParameters:
       type: object
       title: Stores

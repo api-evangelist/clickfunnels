@@ -323,6 +323,13 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -353,56 +360,7 @@ components:
       required: true
       schema:
         type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-  headers:
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
   schemas:
-    ProductsTagParametersUpdate:
-      type: object
-      title: Product Tags
-      description: Product Tags
-      required: []
-      properties:
-        name:
-          type: string
-          description: Name of the product tag
-        color:
-          type: string
-          description: The color of the product tag
-      example:
-        products_tag:
-          name: Example Product Tag
-          color: '#FF5733'
-    ProductsTagParameters:
-      type: object
-      title: Product Tags
-      description: Product Tags
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          description: Name
-        color:
-          type: string
-          description: The color of the product tag
-      example:
-        products_tag:
-          name: Example Tag
-          color: '#FF5733'
     ProductsTagAttributes:
       type: object
       title: Product Tags
@@ -453,6 +411,48 @@ components:
       - public_id
       - updated_at
       - workspace_id
+    ProductsTagParameters:
+      type: object
+      title: Product Tags
+      description: Product Tags
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name
+        color:
+          type: string
+          description: The color of the product tag
+      example:
+        products_tag:
+          name: Example Tag
+          color: '#FF5733'
+    ProductsTagParametersUpdate:
+      type: object
+      title: Product Tags
+      description: Product Tags
+      required: []
+      properties:
+        name:
+          type: string
+          description: Name of the product tag
+        color:
+          type: string
+          description: The color of the product tag
+      example:
+        products_tag:
+          name: Example Product Tag
+          color: '#FF5733'
+  headers:
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
   securitySchemes:
     BearerAuth:
       type: http

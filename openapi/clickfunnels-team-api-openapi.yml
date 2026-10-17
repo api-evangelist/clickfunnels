@@ -308,6 +308,13 @@ paths:
           description: Unprocessable Entity
 components:
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -338,117 +345,7 @@ components:
       required: true
       schema:
         type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
-    UserAttributes:
-      type: object
-      title: Profile
-      description: 'A user profile. This includes **platform-agent** users — the synthetic user an OAuth/API
-
-        client authenticates as (e.g. "Default API Client") — as well as human users. Workflow
-
-        `notify_step` targets exclude platform agents (they resolve against non-platform team
-
-        members); discover those via `GET /api/v2/teams/{team_id}/memberships`.
-
-        '
-      properties:
-        id:
-          type: integer
-          description: User ID
-        public_id:
-          type:
-          - string
-          - 'null'
-          description: User public ID
-        email:
-          type: string
-          description: Email Address
-        first_name:
-          type: string
-          description: First Name
-        last_name:
-          type: string
-          description: Last Name
-        time_zone:
-          type:
-          - string
-          - 'null'
-          description: Your Time Zone
-        locale:
-          type:
-          - string
-          - 'null'
-          description: Language
-        created_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Signed up
-        updated_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Updated
-      example:
-        id: 1
-        public_id: prbtEx
-        email: test@email.com
-        first_name: Lili
-        last_name: Stiedemann
-        time_zone: Pacific Time (US & Canada)
-        locale: en
-        created_at: '2025-01-01T00:00:00.000Z'
-        updated_at: '2025-01-01T00:00:00.000Z'
-      required:
-      - created_at
-      - email
-      - first_name
-      - id
-      - last_name
-      - locale
-      - public_id
-      - time_zone
-      - updated_at
-    TeamParametersUpdate:
-      type: object
-      title: Teams
-      description: Teams
-      required: []
-      properties:
-        name:
-          type: string
-          description: The name of your Team
-        time_zone:
-          type:
-          - string
-          - 'null'
-          description: 'The human-readable time zone set manually by a ClickFunnels user or dynamically by the app.
-
-            Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
-
-            '
-        locale:
-          type: string
-          description: The main language used to create a new website.
-          enum:
-          - en
-          - ja
-          - pt
-          default: en
-      example:
-        team:
-          name: Example Team
-          time_zone: Pacific Time (US & Canada)
-          locale: en
     MembershipAttributes:
       type: object
       title: Memberships
@@ -563,31 +460,52 @@ components:
       - user_id
       - user_last_name
       - user_profile_photo_id
-    BillingSubscriptionIncludedPriceAttributes:
+    UserAttributes:
       type: object
-      title: Billing Subscription Included Prices
-      description: A price included in a billing subscription.
+      title: Profile
+      description: 'A user profile. This includes **platform-agent** users — the synthetic user an OAuth/API
+
+        client authenticates as (e.g. "Default API Client") — as well as human users. Workflow
+
+        `notify_step` targets exclude platform agents (they resolve against non-platform team
+
+        members); discover those via `GET /api/v2/teams/{team_id}/memberships`.
+
+        '
       properties:
         id:
           type: integer
-          description: Included price ID
-        subscription_id:
-          type: integer
-          description: The ID of the billing subscription this price belongs to
-        price_id:
-          type: string
-          description: The identifier of the underlying price
-        quantity:
+          description: User ID
+        public_id:
           type:
-          - integer
+          - string
           - 'null'
-          description: The quantity of the price included in the subscription
+          description: User public ID
+        email:
+          type: string
+          description: Email Address
+        first_name:
+          type: string
+          description: First Name
+        last_name:
+          type: string
+          description: Last Name
+        time_zone:
+          type:
+          - string
+          - 'null'
+          description: Your Time Zone
+        locale:
+          type:
+          - string
+          - 'null'
+          description: Language
         created_at:
           type:
           - string
           - 'null'
           format: date-time
-          description: Created
+          description: Signed up
         updated_at:
           type:
           - string
@@ -595,19 +513,56 @@ components:
           format: date-time
           description: Updated
       example:
-        id: 9000
-        subscription_id: 8000
-        price_id: price_basic_monthly
-        quantity: 1
+        id: 1
+        public_id: prbtEx
+        email: test@email.com
+        first_name: Lili
+        last_name: Stiedemann
+        time_zone: Pacific Time (US & Canada)
+        locale: en
         created_at: '2025-01-01T00:00:00.000Z'
         updated_at: '2025-01-01T00:00:00.000Z'
       required:
       - created_at
+      - email
+      - first_name
       - id
-      - price_id
-      - quantity
-      - subscription_id
+      - last_name
+      - locale
+      - public_id
+      - time_zone
       - updated_at
+    TeamParametersUpdate:
+      type: object
+      title: Teams
+      description: Teams
+      required: []
+      properties:
+        name:
+          type: string
+          description: The name of your Team
+        time_zone:
+          type:
+          - string
+          - 'null'
+          description: 'The human-readable time zone set manually by a ClickFunnels user or dynamically by the app.
+
+            Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
+
+            '
+        locale:
+          type: string
+          description: The main language used to create a new website.
+          enum:
+          - en
+          - ja
+          - pt
+          default: en
+      example:
+        team:
+          name: Example Team
+          time_zone: Pacific Time (US & Canada)
+          locale: en
     BillingSubscriptionAttributes:
       type: object
       title: Billing Subscriptions
@@ -675,6 +630,51 @@ components:
       - public_id
       - status
       - team_id
+      - updated_at
+    BillingSubscriptionIncludedPriceAttributes:
+      type: object
+      title: Billing Subscription Included Prices
+      description: A price included in a billing subscription.
+      properties:
+        id:
+          type: integer
+          description: Included price ID
+        subscription_id:
+          type: integer
+          description: The ID of the billing subscription this price belongs to
+        price_id:
+          type: string
+          description: The identifier of the underlying price
+        quantity:
+          type:
+          - integer
+          - 'null'
+          description: The quantity of the price included in the subscription
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Created
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+      example:
+        id: 9000
+        subscription_id: 8000
+        price_id: price_basic_monthly
+        quantity: 1
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+      required:
+      - created_at
+      - id
+      - price_id
+      - quantity
+      - subscription_id
       - updated_at
     TeamAttributes:
       type: object

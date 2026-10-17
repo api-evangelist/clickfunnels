@@ -710,6 +710,13 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -740,34 +747,7 @@ components:
       required: true
       schema:
         type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
-    WorkflowParametersUpdate:
-      type: object
-      title: Update Workflow
-      description: Parameters for updating an existing workflow. All fields are optional.
-      required:
-      - workflow
-      properties:
-        workflow:
-          type: object
-          properties:
-            name:
-              type: string
-              description: New name for the workflow.
-            archived:
-              type: boolean
-              description: Set to `true` to archive the workflow, `false` to unarchive.
-      example:
-        workflow:
-          name: Updated Nurture Sequence
-          archived: false
     WorkflowStructureAttributes:
       type: object
       title: Workflow Structure
@@ -1075,6 +1055,26 @@ components:
       example:
         workflow:
           name: New Lead Nurture
+    WorkflowParametersUpdate:
+      type: object
+      title: Update Workflow
+      description: Parameters for updating an existing workflow. All fields are optional.
+      required:
+      - workflow
+      properties:
+        workflow:
+          type: object
+          properties:
+            name:
+              type: string
+              description: New name for the workflow.
+            archived:
+              type: boolean
+              description: Set to `true` to archive the workflow, `false` to unarchive.
+      example:
+        workflow:
+          name: Updated Nurture Sequence
+          archived: false
   headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.

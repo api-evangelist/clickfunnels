@@ -550,6 +550,92 @@ components:
             weight: 70
           - page_id: 501
             weight: 30
+    SplitTestStepParametersCreate:
+      type: object
+      title: Create Split Test Step
+      description: 'Parameters for wrapping an existing page in a new split test. Provide 1 or 2 variants.
+
+        The first variant''s `page_id` must already be attached to a step in this funnel''s
+
+        workflow (that page gets wrapped). The second variant''s `page_id` must be a fresh page
+
+        (not already used by any step anywhere). No cloning occurs.
+
+
+        ### Positioning the split
+
+
+        By default (no `show_page_step_id`), the split lands at the funnel entry —
+
+        `sort_order 0` under the workflow root — with all surviving steps moved into a
+
+        `Root Step after Sequence End` convergence sequence positioned right after the split.
+
+
+        When `show_page_step_id` references an existing show-page step in this funnel, the
+
+        split is inserted **after that step** under the same parent, and steps
+
+        N+1...end are migrated under the convergence sequence. This is the "split between
+
+        step N and step N+1" shape.
+
+
+        See [Positioning the split](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#positioning-the-split) in the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for picking a safe anchor step, and [Placing an external (SDK) page in a branch](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#placing-an-external-sdk-page-in-a-branch) to use a page you host yourself as a variant.
+
+        '
+      required:
+      - split_test_step
+      properties:
+        split_test_step:
+          type: object
+          required:
+          - variants
+          properties:
+            variants:
+              type: array
+              description: 1 or 2 variant entries.
+              minItems: 1
+              maxItems: 2
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  page_id:
+                    type: integer
+                    description: Page ID (required on the first variant; optional on the second).
+                  weight:
+                    type: integer
+                    description: Traffic weight (0..100). Either omit on both variants (defaults 100/0 for 1 variant or 50/50 for 2) or provide on both.
+            show_page_step_id:
+              type:
+              - integer
+              - string
+              description: 'Optional. Insert the new split AFTER the workflow step that wraps this
+
+                `show_page_step`. Accepts a numeric `Workflows::Steps::ShowPageStep` id
+
+                or its obfuscated public id (you can read either off any page response).
+
+                When omitted, the split lands at funnel entry.
+
+                Caution: creating a split moves the wrapped step inside a branch sequence,
+
+                so an id fetched earlier may no longer sit where you think — read the
+
+                funnel structure immediately before creating, and note that anchoring on
+
+                a step inside another split''s branch nests the new split in that branch.
+
+                '
+      example:
+        split_test_step:
+          variants:
+          - page_id: 500
+            weight: 60
+          - page_id: 501
+            weight: 40
+          show_page_step_id: 100
     SplitTestStepAttributes:
       type: object
       title: Split Test Step
@@ -651,92 +737,6 @@ components:
       - public_id
       - updated_at
       - variants
-    SplitTestStepParametersCreate:
-      type: object
-      title: Create Split Test Step
-      description: 'Parameters for wrapping an existing page in a new split test. Provide 1 or 2 variants.
-
-        The first variant''s `page_id` must already be attached to a step in this funnel''s
-
-        workflow (that page gets wrapped). The second variant''s `page_id` must be a fresh page
-
-        (not already used by any step anywhere). No cloning occurs.
-
-
-        ### Positioning the split
-
-
-        By default (no `show_page_step_id`), the split lands at the funnel entry —
-
-        `sort_order 0` under the workflow root — with all surviving steps moved into a
-
-        `Root Step after Sequence End` convergence sequence positioned right after the split.
-
-
-        When `show_page_step_id` references an existing show-page step in this funnel, the
-
-        split is inserted **after that step** under the same parent, and steps
-
-        N+1...end are migrated under the convergence sequence. This is the "split between
-
-        step N and step N+1" shape.
-
-
-        See [Positioning the split](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#positioning-the-split) in the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for picking a safe anchor step, and [Placing an external (SDK) page in a branch](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#placing-an-external-sdk-page-in-a-branch) to use a page you host yourself as a variant.
-
-        '
-      required:
-      - split_test_step
-      properties:
-        split_test_step:
-          type: object
-          required:
-          - variants
-          properties:
-            variants:
-              type: array
-              description: 1 or 2 variant entries.
-              minItems: 1
-              maxItems: 2
-              items:
-                type: object
-                additionalProperties: false
-                properties:
-                  page_id:
-                    type: integer
-                    description: Page ID (required on the first variant; optional on the second).
-                  weight:
-                    type: integer
-                    description: Traffic weight (0..100). Either omit on both variants (defaults 100/0 for 1 variant or 50/50 for 2) or provide on both.
-            show_page_step_id:
-              type:
-              - integer
-              - string
-              description: 'Optional. Insert the new split AFTER the workflow step that wraps this
-
-                `show_page_step`. Accepts a numeric `Workflows::Steps::ShowPageStep` id
-
-                or its obfuscated public id (you can read either off any page response).
-
-                When omitted, the split lands at funnel entry.
-
-                Caution: creating a split moves the wrapped step inside a branch sequence,
-
-                so an id fetched earlier may no longer sit where you think — read the
-
-                funnel structure immediately before creating, and note that anchoring on
-
-                a step inside another split''s branch nests the new split in that branch.
-
-                '
-      example:
-        split_test_step:
-          variants:
-          - page_id: 500
-            weight: 60
-          - page_id: 501
-            weight: 40
-          show_page_step_id: 100
   securitySchemes:
     BearerAuth:
       type: http

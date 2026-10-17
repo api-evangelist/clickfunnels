@@ -344,6 +344,13 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -374,14 +381,22 @@ components:
       required: true
       schema:
         type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
+    EmailsBroadcastsSendActionParameters:
+      type: object
+      title: Email Broadcast Send Actions
+      description: Parameters for creating a send action. The request body is optional — a bodyless POST sends the broadcast immediately.
+      properties:
+        emails_broadcasts_send_action:
+          type: object
+          properties:
+            send_at:
+              type: string
+              format: date-time
+              description: Optional ISO 8601 datetime. When provided, the broadcast is scheduled for that day at the given hour in the workspace's time zone. Omit (or send an empty body) to dispatch immediately.
+      example:
+        emails_broadcasts_send_action:
+          send_at: '2025-09-15T18:00:00.000Z'
     EmailsBroadcastsSendActionAttributes:
       type: object
       title: Email Broadcast Send Actions
@@ -503,21 +518,6 @@ components:
       - target_ids
       - updated_at
       - workspace_id
-    EmailsBroadcastsSendActionParameters:
-      type: object
-      title: Email Broadcast Send Actions
-      description: Parameters for creating a send action. The request body is optional — a bodyless POST sends the broadcast immediately.
-      properties:
-        emails_broadcasts_send_action:
-          type: object
-          properties:
-            send_at:
-              type: string
-              format: date-time
-              description: Optional ISO 8601 datetime. When provided, the broadcast is scheduled for that day at the given hour in the workspace's time zone. Omit (or send an empty body) to dispatch immediately.
-      example:
-        emails_broadcasts_send_action:
-          send_at: '2025-09-15T18:00:00.000Z'
   headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.

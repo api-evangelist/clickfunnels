@@ -319,6 +319,13 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -335,13 +342,6 @@ components:
       required: true
       schema:
         type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
     FormsFieldsOptionAttributes:
       type: object
@@ -395,6 +395,18 @@ components:
       - public_id
       - sort_order
       - updated_at
+    FormsFieldsOptionParametersUpdate:
+      type: object
+      title: Options
+      description: Options
+      required: []
+      properties:
+        label:
+          type: string
+          description: Label
+      example:
+        forms_fields_option:
+          label: Example Option
     FormsFieldsOptionParameters:
       type: object
       title: Options
@@ -408,18 +420,6 @@ components:
       example:
         forms_fields_option:
           label: Test Label
-    FormsFieldsOptionParametersUpdate:
-      type: object
-      title: Options
-      description: Options
-      required: []
-      properties:
-        label:
-          type: string
-          description: Label
-      example:
-        forms_fields_option:
-          label: Example Option
   headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.

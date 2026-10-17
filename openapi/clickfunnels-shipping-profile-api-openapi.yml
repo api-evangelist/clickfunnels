@@ -303,6 +303,13 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -333,20 +340,12 @@ components:
       required: true
       schema:
         type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
-    ShippingProfileParameters:
+    ShippingProfileParametersUpdate:
       type: object
       title: Profiles
       description: Profiles
-      required:
-      - name
+      required: []
       properties:
         name:
           type: string
@@ -358,7 +357,7 @@ components:
           description: Variant IDs
       example:
         shipping_profile:
-          name: Example Shipping Profile
+          name: Example Shipping
           variant_ids: []
     ShippingProfileAttributes:
       type: object
@@ -407,11 +406,12 @@ components:
       - public_id
       - updated_at
       - variant_ids
-    ShippingProfileParametersUpdate:
+    ShippingProfileParameters:
       type: object
       title: Profiles
       description: Profiles
-      required: []
+      required:
+      - name
       properties:
         name:
           type: string
@@ -423,7 +423,7 @@ components:
           description: Variant IDs
       example:
         shipping_profile:
-          name: Example Shipping
+          name: Example Shipping Profile
           variant_ids: []
   headers:
     PaginationNext:

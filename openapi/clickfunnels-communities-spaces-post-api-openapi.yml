@@ -732,6 +732,13 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -762,14 +769,41 @@ components:
       required: true
       schema:
         type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
+    CommunitiesSpacesPostParametersUpdate:
+      type: object
+      title: Communities::Spaces::Post
+      description: Communities::Spaces::Post
+      properties:
+        title:
+          type:
+          - string
+          - 'null'
+          description: Post title
+        body:
+          type:
+          - string
+          - 'null'
+          description: Post body as rich HTML
+        image_id:
+          type:
+          - integer
+          - 'null'
+          description: Cover image ID
+        is_pinned:
+          type:
+          - boolean
+          - 'null'
+          description: Whether to pin the post at the top of the space
+        current_path:
+          type:
+          - string
+          - 'null'
+          description: Current path (used for tracking purposes)
+      example:
+        communities_spaces_post:
+          title: Updated post title
+          is_pinned: true
     CommunitiesSpacesPostParameters:
       type: object
       title: Communities::Spaces::Post
@@ -809,40 +843,6 @@ components:
         communities_spaces_post:
           title: Welcome to the community!
           body: <p>Hi everyone, excited to be here.</p>
-    CommunitiesSpacesPostParametersUpdate:
-      type: object
-      title: Communities::Spaces::Post
-      description: Communities::Spaces::Post
-      properties:
-        title:
-          type:
-          - string
-          - 'null'
-          description: Post title
-        body:
-          type:
-          - string
-          - 'null'
-          description: Post body as rich HTML
-        image_id:
-          type:
-          - integer
-          - 'null'
-          description: Cover image ID
-        is_pinned:
-          type:
-          - boolean
-          - 'null'
-          description: Whether to pin the post at the top of the space
-        current_path:
-          type:
-          - string
-          - 'null'
-          description: Current path (used for tracking purposes)
-      example:
-        communities_spaces_post:
-          title: Updated post title
-          is_pinned: true
     CommunitiesSpacesPostAttributes:
       type: object
       title: Communities::Spaces::Post

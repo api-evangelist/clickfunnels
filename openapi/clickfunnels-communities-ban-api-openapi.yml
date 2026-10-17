@@ -279,12 +279,13 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
-    id:
-      name: id
-      in: path
-      required: true
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -309,42 +310,13 @@ components:
         enum:
         - id
         - updated_at
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-  headers:
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
   schemas:
-    CommunitiesBanParameters:
-      type: object
-      title: Communities::Ban
-      description: Communities::Ban
-      required:
-      - contact_id
-      properties:
-        contact_id:
-          type: string
-          description: Public ID of the Contact to ban
-        reason:
-          type:
-          - string
-          - 'null'
-          description: Optional reason for the ban (max 1024 characters)
-      example:
-        communities_ban:
-          contact_id: GhIjKl
-          reason: Violated community guidelines
     CommunitiesBanAttributes:
       type: object
       title: Communities::Ban
@@ -445,6 +417,34 @@ components:
       - public_id
       - reason
       - updated_at
+    CommunitiesBanParameters:
+      type: object
+      title: Communities::Ban
+      description: Communities::Ban
+      required:
+      - contact_id
+      properties:
+        contact_id:
+          type: string
+          description: Public ID of the Contact to ban
+        reason:
+          type:
+          - string
+          - 'null'
+          description: Optional reason for the ban (max 1024 characters)
+      example:
+        communities_ban:
+          contact_id: GhIjKl
+          reason: Violated community guidelines
+  headers:
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
   securitySchemes:
     BearerAuth:
       type: http

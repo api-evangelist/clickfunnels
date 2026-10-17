@@ -379,6 +379,13 @@ paths:
                 error: 'Not found: Record missing'
 components:
   parameters:
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -395,44 +402,7 @@ components:
       required: true
       schema:
         type: string
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
-    SalesPipelinesStageParameters:
-      type: object
-      title: Stages
-      description: Stages
-      required:
-      - name
-      - close_probability
-      properties:
-        name:
-          type: string
-          description: Stage name
-        sort_order:
-          type:
-          - integer
-          - 'null'
-          description: 'The position of the stage in the pipeline. The stages are ordered by the sort order attribute, starting at zero.
-
-            If not provided, the stage will be added at the end of the pipeline.
-
-            If provided, the stage will be inserted at the specified position, and the sort order of the subsequent stages will be incremented by one.
-
-            '
-        close_probability:
-          type: number
-          description: Close probability of the opportunities in this stage
-      example:
-        sales_pipelines_stage:
-          name: Example Stage
-          sort_order: 5
-          close_probability: 20
     SalesPipelinesStageParametersUpdate:
       type: object
       title: Stages
@@ -457,6 +427,36 @@ components:
           type:
           - number
           - 'null'
+          description: Close probability of the opportunities in this stage
+      example:
+        sales_pipelines_stage:
+          name: Example Stage
+          sort_order: 5
+          close_probability: 20
+    SalesPipelinesStageParameters:
+      type: object
+      title: Stages
+      description: Stages
+      required:
+      - name
+      - close_probability
+      properties:
+        name:
+          type: string
+          description: Stage name
+        sort_order:
+          type:
+          - integer
+          - 'null'
+          description: 'The position of the stage in the pipeline. The stages are ordered by the sort order attribute, starting at zero.
+
+            If not provided, the stage will be added at the end of the pipeline.
+
+            If provided, the stage will be inserted at the specified position, and the sort order of the subsequent stages will be incremented by one.
+
+            '
+        close_probability:
+          type: number
           description: Close probability of the opportunities in this stage
       example:
         sales_pipelines_stage:
