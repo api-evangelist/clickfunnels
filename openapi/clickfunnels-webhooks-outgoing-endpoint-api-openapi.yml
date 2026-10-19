@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,6 +39,7 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Webhooks::Outgoing::Endpoint
   description: Webhook Outgoing Endpoints
@@ -38,6 +58,7 @@ paths:
         schema:
           type: string
       - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/per_page'
       - $ref: '#/components/parameters/sort_order'
       - $ref: '#/components/parameters/sort_property'
       responses:
@@ -68,6 +89,7 @@ paths:
                 updated_at: '2025-01-01T00:00:00.000Z'
                 page_ids: []
                 funnel_ids: []
+                webhook_secret_last_four: c3d4
               - id: 3
                 public_id: KlIDGN
                 workspace_id: 42000
@@ -81,6 +103,7 @@ paths:
                 updated_at: '2025-01-01T00:00:00.000Z'
                 page_ids: []
                 funnel_ids: []
+                webhook_secret_last_four: c3d4
         '401':
           description: Unauthorized
           content:
@@ -90,8 +113,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -102,8 +131,16 @@ paths:
                   error:
                     type: string
                     description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          $ref: '#/components/responses/InvalidPageSize'
     post:
       tags:
       - Webhooks::Outgoing::Endpoint
@@ -142,7 +179,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WebhooksOutgoingEndpointAttributes'
+                $ref: '#/components/schemas/WebhooksOutgoingEndpointCreatedAttributes'
               example:
                 id: 5
                 public_id: GrVNvI
@@ -157,6 +194,8 @@ paths:
                 updated_at: '2025-01-01T00:00:00.000Z'
                 page_ids: []
                 funnel_ids: []
+                webhook_secret_last_four: c3d4
+                webhook_secret: 3f9a1c7e5b2d4e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0dc3d4
         '400':
           description: Bad Request
           content:
@@ -166,8 +205,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -177,8 +222,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
   /webhooks/outgoing/endpoints/{id}:
     get:
       tags:
@@ -209,6 +260,7 @@ paths:
                 updated_at: '2025-01-01T00:00:00.000Z'
                 page_ids: []
                 funnel_ids: []
+                webhook_secret_last_four: c3d4
         '401':
           description: Unauthorized
           content:
@@ -218,8 +270,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -229,8 +287,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     put:
       tags:
       - Webhooks::Outgoing::Endpoint
@@ -280,6 +344,7 @@ paths:
                 updated_at: '2025-01-01T00:00:00.000Z'
                 page_ids: []
                 funnel_ids: []
+                webhook_secret_last_four: c3d4
         '400':
           description: Bad Request
           content:
@@ -289,8 +354,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -300,8 +371,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -311,8 +388,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     delete:
       tags:
       - Webhooks::Outgoing::Endpoint
@@ -333,8 +416,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -344,33 +433,31 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
 components:
   parameters:
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
     id:
       name: id
       in: path
       required: true
       schema:
         type: string
+    per_page:
+      name: per_page
+      in: query
+      required: false
+      description: Records per page. Defaults to 20; raise it up to 100 for bulk reads. A larger value returns 100 records. Zero, a negative or a non-integer value is a 422. The `Link` next-page URL keeps the value, so a client following it keeps the page size. More [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
     sort_property:
       name: sort_property
       in: query
@@ -385,7 +472,183 @@ components:
         enum:
         - id
         - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
+    WebhooksOutgoingEndpointCreatedAttributes:
+      type: object
+      title: Created Outgoing Webhook Endpoint
+      description: 'The newly created endpoint. The signing secret is returned as `webhook_secret` in this
+
+        response only, so save it immediately: later reads return just its last four characters.
+
+        '
+      allOf:
+      - $ref: '#/components/schemas/WebhooksOutgoingEndpointAttributes'
+      - type: object
+        properties:
+          webhook_secret:
+            type: string
+            description: Signing secret, returned only in this create response.
+      example:
+        id: 5
+        public_id: GrVNvI
+        workspace_id: 42000
+        url: https://example.com/some-endpoint-url
+        name: Example Endpoint
+        event_type_ids:
+        - contact.identified
+        - one-time-order.completed
+        api_version: 2
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        page_ids: []
+        funnel_ids: []
+        webhook_secret_last_four: c3d4
+        webhook_secret: 3f9a1c7e5b2d4e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0dc3d4
+    WebhooksOutgoingEndpointParametersUpdate:
+      type: object
+      title: Webhooks
+      description: Webhooks
+      required: []
+      properties:
+        url:
+          type: string
+          description: The URL that ClickFunnels event webhooks will be sent to.
+        name:
+          type: string
+          description: The custom name for the webhook endpoint.
+        event_type_ids:
+          type: array
+          description: 'The event type keys to which the webhook endpoint subscribes. Each value is a dotted or slashed string key
+
+            (e.g. `contact.updated`, `order.completed`, `orders/invoice.paid`) — these are NOT numeric IDs.
+
+            Retrieve the full list of valid keys from GET /api/v2/webhooks/outgoing/event_types
+
+            (operationId: `listWebhooksOutgoingEventTypes`). The <a class="link" href="https://developers.myclickfunnels.com/docs/webhook-event-types" target="_blank">Webhook Event Types guide</a> provides supplementary context.
+
+
+            On create, one or more valid `event_type_ids` are required.
+
+
+            To remove one `event_type_id` on update, pass an array of all current `event_type_ids` less the one to be removed.
+
+
+            On update to remove all `event_type_ids` pass an empty array.
+
+            '
+        page_ids:
+          type:
+          - array
+          - 'null'
+          description: 'The pages scope of the webhook, i.e., the endpoint will only subscribe to events triggered by users from the pages with the given IDs.
+
+            If not configured initially (equalling null) or empty, subscribes to events fired from any page in the workspace.
+
+            Updating the array will override existing values. To remove all `page_ids` pass an empty array or null.
+
+            '
+        funnel_ids:
+          type:
+          - array
+          - 'null'
+          description: 'The funnel scope of the webhook, i.e., the endpoint will only subscribe to events triggered by users from the funnels with the given IDs.
+
+            If not configured initially (equalling null) or empty, subscribes to events fired from any funnel in the workspace.
+
+            Updating the array will override existing values. To remove all `funnel_ids` pass an empty array or null.
+
+            '
+      example:
+        webhooks_outgoing_endpoint:
+          url: https://example.com/some-endpoint-url
+          name: Example Endpoint
+          event_type_ids:
+          - contact.identified
+          - one-time-order.completed
+          page_ids: []
+          funnel_ids: []
+    WebhooksOutgoingEndpointParameters:
+      type: object
+      title: Webhooks
+      description: Webhooks
+      required:
+      - url
+      - name
+      properties:
+        url:
+          type: string
+          description: The URL that ClickFunnels event webhooks will be sent to.
+        name:
+          type: string
+          description: The custom name for the webhook endpoint.
+        event_type_ids:
+          type: array
+          description: 'The event type keys to which the webhook endpoint subscribes. Each value is a dotted or slashed string key
+
+            (e.g. `contact.updated`, `order.completed`, `orders/invoice.paid`) — these are NOT numeric IDs.
+
+            Retrieve the full list of valid keys from GET /api/v2/webhooks/outgoing/event_types
+
+            (operationId: `listWebhooksOutgoingEventTypes`). The <a class="link" href="https://developers.myclickfunnels.com/docs/webhook-event-types" target="_blank">Webhook Event Types guide</a> provides supplementary context.
+
+
+            On create, one or more valid `event_type_ids` are required.
+
+
+            To remove one `event_type_id` on update, pass an array of all current `event_type_ids` less the one to be removed.
+
+
+            On update to remove all `event_type_ids` pass an empty array.
+
+            '
+        page_ids:
+          type:
+          - array
+          - 'null'
+          description: 'The pages scope of the webhook, i.e., the endpoint will only subscribe to events triggered by users from the pages with the given IDs.
+
+            If not configured initially (equalling null) or empty, subscribes to events fired from any page in the workspace.
+
+            Updating the array will override existing values. To remove all `page_ids` pass an empty array or null.
+
+            '
+        funnel_ids:
+          type:
+          - array
+          - 'null'
+          description: 'The funnel scope of the webhook, i.e., the endpoint will only subscribe to events triggered by users from the funnels with the given IDs.
+
+            If not configured initially (equalling null) or empty, subscribes to events fired from any funnel in the workspace.
+
+            Updating the array will override existing values. To remove all `funnel_ids` pass an empty array or null.
+
+            '
+      example:
+        webhooks_outgoing_endpoint:
+          url: https://example.com/some-endpoint-url
+          name: Example Endpoint
+          event_type_ids:
+          - contact.identified
+          - one-time-order.completed
+          page_ids: []
+          funnel_ids: []
     WebhooksOutgoingEndpointAttributes:
       type: object
       title: Webhooks
@@ -463,6 +726,17 @@ components:
             Can be null when first created. After an update, it can be null, an empty array or an array of page IDs.
 
             '
+        webhook_secret_last_four:
+          type:
+          - string
+          - 'null'
+          description: 'Last four characters of the endpoint''s signing secret. Enough to tell whether the secret
+
+            you hold is still the current one. The full value is returned only in the create
+
+            response, as `webhook_secret`.
+
+            '
       example:
         id: 1
         public_id: RcHPAt
@@ -477,146 +751,25 @@ components:
         updated_at: '2025-01-01T00:00:00.000Z'
         page_ids: []
         funnel_ids: []
-      required:
-      - api_version
-      - created_at
-      - event_type_ids
-      - funnel_ids
-      - id
-      - name
-      - page_ids
-      - public_id
-      - updated_at
-      - url
-      - workspace_id
-    WebhooksOutgoingEndpointParameters:
-      type: object
-      title: Webhooks
-      description: Webhooks
-      required:
-      - url
-      - name
-      properties:
-        url:
-          type: string
-          description: The URL that ClickFunnels event webhooks will be sent to.
-        name:
-          type: string
-          description: The custom name for the webhook endpoint.
-        event_type_ids:
-          type: array
-          description: 'The event type keys to which the webhook endpoint subscribes. Each value is a dotted or slashed string key
-
-            (e.g. `contact.updated`, `order.completed`, `orders/invoice.paid`) — these are NOT numeric IDs.
-
-            Retrieve the full list of valid keys from GET /api/v2/webhooks/outgoing/event_types
-
-            (operationId: `listWebhooksOutgoingEventTypes`). The <a class="link" href="https://developers.myclickfunnels.com/docs/webhook-event-types" target="_blank">Webhook Event Types guide</a> provides supplementary context.
-
-
-            On create, one or more valid `event_type_ids` are required.
-
-
-            To remove one `event_type_id` on update, pass an array of all current `event_type_ids` less the one to be removed.
-
-
-            On update to remove all `event_type_ids` pass an empty array.
-
-            '
-        page_ids:
-          type:
-          - array
-          - 'null'
-          description: 'The pages scope of the webhook, i.e., the endpoint will only subscribe to events triggered by users from the pages with the given IDs.
-
-            If not configured initially (equalling null) or empty, subscribes to events fired from any page in the workspace.
-
-            Updating the array will override existing values. To remove all `page_ids` pass an empty array or null.
-
-            '
-        funnel_ids:
-          type:
-          - array
-          - 'null'
-          description: 'The funnel scope of the webhook, i.e., the endpoint will only subscribe to events triggered by users from the funnels with the given IDs.
-
-            If not configured initially (equalling null) or empty, subscribes to events fired from any funnel in the workspace.
-
-            Updating the array will override existing values. To remove all `funnel_ids` pass an empty array or null.
-
-            '
-      example:
-        webhooks_outgoing_endpoint:
-          url: https://example.com/some-endpoint-url
-          name: Example Endpoint
-          event_type_ids:
-          - contact.identified
-          - one-time-order.completed
-          page_ids: []
-          funnel_ids: []
-    WebhooksOutgoingEndpointParametersUpdate:
-      type: object
-      title: Webhooks
-      description: Webhooks
-      required: []
-      properties:
-        url:
-          type: string
-          description: The URL that ClickFunnels event webhooks will be sent to.
-        name:
-          type: string
-          description: The custom name for the webhook endpoint.
-        event_type_ids:
-          type: array
-          description: 'The event type keys to which the webhook endpoint subscribes. Each value is a dotted or slashed string key
-
-            (e.g. `contact.updated`, `order.completed`, `orders/invoice.paid`) — these are NOT numeric IDs.
-
-            Retrieve the full list of valid keys from GET /api/v2/webhooks/outgoing/event_types
-
-            (operationId: `listWebhooksOutgoingEventTypes`). The <a class="link" href="https://developers.myclickfunnels.com/docs/webhook-event-types" target="_blank">Webhook Event Types guide</a> provides supplementary context.
-
-
-            On create, one or more valid `event_type_ids` are required.
-
-
-            To remove one `event_type_id` on update, pass an array of all current `event_type_ids` less the one to be removed.
-
-
-            On update to remove all `event_type_ids` pass an empty array.
-
-            '
-        page_ids:
-          type:
-          - array
-          - 'null'
-          description: 'The pages scope of the webhook, i.e., the endpoint will only subscribe to events triggered by users from the pages with the given IDs.
-
-            If not configured initially (equalling null) or empty, subscribes to events fired from any page in the workspace.
-
-            Updating the array will override existing values. To remove all `page_ids` pass an empty array or null.
-
-            '
-        funnel_ids:
-          type:
-          - array
-          - 'null'
-          description: 'The funnel scope of the webhook, i.e., the endpoint will only subscribe to events triggered by users from the funnels with the given IDs.
-
-            If not configured initially (equalling null) or empty, subscribes to events fired from any funnel in the workspace.
-
-            Updating the array will override existing values. To remove all `funnel_ids` pass an empty array or null.
-
-            '
-      example:
-        webhooks_outgoing_endpoint:
-          url: https://example.com/some-endpoint-url
-          name: Example Endpoint
-          event_type_ids:
-          - contact.identified
-          - one-time-order.completed
-          page_ids: []
-          funnel_ids: []
+        webhook_secret_last_four: c3d4
+  responses:
+    InvalidPageSize:
+      description: Unprocessable Entity - `per_page` must be a positive integer.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: Next step for the caller, or null when no additional guidance applies.
+          example:
+            error: 'Request unprocessable: per_page must be a positive integer, capped at 100 (got "0")'
+            hint: null
   headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
@@ -630,6 +783,88 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com

@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,6 +39,7 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Funnel
   description: '> The Funnel resource contains relevant metadata about funnels.
@@ -43,6 +63,7 @@ paths:
         schema:
           type: string
       - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/per_page'
       - $ref: '#/components/parameters/sort_order'
       - $ref: '#/components/parameters/sort_property'
       - name: filter
@@ -117,8 +138,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -129,8 +156,16 @@ paths:
                   error:
                     type: string
                     description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          $ref: '#/components/responses/InvalidPageSize'
     post:
       tags:
       - Funnel
@@ -209,8 +244,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -221,8 +262,14 @@ paths:
                   error:
                     type: string
                     description: Not found - The workspace or record cannot be found.
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity
           content:
@@ -232,13 +279,20 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: Name can't be blank
+                hint: null
   /funnels/{id}:
     get:
       tags:
       - Funnel
       summary: Fetch Funnel
+      description: Fetch a funnel by numeric id or public id. The unwrapped response's `live_mode` controls test versus live payment processing, not page visibility or publication status. Use `GET /api/v2/pages/:id` to inspect page content and computed URLs, and the existing structure endpoint for the step tree.
       operationId: getFunnels
       parameters:
       - $ref: '#/components/parameters/id'
@@ -257,7 +311,7 @@ paths:
                 name: Example Funnel
                 archived: false
                 current_path: /example-path
-                live_mode: true
+                live_mode: false
                 domain_id: 42
                 favicon_image_id: null
                 created_at: '2025-01-01T00:00:00.000Z'
@@ -276,8 +330,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -287,16 +347,28 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     put:
       tags:
       - Funnel
       summary: Update Funnel
-      description: 'Update Funnel.
+      description: 'Update a funnel''s settings, including its path, favicon, domain, and tags, by numeric id or public id with the `funnel` JSON root. PATCH is also supported. The favicon is writable only on this operation; creation already accepts a path. The target image, domain, and tags must belong to the funnel''s workspace. A path edit cannot take an occupied or historical URL or move the root path. Domain changes can continue propagating after this response.
 
 
-        You can use head_code and footer_code parameters to inject custom code. Use head_code_mode and footer_code_mode to control whether code is appended or replaced.'
+        `live_mode` controls test versus live payment processing; changing it does not publish page content. Use `PUT /api/v2/pages/:id` or `PATCH /api/v2/pages/:id` for an intentional live page content replacement and `GET /api/v2/pages/:id` to read the resource back. There is currently no atomic whole-funnel release or pollable publish receipt.
+
+
+        Boolean `true`/`false` and their string forms assign `live_mode`; null, empty and other values leave it unchanged. Set it to true only when live payment processing is intended.
+
+
+        Use head_code and footer_code to inject custom code. Their modes default to append; use replace for repeatable writes. Null clears code.'
       operationId: updateFunnels
       externalDocs:
         description: Funnels Skill - build and modify funnel workflows
@@ -311,6 +383,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+              - funnel
               properties:
                 funnel:
                   type: object
@@ -318,7 +392,11 @@ paths:
             example:
               funnel:
                 name: Example Funnel
-                live_mode: true
+                current_path: /example-funnel
+                live_mode: false
+                favicon_image_id: 73
+                tag_ids:
+                - 9
                 head_code: <script>console.log('funnel');</script>
                 head_code_mode: append
       responses:
@@ -335,7 +413,7 @@ paths:
                 name: Example Funnel
                 archived: false
                 current_path: /example-path
-                live_mode: true
+                live_mode: false
                 domain_id: 42
                 favicon_image_id: null
                 created_at: '2025-01-01T00:00:00.000Z'
@@ -354,8 +432,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: Invalid code mode ''invalid''. Must be ''append'' or ''replace''.'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -365,8 +449,30 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+              example:
+                error: 'Forbidden: This API key is limited to specific workspaces.'
+                hint: null
         '404':
           description: Not Found
           content:
@@ -376,8 +482,362 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+              example:
+                error: 'Request unprocessable: current_path is already used on this domain'
+                hint: null
+    delete:
+      tags:
+      - Funnel
+      summary: Delete an empty Funnel
+      description: 'Permanently remove an active or archived, unshared funnel only when its workflow has no steps beyond its generated root. Populated funnels must be archived instead. The workflow and its root step are retained.
+
+
+        An otherwise empty funnel can still be referenced by products, affiliate campaigns, or store upsells. If a database foreign key blocks deletion, the endpoint returns 409 with guidance to archive instead; the funnel and its dependent records are preserved.
+
+
+        Funnels write access is required. If the funnel has attached workflow triggers, deletion also requires Workflows write access because those triggers are deleted with the funnel. Trigger-free funnels require only Funnels write access.'
+      operationId: destroyFunnels
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: Funnel deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          description: Funnels write access is required; Workflows write access is also required when attached workflow triggers will be deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Forbidden: Token does not grant write access to Funnels'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Not found: Record missing'
+                hint: null
+        '409':
+          description: Shared, populated, or referenced funnel cannot be deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Conflict: Only empty funnels can be deleted; archive this funnel instead'
+                hint: null
+        '422':
+          description: Funnel destruction failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Request unprocessable: Funnel could not be deleted'
+                hint: null
+  /funnels/{id}/archive:
+    post:
+      tags:
+      - Funnel
+      summary: Archive a Funnel
+      description: Synchronously archive the funnel and its attached show-page pages. Its URL path is disambiguated, and redirect steps targeting it are unlinked. Restoring the funnel does not restore the original path or those links. Shared funnels cannot be archived.
+      operationId: archiveFunnels
+      parameters:
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/ExpandFunnelFields'
+      responses:
+        '200':
+          description: Archived Funnel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunnelAttributes'
+              example:
+                id: 5
+                public_id: SgjNJM
+                workspace_id: 42000
+                name: Example Funnel
+                archived: true
+                current_path: /example-path--a1b2c
+                live_mode: true
+                domain_id: 42
+                favicon_image_id: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                tags: []
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Forbidden: Token does not grant write access to Funnels'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Not found: Record missing'
+                hint: null
+        '409':
+          description: Already archived or shared Funnel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Conflict: Funnel is already archived'
+                hint: null
+        '422':
+          description: Funnel or page validation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Request unprocessable: Name can''t be blank'
+                hint: null
+  /funnels/{id}/unarchive:
+    post:
+      tags:
+      - Funnel
+      summary: Restore an archived Funnel
+      description: Synchronously restore the funnel and its attached show-page pages. The disambiguated URL path remains. For funnels with show-page steps, associated archived products are submitted for background restoration after commit; they may still be archived when this call returns. A token needs Funnels write access, and also Store write access when archived products will be submitted for restoration. Funnels write alone is sufficient when there are no archived products to restore.
+      operationId: unarchiveFunnels
+      parameters:
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/ExpandFunnelFields'
+      responses:
+        '200':
+          description: Restored Funnel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunnelAttributes'
+              example:
+                id: 5
+                public_id: SgjNJM
+                workspace_id: 42000
+                name: Example Funnel
+                archived: false
+                current_path: /example-path--a1b2c
+                live_mode: true
+                domain_id: 42
+                favicon_image_id: null
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                tags: []
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          description: Missing Funnels write access, or Store write access when archived products will be restored
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Forbidden: Restoring this funnel submits archived products for background restoration; this access token needs write access to Store.'
+                hint: null
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Not found: Record missing'
+                hint: null
+        '409':
+          description: Funnel is already active
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Conflict: Funnel is not archived'
+                hint: null
+        '422':
+          description: Funnel or page validation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Request unprocessable: Funnel limit reached'
+                hint: null
   /funnels/{id}/structure:
     get:
       tags:
@@ -697,8 +1157,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -708,8 +1174,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
   /funnels/{funnel_id}/stats:
     get:
       tags:
@@ -771,6 +1243,8 @@ paths:
                   recurring_sales: '0.00'
                   average_cart_value: '0.00'
                   pageviews: 85
+                  optins: 38
+                  optins_unique: 27
                 page_public_ids:
                 - NnAdPE
                 - kJzvQi
@@ -783,8 +1257,16 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          $ref: '#/components/responses/WorkspaceGrantForbidden'
         '404':
           description: Not Found
           content:
@@ -794,26 +1276,57 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          description: 'Unprocessable Entity — a timerange parameter is not a real date or time. Unparseable
+
+            values and calendar dates that do not exist (2026-02-31) are refused rather than
+
+            silently answered with a different window.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Request unprocessable: timerange_start ''2026-13-01'' is not a valid date or time. Use an ISO 8601 value, e.g. 2026-09-01T00:00:00Z.'
+                hint: null
 components:
   parameters:
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     StatsTimerangeStart:
       name: timerange_start
       in: query
-      description: Start of the stats timerange (ISO 8601 format). Defaults to 30 days before `timerange_end`. If the window between start and end exceeds 90 days, start is automatically clamped to 90 days before end. If start is after end, the window resets to the default 30 days ending at `timerange_end`. See [Timerange parameters (both endpoints)](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#timerange-parameters-both-endpoints) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for the clamping rules and how to cover longer windows.
+      description: Start of the stats timerange (ISO 8601 only; any other value is a 422. Send an offset's `+` as `%2B`, since an unencoded `+` arrives as a space). Defaults to 30 days before `timerange_end`. If the window between start and end exceeds 90 days, start is automatically clamped to 90 days before end. If start is after end, the window resets to the default 30 days ending at `timerange_end`. See [Timerange parameters (both endpoints)](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#timerange-parameters-both-endpoints) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for the clamping rules and how to cover longer windows.
       required: false
       schema:
         type: string
         format: date-time
       example: '2026-01-01T00:00:00Z'
+    per_page:
+      name: per_page
+      in: query
+      required: false
+      description: Records per page. Defaults to 20; raise it up to 100 for bulk reads. A larger value returns 100 records. Zero, a negative or a non-integer value is a 422. The `Link` next-page URL keeps the value, so a client following it keeps the page size. More [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
     ExpandFunnelFields:
       name: expand[]
       in: query
@@ -826,17 +1339,21 @@ components:
           enum:
           - head_code
           - footer_code
-    ExpandFunnelStatsFields:
-      name: expand[]
+    StatsTimerangeEnd:
+      name: timerange_end
       in: query
-      description: Expand additional data in the response. Use `expand[]=steps` to include per-step statistics. When `expand[]=steps` is set, the response contains a `steps` array with detailed metrics for each funnel step. When omitted, the response contains a `page_public_ids` array instead. See [the expanded steps response](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#response-with-expandsteps) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for both response shapes.
+      description: End of the stats timerange (ISO 8601 only; any other value is a 422. Send an offset's `+` as `%2B`, since an unencoded `+` arrives as a space). Defaults to the current time. Values in the future are automatically clamped to now.
       required: false
       schema:
-        type: array
-        items:
-          type: string
-          enum:
-          - steps
+        type: string
+        format: date-time
+      example: '2026-01-31T23:59:59Z'
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
     sort_order:
       name: sort_order
       in: query
@@ -847,15 +1364,6 @@ components:
         enum:
         - asc
         - desc
-    StatsTimerangeEnd:
-      name: timerange_end
-      in: query
-      description: End of the stats timerange (ISO 8601 format). Defaults to the current time. Values in the future are automatically clamped to now.
-      required: false
-      schema:
-        type: string
-        format: date-time
-      example: '2026-01-31T23:59:59Z'
     sort_property:
       name: sort_property
       in: query
@@ -870,12 +1378,24 @@ components:
         enum:
         - id
         - updated_at
-    id:
-      name: id
-      in: path
-      required: true
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+    ExpandFunnelStatsFields:
+      name: expand[]
+      in: query
+      description: Expand additional data in the response. Use `expand[]=steps` to include per-step statistics. When `expand[]=steps` is set, the response contains a `steps` array with detailed metrics for each funnel step. When omitted, the response contains a `page_public_ids` array instead. See [the expanded steps response](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#response-with-expandsteps) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for both response shapes.
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - steps
   schemas:
     FunnelParametersCreate:
       type: object
@@ -892,7 +1412,7 @@ components:
           description: The URL path for the funnel. If not provided, a path will be auto-generated from the name.
         live_mode:
           type: boolean
-          description: In Live Mode your Funnel cannot be tested and will process live payments
+          description: Controls test versus live payment processing, not page visibility or publication. True enables live payments; false keeps test mode. Page content is saved live through the Pages API.
         domain_id:
           type:
           - integer
@@ -929,88 +1449,101 @@ components:
         funnel:
           name: Example Funnel
           current_path: /example-funnel
-          live_mode: true
+          live_mode: false
           tag_ids:
           - 1
           - 2
-    FunnelStatsAttributes:
+    FunnelAttributes:
       type: object
-      title: Funnel Stats
-      description: Detailed funnel statistics with aggregate summary and optional per-step breakdown.
+      title: Funnels
+      description: Funnels
       properties:
-        funnel:
-          $ref: '#/components/schemas/FunnelSummary'
-        currency:
+        id:
+          type: integer
+          description: Funnel ID
+        public_id:
           type: string
-          description: ISO 4217 currency code for all monetary values (e.g. USD, EUR)
-        timerange:
-          type: object
-          description: The actual time range used for the stats (after any clamping)
-          properties:
-            from:
-              type: string
-              format: date-time
-              description: Start of the timerange (ISO 8601)
-            to:
-              type: string
-              format: date-time
-              description: End of the timerange (ISO 8601)
-        summary:
-          type: object
-          description: Aggregate funnel summary metrics
-          properties:
-            earnings_per_click:
-              type: string
-              description: Earnings per click as a decimal string (see currency field)
-            upfront_sales:
-              type: string
-              description: Total upfront sales as a decimal string (see currency field)
-            upfront_sales_count:
-              type: integer
-              description: Number of upfront sales
-            recurring_sales:
-              type: string
-              description: Total recurring sales as a decimal string (see currency field)
-            average_cart_value:
-              type: string
-              description: Average cart value as a decimal string (see currency field)
-            pageviews:
-              type: integer
-              description: Total pageviews across all funnel steps
-        page_public_ids:
+          description: The public identifier of the funnel
+        workspace_id:
+          type: integer
+          description: The ID of the workspace that the funnel belongs to
+        name:
+          type: string
+          description: Name of the Funnel
+        archived:
+          type: boolean
+          description: Archived status
+        current_path:
+          type: string
+          description: The URL path of the funnel
+        live_mode:
+          type: boolean
+          description: Test versus live payment processing mode, not page visibility or publication status. False means test mode; true enables live payments.
+        domain_id:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the domain associated with this funnel. Use the Domains API to look up available domain IDs.
+        favicon_image_id:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the image used as the favicon for this funnel
+        created_at:
+          type: string
+          format: date-time
+          description: Created at
+        updated_at:
+          type: string
+          format: date-time
+          description: Updated at
+        tags:
           type: array
-          description: Public IDs of the pages associated with each funnel step, in step order. Present when `expand[]=steps` is NOT requested. Steps without an associated page are omitted.
           items:
-            type: string
-        steps:
-          type: array
-          description: Per-step statistics. Present only when `expand[]=steps` is requested. When this field is present, `page_public_ids` is absent.
-          items:
-            $ref: '#/components/schemas/FunnelStepStats'
+            type: object
+            title: Funnel Tags
+            description: Funnel Tags
+            properties:
+              id:
+                type: integer
+                description: ID
+              public_id:
+                type: string
+                description: Public ID
+              name:
+                type: string
+                description: The name of the funnel tag
+              color:
+                type: string
+                description: The color of the funnel tag
+          description: Funnel Tags
+        head_code:
+          type:
+          - string
+          - 'null'
+          description: '**Expandable** Custom HTML/JavaScript code injected into the funnel head section. Only returned when expand[]=head_code is provided. Note: expanding may add latency, especially on list endpoints. Use sparingly.'
+        footer_code:
+          type:
+          - string
+          - 'null'
+          description: '**Expandable** Custom HTML/JavaScript code injected before the closing body tag. Only returned when expand[]=footer_code is provided. Note: expanding may add latency, especially on list endpoints. Use sparingly.'
       example:
-        funnel:
-          id: 1
-          public_id: gESyMv
-          name: My Sales Funnel
-        currency: USD
-        timerange:
-          from: '2026-03-03T00:00:00Z'
-          to: '2026-04-02T23:59:59Z'
-        summary:
-          earnings_per_click: '0.00'
-          upfront_sales: '0.00'
-          upfront_sales_count: 0
-          recurring_sales: '0.00'
-          average_cart_value: '0.00'
-          pageviews: 85
-        page_public_ids:
-        - NnAdPE
-        - kJzvQi
-      required:
-      - currency
-      - funnel
-      - summary
-      - timerange
+        id: 1
+        public_id: gESyMv
+        workspace_id: 42000
+        name: Example Funnel
+        archived: false
+        current_path: /example-path
+        live_mode: false
+        domain_id: 42
+        favicon_image_id: null
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
+        tags:
+        - id: 1
+          public_id: JgjGTv
+          name: Example Funnel Tag
+          color: '#00FF00'
     FunnelParametersUpdate:
       type: object
       title: Funnels
@@ -1020,14 +1553,36 @@ components:
         name:
           type: string
           description: Name of the Funnel
+        current_path:
+          type: string
+          description: The funnel URL path. It is normalized to lowercase with a leading slash. Blank, root, reserved, and occupied paths are rejected.
         live_mode:
           type: boolean
-          description: In Live Mode your Funnel cannot be tested and will process live payments
+          description: Controls test versus live payment processing, not page visibility or publication. True enables live payments; false keeps test mode. Boolean values and the strings 'true'/'false' are accepted by the update operation; null, empty and other values leave the current mode unchanged. Use updatePages for intentional live page content writes.
         domain_id:
           type:
           - integer
           - 'null'
           description: The ID of the domain to associate with this funnel. Set to null to remove the domain association. Use the Domains API to look up available domain IDs.
+        favicon_image_id:
+          description: The ID of an image in the funnel's workspace. A positive numeric ID or digit-only string is accepted; null clears the favicon. Update only.
+          oneOf:
+          - type: integer
+            minimum: 1
+          - type: string
+            pattern: ^0*[1-9][0-9]*$
+          - type: 'null'
+        tag_ids:
+          type:
+          - array
+          - 'null'
+          description: Replace the funnel's tags with numeric IDs from its workspace. An empty array clears tags; null is ignored.
+          items:
+            oneOf:
+            - type: integer
+              minimum: 1
+            - type: string
+              pattern: ^0*[1-9][0-9]*$
         head_code:
           type:
           - string
@@ -1053,7 +1608,11 @@ components:
       example:
         funnel:
           name: Example Funnel
-          live_mode: true
+          current_path: /example-funnel
+          live_mode: false
+          favicon_image_id: 73
+          tag_ids:
+          - 9
           head_code: <script>console.log('funnel');</script>
           head_code_mode: append
     FunnelStepStats:
@@ -1114,9 +1673,9 @@ components:
         views_all: 17
         views_unique: 17
         optins: 0
-        optin_rate: 0
+        optin_rate: 0.0
         sales_count: 0
-        sales_rate: 0
+        sales_rate: 0.0
         sales_value: '0.00'
         recurring_sales_count: 0
         recurring_sales_value: '0.00'
@@ -1140,123 +1699,231 @@ components:
         id: 1
         public_id: gESyMv
         name: My Sales Funnel
-    FunnelAttributes:
+    FunnelStatsAttributes:
       type: object
-      title: Funnels
-      description: Funnels
+      title: Funnel Stats
+      description: Detailed funnel statistics with aggregate summary and optional per-step breakdown.
       properties:
-        id:
-          type: integer
-          description: Funnel ID
-        public_id:
+        funnel:
+          $ref: '#/components/schemas/FunnelSummary'
+        currency:
           type: string
-          description: The public identifier of the funnel
-        workspace_id:
-          type: integer
-          description: The ID of the workspace that the funnel belongs to
-        name:
-          type: string
-          description: Name of the Funnel
-        archived:
-          type: boolean
-          description: Archived status
-        current_path:
-          type: string
-          description: The URL path of the funnel
-        live_mode:
-          type: boolean
-          description: In Live Mode your Funnel cannot be tested and will process live payments
-        domain_id:
-          type:
-          - integer
-          - 'null'
-          description: The ID of the domain associated with this funnel. Use the Domains API to look up available domain IDs.
-        favicon_image_id:
-          type:
-          - string
-          - 'null'
-          description: The ID of the image used as the favicon for this funnel
-        created_at:
-          type: string
-          format: date-time
-          description: Created at
-        updated_at:
-          type: string
-          format: date-time
-          description: Updated at
-        tags:
+          description: ISO 4217 currency code for all monetary values (e.g. USD, EUR)
+        timerange:
+          type: object
+          description: The actual time range used for the stats (after any clamping)
+          properties:
+            from:
+              type: string
+              format: date-time
+              description: Start of the timerange (ISO 8601)
+            to:
+              type: string
+              format: date-time
+              description: End of the timerange (ISO 8601)
+        summary:
+          type: object
+          description: Aggregate funnel summary metrics
+          properties:
+            earnings_per_click:
+              type: string
+              description: Earnings per click as a decimal string (see currency field)
+            upfront_sales:
+              type: string
+              description: Total upfront sales as a decimal string (see currency field)
+            upfront_sales_count:
+              type: integer
+              description: Number of upfront sales
+            recurring_sales:
+              type: string
+              description: Total recurring sales as a decimal string (see currency field)
+            average_cart_value:
+              type: string
+              description: Average cart value as a decimal string (see currency field)
+            pageviews:
+              type: integer
+              description: Total pageviews across all funnel steps
+            optins:
+              type: integer
+              description: Opt-in events across the funnel, matching the sum of the per-step `optins` numbers.
+            optins_unique:
+              type: integer
+              description: Distinct contacts associated with an opt-in event anywhere in the funnel.
+        page_public_ids:
           type: array
+          description: Public IDs of the pages associated with each funnel step, in step order. Present when `expand[]=steps` is NOT requested. Steps without an associated page are omitted.
           items:
-            type: object
-            title: Funnel Tags
-            description: Funnel Tags
-            properties:
-              id:
-                type: integer
-                description: ID
-              public_id:
-                type: string
-                description: Public ID
-              name:
-                type: string
-                description: The name of the funnel tag
-              color:
-                type: string
-                description: The color of the funnel tag
-          description: Funnel Tags
-        head_code:
-          type:
-          - string
-          - 'null'
-          description: '**Expandable** Custom HTML/JavaScript code injected into the funnel head section. Only returned when expand[]=head_code is provided. Note: expanding may add latency, especially on list endpoints. Use sparingly.'
-        footer_code:
-          type:
-          - string
-          - 'null'
-          description: '**Expandable** Custom HTML/JavaScript code injected before the closing body tag. Only returned when expand[]=footer_code is provided. Note: expanding may add latency, especially on list endpoints. Use sparingly.'
+            type: string
+        steps:
+          type: array
+          description: Per-step statistics. Present only when `expand[]=steps` is requested. When this field is present, `page_public_ids` is absent.
+          items:
+            $ref: '#/components/schemas/FunnelStepStats'
       example:
-        id: 1
-        public_id: gESyMv
-        workspace_id: 42000
-        name: Example Funnel
-        archived: false
-        current_path: /example-path
-        live_mode: true
-        domain_id: 42
-        favicon_image_id: null
-        created_at: '2025-01-01T00:00:00.000Z'
-        updated_at: '2025-01-01T00:00:00.000Z'
-        tags:
-        - id: 1
-          public_id: JgjGTv
-          name: Example Funnel Tag
-          color: '#00FF00'
-      required:
-      - archived
-      - created_at
-      - current_path
-      - domain_id
-      - favicon_image_id
-      - id
-      - live_mode
-      - name
-      - public_id
-      - tags
-      - updated_at
-      - workspace_id
+        funnel:
+          id: 1
+          public_id: gESyMv
+          name: My Sales Funnel
+        currency: USD
+        timerange:
+          from: '2026-03-03T00:00:00Z'
+          to: '2026-04-02T23:59:59Z'
+        summary:
+          earnings_per_click: '0.00'
+          upfront_sales: '0.00'
+          upfront_sales_count: 0
+          recurring_sales: '0.00'
+          average_cart_value: '0.00'
+          pageviews: 85
+          optins: 38
+          optins_unique: 27
+        page_public_ids:
+        - NnAdPE
+        - kJzvQi
+  responses:
+    InvalidPageSize:
+      description: Unprocessable Entity - `per_page` must be a positive integer.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: Next step for the caller, or null when no additional guidance applies.
+          example:
+            error: 'Request unprocessable: per_page must be a positive integer, capped at 100 (got "0")'
+            hint: null
+    WorkspaceGrantForbidden:
+      description: "Forbidden — this request's workspace is closed to it.\n\nThree cases return this:\n\n* The access token is limited to specific workspaces (see the workspace selection made when\n  the key was provisioned, or the workspaces approved on the OAuth consent screen) and the\n  request acts on a workspace outside that set.\n* The access token is limited to specific workspaces and the request's workspace could not be\n  determined at all. The gate is fail-closed, so a workspace-limited token is denied rather\n  than allowed through when the target workspace is ambiguous.\n* The workspace's team has no active ClickFunnels subscription: it was canceled, is paused,\n  or is locked out after failed payments. Reads and writes are both refused until the\n  subscription is reactivated, and the body carries `\"code\": \"subscription_inactive\"`.\n\nA token with no workspace restriction never receives the first two."
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: string
+                description: A machine-readable cause, when there is one. `subscription_inactive` means the workspace's team has no active ClickFunnels subscription.
+                enum:
+                - subscription_inactive
+              hint:
+                type:
+                - string
+                - 'null'
+                description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+          examples:
+            workspace_not_granted:
+              summary: Token not granted this workspace
+              value:
+                error: 'Forbidden: This access token is limited to specific workspaces and was not granted access to this one.'
+                hint: The token's workspace grant was chosen when it was provisioned (Platform Applications) or on the OAuth consent screen. Use GET /api/v2/teams/{team_id}/workspaces to list the workspaces this token can reach (GET /api/v2/teams lists the team ids).
+            subscription_inactive:
+              summary: Team subscription inactive
+              value:
+                error: 'Forbidden: This workspace''s team does not have an active ClickFunnels subscription, so API access to it is disabled until the subscription is reactivated.'
+                hint: null
+                code: subscription_inactive
   headers:
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
       schema:
         type: string
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com

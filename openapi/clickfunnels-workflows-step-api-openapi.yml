@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,6 +39,7 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Workflows::Step
   description: 'Action and split steps within a workflow. The step `type` (e.g. `send_email_step`, `delay_step`, `conditional_split_step`) is conveyed via the `step_type_settings` map — the single key in that map is always the step type.
@@ -53,6 +73,7 @@ paths:
           type: string
         description: Integer id or obfuscated public_id of the workflow.
       - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/per_page'
       - $ref: '#/components/parameters/sort_order'
       - $ref: '#/components/parameters/sort_property'
       responses:
@@ -109,6 +130,8 @@ paths:
                     use_execution_window: false
                     day_of_week: null
                     date_of_month: null
+                    specific_date: null
+                    past_date_action: continue
                     start_time: null
                     end_time: null
                     execution_window_days: []
@@ -123,8 +146,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden
           content:
@@ -134,8 +163,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: You are not authorized to perform this action.
+                hint: null
         '404':
           description: Not Found
           content:
@@ -145,8 +180,16 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          $ref: '#/components/responses/InvalidPageSize'
     post:
       tags:
       - Workflows::Step
@@ -236,8 +279,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden
           content:
@@ -247,8 +296,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: You are not authorized to perform this action.
+                hint: null
         '404':
           description: Not Found
           content:
@@ -258,8 +313,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity
           content:
@@ -269,15 +330,22 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               examples:
                 invalid_step_type_settings:
                   summary: Invalid step settings map
                   value:
                     error: 'Request unprocessable: step_type_settings must contain exactly one step-class key.'
+                    hint: null
                 incomplete_business_address:
                   summary: Missing business mailing address for a send-email step
                   value:
                     error: 'Request unprocessable: A complete business mailing address is required to create marketing emails. Set it first via the email settings endpoint (GET/PUT /api/v2/workspaces/:workspace_id/emails/settings), providing a name and address, then try again.'
+                    hint: null
   /workflows/steps/{id}:
     get:
       tags:
@@ -328,8 +396,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden
           content:
@@ -339,8 +413,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: You are not authorized to perform this action.
+                hint: null
         '404':
           description: Not Found
           content:
@@ -350,8 +430,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     patch:
       tags:
       - Workflows::Step
@@ -414,6 +500,8 @@ paths:
                     use_execution_window: false
                     day_of_week: null
                     date_of_month: null
+                    specific_date: null
+                    past_date_action: continue
                     start_time: null
                     end_time: null
                     execution_window_days: []
@@ -428,8 +516,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden
           content:
@@ -439,8 +533,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: You are not authorized to perform this action.
+                hint: null
         '404':
           description: Not Found
           content:
@@ -450,8 +550,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity
           content:
@@ -461,8 +567,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Request unprocessable: send_email_step template_id cannot be changed after creation. Send html_body/text_body to edit this step''s email, or create a new step to use a different template.'
+                hint: null
     delete:
       tags:
       - Workflows::Step
@@ -490,8 +602,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden
           content:
@@ -501,8 +619,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: You are not authorized to perform this action.
+                hint: null
         '404':
           description: Not Found
           content:
@@ -512,66 +636,347 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+  /workflows/steps/{step_id}/stats:
+    get:
+      tags:
+      - Workflows::Step
+      summary: Fetch Workflow Step Stats
+      description: 'Stats for one workflow step — the numbers the workflow builder shows under it. Every step
+
+        type reports `contacts`: how many are at the step right now and how many left it inside
+
+        the window. A `send_email_step` also reports `email`: engagement and attributed revenue
+
+        for the email it sends. For every other step type `email` is `null`, so a delay or tag
+
+        step never reads as an email that performed badly.
+
+
+        `contacts.are_here` is current occupancy — runs whose current step is this one — and is
+
+        the one number that does not follow `timerange`. `contacts.were_here` counts contacts who
+
+        left the step inside the window, once per pass through it.
+
+
+        Unlike a broadcast, a workflow step has no audience and no send window: it keeps
+
+        sending for as long as the workflow runs and contacts keep reaching it. So there is
+
+        nothing to report as queued or in progress, and the numbers are always for a window
+
+        you choose. Defaults to a 30-day window ending now. Override with `timerange_start`
+
+        and `timerange_end`. Values are clamped: a future end date is clamped to now, a window
+
+        over 90 days is clamped to 90 days, and a start after the end resets to 30 days ending
+
+        at `timerange_end`. Read `timerange` back from the response for the window actually used.
+
+
+        `sends` counts a contact once per pass through the step, so a looping workflow makes it
+
+        larger than `recipients`. Rates are whole percentages rounded to the nearest integer — a
+
+        share under 0.5% reads 0 next to a non-zero count, and the counts are authoritative.
+
+        `open_rate`, `click_rate`, `bounce_rate` and `unsubscribe_rate` divide by `recipients`;
+
+        `click_to_open_rate` divides unique clicks by unique opens. The workflow builder''s
+
+        percentages under a step divide by `sends` instead, so for a step that sent to a contact
+
+        more than once the app shows a lower rate than this endpoint does for the same window;
+
+        the counts are the same on both. Numerator and denominator are
+
+        each counted inside the window on their own: an open inside the window counts even when
+
+        the send it answers happened before the window. So a rate can exceed 100 when few new
+
+        sends meet many opens of older emails, and it is 0 whenever its denominator is 0, however
+
+        many opens there were. A step whose email last sent before the window reports zero
+
+        `sends` and `recipients` while opens and clicks inside it still count. To compare like
+
+        with like, widen the window to cover the sends you care about.
+
+
+        Revenue is attributed when the buyer''s last tracked source within 30 days was a click on
+
+        one of the email''s links. Each attributed order contributes its **first** paid invoice,
+
+        and only when that invoice was issued inside the window: renewals never count, and an
+
+        order whose first payment predates the window contributes nothing even if a renewal was
+
+        paid inside it. Only live-mode orders paid in the workspace currency are counted. Note
+
+        the engagement counts do include test-mode sends, so the revenue-per-X figures divide
+
+        live-only money by counts that may include test traffic.
+
+
+        The broadcast equivalent is `GET /emails/broadcasts/{broadcast_id}/stats`. Its
+
+        `performance` and `revenue` blocks share this vocabulary at the top level, with
+
+        `delivered` in place of `sends`/`recipients`/`failed`, and it takes no timerange — a
+
+        broadcast reports on its own send window.'
+      operationId: getWorkflowStepStats
+      externalDocs:
+        description: Workflows Skill - step stats
+        url: https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#step-stats
+      parameters:
+      - name: step_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/StatsTimerangeStart'
+      - $ref: '#/components/parameters/StatsTimerangeEnd'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowsStepStatsAttributes'
+              examples:
+                send_email_step:
+                  summary: A step that sends an email
+                  value:
+                    step:
+                      id: 42
+                      public_id: RBxAQx
+                      name: Welcome email
+                      step_type: send_email_step
+                    workflow:
+                      id: 7
+                      public_id: zmXVGz
+                      name: New lead nurture
+                    currency: USD
+                    timerange:
+                      from: '2026-08-05T00:00:00Z'
+                      to: '2026-09-04T00:00:00Z'
+                    contacts:
+                      are_here: 12
+                      were_here: 1240
+                    email:
+                      performance:
+                        sends: 1240
+                        recipients: 1180
+                        failed: 4
+                        bounced: 21
+                        opened: 890
+                        unique_opens: 604
+                        clicked: 173
+                        unique_clicks: 148
+                        unsubscribed: 9
+                        spam_complaints: 2
+                        open_rate: 51
+                        click_rate: 13
+                        click_to_open_rate: 25
+                        bounce_rate: 2
+                        unsubscribe_rate: 1
+                      revenue:
+                        total: '3480.00'
+                        orders_count: 24
+                        per_recipient: '2.95'
+                        per_unique_open: '5.76'
+                        per_unique_click: '23.51'
+                delay_step:
+                  summary: A step that sends no email
+                  value:
+                    step:
+                      id: 43
+                      public_id: QpLmNz
+                      name: Wait 2 days
+                      step_type: delay_step
+                    workflow:
+                      id: 7
+                      public_id: zmXVGz
+                      name: New lead nurture
+                    currency: USD
+                    timerange:
+                      from: '2026-08-05T00:00:00Z'
+                      to: '2026-09-04T00:00:00Z'
+                    contacts:
+                      are_here: 57
+                      were_here: 1183
+                    email: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          description: Forbidden — the token's scopes don't grant read access to workflows. Not retryable.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Forbidden: This access token''s scopes do not grant read access to Workflows. Granted scopes: contacts:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
+        '404':
+          description: Not Found — step not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Not found: Record missing'
+                hint: null
+        '422':
+          description: 'Unprocessable Entity — a timerange parameter is not a real date or time. Unparseable
+
+            values and calendar dates that do not exist (2026-02-31) are refused rather than
+
+            silently answered with a different window.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Request unprocessable: timerange_start ''2026-13-01'' is not a valid date or time. Use an ISO 8601 value, e.g. 2026-09-01T00:00:00Z.'
+                hint: null
+        '503':
+          description: 'Service Unavailable — a stats query exceeded the database timeout, or a dependency was
+
+            briefly unavailable. Retryable; narrowing the timerange makes the query cheaper.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Service unavailable: Transient service issue: Please try again shortly.'
+                hint: null
 components:
+  parameters:
+    StatsTimerangeStart:
+      name: timerange_start
+      in: query
+      description: Start of the stats timerange (ISO 8601 only; any other value is a 422. Send an offset's `+` as `%2B`, since an unencoded `+` arrives as a space). Defaults to 30 days before `timerange_end`. If the window between start and end exceeds 90 days, start is automatically clamped to 90 days before end. If start is after end, the window resets to the default 30 days ending at `timerange_end`. See [Timerange parameters (both endpoints)](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#timerange-parameters-both-endpoints) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for the clamping rules and how to cover longer windows.
+      required: false
+      schema:
+        type: string
+        format: date-time
+      example: '2026-01-01T00:00:00Z'
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    per_page:
+      name: per_page
+      in: query
+      required: false
+      description: Records per page. Defaults to 20; raise it up to 100 for bulk reads. A larger value returns 100 records. Zero, a negative or a non-integer value is a 422. The `Link` next-page URL keeps the value, so a client following it keeps the page size. More [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    StatsTimerangeEnd:
+      name: timerange_end
+      in: query
+      description: End of the stats timerange (ISO 8601 only; any other value is a 422. Send an offset's `+` as `%2B`, since an unencoded `+` arrives as a space). Defaults to the current time. Values in the future are automatically clamped to now.
+      required: false
+      schema:
+        type: string
+        format: date-time
+      example: '2026-01-31T23:59:59Z'
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
-    WorkflowsStepParametersCreate:
-      type: object
-      title: Create Workflows::Step
-      description: "Parameters for adding a new step to a workflow. `step_type_settings` must contain\nexactly one key naming the step type.\n\n### Placement\n\n- **Trunk (default)**: omit `parent_step_id` and `branch` to append at the end of the main sequence.\n- **Inside a split branch**: set `parent_step_id` to the id (integer or public_id) of the split step, and `branch` to:\n  - `matched` or `unmatched` for a `conditional_split_step` (the legacy `match`/`fallback` aliases are still accepted)\n  - A 0-based variant index string (`\"0\"`, `\"1\"`) for a `split_test_step`\n- **Specific position**: use `position` (0-based integer) or `after_step_id` (id of the preceding step).\n\nSee [Branching](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#branching) in the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md) for where a step with no placement lands relative to a split.\n\nFor `split_test_step`, the `variants` array must have exactly 2 entries with integer weights summing to 100.\nFor `conditional_split_step`, provide `condition.filter_id` (integer id or obfuscated RefineFilter public_id).\n\nCreating a `send_email_step` requires a complete business mailing address in\nthe workspace's email settings. Configure it with\n`PUT /workspaces/{workspace_id}/emails/settings`; otherwise creation returns `422`.\n"
-      required:
-      - workflows_step
-      properties:
-        workflows_step:
-          type: object
-          required:
-          - step_type_settings
-          properties:
-            name:
-              type: string
-              description: Optional human-readable name. Defaults to a titleized version of the step type.
-            parent_step_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Step id or public_id of a split step. Required when placing a step inside a branch.
-            branch:
-              type: string
-              description: Branch selector — `matched`/`unmatched` for conditional splits (legacy `match`/`fallback` still accepted); `"0"`/`"1"` for split tests.
-            position:
-              type: integer
-              description: 0-based position within the container. Mutually exclusive with `after_step_id`.
-            after_step_id:
-              $ref: '#/components/schemas/IntegerOrPublicId'
-              description: Step id or public_id of the step to insert after. Mutually exclusive with `position`.
-            step_type_settings:
-              type: object
-              description: 'Exactly one key naming the step type, with its settings as the value. On a
-
-                `send_email_step` a `template_id` is copied into a new step-owned template, and
-
-                you may instead pass the write-only `html_body`/`text_body` to author one inline.
-
-
-                **See the `step_type_settings` field on the Workflows::Step response schema
-
-                (`#/components/schemas/WorkflowsStepAttributes`) for the full per-type field
-
-                catalog, the `send_email_step` inline-body rules, and FK id handling.**
-
-                '
-      example:
-        workflows_step:
-          name: Send Welcome Email
-          step_type_settings:
-            send_email_step:
-              subject: Welcome!
-              template_id: TmPl01
-              from_address_id: FrAd01
-    IntegerOrPublicId:
-      type:
-      - integer
-      - string
-      description: Integer database id or obfuscated public_id.
     WorkflowsStepParametersUpdate:
       type: object
       title: Update Workflows::Step
@@ -628,6 +1033,194 @@ components:
               delay_type: relative
               duration: 7
               interval: days
+    WorkflowsStepStatsAttributes:
+      type: object
+      title: Workflow Step Stats
+      description: Stats for one workflow step over the requested timerange. Every step type reports `contacts`; only a `send_email_step` reports `email`, which is `null` for every other step type. Counts are unique contacts unless noted; rates are whole percentages; money is a decimal string in `currency`.
+      properties:
+        step:
+          type: object
+          description: The workflow step these stats belong to
+          properties:
+            id:
+              type: integer
+              description: Step ID
+            public_id:
+              type:
+              - string
+              - 'null'
+              description: Step public ID
+            name:
+              type:
+              - string
+              - 'null'
+              description: Step name
+            step_type:
+              type: string
+              description: The step's type, e.g. `send_email_step` or `delay_step`. `email` is `null` unless this is `send_email_step`.
+        workflow:
+          type: object
+          description: The workflow the step belongs to
+          properties:
+            id:
+              type: integer
+              description: Workflow ID
+            public_id:
+              type:
+              - string
+              - 'null'
+              description: Workflow public ID
+            name:
+              type:
+              - string
+              - 'null'
+              description: Workflow name
+        currency:
+          type:
+          - string
+          - 'null'
+          description: ISO 4217 currency code for all monetary values (e.g. USD, EUR). `email.revenue` counts only orders paid in this currency. `null` when the workspace has no currency set, in which case there is nothing to filter on and revenue sums every currency its orders were paid in.
+        timerange:
+          type: object
+          description: The window the stats cover, after clamping. Read it back rather than assuming the window you asked for was used. Every number follows it except `contacts.are_here`, which is a live count.
+          properties:
+            from:
+              type: string
+              format: date-time
+              description: Start of the window
+            to:
+              type: string
+              format: date-time
+              description: End of the window
+        contacts:
+          type: object
+          description: Where contacts stand in relation to this step. Every step type reports these; they are the two numbers the workflow builder shows under each step.
+          properties:
+            are_here:
+              type: integer
+              description: Contacts at this step right now — runs whose current step is this one. A live count; it does not follow `timerange`.
+            were_here:
+              type: integer
+              description: Contacts who left this step inside the window, counting a contact once per pass through it.
+        email:
+          type:
+          - object
+          - 'null'
+          description: Engagement and attributed revenue for the email this step sends. `null` for every step type except `send_email_step` — a step that sends nothing has nothing to report, which is not the same as performing badly.
+          properties:
+            performance:
+              type: object
+              description: Engagement inside the window. Rates are rounded to whole percentages, so a share under 0.5% reads 0 next to a non-zero count; the counts are authoritative. Numerator and denominator are each counted inside the window on their own, so a rate is not a share of one fixed group of contacts — see `open_rate`. These counts include test-mode sends, while `revenue` counts live-mode orders only, so the revenue-per-X figures divide live-only money by counts that may include test traffic.
+              properties:
+                sends:
+                  type: integer
+                  description: Emails this step sent inside the window, counting a contact once per pass through the step. A workflow that loops, or a contact re-entered into it, makes this larger than `recipients`.
+                recipients:
+                  type: integer
+                  description: Distinct contacts the step sent to inside the window, including any reached in test mode. Every rate below except `click_to_open_rate` is a share of this, not of `sends`.
+                failed:
+                  type: integer
+                  description: Contacts whose send failed, either refused outright or timed out in the queue. A contact that failed both ways counts once.
+                bounced:
+                  type: integer
+                  description: Contacts whose address bounced
+                opened:
+                  type: integer
+                  description: Total opens inside the window, counting repeat opens by the same contact
+                unique_opens:
+                  type: integer
+                  description: Contacts who opened at least once inside the window
+                clicked:
+                  type: integer
+                  description: Total clicks inside the window, counting repeat clicks by the same contact
+                unique_clicks:
+                  type: integer
+                  description: Contacts who clicked at least once inside the window
+                unsubscribed:
+                  type: integer
+                  description: Contacts who unsubscribed from this email
+                spam_complaints:
+                  type: integer
+                  description: Contacts who reported this email as spam
+                open_rate:
+                  type: integer
+                  description: Unique opens as a whole percentage of `recipients`. Both are counted inside the window on their own, so an open of an email sent before the window counts while its send does not; the figure can exceed 100 when few new sends meet many opens of older emails, and it is 0 whenever `recipients` is 0. Widen the window to cover the sends you care about.
+                click_rate:
+                  type: integer
+                  description: Unique clicks as a whole percentage of `recipients`. Counted the same way as `open_rate`, so it can exceed 100 and is 0 when `recipients` is 0.
+                click_to_open_rate:
+                  type: integer
+                  description: Unique clicks as a whole percentage of unique opens; 0 when there are no opens.
+                bounce_rate:
+                  type: integer
+                  description: Bounces as a whole percentage of `recipients`; 0 when `recipients` is 0.
+                unsubscribe_rate:
+                  type: integer
+                  description: Unsubscribes as a whole percentage of `recipients`; 0 when `recipients` is 0.
+            revenue:
+              type: object
+              description: 'Orders attributed to this step''s email: the buyer''s last tracked source within 30 days was a click on one of its links, so a later touch from elsewhere supersedes it. Each order contributes its FIRST paid invoice, and only when that invoice was issued inside the window - renewals never count, and an order whose first payment predates the window contributes nothing even if a renewal was paid inside it. Only live-mode orders paid in the workspace `currency` are counted.'
+              properties:
+                total:
+                  type: string
+                  description: Revenue attributed to the step, as a decimal string in `currency`
+                orders_count:
+                  type: integer
+                  description: Attributed orders whose FIRST paid invoice was issued inside the window
+                per_recipient:
+                  type: string
+                  description: Revenue divided by `recipients`, as a decimal string in `currency`
+                per_unique_open:
+                  type: string
+                  description: Revenue divided by unique opens, as a decimal string in `currency`
+                per_unique_click:
+                  type: string
+                  description: Revenue divided by unique clicks, as a decimal string in `currency`
+      example:
+        step:
+          id: 42
+          public_id: RBxAQx
+          name: Welcome email
+          step_type: send_email_step
+        workflow:
+          id: 7
+          public_id: zmXVGz
+          name: New lead nurture
+        currency: USD
+        timerange:
+          from: '2026-08-05T00:00:00Z'
+          to: '2026-09-04T00:00:00Z'
+        contacts:
+          are_here: 12
+          were_here: 1240
+        email:
+          performance:
+            sends: 1240
+            recipients: 1180
+            failed: 4
+            bounced: 21
+            opened: 890
+            unique_opens: 604
+            clicked: 173
+            unique_clicks: 148
+            unsubscribed: 9
+            spam_complaints: 2
+            open_rate: 51
+            click_rate: 13
+            click_to_open_rate: 25
+            bounce_rate: 2
+            unsubscribe_rate: 1
+          revenue:
+            total: '3480.00'
+            orders_count: 24
+            per_recipient: '2.95'
+            per_unique_open: '5.76'
+            per_unique_click: '23.51'
+    IntegerOrPublicId:
+      type:
+      - integer
+      - string
+      description: Integer database id or obfuscated public_id.
     WorkflowsStepAttributes:
       type: object
       title: Workflows::Step
@@ -736,7 +1329,7 @@ components:
 
             - `contact_custom_attribute_step`: `action`, `value`, `field_id` (a Forms::Field id — discoverable via the Forms API)
 
-            - `delay_step`: `delay_type` (`relative`/`day_of_week`/`day_of_month`), `duration`, `interval`, `time_zone`, `use_contact_time_zone`, `use_execution_window`, `day_of_week`, `date_of_month`, `start_time`, `end_time`, `execution_window_days`
+            - `delay_step`: `delay_type` (`relative`/`day_of_week`/`day_of_month`/`specific_date`), `duration`, `interval`, `time_zone`, `use_contact_time_zone`, `use_execution_window`, `day_of_week`, `date_of_month`, `specific_date`, `past_date_action`, `start_time`, `end_time`, `execution_window_days`. For `specific_date`, send `specific_date` (`YYYY-MM-DD`, no more than a year away) and `start_time` (`HH:MM`, 24-hour), read in `time_zone` (or each contact''s own zone with `use_contact_time_zone: true`). A moment that has already passed is accepted. `past_date_action` (`continue`, the default, or `end`) decides what happens to a contact who reaches the step after that moment: continue to the next step right away, or end their run. `time_zone` is a human-readable time zone name — the label shown in the builder''s dropdown, e.g. `Eastern Time (US & Canada)`, `London`, `Tokyo`. A TZ database id is also accepted and is stored as the name that keeps the same clock (`America/New_York` and `America/Toronto` → `Eastern Time (US & Canada)`, `Europe/London` → `London`), so the response echoes the name, not the id you sent. Any other value is rejected 422. The full list of names and how they map to TZ ids is in [our Time Zones guide](https://developers.myclickfunnels.com/docs/timezones). Set `use_contact_time_zone: true` to use each contact''s own zone instead.
 
             - `notify_step`: `message`, `notify_type` (array), `user_ids` (array of user ids — must be team members; discover via `GET /teams/{team_id}/memberships` → `user_id`. A non-member id is rejected 422.)
 
@@ -772,7 +1365,11 @@ components:
 
             so edits to a step''s email never touch the source. `template_id` takes precedence
 
-            when both a `template_id` and an inline body are supplied.
+            when both a `template_id` and an inline body are supplied. The create response''s
+
+            `step_type_settings.send_email_step.template_id` is the step-owned copy''s id, not
+
+            the source template''s id.
 
 
             Because the step owns its template, `template_id` is **create-only and cannot be
@@ -830,58 +1427,75 @@ components:
             reply_to_address_id: null
         created_at: '2025-06-01T00:00:00.000Z'
         updated_at: '2025-06-01T00:00:00.000Z'
+    WorkflowsStepParametersCreate:
+      type: object
+      title: Create Workflows::Step
+      description: "Parameters for adding a new step to a workflow. `step_type_settings` must contain\nexactly one key naming the step type.\n\n### Placement\n\n- **Trunk (default)**: omit `parent_step_id` and `branch` to append at the end of the main sequence.\n- **Inside a split branch**: set `parent_step_id` to the id (integer or public_id) of the split step, and `branch` to:\n  - `matched` or `unmatched` for a `conditional_split_step` (the legacy `match`/`fallback` aliases are still accepted)\n  - A 0-based variant index string (`\"0\"`, `\"1\"`) for a `split_test_step`\n- **Specific position**: use `position` (0-based integer) or `after_step_id` (id of the preceding step).\n\nSee [Branching](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md#branching) in the [Workflows Skill](https://accounts.myclickfunnels.com/.well-known/workflows/skill.md) for where a step with no placement lands relative to a split.\n\nFor `split_test_step`, the `variants` array must have exactly 2 entries with integer weights summing to 100.\nFor `conditional_split_step`, provide `condition.filter_id` (integer id or obfuscated RefineFilter public_id).\n\nCreating a `send_email_step` requires a complete business mailing address in\nthe workspace's email settings. Configure it with\n`PUT /workspaces/{workspace_id}/emails/settings`; otherwise creation returns `422`.\n"
       required:
-      - branch
-      - convergence_step_id
-      - created_at
-      - id
-      - name
-      - parent_step_id
-      - public_id
-      - sort_order
-      - state
-      - step_type
-      - step_type_settings
-      - updated_at
-      - workflow_id
-  parameters:
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    sort_property:
-      name: sort_property
-      in: query
-      description: 'Sort property of a list response. The default is id and thus the created_at order.
+      - workflows_step
+      properties:
+        workflows_step:
+          type: object
+          required:
+          - step_type_settings
+          properties:
+            name:
+              type: string
+              description: Optional human-readable name. Defaults to a titleized version of the step type.
+            parent_step_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Step id or public_id of a split step. Required when placing a step inside a branch.
+            branch:
+              type: string
+              description: Branch selector — `matched`/`unmatched` for conditional splits (legacy `match`/`fallback` still accepted); `"0"`/`"1"` for split tests.
+            position:
+              type: integer
+              description: 0-based position within the container. Mutually exclusive with `after_step_id`.
+            after_step_id:
+              $ref: '#/components/schemas/IntegerOrPublicId'
+              description: Step id or public_id of the step to insert after. Mutually exclusive with `position`.
+            step_type_settings:
+              type: object
+              description: 'Exactly one key naming the step type, with its settings as the value. On a
 
-        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+                `send_email_step` a `template_id` is copied into a new step-owned template, and
 
-        '
-      required: false
-      schema:
-        type: string
-        enum:
-        - id
-        - updated_at
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
+                you may instead pass the write-only `html_body`/`text_body` to author one inline.
+
+
+                **See the `step_type_settings` field on the Workflows::Step response schema
+
+                (`#/components/schemas/WorkflowsStepAttributes`) for the full per-type field
+
+                catalog, the `send_email_step` inline-body rules, and FK id handling.**
+
+                '
+      example:
+        workflows_step:
+          name: Send Welcome Email
+          step_type_settings:
+            send_email_step:
+              subject: Welcome!
+              template_id: TmPl01
+              from_address_id: FrAd01
+  responses:
+    InvalidPageSize:
+      description: Unprocessable Entity - `per_page` must be a positive integer.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: Next step for the caller, or null when no additional guidance applies.
+          example:
+            error: 'Request unprocessable: per_page must be a positive integer, capped at 100 (got "0")'
+            hint: null
   headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
@@ -895,6 +1509,88 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com

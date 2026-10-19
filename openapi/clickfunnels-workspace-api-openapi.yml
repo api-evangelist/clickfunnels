@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,6 +39,7 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Workspace
   description: Workspace
@@ -38,6 +58,7 @@ paths:
         schema:
           type: string
       - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/per_page'
       - $ref: '#/components/parameters/sort_order'
       - name: sort_property
         in: query
@@ -91,8 +112,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -103,8 +130,16 @@ paths:
                   error:
                     type: string
                     description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          $ref: '#/components/responses/InvalidPageSize'
   /workspaces/{id}:
     get:
       tags:
@@ -138,8 +173,16 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          $ref: '#/components/responses/WorkspaceGrantForbidden'
         '404':
           description: Not Found
           content:
@@ -149,8 +192,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     put:
       tags:
       - Workspace
@@ -198,8 +247,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -209,8 +264,16 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          $ref: '#/components/responses/WorkspaceGrantForbidden'
         '404':
           description: Not Found
           content:
@@ -220,17 +283,521 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+  /workspaces/{workspace_id}/stats:
+    get:
+      tags:
+      - Workspace
+      summary: Fetch Workspace Stats
+      description: 'Aggregate statistics over a **filtered set of records, without listing the records**. Use this for any
+
+        "how many", "what''s the breakdown", or "what''s the total" question: it is dramatically cheaper than paging
+
+        a collection and counting client-side.
+
+
+        One workspace endpoint serves every analyzable resource. Name the resource and request the stats you want
+
+        as query parameters:
+
+
+        ```http
+
+        GET /api/v2/workspaces/{workspace_id}/stats?resource=contact&count=true&count_by[property]=is_active&filter[tag_ids]=42
+
+        ```
+
+
+        A flag of `true` computes the stat; an object-style query supplies a stat''s parameters. Omit a stat (or pass
+
+        `false`) to skip it. Calling with only `resource` returns a 422 that lists the stats and `property` values the
+
+        named resource supports, so the endpoint is self-describing.
+
+
+        ### Narrowing the set
+
+
+        The same selectors the resource''s own index accepts, composed with AND:
+
+
+        - `filter` - simple field matches, e.g. `filter[tag_ids]=42` for contacts
+
+        - `stable_id` - a one-off Refine filter token, e.g. from `POST /workspaces/{workspace_id}/contacts/filters`
+
+        - `stored_filter_id` - a saved Refine filter id
+
+
+        Omit all three to report on every record of that resource in the workspace.
+
+
+        Beyond the index''s own keys, `filter` takes a `created_at` window on every resource
+
+        (`created_at_after` inclusive, `created_at_before` exclusive, ISO 8601 only, with an offset''s `+`
+
+        sent as `%2B`), and on `order` the two attribution keys a sales dashboard needs: `funnel_id`
+
+        (orders attributed to that funnel) and `product_id` (orders containing that product, from any
+
+        channel). Every id filter (`id`, `contact_id`, `page_id`, `tag_ids`, `funnel_id`, `product_id`)
+
+        takes a numeric `id` or a `public_id`, comma-separated for several; an id that is not this
+
+        workspace''s is a 422 naming it, never a silent zero:
+
+
+        ```http
+
+        GET /api/v2/workspaces/{workspace_id}/stats?resource=order&count=true&sum[property]=total_collected&filter[funnel_id]=41&filter[created_at_after]=2026-10-01T00:00:00Z
+
+        ```
+
+
+        ### Large sets
+
+
+        Every stat is computed over the whole matching set, bounded in time rather than in rows: each query has a
+
+        statement timeout, and the request has an overall time budget. A stat that cannot finish in time is not
+
+        returned; it is named in `unavailable`, with `unavailable_reason` saying whether to narrow the filter or to
+
+        ask for it on its own, rather than computed over part of the set.
+
+
+        `count` has one fallback of its own. Past 100,000 matches, if counting the whole set cannot finish in time,
+
+        it returns 100,000 with `count_capped_at` beside it - the real total is higher, so narrow the filter.
+
+
+        When no requested stat can be computed in time, the response is a 422, not a 503: retrying it unchanged
+
+        fails the same way, so narrow it instead.
+
+
+        ### Access
+
+
+        Computing a statistic persists nothing, so a token with **read-only** access may call it. Authorization
+
+        follows the category of the resource being analyzed: `contact` requires read access to Contacts, `order`
+
+        requires read access to Store, `form_submission` requires read access to Forms.
+
+
+        ### Form submissions per page
+
+
+        `form_submission` reports on the same rows `GET /workspaces/{workspace_id}/form_submissions` lists: one per
+
+        form post on a ClickFunnels page. `count_by[property]=page_id` returns the submission count of every page in
+
+        one call, so counting a funnel''s submissions no longer means paging the whole log:
+
+
+        ```http
+
+        GET /api/v2/workspaces/{workspace_id}/stats?resource=form_submission&count_by[property]=page_id&filter[page_id]=41,42
+
+        ```
+
+
+        These are form posts, not opt-ins: checkout submits and repeat posts by the same contact count too. For
+
+        opt-ins as the funnel dashboard counts them, read `optins` from `GET /funnels/{funnel_id}/stats` or
+
+        `GET /pages/{page_id}/stats`.
+
+
+        It has no Refine filter class, so `stable_id` and `stored_filter_id` are refused with a 422 for it.'
+      operationId: getWorkspaceStats
+      externalDocs:
+        description: Stats Skill - record stats
+        url: https://accounts.myclickfunnels.com/.well-known/stats/skill.md#record-stats-counts-breakdowns-and-totals
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: resource
+        in: query
+        required: true
+        description: The resource to report on.
+        schema:
+          type: string
+          enum:
+          - contact
+          - order
+          - form_submission
+        example: contact
+      - name: count
+        in: query
+        required: false
+        description: How many records match. Exact unless counting a set of more than 100,000 cannot finish in time - see `count_capped_at` in the response.
+        schema:
+          type: boolean
+          default: false
+      - name: count_by
+        in: query
+        required: false
+        description: Breaks the matching set down by one allow-listed property, returning a count per distinct value.
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          required:
+          - property
+          properties:
+            property:
+              type: string
+              description: 'Allow-listed per resource - `contact`: `is_active`, `anonymous`, `email_suppression_reason`, `time_zone`; `order`: `billing_status`, `service_status`, `order_type`, `live_mode`; `form_submission`: `page_id`. A 422 lists them.'
+              example: is_active
+      - name: created_at_range
+        in: query
+        required: false
+        description: The earliest and latest `created_at` in the matching set. Exact; listed in `unavailable` instead when it cannot finish in time.
+        schema:
+          type: boolean
+          default: false
+      - name: sum
+        in: query
+        required: false
+        description: Totals one allow-listed numeric property. Exact; listed in `unavailable` instead when it cannot finish in time. Not available for every resource.
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          required:
+          - property
+          properties:
+            property:
+              type: string
+              description: 'Allow-listed per resource - `order`: `total_amount`, `tax_amount`, `total_collected`. A 422 lists them.'
+              example: total_amount
+      - name: filter
+        in: query
+        required: false
+        description: 'Simple field matches. The keys the resource''s index accepts - `contact`: `id`, `email_address`, `is_active`, `tag_ids`; `order`: `id`, `contact_id`, `order_type`, `billing_status`, `service_status`, `live_mode`; `form_submission`: `id`, `page_id`, `contact_id` - plus `created_at_after` (inclusive) and `created_at_before` (exclusive, both ISO 8601 only; send an offset''s `+` as `%2B`) on every resource, and `funnel_id` and `product_id` on `order`. Every id filter takes a numeric id or a public_id; one that is not this workspace''s is a 422. Comma-separated values match any of them.'
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          additionalProperties:
+            type: string
+        example:
+          tag_ids: '42'
+      - name: stable_id
+        in: query
+        required: false
+        description: A URL-encoded Refine `stable_id` token, applied to the set before computing. Same token format the resource's index accepts; for contacts it can come from `POST /workspaces/{workspace_id}/contacts/filters`. Pass it exactly as returned. Not accepted for `form_submission` (422).
+        schema:
+          type: string
+      - name: stored_filter_id
+        in: query
+        required: false
+        description: The `id` or `public_id` of a saved Refine filter in this workspace, applied to the set before computing. Must match the resource's filter type. Not accepted for `form_submission` (422).
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resource:
+                    type: string
+                    description: The resource reported on.
+                  workspace_id:
+                    type: integer
+                  stats:
+                    type: object
+                    description: One key per requested stat.
+                    properties:
+                      count:
+                        type: integer
+                        description: Matching records. Exact unless `count_capped_at` is present, in which case it equals that value and the true total is higher.
+                      count_capped_at:
+                        type: integer
+                        description: Present only when more than this many records match AND counting the whole set could not finish in time. `count` is this value, and the real total is higher - narrow the filter. Absent means `count` is exact.
+                      count_by:
+                        type: object
+                        properties:
+                          property:
+                            type: string
+                          values:
+                            type: object
+                            description: Count per distinct value. A NULL value is keyed as the string `null`.
+                            additionalProperties:
+                              type: integer
+                          capped:
+                            type: boolean
+                            description: Always `false`; kept for compatibility. The breakdown always covers the whole set, and one that cannot finish in time is listed in `unavailable` instead.
+                      created_at_range:
+                        type: object
+                        properties:
+                          min:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                            description: Earliest `created_at` in the matching set, or `null` when the set is empty.
+                          max:
+                            type:
+                            - string
+                            - 'null'
+                            format: date-time
+                            description: Latest `created_at` in the matching set, or `null` when the set is empty.
+                      sum:
+                        type: object
+                        properties:
+                          property:
+                            type: string
+                          value:
+                            type:
+                            - string
+                            - 'null'
+                            description: Decimal total serialized as a string to preserve precision. Money renders at the currency's minor units, the same scale the resource's own record serializer uses (`"100.00"`, not `"100.0"`). `null` means the matching set was EMPTY - a non-empty set whose rows are all NULL in that column totals zero, matching what those records serialize as, so `null` and a zero total are never ambiguous.
+                  unavailable:
+                    type: array
+                    description: Requested stats that were NOT computed because they could not finish in time. Present only when something was skipped; the other requested stats are still returned.
+                    items:
+                      type: string
+                  unavailable_reason:
+                    type: string
+                    description: Why the stats in `unavailable` were skipped, and what to do - narrow the filter when a query took too long, or request the stat on its own when the request's time budget ran out first.
+              example:
+                resource: contact
+                workspace_id: 5
+                stats:
+                  count: 51
+                  count_by:
+                    property: is_active
+                    values:
+                      'true': 40
+                      'false': 11
+                    capped: false
+        '400':
+          description: Bad Request — the required `resource` query parameter is missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Bad request: param is missing or the value is empty: resource'
+                hint: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          description: Forbidden — the token's scopes don't grant read access to the analyzed resource's category. Not retryable.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'This access token''s scopes do not grant read access to Store. Granted scopes: read contacts:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
+        '404':
+          description: Not Found — workspace not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Not found: Record missing'
+                hint: null
+        '422':
+          description: 'Unprocessable Entity — an unknown `resource`, an unknown or unsupported stat, a missing/disallowed
+
+            `property`, an unknown `filter` key, an id filter value that does not identify a record in this
+
+            workspace, a `created_at_after`/`created_at_before` that is not ISO 8601, a `stable_id`/`stored_filter_id` on a
+
+            resource without a Refine filter (`form_submission`), or no stats requested. The message enumerates the
+
+            valid values, so an empty request is a cheap way to discover a resource''s capabilities. Also returned when
+
+            the stats took longer than the statement timeout to compute: the set is too large, so retrying unchanged
+
+            fails the same way - narrow it with `filter[...]` (for example a `created_at` window) or request fewer stats.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'sum is not supported for contact. Supported: count, count_by, created_at_range'
+                hint: null
+        '429':
+          $ref: '#/components/responses/FilteredQueryConcurrency'
+        '503':
+          $ref: '#/components/responses/FilteredQueryBudget'
 components:
+  responses:
+    WorkspaceGrantForbidden:
+      description: "Forbidden — this request's workspace is closed to it.\n\nThree cases return this:\n\n* The access token is limited to specific workspaces (see the workspace selection made when\n  the key was provisioned, or the workspaces approved on the OAuth consent screen) and the\n  request acts on a workspace outside that set.\n* The access token is limited to specific workspaces and the request's workspace could not be\n  determined at all. The gate is fail-closed, so a workspace-limited token is denied rather\n  than allowed through when the target workspace is ambiguous.\n* The workspace's team has no active ClickFunnels subscription: it was canceled, is paused,\n  or is locked out after failed payments. Reads and writes are both refused until the\n  subscription is reactivated, and the body carries `\"code\": \"subscription_inactive\"`.\n\nA token with no workspace restriction never receives the first two."
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: string
+                description: A machine-readable cause, when there is one. `subscription_inactive` means the workspace's team has no active ClickFunnels subscription.
+                enum:
+                - subscription_inactive
+              hint:
+                type:
+                - string
+                - 'null'
+                description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+          examples:
+            workspace_not_granted:
+              summary: Token not granted this workspace
+              value:
+                error: 'Forbidden: This access token is limited to specific workspaces and was not granted access to this one.'
+                hint: The token's workspace grant was chosen when it was provisioned (Platform Applications) or on the OAuth consent screen. Use GET /api/v2/teams/{team_id}/workspaces to list the workspaces this token can reach (GET /api/v2/teams lists the team ids).
+            subscription_inactive:
+              summary: Team subscription inactive
+              value:
+                error: 'Forbidden: This workspace''s team does not have an active ClickFunnels subscription, so API access to it is disabled until the subscription is reactivated.'
+                hint: null
+                code: subscription_inactive
+    FilteredQueryBudget:
+      description: "Service Unavailable — retryable. Two conditions land here:\n\n* **Transient dependency** — a database connection, the model behind filter generation, or another\n  dependency was briefly unavailable.\n* **Request budget exhausted** — the request's own wall clock ran out before the filter could be given a\n  fair slice, so no records were read. The time went elsewhere in the same request: a slow generation\n  call, or earlier pages of the same projection.\n\nThe second case is the OPPOSITE of the 422 that says the filter \"took longer than 10s to evaluate\". That\n422 is a statement timeout and is deterministic — the filter selects more than can be evaluated, and an\nunchanged retry fails identically. This 503 makes no such claim about the filter, so retrying is worth\ndoing; if it recurs, narrow the filter or ask for fewer records per call."
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+          example:
+            error: 'Service unavailable: This request ran out of its 20s budget before the filter could be evaluated, so no records were read. The filter itself was not found to be too broad, so retrying is worth doing.'
+            hint: null
+    InvalidPageSize:
+      description: Unprocessable Entity - `per_page` must be a positive integer.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: Next step for the caller, or null when no additional guidance applies.
+          example:
+            error: 'Request unprocessable: per_page must be a positive integer, capped at 100 (got "0")'
+            hint: null
+    FilteredQueryConcurrency:
+      description: Too Many Requests — two filtered reads are already active for this token and workspace
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying. Also in the body as `retry_after`, for clients that cannot read response headers.
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              retry_after:
+                type: integer
+                description: Seconds to wait before retrying. Mirrors the `Retry-After` header so the delay survives transports that forward only the status and body.
+          example:
+            error: Too many filtered requests are already running for this workspace and access token. Try again in 2 seconds.
+            retry_after: 2
+            hint: null
   parameters:
-    after:
-      name: after
+    per_page:
+      name: per_page
       in: query
       required: false
+      description: Records per page. Defaults to 20; raise it up to 100 for bulk reads. A larger value returns 100 records. Zero, a negative or a non-integer value is a 422. The `Link` next-page URL keeps the value, so a client following it keeps the page size. More [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     sort_order:
       name: sort_order
       in: query
@@ -241,12 +808,13 @@ components:
         enum:
         - asc
         - desc
-    id:
-      name: id
-      in: path
-      required: true
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
     WorkspaceParametersUpdate:
       type: object
@@ -306,14 +874,6 @@ components:
         subdomain: example
         created_at: '2025-01-01T00:00:00.000Z'
         updated_at: '2025-01-01T00:00:00.000Z'
-      required:
-      - created_at
-      - id
-      - name
-      - public_id
-      - subdomain
-      - team_id
-      - updated_at
   headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
@@ -327,6 +887,88 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com

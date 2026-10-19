@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,9 +39,31 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Orders::LineItems::Change
-  description: '> Preview and commit variant/price changes on existing subscription line items.'
+  description: '> Preview and commit variant/price changes on existing subscription line items.
+
+
+    A self-serve flow for switching the variant or price on a subscription line item. The
+
+    surface has three endpoints — discovery (`Products::Prices::ChangeOption`) tells
+
+    you which targets are allowed; this resource is the actual change. `POST` to `…/changes`
+
+    to preview the upcoming invoice (`preview: true`); `POST` to `…/changes/perform` to commit
+
+    (`preview: false`). The response envelope is identical between preview and commit and only
+
+    the `preview` flag flips.
+
+
+    Allowed transitions are constrained by merchant-configured upgrade/downgrade option rows.
+
+    See the discovery endpoint for sourcing legal `products_price_id` targets.
+
+
+    See the Subscription Changes Skill for the full flow — preview and commit.'
 paths:
   /orders/line_items/{line_item_id}/changes:
     post:
@@ -34,17 +75,6 @@ paths:
         line item, including proration math, the next charge amount, and the effective date.
 
         Follows the same upgrade/downgrade rules as the in-app self-serve flow.
-
-
-        When accessing the API through an OAuth connection from a third-party platform acting on
-
-        another team''s workspaces, this endpoint requires trusted platform access and returns
-
-        403 without it. This trusted-access check does not apply when acting on your own account
-
-        (your own API key, or an OAuth app within its own team). Option discovery via
-
-        change_options is a read and is never gated.
 
 
         Source allowed `products_price_id` targets from `GET /products/prices/{price_id}/change_options`.
@@ -150,10 +180,16 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
-          description: Forbidden - a third-party platform acting on another team's workspace without trusted platform access. This check does not apply to first-party or own-account writes.
+          description: Forbidden - the access token's scopes do not cover this request
           content:
             application/json:
               schema:
@@ -161,8 +197,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
-                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+                error: 'Forbidden: This access token''s scopes do not grant write access to Store. Granted scopes: store:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
         '404':
           description: Not Found
           content:
@@ -172,8 +214,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity
           content:
@@ -183,8 +231,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: The target variant and price combination is not an allowed upgrade or downgrade for this subscription.
+                hint: null
   /orders/line_items/{line_item_id}/changes/perform:
     post:
       tags:
@@ -199,15 +253,6 @@ paths:
         renewal and are not prorated. Both behaviours can be overridden via `prorate` and
 
         `effective_time`.
-
-
-        When accessing the API through an OAuth connection from a third-party platform acting on
-
-        another team''s workspaces, this endpoint requires trusted platform access and returns
-
-        403 without it. This trusted-access check does not apply when acting on your own account
-
-        (your own API key, or an OAuth app within its own team).
 
 
         Source allowed `products_price_id` targets from `GET /products/prices/{price_id}/change_options`,
@@ -321,10 +366,16 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
-          description: Forbidden - a third-party platform acting on another team's workspace without trusted platform access. This check does not apply to first-party or own-account writes.
+          description: Forbidden - the access token's scopes do not cover this request
           content:
             application/json:
               schema:
@@ -332,8 +383,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
-                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+                error: 'Forbidden: This access token''s scopes do not grant write access to Store. Granted scopes: store:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
         '404':
           description: Not Found
           content:
@@ -343,8 +400,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity
           content:
@@ -354,8 +417,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: The target variant and price combination is not an allowed upgrade or downgrade for this subscription.
+                hint: null
 components:
   parameters:
     line_item_id:
@@ -372,66 +441,6 @@ components:
         - type: integer
         - type: string
   schemas:
-    OrdersLineItemsChangeRequest:
-      type: object
-      title: Line Item Change Request
-      description: Parameters to preview or commit a subscription line item variant/price change
-      required:
-      - orders_line_items_change
-      properties:
-        orders_line_items_change:
-          type: object
-          required:
-          - products_price_id
-          properties:
-            products_price_id:
-              oneOf:
-              - type: integer
-              - type: string
-              description: 'Target price. Accepts either the integer database id or the obfuscated
-
-                `public_id` string returned by the discovery endpoint. The target variant is
-
-                derived from the price''s `variant` association.
-
-                '
-            prorate:
-              type:
-              - boolean
-              - 'null'
-              description: 'Optional override for proration. Accepts `true`, `false`, `"true"`, `"false"`,
-
-                `"1"`, `"0"`, `1`, or `0`. When omitted, the in-app default is used:
-
-                upgrades are prorated and applied immediately; downgrades are not prorated and
-
-                take effect at the end of the current billing cycle. Forced to `false` for
-
-                physical line items regardless of the value sent. Any other value returns 422.
-
-                '
-            effective_time:
-              type:
-              - string
-              - 'null'
-              enum:
-              - now
-              - next_renewal
-              - null
-              description: 'Optional override for when the change takes effect. When omitted (or `null`,
-
-                or an empty string), the in-app default is used: upgrades take effect now,
-
-                downgrades at the next renewal. Any other value (e.g. `end_of_period` or a
-
-                literal timestamp) returns 422.
-
-                '
-      example:
-        orders_line_items_change:
-          products_price_id: 24
-          prorate: true
-          effective_time: now
     OrdersLineItemsChangeResponse:
       type: object
       title: Line Item Change
@@ -603,6 +612,59 @@ components:
               interval: months
               interval_count: 1
             products_variant: null
+    ProductsPriceMinimal:
+      type: object
+      title: Products Price (Minimal)
+      description: 'Minimal price representation used wherever a price appears as a nested
+
+        attribute (line items, upgrade/downgrade discovery).
+
+        '
+      properties:
+        id:
+          type: integer
+        public_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type:
+          - string
+          - 'null'
+        key:
+          type:
+          - string
+          - 'null'
+        amount:
+          type:
+          - string
+          - 'null'
+        currency:
+          type:
+          - string
+          - 'null'
+        duration:
+          type:
+          - integer
+          - 'null'
+        interval:
+          type:
+          - string
+          - 'null'
+        interval_count:
+          type:
+          - integer
+          - 'null'
+      example:
+        id: 24
+        public_id: aBcDeF
+        name: Pro Monthly
+        key: pro_monthly_2024
+        amount: '20.00'
+        currency: USD
+        duration: null
+        interval: months
+        interval_count: 1
     OrdersLineItemAttributes:
       type: object
       title: Line items
@@ -713,74 +775,152 @@ components:
           name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
           description: null
           sku: SIYP-BLACK-PREMIUM-001
-      required:
-      - created_at
-      - id
-      - order_id
-      - original_product
-      - products_price
-      - products_variant
-      - prorated
-      - public_id
-      - quantity
-      - updated_at
-    ProductsPriceMinimal:
+    OrdersLineItemsChangeRequest:
       type: object
-      title: Products Price (Minimal)
-      description: 'Minimal price representation used wherever a price appears as a nested
-
-        attribute (line items, upgrade/downgrade discovery).
-
-        '
+      title: Line Item Change Request
+      description: Parameters to preview or commit a subscription line item variant/price change
+      required:
+      - orders_line_items_change
       properties:
-        id:
-          type: integer
-        public_id:
-          type:
-          - string
-          - 'null'
-        name:
-          type:
-          - string
-          - 'null'
-        key:
-          type:
-          - string
-          - 'null'
-        amount:
-          type:
-          - string
-          - 'null'
-        currency:
-          type:
-          - string
-          - 'null'
-        duration:
-          type:
-          - integer
-          - 'null'
-        interval:
-          type:
-          - string
-          - 'null'
-        interval_count:
-          type:
-          - integer
-          - 'null'
+        orders_line_items_change:
+          type: object
+          required:
+          - products_price_id
+          properties:
+            products_price_id:
+              oneOf:
+              - type: integer
+              - type: string
+              description: 'Target price. Accepts either the integer database id or the obfuscated
+
+                `public_id` string returned by the discovery endpoint. The target variant is
+
+                derived from the price''s `variant` association.
+
+                '
+            prorate:
+              type:
+              - boolean
+              - 'null'
+              description: 'Optional override for proration. Accepts `true`, `false`, `"true"`, `"false"`,
+
+                `"1"`, `"0"`, `1`, or `0`. When omitted, the in-app default is used:
+
+                upgrades are prorated and applied immediately; downgrades are not prorated and
+
+                take effect at the end of the current billing cycle. Forced to `false` for
+
+                physical line items regardless of the value sent. Any other value returns 422.
+
+                '
+            effective_time:
+              type:
+              - string
+              - 'null'
+              enum:
+              - now
+              - next_renewal
+              - null
+              description: 'Optional override for when the change takes effect. When omitted (or `null`,
+
+                or an empty string), the in-app default is used: upgrades take effect now,
+
+                downgrades at the next renewal. Any other value (e.g. `end_of_period` or a
+
+                literal timestamp) returns 422.
+
+                '
       example:
-        id: 24
-        public_id: aBcDeF
-        name: Pro Monthly
-        key: pro_monthly_2024
-        amount: '20.00'
-        currency: USD
-        duration: null
-        interval: months
-        interval_count: 1
+        orders_line_items_change:
+          products_price_id: 24
+          prorate: true
+          effective_time: now
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com

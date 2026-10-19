@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,6 +39,7 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Products::Price
   description: Product Prices
@@ -38,6 +58,7 @@ paths:
         schema:
           type: string
       - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/per_page'
       - $ref: '#/components/parameters/sort_order'
       - $ref: '#/components/parameters/sort_property'
       - name: filter
@@ -147,8 +168,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -159,8 +186,16 @@ paths:
                   error:
                     type: string
                     description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          $ref: '#/components/responses/InvalidPageSize'
   /products/prices/{id}:
     get:
       tags:
@@ -212,8 +247,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -223,8 +264,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     put:
       tags:
       - Products::Price
@@ -308,8 +355,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -319,8 +372,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -330,8 +389,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
   /products/variants/{variant_id}/prices:
     post:
       tags:
@@ -358,28 +423,50 @@ paths:
                 products_price:
                   type: object
                   $ref: '#/components/schemas/ProductsPriceParameters'
-            example:
-              products_price:
-                name: Example Price
-                amount: '100.00'
-                cost: '0.00'
-                currency: USD
-                duration: null
-                interval: null
-                trial_interval: null
-                trial_duration: null
-                trial_amount: '0.00'
-                setup_amount: null
-                self_cancel: true
-                self_upgrade: true
-                self_downgrade: true
-                self_reactivate: true
-                interval_count: null
-                payment_type: one_time
-                visible: true
-                compare_at_amount: null
-                key: null
-                archived: false
+            examples:
+              one_time:
+                summary: A one-off price
+                value:
+                  products_price:
+                    name: Example Price
+                    amount: '100.00'
+                    cost: '0.00'
+                    payment_type: one_time
+                    visible: true
+              subscription:
+                summary: A subscription billed every 3 months
+                value:
+                  products_price:
+                    name: Quarterly Membership
+                    amount: '144.00'
+                    payment_type: subscription
+                    interval: months
+                    interval_count: 3
+                    visible: true
+              subscription_with_trial:
+                summary: A monthly subscription with a 14-day free trial
+                value:
+                  products_price:
+                    name: Monthly With Trial
+                    amount: '97.00'
+                    payment_type: subscription
+                    interval: months
+                    interval_count: 1
+                    trial_interval: days
+                    trial_duration: 14
+                    trial_amount: '0.00'
+                    visible: true
+              payment_plan:
+                summary: A payment plan of 4 monthly installments
+                value:
+                  products_price:
+                    name: Four Easy Payments
+                    amount: '50.00'
+                    payment_type: payment_plan
+                    interval: months
+                    interval_count: 1
+                    duration: 4
+                    visible: true
       responses:
         '201':
           description: Created
@@ -422,8 +509,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -433,8 +526,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '422':
           description: Unprocessable Entity - validation failed
           content:
@@ -444,34 +543,34 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               examples:
                 singular_interval:
                   summary: interval given in the singular
                   value:
                     error: 'Request unprocessable: Interval is not included in the list'
-                missing_amount:
-                  summary: no amount on the price
-                  value:
-                    error: 'Request unprocessable: Amount can''t be blank; Amount is not a number'
+                    hint: null
 components:
   parameters:
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    sort_order:
-      name: sort_order
+    per_page:
+      name: per_page
       in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
       required: false
+      description: Records per page. Defaults to 20; raise it up to 100 for bulk reads. A larger value returns 100 records. Zero, a negative or a non-integer value is a 422. The `Link` next-page URL keeps the value, so a client following it keeps the page size. More [in our guides](https://developers.myclickfunnels.com/docs/pagination).
       schema:
-        type: string
-        enum:
-        - asc
-        - desc
+        type: integer
+        minimum: 1
+        default: 20
     sort_property:
       name: sort_property
       in: query
@@ -486,18 +585,30 @@ components:
         enum:
         - id
         - updated_at
-    id:
-      name: id
-      in: path
-      required: true
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
       schema:
         type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
   schemas:
-    ProductsPriceParametersUpdate:
+    ProductsPriceParameters:
       type: object
       title: Prices
       description: Prices
-      required: []
+      required:
+      - amount
       properties:
         name:
           type:
@@ -506,7 +617,7 @@ components:
           description: Name
         amount:
           type: string
-          description: Amount
+          description: Amount, as a decimal string. Omitting it does not fail — it silently creates a free price ('0.00') — so always send it.
         cost:
           type:
           - string
@@ -514,32 +625,46 @@ components:
           description: Cost
         currency:
           type: string
-          description: Currency
+          description: Currency. Ignored on write — a price always takes its workspace's currency, so sending a different one has no effect.
         duration:
           type:
           - integer
           - 'null'
-          description: Duration
+          description: Amount of payments. Required when payment_type is payment_plan; ignored for one_time and subscription.
         interval:
           type:
           - string
           - 'null'
-          description: Interval
+          enum:
+          - days
+          - weeks
+          - months
+          - quarters
+          - years
+          - null
+          description: Billing period unit — note the values are plural ('months', not 'month'). Required when payment_type is subscription or payment_plan; ignored for one_time.
         trial_interval:
           type:
           - string
           - 'null'
-          description: Trial interval
+          enum:
+          - days
+          - weeks
+          - months
+          - quarters
+          - years
+          - null
+          description: 'Trial period unit — same plural values as interval. An active recurring trial needs BOTH trial_interval and a positive trial_duration. Send both together: trial_duration alone is stored but inactive until trial_interval is added later, while trial_interval alone is cleared. Trial fields are cleared on a one_time price.'
         trial_duration:
           type:
           - integer
           - 'null'
-          description: Trial duration
+          description: Length of the trial, in trial_interval units. Send a positive value together with trial_interval to create an active trial. Sent alone, it is stored but remains inactive until trial_interval is added later.
         trial_amount:
           type:
           - string
           - 'null'
-          description: Trial amount
+          description: Amount charged for the trial. Leave at '0.00' for a free trial, or set it above 0 for a paid one. Only applies when trial_interval and trial_duration are both set.
         setup_amount:
           type:
           - string
@@ -554,12 +679,12 @@ components:
           type:
           - boolean
           - 'null'
-          description: Customer can upgrade
+          description: 'Legacy setting with no effect: no checkout, customer portal or API plan change reads it. `GET /products/prices/{price_id}/change_options` lists the upgrades and downgrades the API allows from this price.'
         self_downgrade:
           type:
           - boolean
           - 'null'
-          description: Customer can downgrade
+          description: 'Legacy setting with no effect: no checkout, customer portal or API plan change reads it. `GET /products/prices/{price_id}/change_options` lists the upgrades and downgrades the API allows from this price.'
         self_reactivate:
           type:
           - boolean
@@ -569,7 +694,7 @@ components:
           type:
           - integer
           - 'null'
-          description: Interval count
+          description: How many intervals between charges — interval 'months' with interval_count 3 bills every 3 months. Required when payment_type is subscription or payment_plan.
         payment_type:
           type:
           - string
@@ -606,17 +731,17 @@ components:
           amount: '100.00'
           cost: '0.00'
           currency: USD
-          duration: 1
-          interval: months
-          trial_interval: days
-          trial_duration: 14
+          duration: null
+          interval: null
+          trial_interval: null
+          trial_duration: null
           trial_amount: '0.00'
           setup_amount: null
           self_cancel: true
           self_upgrade: true
           self_downgrade: true
           self_reactivate: true
-          interval_count: 1
+          interval_count: null
           payment_type: one_time
           visible: true
           compare_at_amount: null
@@ -660,7 +785,7 @@ components:
           type:
           - integer
           - 'null'
-          description: Duration
+          description: Amount of payments
         interval:
           type:
           - string
@@ -693,12 +818,12 @@ components:
           type:
           - boolean
           - 'null'
-          description: Customer can upgrade
+          description: 'Legacy setting with no effect: no checkout, customer portal or API plan change reads it. `GET /products/prices/{price_id}/change_options` lists the upgrades and downgrades the API allows from this price.'
         self_downgrade:
           type:
           - boolean
           - 'null'
-          description: Customer can downgrade
+          description: 'Legacy setting with no effect: no checkout, customer portal or API plan change reads it. `GET /products/prices/{price_id}/change_options` lists the upgrades and downgrades the API allows from this price.'
         self_reactivate:
           type:
           - boolean
@@ -777,45 +902,11 @@ components:
         archived: false
         created_at: '2025-01-01T00:00:00.000Z'
         updated_at: '2025-01-01T00:00:00.000Z'
-      required:
-      - amount
-      - archived
-      - compare_at_amount
-      - cost
-      - created_at
-      - currency
-      - duration
-      - id
-      - interval
-      - interval_count
-      - key
-      - name
-      - payment_type
-      - public_id
-      - self_cancel
-      - self_downgrade
-      - self_reactivate
-      - self_upgrade
-      - setup_amount
-      - trial_amount
-      - trial_duration
-      - trial_interval
-      - updated_at
-      - variant_id
-      - visible
-    ProductsPriceParameters:
+    ProductsPriceParametersUpdate:
       type: object
       title: Prices
       description: Prices
-      required:
-      - amount
-      - currency
-      - duration
-      - interval
-      - trial_interval
-      - trial_duration
-      - trial_amount
-      - interval_count
+      required: []
       properties:
         name:
           type:
@@ -832,22 +923,46 @@ components:
           description: Cost
         currency:
           type: string
-          description: Currency
+          description: Currency. Ignored on write — a price always takes its workspace's currency, so sending a different one has no effect.
         duration:
-          type: integer
-          description: Duration
+          type:
+          - integer
+          - 'null'
+          description: Amount of payments. Only used by a payment_plan price.
         interval:
-          type: string
-          description: Interval
+          type:
+          - string
+          - 'null'
+          enum:
+          - days
+          - weeks
+          - months
+          - quarters
+          - years
+          - null
+          description: Billing period unit — note the values are plural ('months', not 'month'). Only used by a subscription or payment_plan price.
         trial_interval:
-          type: string
-          description: Trial interval
+          type:
+          - string
+          - 'null'
+          enum:
+          - days
+          - weeks
+          - months
+          - quarters
+          - years
+          - null
+          description: Trial period unit — same plural values as interval. An active recurring trial needs this field and a positive trial_duration. Adding it to a price with a stored trial_duration activates the trial. Clearing only this field leaves the duration stored but inactive. Trial fields are cleared on a one_time price.
         trial_duration:
-          type: integer
-          description: Trial duration
+          type:
+          - integer
+          - 'null'
+          description: Length of the trial, in trial_interval units. A positive value sent alone is stored but inactive until trial_interval is added. Clearing this field removes the trial configuration.
         trial_amount:
-          type: string
-          description: Trial Amount
+          type:
+          - string
+          - 'null'
+          description: Amount charged for the trial. Leave at '0.00' for a free trial, or set it above 0 for a paid one. Only applies when trial_interval and trial_duration are both set.
         setup_amount:
           type:
           - string
@@ -862,20 +977,22 @@ components:
           type:
           - boolean
           - 'null'
-          description: Customer can upgrade
+          description: 'Legacy setting with no effect: no checkout, customer portal or API plan change reads it. `GET /products/prices/{price_id}/change_options` lists the upgrades and downgrades the API allows from this price.'
         self_downgrade:
           type:
           - boolean
           - 'null'
-          description: Customer can downgrade
+          description: 'Legacy setting with no effect: no checkout, customer portal or API plan change reads it. `GET /products/prices/{price_id}/change_options` lists the upgrades and downgrades the API allows from this price.'
         self_reactivate:
           type:
           - boolean
           - 'null'
           description: Customer can reactivate
         interval_count:
-          type: integer
-          description: Interval count
+          type:
+          - integer
+          - 'null'
+          description: How many intervals between charges — interval 'months' with interval_count 3 bills every 3 months. Only used by a subscription or payment_plan price.
         payment_type:
           type:
           - string
@@ -912,22 +1029,40 @@ components:
           amount: '100.00'
           cost: '0.00'
           currency: USD
-          duration: null
-          interval: null
-          trial_interval: null
-          trial_duration: null
+          duration: 1
+          interval: months
+          trial_interval: days
+          trial_duration: 14
           trial_amount: '0.00'
           setup_amount: null
           self_cancel: true
           self_upgrade: true
           self_downgrade: true
           self_reactivate: true
-          interval_count: null
+          interval_count: 1
           payment_type: one_time
           visible: true
           compare_at_amount: null
           key: null
           archived: false
+  responses:
+    InvalidPageSize:
+      description: Unprocessable Entity - `per_page` must be a positive integer.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: Next step for the caller, or null when no additional guidance applies.
+          example:
+            error: 'Request unprocessable: per_page must be a positive integer, capped at 100 (got "0")'
+            hint: null
   headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
@@ -941,6 +1076,88 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com

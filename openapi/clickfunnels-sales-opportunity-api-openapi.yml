@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,12 +39,25 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Sales::Opportunity
   description: '> Sales Opportunities
 
 
-    Sales Opportunities are initially created in a specific stage of a Pipeline and can be moved between different stages within that Pipeline.'
+    Sales Opportunities are initially created in a specific stage of a Pipeline and can be moved between different stages within that Pipeline.
+
+
+    Each Sales Opportunity requires a name and a reference to a Primary Contact. If the Opportunity is associated with a new Contact, you must first create the Contact using the Contacts API.
+
+
+    The `value` field, which is optional, represents the potential value of the Opportunity in the default currency of the Workspace.
+
+
+    You can assign an Opportunity to a Team Member using the `assignee_id` field. To reassign the Opportunity to a different team member, simply update this value. To remove the assignee, set the `assignee_id` to `null`. The `assignee_id` corresponds to the `membership.id` in the relevant Team, which can be retrieved using the Teams API.
+
+
+    When an Opportunity is moved to a stage with a `close_probability` value of 0 or 100, the `closed_at` timestamp is automatically set. If the Opportunity is later moved to a different stage, the `closed_at` timestamp remains unchanged. You can also manually set the `closed_at` timestamp using the API.'
 paths:
   /workspaces/{workspace_id}/sales/opportunities:
     get:
@@ -40,6 +72,7 @@ paths:
         schema:
           type: string
       - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/per_page'
       - $ref: '#/components/parameters/sort_order'
       - name: sort_property
         in: query
@@ -136,6 +169,7 @@ paths:
                   last_notification_email_sent_at: null
                   email_suppression_reason: null
                   is_active: true
+                  deleted_at: null
                   fb_url: null
                   twitter_url: null
                   instagram_url: null
@@ -232,6 +266,7 @@ paths:
                   last_notification_email_sent_at: null
                   email_suppression_reason: null
                   is_active: true
+                  deleted_at: null
                   fb_url: null
                   twitter_url: null
                   instagram_url: null
@@ -302,8 +337,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -314,8 +355,16 @@ paths:
                   error:
                     type: string
                     description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          $ref: '#/components/responses/InvalidPageSize'
     post:
       tags:
       - Sales::Opportunity
@@ -389,6 +438,7 @@ paths:
                   last_notification_email_sent_at: null
                   email_suppression_reason: null
                   is_active: true
+                  deleted_at: null
                   fb_url: null
                   twitter_url: null
                   instagram_url: null
@@ -459,8 +509,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -470,8 +526,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
   /sales/opportunities/{id}:
     get:
       tags:
@@ -523,6 +585,7 @@ paths:
                   last_notification_email_sent_at: null
                   email_suppression_reason: null
                   is_active: true
+                  deleted_at: null
                   fb_url: null
                   twitter_url: null
                   instagram_url: null
@@ -593,8 +656,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -604,8 +673,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     put:
       tags:
       - Sales::Opportunity
@@ -675,6 +750,7 @@ paths:
                   last_notification_email_sent_at: null
                   email_suppression_reason: null
                   is_active: true
+                  deleted_at: null
                   fb_url: null
                   twitter_url: null
                   instagram_url: null
@@ -745,8 +821,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -756,8 +838,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -767,8 +855,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     delete:
       tags:
       - Sales::Opportunity
@@ -788,8 +882,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -799,142 +899,16 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
 components:
-  parameters:
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-  headers:
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
   schemas:
-    SalesOpportunityParameters:
-      type: object
-      title: Opportunities
-      description: Opportunities
-      required:
-      - name
-      - pipelines_stage_id
-      - primary_contact_id
-      properties:
-        name:
-          type: string
-          description: Name
-        pipelines_stage_id:
-          type: integer
-          description: Pipeline Stage
-        primary_contact_id:
-          type: integer
-          description: Primary Contact
-        value:
-          type:
-          - number
-          - 'null'
-          description: The potential value of this opportunity in the default currency of the workspace
-        closed_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Close date
-        assignee_id:
-          type: integer
-          description: 'The ID of the Team `Membership` to assign the Opportunity to.
-
-            An Opportunity can be assigned to any Team member since they have access to all your workspaces.
-
-            You can get a list of available Memberships and their `id` via the `Team` resource''s `memberships` property.
-
-
-            If the opportunity is already assigned to a team member, the assignee will be updated.
-
-            You can unset the assignee by passing a `null` value for `assignee_id`.
-
-            '
-      example:
-        sales_opportunity:
-          name: Example Opportunity
-          pipelines_stage_id: 42
-          primary_contact_id: 26
-          value: '100.0'
-          closed_at: '2025-01-01T00:00:00.000Z'
-          assignee_id: 42
-    SalesOpportunityParametersUpdate:
-      type: object
-      title: Opportunities
-      description: Opportunities
-      required: []
-      properties:
-        name:
-          type: string
-          description: Name
-        pipelines_stage_id:
-          type: integer
-          description: Pipeline Stage ID
-        primary_contact_id:
-          type: integer
-          description: Primary Contact ID
-        value:
-          type:
-          - number
-          - 'null'
-          description: The potential value of this opportunity in the default currency of the workspace
-        closed_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Close date
-        assignee_id:
-          type: integer
-          description: 'The ID of the Team `Membership` to assign the Opportunity to.
-
-            An Opportunity can be assigned to any Team member since they have access to all your workspaces.
-
-            You can get a list of available Memberships and their `id` via the `Team` resource''s `memberships` property.
-
-
-            If the opportunity is already assigned to a team member, the assignee will be updated.
-
-            You can unset the assignee by passing a `null` value for `assignee_id`.
-
-            '
-      example:
-        sales_opportunity:
-          name: Example Opportunity
-          pipelines_stage_id: 123
-          primary_contact_id: 123
-          value: '100.0'
-          closed_at: '2025-01-01T00:00:00.000Z'
-          assignee_id: 42
     VisitsAttributes:
       type: object
       title: Visits
@@ -955,10 +929,6 @@ components:
           anyOf:
           - $ref: '#/components/schemas/VisitAttributes'
           - type: 'null'
-      required:
-      - first_visit
-      - last_visit
-      - last_visit_with_utm
     SalesOpportunityAttributes:
       type: object
       title: Opportunities
@@ -1106,6 +1076,12 @@ components:
               - string
               - 'null'
               description: Last notification email sent
+            deleted_at:
+              type:
+              - string
+              - 'null'
+              format: date-time
+              description: When the contact was deleted. Null when the contact has not been deleted.
             fb_url:
               type:
               - string
@@ -1259,6 +1235,7 @@ components:
           last_notification_email_sent_at: null
           email_suppression_reason: null
           is_active: true
+          deleted_at: null
           fb_url: null
           twitter_url: null
           instagram_url: null
@@ -1320,24 +1297,105 @@ components:
           created_by_id: 38
           created_at: '2025-01-01T00:00:00.000Z'
           updated_at: '2025-01-01T00:00:00.000Z'
+    SalesOpportunityParametersUpdate:
+      type: object
+      title: Opportunities
+      description: Opportunities
+      required: []
+      properties:
+        name:
+          type: string
+          description: Name
+        pipelines_stage_id:
+          type: integer
+          description: Pipeline Stage ID
+        primary_contact_id:
+          type: integer
+          description: Primary Contact ID
+        value:
+          type:
+          - number
+          - 'null'
+          description: The potential value of this opportunity in the default currency of the workspace
+        closed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Close date
+        assignee_id:
+          type: integer
+          description: 'The ID of the Team `Membership` to assign the Opportunity to.
+
+            An Opportunity can be assigned to any Team member since they have access to all your workspaces.
+
+            You can get a list of available Memberships and their `id` via the `Team` resource''s `memberships` property.
+
+
+            If the opportunity is already assigned to a team member, the assignee will be updated.
+
+            You can unset the assignee by passing a `null` value for `assignee_id`.
+
+            '
+      example:
+        sales_opportunity:
+          name: Example Opportunity
+          pipelines_stage_id: 123
+          primary_contact_id: 123
+          value: '100.0'
+          closed_at: '2025-01-01T00:00:00.000Z'
+          assignee_id: 42
+    SalesOpportunityParameters:
+      type: object
+      title: Opportunities
+      description: Opportunities
       required:
-      - assignee_id
-      - closed_at
-      - created_at
-      - id
       - name
-      - notes
-      - pipeline
-      - pipeline_id
-      - pipelines_stage
       - pipelines_stage_id
-      - primary_contact
       - primary_contact_id
-      - public_id
-      - sort_order
-      - updated_at
-      - value
-      - workspace_id
+      properties:
+        name:
+          type: string
+          description: Name
+        pipelines_stage_id:
+          type: integer
+          description: Pipeline Stage
+        primary_contact_id:
+          type: integer
+          description: Primary Contact
+        value:
+          type:
+          - number
+          - 'null'
+          description: The potential value of this opportunity in the default currency of the workspace
+        closed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Close date
+        assignee_id:
+          type: integer
+          description: 'The ID of the Team `Membership` to assign the Opportunity to.
+
+            An Opportunity can be assigned to any Team member since they have access to all your workspaces.
+
+            You can get a list of available Memberships and their `id` via the `Team` resource''s `memberships` property.
+
+
+            If the opportunity is already assigned to a team member, the assignee will be updated.
+
+            You can unset the assignee by passing a `null` value for `assignee_id`.
+
+            '
+      example:
+        sales_opportunity:
+          name: Example Opportunity
+          pipelines_stage_id: 42
+          primary_contact_id: 26
+          value: '100.0'
+          closed_at: '2025-01-01T00:00:00.000Z'
+          assignee_id: 42
     VisitAttributes:
       type: object
       title: Visit
@@ -1443,28 +1501,152 @@ components:
         started_at: '2026-01-09T14:23:45.123Z'
         created_at: '2026-01-09T14:23:45.123Z'
         updated_at: '2026-01-09T14:23:45.123Z'
-      required:
-      - browser
-      - created_at
-      - device_type
-      - ip
-      - landing_page
-      - os
-      - referrer
-      - referring_domain
-      - started_at
-      - updated_at
-      - user_agent
-      - utm_campaign
-      - utm_content
-      - utm_medium
-      - utm_source
-      - utm_term
-      - uuid
+  parameters:
+    per_page:
+      name: per_page
+      in: query
+      required: false
+      description: Records per page. Defaults to 20; raise it up to 100 for bulk reads. A larger value returns 100 records. Zero, a negative or a non-integer value is a 422. The `Link` next-page URL keeps the value, so a client following it keeps the page size. More [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  responses:
+    InvalidPageSize:
+      description: Unprocessable Entity - `per_page` must be a positive integer.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: Next step for the caller, or null when no additional guidance applies.
+          example:
+            error: 'Request unprocessable: per_page must be a positive integer, capped at 100 (got "0")'
+            hint: null
+  headers:
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com

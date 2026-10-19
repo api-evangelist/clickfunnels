@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,6 +39,7 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Orders::Invoice
   description: '> Invoices track payments for orders.
@@ -44,6 +64,7 @@ paths:
         schema:
           type: string
       - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/per_page'
       - $ref: '#/components/parameters/sort_order'
       - $ref: '#/components/parameters/sort_property'
       - $ref: '#/components/parameters/InvoiceFilter'
@@ -143,6 +164,7 @@ paths:
                   service_status: completed
                   order_type: one-time-order
                   next_charge_at: null
+                  renewal_at: null
                   trial_end_at: null
                   tag_ids: []
                   activated_at: null
@@ -185,6 +207,7 @@ paths:
                     last_notification_email_sent_at: null
                     email_suppression_reason: null
                     is_active: true
+                    deleted_at: null
                     fb_url: null
                     twitter_url: null
                     instagram_url: null
@@ -281,8 +304,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -293,8 +322,16 @@ paths:
                   error:
                     type: string
                     description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          $ref: '#/components/responses/InvalidPageSize'
     post:
       tags:
       - Orders::Invoice
@@ -430,6 +467,7 @@ paths:
                   service_status: completed
                   order_type: one-time-order
                   next_charge_at: null
+                  renewal_at: null
                   trial_end_at: null
                   tag_ids: []
                   activated_at: null
@@ -472,6 +510,7 @@ paths:
                     last_notification_email_sent_at: null
                     email_suppression_reason: null
                     is_active: true
+                    deleted_at: null
                     fb_url: null
                     twitter_url: null
                     instagram_url: null
@@ -568,8 +607,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -579,8 +624,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
   /orders/invoices/{id}:
     get:
       tags:
@@ -679,6 +730,7 @@ paths:
                   service_status: completed
                   order_type: one-time-order
                   next_charge_at: null
+                  renewal_at: null
                   trial_end_at: null
                   tag_ids: []
                   activated_at: null
@@ -721,6 +773,7 @@ paths:
                     last_notification_email_sent_at: null
                     email_suppression_reason: null
                     is_active: true
+                    deleted_at: null
                     fb_url: null
                     twitter_url: null
                     instagram_url: null
@@ -817,8 +870,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -828,8 +887,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     put:
       tags:
       - Orders::Invoice
@@ -953,6 +1018,7 @@ paths:
                   service_status: completed
                   order_type: one-time-order
                   next_charge_at: null
+                  renewal_at: null
                   trial_end_at: null
                   tag_ids: []
                   activated_at: null
@@ -995,6 +1061,7 @@ paths:
                     last_notification_email_sent_at: null
                     email_suppression_reason: null
                     is_active: true
+                    deleted_at: null
                     fb_url: null
                     twitter_url: null
                     instagram_url: null
@@ -1091,8 +1158,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -1102,8 +1175,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -1113,8 +1192,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
   /orders/invoices/{id}/abandon:
     post:
       tags:
@@ -1202,6 +1287,7 @@ paths:
                   service_status: completed
                   order_type: one-time-order
                   next_charge_at: null
+                  renewal_at: null
                   trial_end_at: null
                   tag_ids: []
                   activated_at: null
@@ -1244,6 +1330,7 @@ paths:
                     last_notification_email_sent_at: null
                     email_suppression_reason: null
                     is_active: true
+                    deleted_at: null
                     fb_url: null
                     twitter_url: null
                     instagram_url: null
@@ -1341,8 +1428,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found - the invoice does not exist, does not belong to a workspace your API key can access, is not in an abandonable status (`unpaid`, `draft`, `past_due`), or belongs to a deleted order. Fetch the invoice first and check `status` to tell these apart.
           content:
@@ -1352,15 +1445,22 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               examples:
                 not_abandonable_or_inaccessible:
                   summary: Already paid, or outside the workspaces this key can reach
                   value:
                     error: Not found
+                    hint: null
                 no_such_invoice:
                   summary: No invoice with that id
                   value:
                     error: 'Not found: Record 838 missing'
+                    hint: null
         '422':
           description: Unprocessable Entity - the payment processor rejected the abandon or did not move the invoice to `abandoned`. The invoice keeps its previous status and its retry schedule; safe to retry.
           content:
@@ -1370,8 +1470,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Request unprocessable: Invoice abandon status: unpaid'
+                hint: null
   /workspaces/{workspace_id}/orders/invoices:
     get:
       tags:
@@ -1386,6 +1492,7 @@ paths:
         schema:
           type: string
       - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/per_page'
       - $ref: '#/components/parameters/sort_order'
       - $ref: '#/components/parameters/sort_property'
       - $ref: '#/components/parameters/InvoiceFilter'
@@ -1485,6 +1592,7 @@ paths:
                   service_status: completed
                   order_type: one-time-order
                   next_charge_at: null
+                  renewal_at: null
                   trial_end_at: null
                   tag_ids: []
                   activated_at: null
@@ -1527,6 +1635,7 @@ paths:
                     last_notification_email_sent_at: null
                     email_suppression_reason: null
                     is_active: true
+                    deleted_at: null
                     fb_url: null
                     twitter_url: null
                     instagram_url: null
@@ -1623,8 +1732,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -1635,80 +1750,245 @@ paths:
                   error:
                     type: string
                     description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          $ref: '#/components/responses/InvalidPageSize'
 components:
-  parameters:
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    InvoiceFilter:
-      name: filter
-      in: query
-      description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[id]=value&filter[another_property]=value1,value2`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
-
-        '
-      required: false
-      schema:
-        type: object
-        properties:
-          id:
-            type: string
-            description: A comma-separated list of Invoice IDs to filter by.
-            example: 1,42
-          status:
-            type: string
-            description: The status of the invoice to filter by.
-            example: pending
-          invoice_type:
-            type: string
-            description: The type of the invoice to filter by.
-            example: one_time_sale
-          invoice_number:
-            type: string
-            description: A comma-separated list of Invoice Numbers to filter by.
-            example: '#1000,#1001'
-          external_id:
-            type: string
-            description: A comma-separated list of External IDs to filter by.
-            example: inv_1234567890,inv_0987654321
-      style: deepObject
-      explode: true
-    sort_order:
-      name: sort_order
-      in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-      required: false
-      schema:
-        type: string
-        enum:
-        - asc
-        - desc
-    sort_property:
-      name: sort_property
-      in: query
-      description: 'Sort property of a list response. The default is id and thus the created_at order.
-
-        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
-
-        '
-      required: false
-      schema:
-        type: string
-        enum:
-        - id
-        - updated_at
-    id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
   schemas:
+    VisitsAttributes:
+      type: object
+      title: Visits
+      description: Collection of visit tracking records for a contact, including first visit, last visit, and last visit with UTM parameters
+      properties:
+        first_visit:
+          description: The first visit associated with this contact.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit:
+          description: The most recent visit. May be null if it is identical to first_visit (to avoid duplication).
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit_with_utm:
+          description: The most recent visit that contains UTM parameters.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+    ContactBaseAttributes:
+      type: object
+      title: Contacts
+      description: Contacts
+      properties:
+        id:
+          type: integer
+          description: Contact ID
+        public_id:
+          type: string
+          description: Contact public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        anonymous:
+          type:
+          - integer
+          - 'null'
+          description: Anonymous
+        email_address:
+          type:
+          - string
+          - 'null'
+          description: The contact's email address. It is currently not expected to be null and is the main identifier for a contact.
+        first_name:
+          type:
+          - string
+          - 'null'
+          description: First name
+        last_name:
+          type:
+          - string
+          - 'null'
+          description: Last name
+        phone_number:
+          type:
+          - string
+          - 'null'
+          description: Phone number
+        time_zone:
+          type:
+          - string
+          - 'null'
+          description: 'The human-readable time zone, usually set dynamically by the app for the contact, for example, during opt-in.
+
+            Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
+
+            '
+        uuid:
+          type: string
+          description: UUID
+        unsubscribed_at:
+          type:
+          - string
+          - 'null'
+          description: Unsubscribed
+        last_notification_email_sent_at:
+          type:
+          - string
+          - 'null'
+          description: Last notification email sent
+        email_suppression_reason:
+          type:
+          - string
+          - 'null'
+          description: The reason the contact's email address is suppressed from receiving emails. Null when no suppression exists.
+        is_active:
+          type: boolean
+          description: Whether the contact is active. A contact is considered active when they have a valid email address, have not unsubscribed, have not been deleted, and have no email suppression reason. Because it collapses several states into one flag, do not use it to detect deletion - check deleted_at instead.
+        deleted_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: 'When the contact was deleted. Deleting a contact is a soft delete: the record is excluded from list endpoints but remains readable by id, so a non-null value here is the only reliable way to tell that a contact returned by this endpoint has been deleted. Null when the contact has not been deleted.'
+        fb_url:
+          type:
+          - string
+          - 'null'
+          description: Facebook URL
+        twitter_url:
+          type:
+          - string
+          - 'null'
+          description: Twitter URL
+        instagram_url:
+          type:
+          - string
+          - 'null'
+          description: Instagram URL
+        linkedin_url:
+          type:
+          - string
+          - 'null'
+          description: LinkedIn URL
+        website_url:
+          type:
+          - string
+          - 'null'
+          description: Website URL
+        created_at:
+          type: string
+          format: date-time
+          description: Date added
+        updated_at:
+          type: string
+          format: date-time
+          description: Last updated
+        tags:
+          type:
+          - array
+          - 'null'
+          items:
+            type: object
+            title: Contact Tags
+            description: Contact Tags
+            properties:
+              id:
+                type: integer
+                description: Tag ID
+              public_id:
+                type: string
+                description: Tag public ID
+              name:
+                type: string
+                description: Name
+              color:
+                type: string
+                description: Color
+              applied_at:
+                type:
+                - string
+                - 'null'
+                description: The datetime the tag was applied by creating a Contacts::AppliedTag that maps the tag to the contact.
+          description: Contact Tags
+        custom_attributes:
+          type: object
+          additionalProperties:
+            type: string
+          description: A dynamic key-value pair object where both the key and value are strings. Custom attributes are usually added to the contact when they submit forms that contain custom contact attributes. But you can also add them via the API using the modifying endpoints like Create/Update/Upsert Contact.
+        visits:
+          allOf:
+          - $ref: '#/components/schemas/VisitsAttributes'
+          description: Visit tracking information for this contact, including first visit, last visit, and last visit with UTM parameters
+      example:
+        id: 24359
+        public_id: vQxYMj
+        workspace_id: 4
+        anonymous: 0
+        email_address: jane.doe@example.com
+        first_name: Jane
+        last_name: Doe
+        phone_number: '+18005550199'
+        time_zone: Madrid
+        uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+        unsubscribed_at: null
+        last_notification_email_sent_at: null
+        email_suppression_reason: null
+        is_active: true
+        deleted_at: null
+        fb_url: null
+        twitter_url: null
+        instagram_url: null
+        linkedin_url: null
+        website_url: null
+        created_at: '2026-01-09T15:27:56.647Z'
+        updated_at: '2026-01-09T15:28:08.075Z'
+        tags: []
+        custom_attributes: {}
+        visits:
+          first_visit:
+            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+            utm_source: google
+            utm_medium: cpc
+            utm_campaign: spring_sale
+            utm_term: running shoes
+            utm_content: ad_variant_a
+            ip: 192.168.1.1
+            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+            referrer: https://www.google.com/search?q=example
+            referring_domain: google.com
+            landing_page: https://example.com/products/shoes
+            browser: Chrome
+            os: Mac OS X
+            device_type: desktop
+            started_at: '2026-01-09T14:23:45.123Z'
+            created_at: '2026-01-09T14:23:45.123Z'
+            updated_at: '2026-01-09T14:23:45.123Z'
+          last_visit: null
+          last_visit_with_utm:
+            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+            utm_source: google
+            utm_medium: cpc
+            utm_campaign: spring_sale
+            utm_term: running shoes
+            utm_content: ad_variant_a
+            ip: 192.168.1.1
+            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+            referrer: https://www.google.com/search?q=example
+            referring_domain: google.com
+            landing_page: https://example.com/products/shoes
+            browser: Chrome
+            os: Mac OS X
+            device_type: desktop
+            started_at: '2026-01-09T14:23:45.123Z'
+            created_at: '2026-01-09T14:23:45.123Z'
+            updated_at: '2026-01-09T14:23:45.123Z'
     OrderBaseAttributes:
       type: object
       title: Order (Base)
@@ -1780,12 +2060,55 @@ components:
           type:
           - string
           - 'null'
-          description: Next Charge At
+          description: When the next invoice on this subscription falls due. Read-only for processor-managed orders; on an external order it is a plain field you can write.
+        renewal_at:
+          type:
+          - string
+          - 'null'
+          description: 'When the subscription''s service period rolls over and the next billing cycle begins.
+
+            Distinct from `next_charge_at`, which is when the resulting invoice is due.
+
+
+            Writable on a Payments AI subscription that is `pending`, `active`, or `paused` -
+
+            see the `renewal_at` note on `PATCH /orders/{id}`. Read-only on Stripe and external orders.
+
+
+            A write is applied at the payment processor rather than stored. For an actual schedule change,
+
+            the order a successful `PATCH` hands back will carry the pre-request stored value. Follow the
+
+            `200` / `202` polling conditions on `PATCH /orders/{id}`; a caller timeout means unknown, not
+
+            failed.
+
+            '
         trial_end_at:
           type:
           - string
           - 'null'
-          description: Trial End At
+          description: 'When this subscription''s trial ends and it converts to a paid charge. Null when the
+
+            order never had a trial.
+
+
+            Writable while the order is in a trial. Payments AI also accepts it as the equal companion to
+
+            a legal `renewal_at` move while the stored trial end is still in the future - see the
+
+            `trial_end_at` note on `PATCH /orders/{id}`.
+
+
+            A write is applied at the payment processor rather than stored. For an actual schedule change,
+
+            the order a successful `PATCH` hands back will carry the pre-request stored value. Follow the
+
+            `200` / `202` polling conditions on `PATCH /orders/{id}`; a caller timeout means unknown, not
+
+            failed.
+
+            '
         tag_ids:
           type: array
           items:
@@ -1983,6 +2306,7 @@ components:
         service_status: completed
         order_type: one-time-order
         next_charge_at: null
+        renewal_at: null
         trial_end_at: null
         tag_ids: []
         activated_at: null
@@ -2025,6 +2349,7 @@ components:
           last_notification_email_sent_at: null
           email_suppression_reason: null
           is_active: true
+          deleted_at: null
           fb_url: null
           twitter_url: null
           instagram_url: null
@@ -2075,51 +2400,501 @@ components:
         affiliate: null
         referral_code: null
         order_page: null
-      required:
-      - activated_at
-      - affiliate
-      - billing_address_city
-      - billing_address_country
-      - billing_address_postal_code
-      - billing_address_region
-      - billing_address_street_one
-      - billing_address_street_two
-      - billing_status
-      - cancel_description
-      - cancel_reason
-      - canceled_at
-      - canceled_by
-      - churned_at
-      - contact
-      - id
-      - in_trial
-      - live_mode
-      - next_charge_at
-      - notes
-      - order_number
-      - order_page
-      - order_type
-      - origination_channel_id
-      - origination_channel_name
-      - origination_channel_public_id
-      - origination_channel_type
-      - public_id
-      - recurring_invoices_paid_count
-      - referral_code
-      - service_status
-      - shipping_address_city
-      - shipping_address_country
-      - shipping_address_first_name
-      - shipping_address_last_name
-      - shipping_address_organization_name
-      - shipping_address_phone_number
-      - shipping_address_postal_code
-      - shipping_address_region
-      - shipping_address_street_one
-      - shipping_address_street_two
-      - tag_ids
-      - total_amount
-      - trial_end_at
+    OrdersInvoiceAttributes:
+      type: object
+      title: Invoices
+      description: Invoices
+      properties:
+        id:
+          type: integer
+          description: Invoice ID
+        public_id:
+          type: string
+          description: Invoice public ID
+        order_id:
+          type: integer
+          description: Order ID
+        status:
+          type: string
+          description: 'The billing status reflects the status of the invoice''s payment.
+
+            Billing status can be one of the following for Payments AI orders: `draft`, `paid`, `unpaid`, `partially-refunded`, `refunded`, `voided`, `disputed`, `past-due`.
+
+
+            External invoice statuses of external one-time orders can be one of the following: `unpaid`, `paid`, `voided` and `refunded`, `disputed`, `past-due`.
+
+            A change in status will update the `billing_status` of the parent order. If the status of a one-time order is changed to `paid`, the order''s `service_status` will also be flipped to `completed`.
+
+            '
+        due_amount:
+          type:
+          - string
+          - 'null'
+          description: Due Amount
+        total_amount:
+          type:
+          - string
+          - 'null'
+          description: Total Amt
+        subtotal_amount:
+          type:
+          - string
+          - 'null'
+          description: Subtotal Amount
+        tax_amount:
+          type:
+          - string
+          - 'null'
+          description: Tax Amount
+        shipping_amount:
+          type:
+          - string
+          - 'null'
+          description: Invoiced shipping amount. Cannot be negative.
+        discount_amount:
+          type:
+          - string
+          - 'null'
+          description: Discount Amount
+        currency:
+          type:
+          - string
+          - 'null'
+          description: The currency for the invoice. Automatically set to the parent order's currency when creating an invoice for an external order through the API.
+        issued_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: 'The date the invoice was issued.
+
+            '
+        due_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice is due.
+        paid_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the invoice was paid.
+        invoice_type:
+          type:
+          - string
+          - 'null'
+          enum:
+          - initial
+          - renewal
+          - interim
+          - cancellation
+          - one_time
+          - refund
+          - charge
+          - one_time_sale
+          - null
+          description: Invoice Type
+        invoice_number:
+          type: string
+          description: The number of the invoice. Usually, this is a sequential number in a certain format to be used for bookkeeping purposes.
+        fulfillment_status:
+          type:
+          - string
+          - 'null'
+          description: "The fulfillment status of the invoice.\nThis can be one of:\n - `not_applicable` - the invoice is not eligible for fulfillment\n - `unfulfilled` - the entire invoice needs to be fulfilled\n - `partial` - some items have been fulfilled, but some are pending or restocked\n - `complete` - all items are fulfilled\n"
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+        external_id:
+          type:
+          - string
+          - 'null'
+          description: External ID
+        payment_processor:
+          type:
+          - string
+          - 'null'
+          description: The payment processor of the invoice's order. Currently, it can be one of `payments_ai` and `external`.
+        eligible_for_fulfillment:
+          type:
+          - boolean
+          - 'null'
+          description: Invoice has been paid so is eligible for fulfillment (does not indicate if the invoice has any fulfillable items)
+        line_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrdersInvoicesLineItemAttributes'
+          description: Invoice Line Items
+        order:
+          $ref: '#/components/schemas/OrderBaseAttributes'
+        visits:
+          allOf:
+          - $ref: '#/components/schemas/OrderVisitsAttributes'
+          description: Visit tracking information from the parent order. Contains last_visit and last_visit_with_utm (but not first_visit, which belongs to the contact).
+      example:
+        id: 838
+        public_id: WNrMnJ
+        order_id: 22642
+        status: paid
+        due_amount: '13.00'
+        total_amount: '13.00'
+        subtotal_amount: '3.00'
+        tax_amount: '0.00'
+        shipping_amount: '10.00'
+        discount_amount: '0.00'
+        currency: USD
+        issued_at: '2023-10-01T12:43:55.000Z'
+        due_at: '2023-10-15T00:00:00.000Z'
+        paid_at: '2025-10-10T08:04:02.000Z'
+        invoice_type: one_time_sale
+        invoice_number: '3'
+        fulfillment_status: not_applicable
+        created_at: '2026-01-10T20:16:16.536Z'
+        updated_at: '2026-01-10T20:16:16.536Z'
+        external_id: tffv2w34qv
+        payment_processor: external
+        eligible_for_fulfillment: true
+        line_items:
+        - id: 682
+          public_id: RegpVj
+          invoice_id: 838
+          external_id: null
+          payment_type: null
+          description: null
+          quantity: 1
+          fulfillment_status: unfulfilled
+          external_product_id: null
+          discount_amount: '0.0'
+          state_tax_amount: '0.0'
+          county_tax_amount: '0.0'
+          city_tax_amount: '0.0'
+          district_tax_amount: '0.0'
+          state_tax_rate: '0.0'
+          county_tax_rate: '0.0'
+          city_tax_rate: '0.0'
+          district_tax_rate: '0.0'
+          country_tax_jurisdiction: null
+          state_tax_jurisdiction: null
+          county_tax_jurisdiction: null
+          city_tax_jurisdiction: null
+          period_start_at: null
+          period_end_at: null
+          period_number: null
+          created_at: '2026-01-10T20:16:16.538Z'
+          updated_at: '2026-01-10T20:16:16.538Z'
+          amount: '3.00'
+          products_price:
+            id: 22229
+            public_id: YqEWxY
+            amount: '198.00'
+            currency: usd
+            duration: null
+            interval: null
+            interval_count: null
+          products_variant:
+            id: 22228
+            public_id: JdknyN
+            product_id: 6512
+            name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
+            description: null
+            sku: SIYP-BLACK-PREMIUM-001
+            fulfillment_required: false
+        order:
+          id: 22642
+          public_id: JmRRyN
+          order_number: '#2146'
+          total_amount: '396.00'
+          origination_channel_id: 11
+          origination_channel_type: Platform::Application
+          notes: For Fulfillment
+          live_mode: true
+          in_trial: false
+          billing_status: paid
+          service_status: completed
+          order_type: one-time-order
+          next_charge_at: null
+          renewal_at: null
+          trial_end_at: null
+          tag_ids: []
+          activated_at: null
+          canceled_at: null
+          canceled_by: null
+          cancel_reason: null
+          cancel_description: null
+          churned_at: null
+          shipping_address_first_name: Caroll
+          shipping_address_last_name: Kirlin
+          shipping_address_organization_name: Testing, Inc.
+          shipping_address_phone_number: '+19053871234'
+          shipping_address_street_one: 3443 W Bavaria St
+          shipping_address_street_two: ''
+          shipping_address_city: Eagle
+          shipping_address_region: ID
+          shipping_address_country: US
+          shipping_address_postal_code: '83616'
+          billing_address_street_one: 3443 W Bavaria St
+          billing_address_street_two: ''
+          billing_address_city: Eagle
+          billing_address_region: ID
+          billing_address_country: US
+          billing_address_postal_code: '83616'
+          recurring_invoices_paid_count: 1
+          origination_channel_name: Default API Client
+          origination_channel_public_id: vNWWMb
+          contact:
+            id: 24359
+            public_id: vQxYMj
+            workspace_id: 4
+            anonymous: 0
+            email_address: jane.doe@example.com
+            first_name: Jane
+            last_name: Doe
+            phone_number: '+18005550199'
+            time_zone: Madrid
+            uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
+            unsubscribed_at: null
+            last_notification_email_sent_at: null
+            email_suppression_reason: null
+            is_active: true
+            deleted_at: null
+            fb_url: null
+            twitter_url: null
+            instagram_url: null
+            linkedin_url: null
+            website_url: null
+            created_at: '2026-01-09T15:27:56.647Z'
+            updated_at: '2026-01-09T15:28:08.075Z'
+            tags: []
+            custom_attributes: {}
+            visits:
+              first_visit:
+                uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                utm_source: google
+                utm_medium: cpc
+                utm_campaign: spring_sale
+                utm_term: running shoes
+                utm_content: ad_variant_a
+                ip: 192.168.1.1
+                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                referrer: https://www.google.com/search?q=example
+                referring_domain: google.com
+                landing_page: https://example.com/products/shoes
+                browser: Chrome
+                os: Mac OS X
+                device_type: desktop
+                started_at: '2026-01-09T14:23:45.123Z'
+                created_at: '2026-01-09T14:23:45.123Z'
+                updated_at: '2026-01-09T14:23:45.123Z'
+              last_visit: null
+              last_visit_with_utm:
+                uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+                utm_source: google
+                utm_medium: cpc
+                utm_campaign: spring_sale
+                utm_term: running shoes
+                utm_content: ad_variant_a
+                ip: 192.168.1.1
+                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+                referrer: https://www.google.com/search?q=example
+                referring_domain: google.com
+                landing_page: https://example.com/products/shoes
+                browser: Chrome
+                os: Mac OS X
+                device_type: desktop
+                started_at: '2026-01-09T14:23:45.123Z'
+                created_at: '2026-01-09T14:23:45.123Z'
+                updated_at: '2026-01-09T14:23:45.123Z'
+          affiliate: null
+          referral_code: null
+          order_page: null
+        visits:
+          last_visit:
+            uuid: 7a3f9c11-2d45-4e23-88d2-1bef9acd44fa
+            utm_source: null
+            utm_medium: null
+            utm_campaign: null
+            utm_term: null
+            utm_content: null
+            ip: 192.168.1.1
+            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+            referrer: https://www.clickfunnels.com/products
+            referring_domain: clickfunnels.com
+            landing_page: https://example.com/checkout
+            browser: Chrome
+            os: Mac OS X
+            device_type: desktop
+            started_at: '2026-01-10T20:10:15.234Z'
+            created_at: '2026-01-10T20:10:15.234Z'
+            updated_at: '2026-01-10T20:10:15.234Z'
+          last_visit_with_utm:
+            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+            utm_source: google
+            utm_medium: cpc
+            utm_campaign: spring_sale
+            utm_term: running shoes
+            utm_content: ad_variant_a
+            ip: 192.168.1.1
+            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+            referrer: https://www.google.com/search?q=example
+            referring_domain: google.com
+            landing_page: https://example.com/products/shoes
+            browser: Chrome
+            os: Mac OS X
+            device_type: desktop
+            started_at: '2026-01-09T14:23:45.123Z'
+            created_at: '2026-01-09T14:23:45.123Z'
+            updated_at: '2026-01-09T14:23:45.123Z'
+    OrderVisitsAttributes:
+      type: object
+      title: Order Visits
+      description: Visit tracking records for orders and invoices. Contains last_visit and last_visit_with_utm only (first_visit belongs to the contact).
+      properties:
+        last_visit:
+          description: The most recent visit associated with this order.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+        last_visit_with_utm:
+          description: The most recent visit that contains UTM parameters.
+          anyOf:
+          - $ref: '#/components/schemas/VisitAttributes'
+          - type: 'null'
+      example:
+        last_visit: null
+        last_visit_with_utm:
+          uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+          utm_source: google
+          utm_medium: cpc
+          utm_campaign: spring_sale
+          utm_term: running shoes
+          utm_content: ad_variant_a
+          ip: 192.168.1.1
+          user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+          referrer: https://www.google.com/search?q=example
+          referring_domain: google.com
+          landing_page: https://example.com/products/shoes
+          browser: Chrome
+          os: Mac OS X
+          device_type: desktop
+          started_at: '2026-01-09T14:23:45.123Z'
+          created_at: '2026-01-09T14:23:45.123Z'
+          updated_at: '2026-01-09T14:23:45.123Z'
+    VisitAttributes:
+      type: object
+      title: Visit
+      description: Visit tracking information including UTM parameters and device data
+      properties:
+        uuid:
+          type: string
+          description: Unique identifier for the visit
+        utm_source:
+          type:
+          - string
+          - 'null'
+          description: UTM source parameter from the visit URL
+        utm_medium:
+          type:
+          - string
+          - 'null'
+          description: UTM medium parameter from the visit URL
+        utm_campaign:
+          type:
+          - string
+          - 'null'
+          description: UTM campaign parameter from the visit URL
+        utm_term:
+          type:
+          - string
+          - 'null'
+          description: UTM term parameter from the visit URL
+        utm_content:
+          type:
+          - string
+          - 'null'
+          description: UTM content parameter from the visit URL
+        ip:
+          type:
+          - string
+          - 'null'
+          description: IP address of the visitor
+        user_agent:
+          type:
+          - string
+          - 'null'
+          description: User agent string from the visitor's browser
+        referrer:
+          type:
+          - string
+          - 'null'
+          description: HTTP referrer URL
+        referring_domain:
+          type:
+          - string
+          - 'null'
+          description: Domain extracted from the referrer URL
+        landing_page:
+          type:
+          - string
+          - 'null'
+          description: The first page URL visited in this session
+        browser:
+          type:
+          - string
+          - 'null'
+          description: Browser name detected from user agent
+        os:
+          type:
+          - string
+          - 'null'
+          description: Operating system detected from user agent
+        device_type:
+          type:
+          - string
+          - 'null'
+          description: Device type (e.g., desktop, mobile, tablet)
+        started_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the visit session started
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the visit record was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the visit record was last updated
+      example:
+        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
+        utm_source: google
+        utm_medium: cpc
+        utm_campaign: spring_sale
+        utm_term: running shoes
+        utm_content: ad_variant_a
+        ip: 192.168.1.1
+        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+        referrer: https://www.google.com/search?q=example
+        referring_domain: google.com
+        landing_page: https://example.com/products/shoes
+        browser: Chrome
+        os: Mac OS X
+        device_type: desktop
+        started_at: '2026-01-09T14:23:45.123Z'
+        created_at: '2026-01-09T14:23:45.123Z'
+        updated_at: '2026-01-09T14:23:45.123Z'
     OrdersInvoicesLineItemAttributes:
       type: object
       title: Line items
@@ -2370,198 +3145,6 @@ components:
           description: null
           sku: SIYP-BLACK-PREMIUM-001
           fulfillment_required: false
-      required:
-      - amount
-      - city_tax_amount
-      - city_tax_jurisdiction
-      - city_tax_rate
-      - country_tax_jurisdiction
-      - county_tax_amount
-      - county_tax_jurisdiction
-      - county_tax_rate
-      - created_at
-      - description
-      - discount_amount
-      - district_tax_amount
-      - district_tax_rate
-      - external_id
-      - external_product_id
-      - fulfillment_status
-      - id
-      - invoice_id
-      - payment_type
-      - period_end_at
-      - period_number
-      - period_start_at
-      - products_price
-      - products_variant
-      - public_id
-      - quantity
-      - state_tax_amount
-      - state_tax_jurisdiction
-      - state_tax_rate
-      - updated_at
-    OrderVisitsAttributes:
-      type: object
-      title: Order Visits
-      description: Visit tracking records for orders and invoices. Contains last_visit and last_visit_with_utm only (first_visit belongs to the contact).
-      properties:
-        last_visit:
-          description: The most recent visit associated with this order.
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-        last_visit_with_utm:
-          description: The most recent visit that contains UTM parameters.
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-      example:
-        last_visit: null
-        last_visit_with_utm:
-          uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-          utm_source: google
-          utm_medium: cpc
-          utm_campaign: spring_sale
-          utm_term: running shoes
-          utm_content: ad_variant_a
-          ip: 192.168.1.1
-          user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-          referrer: https://www.google.com/search?q=example
-          referring_domain: google.com
-          landing_page: https://example.com/products/shoes
-          browser: Chrome
-          os: Mac OS X
-          device_type: desktop
-          started_at: '2026-01-09T14:23:45.123Z'
-          created_at: '2026-01-09T14:23:45.123Z'
-          updated_at: '2026-01-09T14:23:45.123Z'
-      required:
-      - last_visit
-      - last_visit_with_utm
-    VisitAttributes:
-      type: object
-      title: Visit
-      description: Visit tracking information including UTM parameters and device data
-      properties:
-        uuid:
-          type: string
-          description: Unique identifier for the visit
-        utm_source:
-          type:
-          - string
-          - 'null'
-          description: UTM source parameter from the visit URL
-        utm_medium:
-          type:
-          - string
-          - 'null'
-          description: UTM medium parameter from the visit URL
-        utm_campaign:
-          type:
-          - string
-          - 'null'
-          description: UTM campaign parameter from the visit URL
-        utm_term:
-          type:
-          - string
-          - 'null'
-          description: UTM term parameter from the visit URL
-        utm_content:
-          type:
-          - string
-          - 'null'
-          description: UTM content parameter from the visit URL
-        ip:
-          type:
-          - string
-          - 'null'
-          description: IP address of the visitor
-        user_agent:
-          type:
-          - string
-          - 'null'
-          description: User agent string from the visitor's browser
-        referrer:
-          type:
-          - string
-          - 'null'
-          description: HTTP referrer URL
-        referring_domain:
-          type:
-          - string
-          - 'null'
-          description: Domain extracted from the referrer URL
-        landing_page:
-          type:
-          - string
-          - 'null'
-          description: The first page URL visited in this session
-        browser:
-          type:
-          - string
-          - 'null'
-          description: Browser name detected from user agent
-        os:
-          type:
-          - string
-          - 'null'
-          description: Operating system detected from user agent
-        device_type:
-          type:
-          - string
-          - 'null'
-          description: Device type (e.g., desktop, mobile, tablet)
-        started_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Timestamp when the visit session started
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp when the visit record was created
-        updated_at:
-          type: string
-          format: date-time
-          description: Timestamp when the visit record was last updated
-      example:
-        uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-        utm_source: google
-        utm_medium: cpc
-        utm_campaign: spring_sale
-        utm_term: running shoes
-        utm_content: ad_variant_a
-        ip: 192.168.1.1
-        user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-        referrer: https://www.google.com/search?q=example
-        referring_domain: google.com
-        landing_page: https://example.com/products/shoes
-        browser: Chrome
-        os: Mac OS X
-        device_type: desktop
-        started_at: '2026-01-09T14:23:45.123Z'
-        created_at: '2026-01-09T14:23:45.123Z'
-        updated_at: '2026-01-09T14:23:45.123Z'
-      required:
-      - browser
-      - created_at
-      - device_type
-      - ip
-      - landing_page
-      - os
-      - referrer
-      - referring_domain
-      - started_at
-      - updated_at
-      - user_agent
-      - utm_campaign
-      - utm_content
-      - utm_medium
-      - utm_source
-      - utm_term
-      - uuid
     OrdersInvoiceParameters:
       type: object
       title: External Invoice
@@ -2710,385 +3293,6 @@ components:
             variant_id: 123
             products_price_id: 456
             description: Premium Widget
-    OrdersInvoiceAttributes:
-      type: object
-      title: Invoices
-      description: Invoices
-      properties:
-        id:
-          type: integer
-          description: Invoice ID
-        public_id:
-          type: string
-          description: Invoice public ID
-        order_id:
-          type: integer
-          description: Order ID
-        status:
-          type: string
-          description: 'The billing status reflects the status of the invoice''s payment.
-
-            Billing status can be one of the following for Payments AI orders: `draft`, `paid`, `unpaid`, `partially-refunded`, `refunded`, `voided`, `disputed`, `past-due`.
-
-
-            External invoice statuses of external one-time orders can be one of the following: `unpaid`, `paid`, `voided` and `refunded`, `disputed`, `past-due`.
-
-            A change in status will update the `billing_status` of the parent order. If the status of a one-time order is changed to `paid`, the order''s `service_status` will also be flipped to `completed`.
-
-            '
-        due_amount:
-          type:
-          - string
-          - 'null'
-          description: Due Amount
-        total_amount:
-          type:
-          - string
-          - 'null'
-          description: Total Amt
-        subtotal_amount:
-          type:
-          - string
-          - 'null'
-          description: Subtotal Amount
-        tax_amount:
-          type:
-          - string
-          - 'null'
-          description: Tax Amount
-        shipping_amount:
-          type:
-          - string
-          - 'null'
-          description: Invoiced shipping amount. Cannot be negative.
-        discount_amount:
-          type:
-          - string
-          - 'null'
-          description: Discount Amount
-        currency:
-          type:
-          - string
-          - 'null'
-          description: Currency
-        issued_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: 'The date the invoice was issued.
-
-            '
-        due_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: The date the invoice is due.
-        paid_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: The date the invoice was paid.
-        invoice_type:
-          type:
-          - string
-          - 'null'
-          enum:
-          - initial
-          - renewal
-          - interim
-          - cancellation
-          - one_time
-          - refund
-          - charge
-          - one_time_sale
-          - null
-          description: Invoice Type
-        invoice_number:
-          type: string
-          description: The number of the invoice. Usually, this is a sequential number in a certain format to be used for bookkeeping purposes.
-        fulfillment_status:
-          type:
-          - string
-          - 'null'
-          description: "The fulfillment status of the invoice.\nThis can be one of:\n - `not_applicable` - the invoice is not eligible for fulfillment\n - `unfulfilled` - the entire invoice needs to be fulfilled\n - `partial` - some items have been fulfilled, but some are pending or restocked\n - `complete` - all items are fulfilled\n"
-        created_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Added
-        updated_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Updated
-        external_id:
-          type:
-          - string
-          - 'null'
-          description: External ID
-        payment_processor:
-          type:
-          - string
-          - 'null'
-          description: The payment processor of the invoice's order. Currently, it can be one of `payments_ai` and `external`.
-        eligible_for_fulfillment:
-          type:
-          - boolean
-          - 'null'
-          description: Invoice has been paid so is eligible for fulfillment (does not indicate if the invoice has any fulfillable items)
-        line_items:
-          type: array
-          items:
-            $ref: '#/components/schemas/OrdersInvoicesLineItemAttributes'
-          description: Invoice Line Items
-        order:
-          $ref: '#/components/schemas/OrderBaseAttributes'
-        visits:
-          allOf:
-          - $ref: '#/components/schemas/OrderVisitsAttributes'
-          description: Visit tracking information from the parent order. Contains last_visit and last_visit_with_utm (but not first_visit, which belongs to the contact).
-      example:
-        id: 838
-        public_id: WNrMnJ
-        order_id: 22642
-        status: paid
-        due_amount: '13.00'
-        total_amount: '13.00'
-        subtotal_amount: '3.00'
-        tax_amount: '0.00'
-        shipping_amount: '10.00'
-        discount_amount: '0.00'
-        currency: USD
-        issued_at: '2023-10-01T12:43:55.000Z'
-        due_at: '2023-10-15T00:00:00.000Z'
-        paid_at: '2025-10-10T08:04:02.000Z'
-        invoice_type: one_time_sale
-        invoice_number: '3'
-        fulfillment_status: not_applicable
-        created_at: '2026-01-10T20:16:16.536Z'
-        updated_at: '2026-01-10T20:16:16.536Z'
-        external_id: tffv2w34qv
-        payment_processor: external
-        eligible_for_fulfillment: true
-        line_items:
-        - id: 682
-          public_id: RegpVj
-          invoice_id: 838
-          external_id: null
-          payment_type: null
-          description: null
-          quantity: 1
-          fulfillment_status: unfulfilled
-          external_product_id: null
-          discount_amount: '0.0'
-          state_tax_amount: '0.0'
-          county_tax_amount: '0.0'
-          city_tax_amount: '0.0'
-          district_tax_amount: '0.0'
-          state_tax_rate: '0.0'
-          county_tax_rate: '0.0'
-          city_tax_rate: '0.0'
-          district_tax_rate: '0.0'
-          country_tax_jurisdiction: null
-          state_tax_jurisdiction: null
-          county_tax_jurisdiction: null
-          city_tax_jurisdiction: null
-          period_start_at: null
-          period_end_at: null
-          period_number: null
-          created_at: '2026-01-10T20:16:16.538Z'
-          updated_at: '2026-01-10T20:16:16.538Z'
-          amount: '3.00'
-          products_price:
-            id: 22229
-            public_id: YqEWxY
-            amount: '198.00'
-            currency: usd
-            duration: null
-            interval: null
-            interval_count: null
-          products_variant:
-            id: 22228
-            public_id: JdknyN
-            product_id: 6512
-            name: Seinfeld In Your Pocket - Comedy Joke Machine (Black Premium)
-            description: null
-            sku: SIYP-BLACK-PREMIUM-001
-            fulfillment_required: false
-        order:
-          id: 22642
-          public_id: JmRRyN
-          order_number: '#2146'
-          total_amount: '396.00'
-          origination_channel_id: 11
-          origination_channel_type: Platform::Application
-          notes: For Fulfillment
-          live_mode: true
-          in_trial: false
-          billing_status: paid
-          service_status: completed
-          order_type: one-time-order
-          next_charge_at: null
-          trial_end_at: null
-          tag_ids: []
-          activated_at: null
-          canceled_at: null
-          canceled_by: null
-          cancel_reason: null
-          cancel_description: null
-          churned_at: null
-          shipping_address_first_name: Caroll
-          shipping_address_last_name: Kirlin
-          shipping_address_organization_name: Testing, Inc.
-          shipping_address_phone_number: '+19053871234'
-          shipping_address_street_one: 3443 W Bavaria St
-          shipping_address_street_two: ''
-          shipping_address_city: Eagle
-          shipping_address_region: ID
-          shipping_address_country: US
-          shipping_address_postal_code: '83616'
-          billing_address_street_one: 3443 W Bavaria St
-          billing_address_street_two: ''
-          billing_address_city: Eagle
-          billing_address_region: ID
-          billing_address_country: US
-          billing_address_postal_code: '83616'
-          recurring_invoices_paid_count: 1
-          origination_channel_name: Default API Client
-          origination_channel_public_id: vNWWMb
-          contact:
-            id: 24359
-            public_id: vQxYMj
-            workspace_id: 4
-            anonymous: 0
-            email_address: jane.doe@example.com
-            first_name: Jane
-            last_name: Doe
-            phone_number: '+18005550199'
-            time_zone: Madrid
-            uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
-            unsubscribed_at: null
-            last_notification_email_sent_at: null
-            email_suppression_reason: null
-            is_active: true
-            fb_url: null
-            twitter_url: null
-            instagram_url: null
-            linkedin_url: null
-            website_url: null
-            created_at: '2026-01-09T15:27:56.647Z'
-            updated_at: '2026-01-09T15:28:08.075Z'
-            tags: []
-            custom_attributes: {}
-            visits:
-              first_visit:
-                uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-                utm_source: google
-                utm_medium: cpc
-                utm_campaign: spring_sale
-                utm_term: running shoes
-                utm_content: ad_variant_a
-                ip: 192.168.1.1
-                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-                referrer: https://www.google.com/search?q=example
-                referring_domain: google.com
-                landing_page: https://example.com/products/shoes
-                browser: Chrome
-                os: Mac OS X
-                device_type: desktop
-                started_at: '2026-01-09T14:23:45.123Z'
-                created_at: '2026-01-09T14:23:45.123Z'
-                updated_at: '2026-01-09T14:23:45.123Z'
-              last_visit: null
-              last_visit_with_utm:
-                uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-                utm_source: google
-                utm_medium: cpc
-                utm_campaign: spring_sale
-                utm_term: running shoes
-                utm_content: ad_variant_a
-                ip: 192.168.1.1
-                user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-                referrer: https://www.google.com/search?q=example
-                referring_domain: google.com
-                landing_page: https://example.com/products/shoes
-                browser: Chrome
-                os: Mac OS X
-                device_type: desktop
-                started_at: '2026-01-09T14:23:45.123Z'
-                created_at: '2026-01-09T14:23:45.123Z'
-                updated_at: '2026-01-09T14:23:45.123Z'
-          affiliate: null
-          referral_code: null
-          order_page: null
-        visits:
-          last_visit:
-            uuid: 7a3f9c11-2d45-4e23-88d2-1bef9acd44fa
-            utm_source: null
-            utm_medium: null
-            utm_campaign: null
-            utm_term: null
-            utm_content: null
-            ip: 192.168.1.1
-            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-            referrer: https://www.clickfunnels.com/products
-            referring_domain: clickfunnels.com
-            landing_page: https://example.com/checkout
-            browser: Chrome
-            os: Mac OS X
-            device_type: desktop
-            started_at: '2026-01-10T20:10:15.234Z'
-            created_at: '2026-01-10T20:10:15.234Z'
-            updated_at: '2026-01-10T20:10:15.234Z'
-          last_visit_with_utm:
-            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-            utm_source: google
-            utm_medium: cpc
-            utm_campaign: spring_sale
-            utm_term: running shoes
-            utm_content: ad_variant_a
-            ip: 192.168.1.1
-            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-            referrer: https://www.google.com/search?q=example
-            referring_domain: google.com
-            landing_page: https://example.com/products/shoes
-            browser: Chrome
-            os: Mac OS X
-            device_type: desktop
-            started_at: '2026-01-09T14:23:45.123Z'
-            created_at: '2026-01-09T14:23:45.123Z'
-            updated_at: '2026-01-09T14:23:45.123Z'
-      required:
-      - created_at
-      - currency
-      - discount_amount
-      - due_amount
-      - due_at
-      - eligible_for_fulfillment
-      - external_id
-      - fulfillment_status
-      - id
-      - invoice_number
-      - invoice_type
-      - issued_at
-      - line_items
-      - order
-      - order_id
-      - paid_at
-      - payment_processor
-      - public_id
-      - shipping_amount
-      - status
-      - subtotal_amount
-      - tax_amount
-      - total_amount
-      - updated_at
-      - visits
     OrdersInvoiceParametersUpdate:
       type: object
       title: External Invoice Update
@@ -3199,255 +3403,103 @@ components:
           - id: 682
             amount: '99.00'
             quantity: 2
-    ContactBaseAttributes:
-      type: object
-      title: Contacts
-      description: Contacts
-      properties:
-        id:
-          type: integer
-          description: Contact ID
-        public_id:
-          type: string
-          description: Contact public ID
-        workspace_id:
-          type: integer
-          description: Workspace ID
-        anonymous:
-          type:
-          - integer
-          - 'null'
-          description: Anonymous
-        email_address:
-          type:
-          - string
-          - 'null'
-          description: The contact's email address. It is currently not expected to be null and is the main identifier for a contact.
-        first_name:
-          type:
-          - string
-          - 'null'
-          description: First name
-        last_name:
-          type:
-          - string
-          - 'null'
-          description: Last name
-        phone_number:
-          type:
-          - string
-          - 'null'
-          description: Phone number
-        time_zone:
-          type:
-          - string
-          - 'null'
-          description: 'The human-readable time zone, usually set dynamically by the app for the contact, for example, during opt-in.
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    per_page:
+      name: per_page
+      in: query
+      required: false
+      description: Records per page. Defaults to 20; raise it up to 100 for bulk reads. A larger value returns 100 records. Zero, a negative or a non-integer value is a 422. The `Link` next-page URL keeps the value, so a client following it keeps the page size. More [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
 
-            Read more about time zones and how to map them back to the TZ standard in [our Time Zones guide.](https://dash.readme.com/project/cf2/v2/docs/timezones).
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
 
-            '
-        uuid:
-          type: string
-          description: UUID
-        unsubscribed_at:
-          type:
-          - string
-          - 'null'
-          description: Unsubscribed
-        last_notification_email_sent_at:
-          type:
-          - string
-          - 'null'
-          description: Last notification email sent
-        email_suppression_reason:
-          type:
-          - string
-          - 'null'
-          description: The reason the contact's email address is suppressed from receiving emails. Null when no suppression exists.
-        is_active:
-          type: boolean
-          description: Whether the contact is active. A contact is considered active when they have a valid email address, have not unsubscribed, have not been deleted, and have no email suppression reason.
-        fb_url:
-          type:
-          - string
-          - 'null'
-          description: Facebook URL
-        twitter_url:
-          type:
-          - string
-          - 'null'
-          description: Twitter URL
-        instagram_url:
-          type:
-          - string
-          - 'null'
-          description: Instagram URL
-        linkedin_url:
-          type:
-          - string
-          - 'null'
-          description: LinkedIn URL
-        website_url:
-          type:
-          - string
-          - 'null'
-          description: Website URL
-        created_at:
-          type: string
-          format: date-time
-          description: Date added
-        updated_at:
-          type: string
-          format: date-time
-          description: Last updated
-        tags:
-          type:
-          - array
-          - 'null'
-          items:
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    InvoiceFilter:
+      name: filter
+      in: query
+      description: 'Filter by available properties in query params, like this: `api/v2/resources?filter[id]=value&filter[another_property]=value1,value2`. Check our Filtering guide for examples and all about filtering [here](https://developers.myclickfunnels.com/docs/filtering).
+
+        '
+      required: false
+      schema:
+        type: object
+        properties:
+          id:
+            type: string
+            description: A comma-separated list of Invoice IDs to filter by.
+            example: 1,42
+          status:
+            type: string
+            description: The status of the invoice to filter by.
+            example: pending
+          invoice_type:
+            type: string
+            description: The type of the invoice to filter by.
+            example: one_time_sale
+          invoice_number:
+            type: string
+            description: A comma-separated list of Invoice Numbers to filter by.
+            example: '#1000,#1001'
+          external_id:
+            type: string
+            description: A comma-separated list of External IDs to filter by.
+            example: inv_1234567890,inv_0987654321
+      style: deepObject
+      explode: true
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  responses:
+    InvalidPageSize:
+      description: Unprocessable Entity - `per_page` must be a positive integer.
+      content:
+        application/json:
+          schema:
             type: object
-            title: Contact Tags
-            description: Contact Tags
             properties:
-              id:
-                type: integer
-                description: Tag ID
-              public_id:
+              error:
                 type: string
-                description: Tag public ID
-              name:
-                type: string
-                description: Name
-              color:
-                type: string
-                description: Color
-              applied_at:
+              hint:
                 type:
                 - string
                 - 'null'
-                description: The datetime the tag was applied by creating a Contacts::AppliedTag that maps the tag to the contact.
-          description: Contact Tags
-        custom_attributes:
-          type: object
-          additionalProperties:
-            type: string
-          description: A dynamic key-value pair object where both the key and value are strings. Custom attributes are usually added to the contact when they submit forms that contain custom contact attributes. But you can also add them via the API using the modifying endpoints like Create/Update/Upsert Contact.
-        visits:
-          allOf:
-          - $ref: '#/components/schemas/VisitsAttributes'
-          description: Visit tracking information for this contact, including first visit, last visit, and last visit with UTM parameters
-      example:
-        id: 24359
-        public_id: vQxYMj
-        workspace_id: 4
-        anonymous: 0
-        email_address: jane.doe@example.com
-        first_name: Jane
-        last_name: Doe
-        phone_number: '+18005550199'
-        time_zone: Madrid
-        uuid: 80b7f903-76cd-4edf-94bf-fc34c13ee654
-        unsubscribed_at: null
-        last_notification_email_sent_at: null
-        email_suppression_reason: null
-        is_active: true
-        fb_url: null
-        twitter_url: null
-        instagram_url: null
-        linkedin_url: null
-        website_url: null
-        created_at: '2026-01-09T15:27:56.647Z'
-        updated_at: '2026-01-09T15:28:08.075Z'
-        tags: []
-        custom_attributes: {}
-        visits:
-          first_visit:
-            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-            utm_source: google
-            utm_medium: cpc
-            utm_campaign: spring_sale
-            utm_term: running shoes
-            utm_content: ad_variant_a
-            ip: 192.168.1.1
-            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-            referrer: https://www.google.com/search?q=example
-            referring_domain: google.com
-            landing_page: https://example.com/products/shoes
-            browser: Chrome
-            os: Mac OS X
-            device_type: desktop
-            started_at: '2026-01-09T14:23:45.123Z'
-            created_at: '2026-01-09T14:23:45.123Z'
-            updated_at: '2026-01-09T14:23:45.123Z'
-          last_visit: null
-          last_visit_with_utm:
-            uuid: 9f2e8a22-1b65-4414-95f3-5caf0bbd11da
-            utm_source: google
-            utm_medium: cpc
-            utm_campaign: spring_sale
-            utm_term: running shoes
-            utm_content: ad_variant_a
-            ip: 192.168.1.1
-            user_agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-            referrer: https://www.google.com/search?q=example
-            referring_domain: google.com
-            landing_page: https://example.com/products/shoes
-            browser: Chrome
-            os: Mac OS X
-            device_type: desktop
-            started_at: '2026-01-09T14:23:45.123Z'
-            created_at: '2026-01-09T14:23:45.123Z'
-            updated_at: '2026-01-09T14:23:45.123Z'
-      required:
-      - anonymous
-      - created_at
-      - custom_attributes
-      - email_address
-      - email_suppression_reason
-      - fb_url
-      - first_name
-      - id
-      - instagram_url
-      - is_active
-      - last_name
-      - last_notification_email_sent_at
-      - linkedin_url
-      - phone_number
-      - public_id
-      - tags
-      - time_zone
-      - twitter_url
-      - unsubscribed_at
-      - updated_at
-      - uuid
-      - visits
-      - website_url
-      - workspace_id
-    VisitsAttributes:
-      type: object
-      title: Visits
-      description: Collection of visit tracking records for a contact, including first visit, last visit, and last visit with UTM parameters
-      properties:
-        first_visit:
-          description: The first visit associated with this contact.
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-        last_visit:
-          description: The most recent visit. May be null if it is identical to first_visit (to avoid duplication).
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-        last_visit_with_utm:
-          description: The most recent visit that contains UTM parameters.
-          anyOf:
-          - $ref: '#/components/schemas/VisitAttributes'
-          - type: 'null'
-      required:
-      - first_visit
-      - last_visit
-      - last_visit_with_utm
+                description: Next step for the caller, or null when no additional guidance applies.
+          example:
+            error: 'Request unprocessable: per_page must be a positive integer, capped at 100 (got "0")'
+            hint: null
   headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
@@ -3461,6 +3513,88 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com

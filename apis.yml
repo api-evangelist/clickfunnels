@@ -3305,6 +3305,116 @@ apis:
     url: errors/clickfunnels-problem-types.yml
   - type: RateLimits
     url: rate-limits/clickfunnels-rate-limits.yml
+- aid: clickfunnels:clickfunnels-contacts-event-api
+  name: ClickFunnels Contacts::Event API
+  description: Contact Activity Event reads, excluding MessageHub conversations.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contacts::Event
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contacts-event-api-openapi.yml
+- aid: clickfunnels:clickfunnels-contacts-events-note-api
+  name: ClickFunnels Contacts::Events::Note API
+  description: Notes in a contact's Activity tab, with full CRUD.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contacts::Events::Note
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contacts-events-note-api-openapi.yml
+- aid: clickfunnels:clickfunnels-contacts-subscriptionchange-api
+  name: ClickFunnels Contacts::Subscription Change API
+  description: Read-only contact subscription-change history.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contacts::SubscriptionChange
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contacts-subscriptionchange-api-openapi.yml
+- aid: clickfunnels:clickfunnels-contacts-unsubscribedtopic-api
+  name: ClickFunnels Contacts::Unsubscribed Topic API
+  description: Contact topic opt-outs and consent-based resubscription.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Contacts::UnsubscribedTopic
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-contacts-unsubscribedtopic-api-openapi.yml
+- aid: clickfunnels:clickfunnels-funnels-cloneaction-api
+  name: ClickFunnels Funnels::Clone Action API
+  description: >-
+    > Duplicate a funnel asynchronously in its current workspace and poll the action for the copied funnel
+    ID.
+
+
+    Each action creates a new copy. See the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#duplicate-a-funnel)
+    for the duplication and polling workflow.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Funnels::CloneAction
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-funnels-cloneaction-api-openapi.yml
+- aid: clickfunnels:clickfunnels-segment-api
+  name: ClickFunnels Segment API
+  description: Named contact audiences.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Segment
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-segment-api-openapi.yml
+- aid: clickfunnels:clickfunnels-urlredirect-api
+  name: ClickFunnels URL Redirect API
+  description: Branded short links and tracked click statistics.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - UrlRedirect
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-urlredirect-api-openapi.yml
+- aid: clickfunnels:clickfunnels-webhooks-incoming-externalpurchaseendpoint-api
+  name: ClickFunnels Webhooks::Incoming::External Purchase Endpoint API
+  description: >-
+    Endpoints that receive purchases from external commerce providers and turn them into ClickFunnels
+    orders.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Webhooks::Incoming::ExternalPurchaseEndpoint
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-webhooks-incoming-externalpurchaseendpoint-api-openapi.yml
+- aid: clickfunnels:clickfunnels-webhooks-incoming-externalpurchaseevent-api
+  name: ClickFunnels Webhooks::Incoming::External Purchase Event API
+  description: >-
+    Raw deliveries received by incoming external purchase endpoints and their processing outcomes.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Webhooks::Incoming::ExternalPurchaseEvent
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-webhooks-incoming-externalpurchaseevent-api-openapi.yml
+- aid: clickfunnels:clickfunnels-webhooks-incoming-externalpurchaseproductmapping-api
+  name: ClickFunnels Webhooks::Incoming::External Purchase Product Mapping API
+  description: >-
+    Mappings from provider plan or SKU identifiers to ClickFunnels product variants and prices.
+  humanURL: https://developers.myclickfunnels.com/reference
+  baseURL: https://{subdomain}.myclickfunnels.com/api/v2
+  tags:
+  - Webhooks::Incoming::ExternalPurchaseProductMapping
+  properties:
+  - type: OpenAPI
+    url: openapi/clickfunnels-webhooks-incoming-externalpurchaseproductmapping-api-openapi.yml
 common:
 - type: License
   name: MIT

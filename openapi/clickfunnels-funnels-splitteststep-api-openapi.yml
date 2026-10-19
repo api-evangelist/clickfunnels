@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,6 +39,7 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Funnels::SplitTestStep
   description: '> Split test steps wrap an existing funnel page in a two-branch A/B split with configurable traffic weights.
@@ -90,8 +110,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -101,8 +127,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     post:
       tags:
       - Funnels::SplitTestStep
@@ -180,8 +212,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -191,8 +229,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -202,8 +246,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity
           content:
@@ -213,8 +263,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Request unprocessable: split_test_step.variants[0].page_id does not belong to this funnel'
+                hint: null
   /funnels/{funnel_id}/split_test_steps/{id}:
     get:
       tags:
@@ -272,8 +328,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -283,8 +345,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     patch:
       tags:
       - Funnels::SplitTestStep
@@ -384,8 +452,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -395,8 +469,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -406,8 +486,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity
           content:
@@ -417,8 +503,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Request unprocessable: split_test_step.variants[1].page_id is already used by another funnel step'
+                hint: null
     delete:
       tags:
       - Funnels::SplitTestStep
@@ -485,8 +577,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -496,8 +594,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -507,8 +611,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
 components:
   schemas:
     SplitTestStepParametersUpdate:
@@ -550,92 +660,6 @@ components:
             weight: 70
           - page_id: 501
             weight: 30
-    SplitTestStepParametersCreate:
-      type: object
-      title: Create Split Test Step
-      description: 'Parameters for wrapping an existing page in a new split test. Provide 1 or 2 variants.
-
-        The first variant''s `page_id` must already be attached to a step in this funnel''s
-
-        workflow (that page gets wrapped). The second variant''s `page_id` must be a fresh page
-
-        (not already used by any step anywhere). No cloning occurs.
-
-
-        ### Positioning the split
-
-
-        By default (no `show_page_step_id`), the split lands at the funnel entry —
-
-        `sort_order 0` under the workflow root — with all surviving steps moved into a
-
-        `Root Step after Sequence End` convergence sequence positioned right after the split.
-
-
-        When `show_page_step_id` references an existing show-page step in this funnel, the
-
-        split is inserted **after that step** under the same parent, and steps
-
-        N+1...end are migrated under the convergence sequence. This is the "split between
-
-        step N and step N+1" shape.
-
-
-        See [Positioning the split](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#positioning-the-split) in the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for picking a safe anchor step, and [Placing an external (SDK) page in a branch](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#placing-an-external-sdk-page-in-a-branch) to use a page you host yourself as a variant.
-
-        '
-      required:
-      - split_test_step
-      properties:
-        split_test_step:
-          type: object
-          required:
-          - variants
-          properties:
-            variants:
-              type: array
-              description: 1 or 2 variant entries.
-              minItems: 1
-              maxItems: 2
-              items:
-                type: object
-                additionalProperties: false
-                properties:
-                  page_id:
-                    type: integer
-                    description: Page ID (required on the first variant; optional on the second).
-                  weight:
-                    type: integer
-                    description: Traffic weight (0..100). Either omit on both variants (defaults 100/0 for 1 variant or 50/50 for 2) or provide on both.
-            show_page_step_id:
-              type:
-              - integer
-              - string
-              description: 'Optional. Insert the new split AFTER the workflow step that wraps this
-
-                `show_page_step`. Accepts a numeric `Workflows::Steps::ShowPageStep` id
-
-                or its obfuscated public id (you can read either off any page response).
-
-                When omitted, the split lands at funnel entry.
-
-                Caution: creating a split moves the wrapped step inside a branch sequence,
-
-                so an id fetched earlier may no longer sit where you think — read the
-
-                funnel structure immediately before creating, and note that anchoring on
-
-                a step inside another split''s branch nests the new split in that branch.
-
-                '
-      example:
-        split_test_step:
-          variants:
-          - page_id: 500
-            weight: 60
-          - page_id: 501
-            weight: 40
-          show_page_step_id: 100
     SplitTestStepAttributes:
       type: object
       title: Split Test Step
@@ -730,17 +754,178 @@ components:
           weight: 0
         created_at: '2026-04-24T00:00:00.000Z'
         updated_at: '2026-04-24T00:00:00.000Z'
+    SplitTestStepParametersCreate:
+      type: object
+      title: Create Split Test Step
+      description: 'Parameters for wrapping an existing page in a new split test. Provide 1 or 2 variants.
+
+        The first variant''s `page_id` must already be attached to a step in this funnel''s
+
+        workflow (that page gets wrapped). The second variant''s `page_id` must be a fresh page
+
+        (not already used by any step anywhere). No cloning occurs.
+
+
+        ### Positioning the split
+
+
+        By default (no `show_page_step_id`), the split lands at the funnel entry —
+
+        `sort_order 0` under the workflow root — with all surviving steps moved into a
+
+        `Root Step after Sequence End` convergence sequence positioned right after the split.
+
+
+        When `show_page_step_id` references an existing show-page step in this funnel, the
+
+        split is inserted **after that step** under the same parent, and steps
+
+        N+1...end are migrated under the convergence sequence. This is the "split between
+
+        step N and step N+1" shape.
+
+
+        See [Positioning the split](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#positioning-the-split) in the [Funnels Skill](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md) for picking a safe anchor step, and [Placing an external (SDK) page in a branch](https://accounts.myclickfunnels.com/.well-known/funnels/skill.md#placing-an-external-sdk-page-in-a-branch) to use a page you host yourself as a variant.
+
+        '
       required:
-      - created_at
-      - funnel
-      - id
-      - public_id
-      - updated_at
-      - variants
+      - split_test_step
+      properties:
+        split_test_step:
+          type: object
+          required:
+          - variants
+          properties:
+            variants:
+              type: array
+              description: 1 or 2 variant entries.
+              minItems: 1
+              maxItems: 2
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  page_id:
+                    type: integer
+                    description: Page ID (required on the first variant; optional on the second).
+                  weight:
+                    type: integer
+                    description: Traffic weight (0..100). Either omit on both variants (defaults 100/0 for 1 variant or 50/50 for 2) or provide on both.
+            show_page_step_id:
+              type:
+              - integer
+              - string
+              description: 'Optional. Insert the new split AFTER the workflow step that wraps this
+
+                `show_page_step`. Accepts a numeric `Workflows::Steps::ShowPageStep` id
+
+                or its obfuscated public id (you can read either off any page response).
+
+                When omitted, the split lands at funnel entry.
+
+                Caution: creating a split moves the wrapped step inside a branch sequence,
+
+                so an id fetched earlier may no longer sit where you think — read the
+
+                funnel structure immediately before creating, and note that anchoring on
+
+                a step inside another split''s branch nests the new split in that branch.
+
+                '
+      example:
+        split_test_step:
+          variants:
+          - page_id: 500
+            weight: 60
+          - page_id: 501
+            weight: 40
+          show_page_step_id: 100
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com

@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,12 +39,40 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Contacts::Filter
   description: '> AI-generated contact filters
 
 
-    Translate a natural-language audience description into a ClickFunnels contact filter using an AI model.'
+    Translate a natural-language audience description into a ClickFunnels contact filter using an AI model.
+
+
+    The model can use the full range of contact filter conditions — identity, tags, last activity, email
+
+    engagement, opt-ins, product/variant purchases & ownership, custom attributes, and more — so describe the
+
+    audience however you like (e.g. "buyers of the $99 course who joined in the last 30 days"). Unlike the
+
+    criteria you submit directly to the RefineFilter endpoints, this endpoint is not limited to the public-API
+
+    condition allow-list.
+
+
+    The endpoint always returns a `stable_id` token you can use as the `stable_id` query parameter on the
+
+    contacts index. Keep the token opaque and let the HTTP client encode the complete query parameter value;
+
+    with curl, use `-G --data-urlencode "stable_id=$STABLE_ID"`. Do not decode the token or interpolate it
+
+    directly into a raw URL. When `save: true` is supplied the filter is also persisted as a reusable
+
+    `Refine::StoredFilter` — identical to filters created via the RefineFilter endpoints — and its
+
+    `id`/`public_id` are included in the response so you can reference it later with `stored_filter_id`.
+
+
+    See Generate a contact filter from plain English in the Refine Filters Skill for the request body, the `save` semantics, and how the returned `stable_id` is applied to the contacts index.'
 paths:
   /workspaces/{workspace_id}/contacts/filters:
     post:
@@ -67,6 +114,23 @@ paths:
         the contacts index). Passing `save: true` persists a stored filter and requires write access.
 
 
+        Because this endpoint selects from the full condition catalog, it can produce text criteria that no
+
+        index can serve. On a text attribute `eq` and `sw` resolve against an index, while `cont` (contains)
+
+        and `ew` (ends with) force a scan of every value stored for that attribute - the cost tracks how many
+
+        values the attribute holds rather than how many contacts the filter selects, so adding further
+
+        criteria may not reduce it. This is most visible on free-text contact custom attributes, which only
+
+        this endpoint can select on, and on a workspace with millions of contacts it is what makes evaluating
+
+        the filter exceed the request limit. Where the description allows it, ask for an exact value or a
+
+        prefix rather than a substring.
+
+
         See Generate a contact filter from plain English in the Refine Filters Skill for a worked request and for managing a saved filter afterwards.'
       operationId: generateContactFilter
       parameters:
@@ -97,6 +161,8 @@ paths:
                   - string
                   - 'null'
                   description: Human-readable name for the saved filter. Only used when `save` is `true`. Must be unique within the workspace when provided.
+                results:
+                  $ref: '#/components/schemas/FilterResultsParameter'
             example:
               text: buyers of the $99 course who joined in the last 30 days
               save: true
@@ -108,13 +174,6 @@ paths:
             application/json:
               schema:
                 type: object
-                required:
-                - id
-                - public_id
-                - workspace_id
-                - name
-                - stable_id
-                - filter
                 properties:
                   id:
                     type:
@@ -136,15 +195,14 @@ paths:
                     - string
                     - 'null'
                     description: Name of the saved filter, or `null` when the filter was not saved or had no name.
+                  results:
+                    $ref: '#/components/schemas/FilterResults'
                   stable_id:
                     type: string
                     description: URL-encoded Refine `stable_id` token in the standard gzip+base64 full-state format — interoperable with the server-rendered filter UI. To apply it on the contacts index, keep it opaque and let the HTTP client encode the complete `stable_id` query parameter value (with curl, use `-G --data-urlencode "stable_id=$STABLE_ID"`). Always present in the response.
                   filter:
                     type: object
                     description: The structured filter generated from the natural-language description.
-                    required:
-                    - conjunction
-                    - criteria
                     properties:
                       conjunction:
                         type: string
@@ -182,8 +240,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'param is missing or the value is empty: text'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -193,8 +257,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found — workspace not found
           content:
@@ -204,8 +274,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: 'Unprocessable Entity — the model could not produce a valid filter from the given description, or the
 
@@ -230,10 +306,26 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: The request is too large to translate into a contact filter. Describe the audience in terms of attributes (tags, dates, purchases) rather than listing individual contacts, or split it into smaller requests.
-        '503':
-          description: Service Unavailable — a transient dependency was unavailable; retry the request
+                hint: null
+        '429':
+          description: 'Too Many Requests, from either of two independent limits:
+
+
+            * **Concurrency** — two database-heavy filtered reads are already active for this access token and workspace. Wait `retry_after` seconds (also sent as the `Retry-After` header); the same request will succeed once one finishes.
+
+            * **Funnels AI spend cap** — the team has reached its Funnels AI budget, so no new generation is started. The body carries `limit_reached: true` and retrying will not help until the cap resets. This is the cap working rather than a failure, so present it as a notice.'
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+              description: Seconds to wait before retrying. Sent for the concurrency limit; absent when the spend cap is what stopped the request. Mirrored in the body as `retry_after`, for clients that cannot read response headers.
           content:
             application/json:
               schema:
@@ -241,8 +333,23 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+                  retry_after:
+                    type: integer
+                    description: Seconds to wait before retrying. Present only for the concurrency limit, mirroring the `Retry-After` header so the delay survives transports that forward only the status and body.
+                  limit_reached:
+                    type: boolean
+                    description: Present and true only when the Funnels AI spend cap stopped the request, which distinguishes it from the concurrency limit.
               example:
-                error: 'Service unavailable: Transient service issue: Please try again shortly.'
+                error: Too many filtered requests are already running for this workspace and access token. Try again in 2 seconds.
+                retry_after: 2
+                hint: null
+        '503':
+          $ref: '#/components/responses/FilteredQueryBudget'
   /contacts/filters/{id}:
     get:
       tags:
@@ -270,6 +377,34 @@ paths:
         description: The saved filter's `id` or `public_id`.
         schema:
           type: string
+      - name: results
+        in: query
+        required: false
+        style: deepObject
+        explode: true
+        description: Return projected matches inline. Pass `true` for ids only; omit for the filter definition alone.
+        schema:
+          type:
+          - object
+          - boolean
+          properties:
+            fields:
+              type: string
+              description: Comma-separated fields to project. Defaults to `id`.
+              example: id,email_address
+            limit:
+              type: integer
+              description: Caller-set row limit. Defaults to 500.
+            max_bytes:
+              type: integer
+              description: Caller-set row byte budget. Defaults to 3072 and is capped at 4194304.
+            after:
+              type: string
+              description: Positive-integer cursor from `results.next_after`.
+            count:
+              type: boolean
+              default: false
+              description: Include the bounded total count. May require another filter evaluation.
       responses:
         '200':
           description: OK
@@ -277,13 +412,6 @@ paths:
             application/json:
               schema:
                 type: object
-                required:
-                - id
-                - public_id
-                - workspace_id
-                - name
-                - stable_id
-                - filter
                 properties:
                   id:
                     type: integer
@@ -305,9 +433,6 @@ paths:
                   filter:
                     type: object
                     description: The structured filter.
-                    required:
-                    - conjunction
-                    - criteria
                     properties:
                       conjunction:
                         type: string
@@ -320,6 +445,8 @@ paths:
                         description: Ordered list of filter criteria.
                         items:
                           $ref: '#/components/schemas/RefineFilterCriterion'
+                  results:
+                    $ref: '#/components/schemas/FilterResults'
               example:
                 id: 87
                 public_id: XyZ123
@@ -342,8 +469,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found — no such filter, or it belongs to a workspace you cannot access
           content:
@@ -353,10 +486,237 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          description: Unprocessable Entity — invalid result projection or filter state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Unknown results.fields for contact: favourite_colour'
+                hint: null
+        '429':
+          $ref: '#/components/responses/FilteredQueryConcurrency'
+        '503':
+          $ref: '#/components/responses/FilteredQueryBudget'
 components:
+  responses:
+    FilteredQueryBudget:
+      description: "Service Unavailable — retryable. Two conditions land here:\n\n* **Transient dependency** — a database connection, the model behind filter generation, or another\n  dependency was briefly unavailable.\n* **Request budget exhausted** — the request's own wall clock ran out before the filter could be given a\n  fair slice, so no records were read. The time went elsewhere in the same request: a slow generation\n  call, or earlier pages of the same projection.\n\nThe second case is the OPPOSITE of the 422 that says the filter \"took longer than 10s to evaluate\". That\n422 is a statement timeout and is deterministic — the filter selects more than can be evaluated, and an\nunchanged retry fails identically. This 503 makes no such claim about the filter, so retrying is worth\ndoing; if it recurs, narrow the filter or ask for fewer records per call."
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+          example:
+            error: 'Service unavailable: This request ran out of its 20s budget before the filter could be evaluated, so no records were read. The filter itself was not found to be too broad, so retrying is worth doing.'
+            hint: null
+    FilteredQueryConcurrency:
+      description: Too Many Requests — two filtered reads are already active for this token and workspace
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying. Also in the body as `retry_after`, for clients that cannot read response headers.
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              retry_after:
+                type: integer
+                description: Seconds to wait before retrying. Mirrors the `Retry-After` header so the delay survives transports that forward only the status and body.
+          example:
+            error: Too many filtered requests are already running for this workspace and access token. Try again in 2 seconds.
+            retry_after: 2
+            hint: null
   schemas:
+    FilterResultsParameter:
+      description: Return projected matches inline. Pass `true` for ids only; omit for the filter definition alone.
+      oneOf:
+      - type: boolean
+      - type: object
+        properties:
+          fields:
+            type: array
+            description: Fields to project. Defaults to `["id"]`.
+            items:
+              type: string
+          limit:
+            type: integer
+            description: Caller-set row limit. Defaults to 500.
+          max_bytes:
+            type: integer
+            description: Caller-set row byte budget. Defaults to 3072 and is capped at 4194304.
+          after:
+            type: string
+            description: Positive-integer cursor from `results.next_after`.
+          count:
+            type: boolean
+            default: false
+            description: Include the bounded total count. May require another filter evaluation.
+    FilterResults:
+      type: object
+      description: 'The records the filter matches, returned inline so selecting a set and reading it is one
+
+        call instead of a filter plus a paginated crawl.
+
+
+        **Column-oriented.** `fields` states the column order once and `rows` carries bare value
+
+        arrays. Repeating every key on every record roughly doubles the payload for a projection
+
+        of a few scalars, which defeats the purpose of asking for a projection. Zip `fields` with
+
+        each row to reconstruct objects.
+
+
+        `truncated` tells you whether `rows` is the whole set. A total `count` is present only
+
+        when the request opts in with `results.count: true`, because counting a truncated set
+
+        requires a second evaluation of the filter. Use the workspace stats endpoint when you
+
+        need only a number.
+
+
+        Saved contact and order filters support `results`. Other filter classes return 422 until
+
+        the API defines an explicit projection allow-list for them.
+
+
+        **You set the budget; the response tells you what it cost.** How much a client can absorb
+
+        is not something this API can know, so `results.max_bytes` and `results.limit` are yours to
+
+        set and their defaults (3 KB of rows, 500 rows) are only a conservative starting point. Every
+
+        response reports estimated `bytes`, `bytes_per_record` and the `max_bytes` actually applied,
+
+        so one call is enough to size every call after it. These estimates are measured before final
+
+        response encoding, which can be slightly larger for values such as timestamps; leave headroom.
+
+        When a response is `truncated`,
+
+        `suggested_max_bytes` is the value to retry with to get the whole set in one call
+
+        (extrapolated from the widest row RETURNED SO FAR, so it can still undershoot if later
+
+        records are wider - check `truncated` again on the retry), and `guidance` spells
+
+        out the alternatives. The only ceiling you cannot raise is the server''s own
+
+        (4 MB of rows per response), which protects the server rather than your context; past it,
+
+        page with `next_after` or narrow the filter.
+
+
+        **`max_bytes` bounds the ROWS, not the whole response.** Over MCP the payload is carried twice
+
+        (structured plus text mirror) alongside the filter definition, which measured at 2.0x-2.9x the
+
+        rows on the wire. So when sizing against a client tool-result cap, divide by ~3. The default is
+
+        already sized that way. `suggested_max_bytes` comes back in the same rows units, so it can be
+
+        passed straight back.
+
+        '
+      properties:
+        fields:
+          type: array
+          description: The projected field names, in the order the values appear in each row.
+          items:
+            type: string
+        rows:
+          type: array
+          description: One array of values per matching record, ordered by id. Each value renders the way the resource's own serializer renders that column, so a money field such as `total_amount` arrives as a string at the currency's minor units (`"100.00"`) and can be compared with the same field read from the record endpoint. A `null` means the column has no value for that record.
+          items:
+            type: array
+            items: {}
+        count:
+          type: integer
+          description: 'Present only when `results.count` was true. Total records the filter matches, independent of the current page. Computed like the workspace stats count: exact, including past the 100,000-record scan cap, unless counting the whole set cannot finish within the time budget, in which case it reports the cap with `count_capped_at`. Counting a truncated result requires a second evaluation of the filter.'
+        count_capped_at:
+          type: integer
+          description: 'Present only when `count` saturated at the scan cap the server applies and counting the whole set could not finish in time: the real total is HIGHER than `count`, so treat `count` as a floor rather than a total. Narrow the filter to get an exact number. Absent means `count` is exact. Same marker the workspace stats endpoint returns for the same case.'
+        count_unavailable_reason:
+          type: string
+          description: Present only when `results.count` was true but its additional filter evaluation could not complete within the filtered-query time budget. The rows, truncation signal, and continuation cursor are still valid; narrow the filter or use the workspace stats endpoint for the count.
+        truncated:
+          type: boolean
+          description: True when `rows` is a page rather than the whole set, because the rows reached `limit` or `max_bytes`, or the request reached its filtered-query wall-clock budget.
+        stop_reason:
+          type: string
+          enum:
+          - time_budget
+          - row_limit
+          - byte_budget
+          - record_exceeds_budget
+          description: 'Present only when `truncated`: which ceiling stopped us, so you do not have to parse `guidance` to find out. `row_limit` means raise your own `limit`; `byte_budget` means raise `max_bytes` or project fewer fields; `record_exceeds_budget` means a single record is larger than the whole budget, so project fewer fields. `time_budget` is the only one you cannot lift: the request reached its filtered-query wall-clock budget, so page with `next_after` or narrow the filter -- raising `max_bytes` or `limit` will not help, because neither is what stopped it.'
+        bytes:
+          type: integer
+          description: Estimated serialized size of `rows`, measured before final response encoding. Values such as timestamps can make the wire representation slightly larger, so leave headroom.
+        bytes_per_record:
+          type: integer
+          description: Average estimated bytes per returned record, so you can size a later call for a different record count.
+        max_bytes:
+          type: integer
+          description: The pre-response row-cost budget applied — your `results.max_bytes` after clamping to the server ceiling, or the default when you didn't set one. It is not an exact wire-size ceiling; leave headroom.
+        suggested_max_bytes:
+          type: integer
+          description: 'Present only when `results.count` was true, the response is `truncated`, and the whole set could fit in one response: the `results.max_bytes` to retry with to get all `count` records in a single call. Extrapolated from the widest row returned SO FAR, not the average — so it is an estimate, and a later record wider than anything on this page can still make the retry truncate. Check `truncated` on the retry rather than assuming it is whole. Absent when the set is too large for any single response, when no exact total was requested or known, or when the wall-clock budget stopped the request — then page or narrow instead.'
+        next_after:
+          type: string
+          description: Cursor to continue from, present only when `truncated` is true. Pass it back as `results[after]`. It is the id of the last row actually RETURNED, so paging never skips a record the budget dropped.
+        guidance:
+          type: string
+          description: 'Present only when `truncated` is true: what to do about it, cheapest-first — retry with
+
+            `suggested_max_bytes` to get everything in one call, raise your own `limit`, narrow the
+
+            filter, project fewer `fields`, page with `next_after` (including how many calls that
+
+            will take at this size when `count` is available), export the full set as a CSV, or use
+
+            the workspace stats endpoint if a number is all that was wanted. The export option is only offered when the filtered
+
+            resource actually has a bulk export and the calling token could create one, so neither an
+
+            order filter nor a read-only connection is pointed at something that would fail.
+
+            '
     RefineFilterCriterion:
       type: object
       title: Refine Filter Criterion
@@ -379,16 +739,14 @@ components:
             '
           example: in
         value:
-          description: "The comparison value. Type depends on the attribute and clause:\n- **Option conditions** (tags, products, etc.): a single opaque public id string, or an array of public id strings.\n- **Date/datetime conditions**: an ISO 8601 date string (`\"2026-01-01\"`) or datetime string (`\"2026-01-01T00:00:00Z\"`).\n  For `between`/`not_between` clauses supply an array of exactly two date strings.\n  For relative `gt`, `lt`, or `exct` clauses supply an object with `days` and a `modifier` of `ago` or `from_now`.\n- **Text/numeric conditions**: a plain string or number.\n- **Set/not-set clauses**: omit `value` entirely.\n"
+          description: "The comparison value. Type depends on the attribute and clause:\n- **Option conditions** (tags, products, etc.): a single opaque public id string, or an array of public id strings.\n- **Date/datetime conditions**: an ISO 8601 date string (`\"2026-01-01\"`) or datetime string (`\"2026-01-01T00:00:00Z\"`).\n  For `between`/`not_between` clauses supply an array of exactly two date strings.\n  For relative `gt`, `lt`, or `exct` clauses supply an object with `days` and a `modifier` of `ago` or `from_now`.\n- **Text/numeric conditions**: a plain string or number.\n- **Set/not-set clauses**: omit `value` entirely.\n\n`null` when the criterion carries no value, as set/not-set clauses do.\n"
           oneOf:
+          - type: 'null'
           - type: string
           - type: array
             items:
               type: string
           - type: object
-            required:
-            - days
-            - modifier
             properties:
               days:
                 oneOf:
@@ -403,10 +761,123 @@ components:
           example:
           - tag-pub-id-1
           - tag-pub-id-2
+        date_refinement:
+          type: object
+          description: Additional event-date comparison for an attribute that supports date refinement. Preserve this object when reusing a returned criterion; it narrows the audience independently of the selected event IDs.
+          properties:
+            clause:
+              type: string
+              description: Date comparison operator, such as gte, btwn, or lt.
+            value:
+              description: ISO8601 date or datetime, two dates for btwn/nbtwn, or days and modifier for relative gt/lt/exct comparisons.
+              oneOf:
+              - type: 'null'
+              - type: string
+              - type: array
+                minItems: 2
+                maxItems: 2
+                items:
+                  type: string
+              - type: object
+                properties:
+                  days:
+                    oneOf:
+                    - type: string
+                    - type: integer
+                  modifier:
+                    type: string
+                    enum:
+                    - ago
+                    - from_now
+          example:
+            clause: gte
+            value: '2026-10-01'
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com

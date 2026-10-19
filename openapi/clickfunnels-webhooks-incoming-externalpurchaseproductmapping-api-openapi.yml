@@ -1,0 +1,928 @@
+openapi: 3.2.0
+info:
+  title: ClickFunnels Webhooks::Incoming::External Purchase Product…
+  termsOfService: https://www.clickfunnels.com/terms-of-service
+  contact:
+    name: ClickFunnels API Team
+    url: https://developers.myclickfunnels.com
+  x-logo:
+    url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+servers:
+- url: https://{subdomain}.myclickfunnels.com/api/v2
+  description: ClickFunnels API
+  variables:
+    subdomain:
+      default: myworkspace
+security:
+- BearerAuth: []
+- OAuth2: []
+tags:
+- name: Webhooks::Incoming::ExternalPurchaseProductMapping
+  description: Mappings from provider plan or SKU identifiers to ClickFunnels product variants and prices.
+paths:
+  /webhooks/incoming/external_purchase_endpoints/{external_purchases_endpoint_id}/product_mappings:
+    get:
+      tags:
+      - Webhooks::Incoming::ExternalPurchaseProductMapping
+      summary: List Incoming External Purchase Product Mappings
+      description: List the external product, plan, or SKU mappings configured for one incoming external purchase endpoint.
+      operationId: listWebhooksIncomingExternalPurchaseProductMappings
+      parameters:
+      - name: external_purchases_endpoint_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Integer ID or obfuscated public ID of the incoming external purchase endpoint.
+      - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/per_page'
+      - $ref: '#/components/parameters/sort_order'
+      - $ref: '#/components/parameters/sort_property'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Pagination-Next:
+              $ref: '#/components/headers/PaginationNext'
+            Link:
+              $ref: '#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WebhooksIncomingExternalPurchaseProductMappingAttributes'
+              example:
+              - id: 201
+                public_id: PrMapA
+                external_purchase_endpoint_id: 81
+                external_product_sku: plan_monthly
+                clickfunnels_product:
+                  id: 401
+                  public_id: CfProd
+                  name: Membership
+                clickfunnels_variant:
+                  id: 501
+                  public_id: CfVari
+                  name: Default
+                clickfunnels_price:
+                  id: 601
+                  public_id: CfPric
+                  name: Monthly
+                  currency: USD
+                  payment_type: subscription
+                  amount: '29.00'
+                created_at: '2026-08-26T12:10:00.000Z'
+                updated_at: '2026-08-26T12:10:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          description: The access token does not grant read access to Webhooks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Forbidden: This access token''s scopes do not grant read access to Webhooks. Granted scopes: contacts:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
+        '404':
+          description: The endpoint does not exist or belongs to an inaccessible workspace.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: Not found
+                hint: null
+        '422':
+          $ref: '#/components/responses/InvalidPageSize'
+    post:
+      tags:
+      - Webhooks::Incoming::ExternalPurchaseProductMapping
+      summary: Create Incoming External Purchase Product Mapping
+      description: 'Map one provider product, plan, or SKU identifier to a ClickFunnels variant and
+
+        price. Both ClickFunnels catalog records must belong to the endpoint''s workspace
+
+        and to the same product. `external_product_sku` is the identifier the provider reports for
+
+        what was bought, which is not always its product id: the item number for ClickBank, the
+
+        product id for CopeCart, the plan id for Whop.'
+      operationId: createWebhooksIncomingExternalPurchaseProductMappings
+      parameters:
+      - name: external_purchases_endpoint_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Integer ID or obfuscated public ID of the incoming external purchase endpoint.
+      requestBody:
+        description: External identifier and ClickFunnels catalog records to map.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                external_purchase_product_mapping:
+                  type: object
+                  $ref: '#/components/schemas/WebhooksIncomingExternalPurchaseProductMappingParameters'
+              required:
+              - external_purchase_product_mapping
+            example:
+              external_purchase_product_mapping:
+                external_product_sku: plan_monthly
+                products_variant_id: CfVari
+                products_price_id: CfPric
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhooksIncomingExternalPurchaseProductMappingAttributes'
+              example:
+                id: 201
+                public_id: PrMapA
+                external_purchase_endpoint_id: 81
+                external_product_sku: plan_monthly
+                clickfunnels_product:
+                  id: 401
+                  public_id: CfProd
+                  name: Membership
+                clickfunnels_variant:
+                  id: 501
+                  public_id: CfVari
+                  name: Default
+                clickfunnels_price:
+                  id: 601
+                  public_id: CfPric
+                  name: Monthly
+                  currency: USD
+                  payment_type: subscription
+                  amount: '29.00'
+                created_at: '2026-08-26T12:10:00.000Z'
+                updated_at: '2026-08-26T12:10:00.000Z'
+        '400':
+          description: The JSON body is invalid or the required wrapper is missing.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Bad request: param is missing or the value is empty: external_purchase_product_mapping'
+                hint: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          description: The access token does not grant write access to Webhooks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Forbidden: This access token''s scopes do not grant write access to Webhooks. Granted scopes: webhooks:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
+        '404':
+          description: The endpoint or selected ClickFunnels catalog record does not exist in this workspace.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: Not found
+                hint: null
+        '422':
+          description: Mapping validation failed, including a duplicate external identifier or a price and variant from different products.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Request unprocessable: External product sku has already been taken'
+                hint: null
+  /webhooks/incoming/external_purchase_product_mappings/{id}:
+    get:
+      tags:
+      - Webhooks::Incoming::ExternalPurchaseProductMapping
+      summary: Fetch Incoming External Purchase Product Mapping
+      description: Retrieve one external purchase product mapping and its ClickFunnels product, variant, and price labels.
+      operationId: getWebhooksIncomingExternalPurchaseProductMappings
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhooksIncomingExternalPurchaseProductMappingAttributes'
+              example:
+                id: 201
+                public_id: PrMapA
+                external_purchase_endpoint_id: 81
+                external_product_sku: plan_monthly
+                clickfunnels_product:
+                  id: 401
+                  public_id: CfProd
+                  name: Membership
+                clickfunnels_variant:
+                  id: 501
+                  public_id: CfVari
+                  name: Default
+                clickfunnels_price:
+                  id: 601
+                  public_id: CfPric
+                  name: Monthly
+                  currency: USD
+                  payment_type: subscription
+                  amount: '29.00'
+                created_at: '2026-08-26T12:10:00.000Z'
+                updated_at: '2026-08-26T12:10:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          description: The access token does not grant read access to Webhooks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Forbidden: This access token''s scopes do not grant read access to Webhooks. Granted scopes: contacts:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
+        '404':
+          description: The mapping does not exist or belongs to an inaccessible workspace.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: Not found
+                hint: null
+    put:
+      tags:
+      - Webhooks::Incoming::ExternalPurchaseProductMapping
+      summary: Update Incoming External Purchase Product Mapping
+      description: Update the external identifier, ClickFunnels variant, or ClickFunnels price for a mapping.
+      operationId: updateWebhooksIncomingExternalPurchaseProductMappings
+      parameters:
+      - $ref: '#/components/parameters/id'
+      requestBody:
+        description: Mutable mapping fields.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                external_purchase_product_mapping:
+                  type: object
+                  $ref: '#/components/schemas/WebhooksIncomingExternalPurchaseProductMappingParametersUpdate'
+              required:
+              - external_purchase_product_mapping
+            example:
+              external_purchase_product_mapping:
+                external_product_sku: plan_annual
+                products_variant_id: CfVari
+                products_price_id: CfPric
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhooksIncomingExternalPurchaseProductMappingAttributes'
+              example:
+                id: 201
+                public_id: PrMapA
+                external_purchase_endpoint_id: 81
+                external_product_sku: plan_annual
+                clickfunnels_product:
+                  id: 401
+                  public_id: CfProd
+                  name: Membership
+                clickfunnels_variant:
+                  id: 501
+                  public_id: CfVari
+                  name: Default
+                clickfunnels_price:
+                  id: 601
+                  public_id: CfPric
+                  name: Annual
+                  currency: USD
+                  payment_type: subscription
+                  amount: '290.00'
+                created_at: '2026-08-26T12:10:00.000Z'
+                updated_at: '2026-08-26T12:20:00.000Z'
+        '400':
+          description: The JSON body is invalid or the required wrapper is missing.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Bad request: param is missing or the value is empty: external_purchase_product_mapping'
+                hint: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          description: The access token does not grant write access to Webhooks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Forbidden: This access token''s scopes do not grant write access to Webhooks. Granted scopes: webhooks:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
+        '404':
+          description: The mapping or selected ClickFunnels catalog record does not exist in this workspace.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: Not found
+                hint: null
+        '422':
+          description: Mapping validation failed, including a duplicate external identifier or a price and variant from different products.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Request unprocessable: Products variant must belong to the same product as the price'
+                hint: null
+    delete:
+      tags:
+      - Webhooks::Incoming::ExternalPurchaseProductMapping
+      summary: Remove Incoming External Purchase Product Mapping
+      description: Delete an external purchase product mapping. This does not delete its ClickFunnels product, variant, or price.
+      operationId: removeWebhooksIncomingExternalPurchaseProductMappings
+      parameters:
+      - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          description: The access token does not grant write access to Webhooks.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Forbidden: This access token''s scopes do not grant write access to Webhooks. Granted scopes: webhooks:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
+        '404':
+          description: The mapping does not exist or belongs to an inaccessible workspace.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: Not found
+                hint: null
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    per_page:
+      name: per_page
+      in: query
+      required: false
+      description: Records per page. Defaults to 20; raise it up to 100 for bulk reads. A larger value returns 100 records. Zero, a negative or a non-integer value is a 422. The `Link` next-page URL keeps the value, so a client following it keeps the page size. More [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
+    sort_property:
+      name: sort_property
+      in: query
+      description: 'Sort property of a list response. The default is id and thus the created_at order.
+
+        If you sort by other properties, we additionally sort by id implicitly as a secondary sort property, so that you can rely on the sort order to be deterministic even if the main sort property ends up with the same values.
+
+        '
+      required: false
+      schema:
+        type: string
+        enum:
+        - id
+        - updated_at
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  responses:
+    InvalidPageSize:
+      description: Unprocessable Entity - `per_page` must be a positive integer.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: Next step for the caller, or null when no additional guidance applies.
+          example:
+            error: 'Request unprocessable: per_page must be a positive integer, capped at 100 (got "0")'
+            hint: null
+  schemas:
+    IntegerOrPublicId:
+      type:
+      - integer
+      - string
+      description: Integer database id or obfuscated public_id.
+    WebhooksIncomingExternalPurchaseProductMappingParametersUpdate:
+      type: object
+      title: Update Incoming External Purchase Product Mapping
+      description: Mutable fields for an incoming external purchase product mapping.
+      properties:
+        external_product_sku:
+          type: string
+          maxLength: 255
+          description: Provider product, plan, or SKU identifier. For Whop, use the plan ID.
+        products_variant_id:
+          $ref: '#/components/schemas/IntegerOrPublicId'
+          description: Integer ID or obfuscated public ID of a ClickFunnels variant in the endpoint's workspace.
+        products_price_id:
+          $ref: '#/components/schemas/IntegerOrPublicId'
+          description: Integer ID or obfuscated public ID of a ClickFunnels price in the endpoint's workspace.
+      example:
+        external_product_sku: plan_annual
+        products_variant_id: CfVari
+        products_price_id: CfPric
+      required: []
+    WebhooksIncomingExternalPurchaseProductMappingAttributes:
+      type: object
+      title: Incoming External Purchase Product Mapping
+      description: 'Maps an external provider product, plan, or SKU to the ClickFunnels variant and price
+
+        used when an incoming purchase creates an order.
+
+        '
+      properties:
+        id:
+          type: integer
+          description: Mapping ID.
+        public_id:
+          type: string
+          description: Obfuscated mapping ID.
+        external_purchase_endpoint_id:
+          type: integer
+          description: Incoming external purchase endpoint that owns this mapping.
+        external_product_sku:
+          type: string
+          description: 'The identifier the provider reports for what was bought. It is the provider''s own id for
+
+            the thing purchased, which is not always its product id: `clickbank` reports the item
+
+            number (`itemNo`), `copecart` reports the product id, and `whop` reports the plan id
+
+            (`plan_...`), because one Whop product can hold several plans.
+
+            '
+        clickfunnels_product:
+          type: object
+          description: ClickFunnels product associated with the mapped price.
+          properties:
+            id:
+              type: integer
+              description: Product ID.
+            public_id:
+              type: string
+              description: Obfuscated product ID.
+            name:
+              type: string
+              description: Product name.
+        clickfunnels_variant:
+          type: object
+          description: ClickFunnels product variant selected by this mapping.
+          properties:
+            id:
+              type: integer
+              description: Variant ID.
+            public_id:
+              type: string
+              description: Obfuscated variant ID.
+            name:
+              type:
+              - string
+              - 'null'
+              description: Variant name.
+        clickfunnels_price:
+          type: object
+          description: ClickFunnels price selected by this mapping.
+          properties:
+            id:
+              type: integer
+              description: Price ID.
+            public_id:
+              type: string
+              description: Obfuscated price ID.
+            name:
+              type:
+              - string
+              - 'null'
+              description: Price name.
+            currency:
+              type: string
+              description: ISO 4217 currency code.
+            payment_type:
+              type:
+              - string
+              - 'null'
+              enum:
+              - one_time
+              - subscription
+              - payment_plan
+              - null
+              description: ClickFunnels price payment type.
+            amount:
+              type: string
+              description: Price amount as a decimal string.
+        created_at:
+          type: string
+          format: date-time
+          description: Created at.
+        updated_at:
+          type: string
+          format: date-time
+          description: Updated at.
+      example:
+        id: 201
+        public_id: PrMapA
+        external_purchase_endpoint_id: 81
+        external_product_sku: plan_monthly
+        clickfunnels_product:
+          id: 401
+          public_id: CfProd
+          name: Membership
+        clickfunnels_variant:
+          id: 501
+          public_id: CfVari
+          name: Default
+        clickfunnels_price:
+          id: 601
+          public_id: CfPric
+          name: Monthly
+          currency: USD
+          payment_type: subscription
+          amount: '29.00'
+        created_at: '2026-08-26T12:10:00.000Z'
+        updated_at: '2026-08-26T12:10:00.000Z'
+    WebhooksIncomingExternalPurchaseProductMappingParameters:
+      type: object
+      title: Create Incoming External Purchase Product Mapping
+      description: Parameters for mapping an external provider identifier to a ClickFunnels variant and price in the endpoint's workspace.
+      properties:
+        external_product_sku:
+          type: string
+          maxLength: 255
+          description: Provider product, plan, or SKU identifier. For Whop, use the plan ID.
+        products_variant_id:
+          $ref: '#/components/schemas/IntegerOrPublicId'
+          description: Integer ID or obfuscated public ID of a ClickFunnels variant in the endpoint's workspace.
+        products_price_id:
+          $ref: '#/components/schemas/IntegerOrPublicId'
+          description: Integer ID or obfuscated public ID of a ClickFunnels price in the endpoint's workspace.
+      example:
+        external_product_sku: plan_monthly
+        products_variant_id: CfVari
+        products_price_id: CfPric
+      required:
+      - external_product_sku
+      - products_price_id
+      - products_variant_id
+  headers:
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
+externalDocs:
+  description: More in-depth guides and further resources
+  url: https://developers.myclickfunnels.com

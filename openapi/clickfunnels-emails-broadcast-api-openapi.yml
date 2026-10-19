@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,12 +39,19 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Emails::Broadcast
   description: '> Email Broadcasts
 
 
-    Email Broadcasts allow you to send one-time email campaigns to your contacts.'
+    Email Broadcasts allow you to send one-time email campaigns to your contacts. Broadcasts are created in draft status and can be sent immediately or scheduled for later delivery.
+
+
+    To target a broadcast''s audience, set `filter_id` to a contact filter. You can pass the numeric id or the public id of a saved contact filter (a RefineFilter created via the Refine Filters Skill), or a serialized contact filter. The supplied filter is copied onto the broadcast, so editing or deleting the saved filter afterward never changes an existing broadcast''s audience. See Applying filters to email broadcasts for the full flow.
+
+
+    See Broadcasts in the Emails Skill.'
 paths:
   /workspaces/{workspace_id}/emails/broadcasts:
     get:
@@ -41,6 +67,7 @@ paths:
         schema:
           type: string
       - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/per_page'
       - $ref: '#/components/parameters/sort_order'
       - $ref: '#/components/parameters/sort_property'
       - name: filter
@@ -92,6 +119,9 @@ paths:
                 send_at_local_time: null
                 time_zone: Pacific Time (US & Canada)
                 send_immediately: false
+                smart_sending: true
+                smart_sending_time: 0.5
+                smart_sending_unit: hour
                 sending_at: null
                 complete_at: null
                 from_email: marketing@example.com
@@ -104,6 +134,16 @@ paths:
                 topic_ids:
                 - 1
                 - 2
+                split_test: false
+                split_test_percentage: null
+                split_test_wait_time: null
+                variants:
+                - subject: This Week's Updates
+                  preheadline: Check out what's new
+                  send_percentage: 100.0
+                  main: true
+                  open_count: 0
+                  winner: null
                 created_at: '2025-01-01T00:00:00.000Z'
                 updated_at: '2025-01-01T00:00:00.000Z'
         '401':
@@ -115,8 +155,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -126,13 +172,21 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          $ref: '#/components/responses/InvalidPageSize'
     post:
       tags:
       - Emails::Broadcast
       summary: Create Email Broadcast
-      description: 'Create a new email broadcast. Broadcasts are created in DRAFT status — creating one does not send it. To send it, create a send action for the broadcast (POST /emails/broadcasts/{broadcast_id}/send_actions): omit send_at to send now, or pass a future send_at to schedule. (Alternatively, the legacy inline path accepts recipients with send_immediately=true, or send_at/send_at_local_time/time_zone to schedule.) A complete business mailing address is required even when creating a draft. Configure it first with PUT /workspaces/{workspace_id}/emails/settings; an incomplete address returns 422. When accessing the API through an OAuth connection from a third-party platform, this endpoint is restricted to trusted developer platforms. If you are using your own API key, you can send emails directly from your account. Pick from_email and reply_to_email from addresses whose top-level `usable_as_sender` is true, not from the sending domain''s `verified` flag: `verified` covers email transport only, and sending a broadcast from an address that is not usable is rejected with 422. List addresses via GET /workspaces/{workspace_id}/emails/addresses. See Broadcasts and the Business mailing address prerequisite in the Emails Skill.'
+      description: 'Create a new email broadcast. Broadcasts are created in DRAFT status — creating one does not send it. The top-level subject/preheadline are split-test variant A; pass one alternate in variants and set split_test true to configure variant B. To send it, create a send action for the broadcast (POST /emails/broadcasts/{broadcast_id}/send_actions): omit send_at to send now, or pass a future send_at to schedule. (Alternatively, the legacy inline path accepts recipients with send_immediately=true, or send_at/send_at_local_time/time_zone to schedule.) A complete business mailing address is required even when creating a draft. Configure it first with PUT /workspaces/{workspace_id}/emails/settings; an incomplete address returns 422. Pick from_email and reply_to_email from addresses whose top-level `usable_as_sender` is true, not from the sending domain''s `verified` flag: `verified` covers email transport only, and sending a broadcast from an address that is not usable is rejected with 422. List addresses via GET /workspaces/{workspace_id}/emails/addresses. See Broadcasts and the Business mailing address prerequisite in the Emails Skill.'
       operationId: createEmailsBroadcast
       parameters:
       - name: workspace_id
@@ -161,6 +215,13 @@ paths:
                 html_body: <h1>Hello World</h1>
                 text_body: Hello World
                 send_immediately: false
+                split_test: true
+                split_test_percentage: 20
+                split_test_wait_time: 4
+                variants:
+                - subject: Don't miss this week's updates
+                  preheadline: See what's new
+                smart_sending: false
                 send_at: '2025-06-01'
                 send_at_local_time: '18:00:00'
                 time_zone: Pacific Time (US & Canada)
@@ -194,6 +255,9 @@ paths:
                 send_at_local_time: null
                 time_zone: Pacific Time (US & Canada)
                 send_immediately: false
+                smart_sending: true
+                smart_sending_time: 0.5
+                smart_sending_unit: hour
                 sending_at: null
                 complete_at: null
                 from_email: marketing@example.com
@@ -206,6 +270,22 @@ paths:
                 topic_ids:
                 - 1
                 - 2
+                split_test: true
+                split_test_percentage: 20
+                split_test_wait_time: 4
+                variants:
+                - subject: This Week's Updates
+                  preheadline: Check out what's new
+                  send_percentage: 10.0
+                  main: true
+                  open_count: 0
+                  winner: null
+                - subject: Don't miss this week's updates
+                  preheadline: See what's new
+                  send_percentage: 10.0
+                  main: false
+                  open_count: 0
+                  winner: null
                 created_at: '2025-01-01T00:00:00.000Z'
                 updated_at: '2025-01-01T00:00:00.000Z'
         '400':
@@ -217,8 +297,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -228,8 +314,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden
           content:
@@ -239,8 +331,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
-                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+                error: 'Forbidden: This access token''s scopes do not grant write access to Emails. Granted scopes: emails:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
         '422':
           description: Unprocessable Entity
           content:
@@ -250,8 +348,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Request unprocessable: A complete business mailing address is required to create marketing emails. Set it first via the email settings endpoint (GET/PUT /api/v2/workspaces/:workspace_id/emails/settings), providing a name and address, then try again.'
+                hint: null
   /emails/broadcasts/{id}:
     get:
       tags:
@@ -284,6 +388,9 @@ paths:
                 send_at_local_time: null
                 time_zone: Pacific Time (US & Canada)
                 send_immediately: false
+                smart_sending: true
+                smart_sending_time: 0.5
+                smart_sending_unit: hour
                 sending_at: null
                 complete_at: null
                 from_email: marketing@example.com
@@ -296,6 +403,16 @@ paths:
                 topic_ids:
                 - 1
                 - 2
+                split_test: false
+                split_test_percentage: null
+                split_test_wait_time: null
+                variants:
+                - subject: This Week's Updates
+                  preheadline: Check out what's new
+                  send_percentage: 100.0
+                  main: true
+                  open_count: 0
+                  winner: null
                 created_at: '2025-01-01T00:00:00.000Z'
                 updated_at: '2025-01-01T00:00:00.000Z'
         '401':
@@ -307,8 +424,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden
           content:
@@ -318,8 +441,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
-                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+                error: 'Forbidden: This access token''s scopes do not grant write access to Emails. Granted scopes: emails:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
         '404':
           description: Not Found
           content:
@@ -329,13 +458,19 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     patch:
       tags:
       - Emails::Broadcast
       summary: Update Email Broadcast
-      description: Update an email broadcast. Only broadcasts in draft status can be updated. When accessing the API through an OAuth connection from a third-party platform, this endpoint is restricted to trusted developer platforms. If you are using your own API key, you can send emails directly from your account. See Broadcasts in the Emails Skill.
+      description: Update an email broadcast. Only broadcasts in draft status can be updated. The top-level subject/preheadline are variant A; omit variants to preserve B, send one entry to replace B, or send an empty array to remove B while split_test is false. See Broadcasts in the Emails Skill.
       operationId: updateEmailsBroadcast
       parameters:
       - $ref: '#/components/parameters/id'
@@ -354,6 +489,12 @@ paths:
               emails_broadcast:
                 name: Updated Newsletter
                 subject: Updated Subject
+                split_test: true
+                split_test_percentage: 20
+                split_test_wait_time: 4
+                variants:
+                - subject: Alternate subject
+                  preheadline: Alternate preview
       responses:
         '200':
           description: OK
@@ -377,6 +518,9 @@ paths:
                 send_at_local_time: null
                 time_zone: Pacific Time (US & Canada)
                 send_immediately: false
+                smart_sending: true
+                smart_sending_time: 0.5
+                smart_sending_unit: hour
                 sending_at: null
                 complete_at: null
                 from_email: marketing@example.com
@@ -389,6 +533,22 @@ paths:
                 topic_ids:
                 - 1
                 - 2
+                split_test: true
+                split_test_percentage: 20
+                split_test_wait_time: 4
+                variants:
+                - subject: Updated Subject
+                  preheadline: Check out what's new
+                  send_percentage: 10.0
+                  main: true
+                  open_count: 0
+                  winner: null
+                - subject: Alternate subject
+                  preheadline: Alternate preview
+                  send_percentage: 10.0
+                  main: false
+                  open_count: 0
+                  winner: null
                 created_at: '2025-01-01T00:00:00.000Z'
                 updated_at: '2025-01-01T00:00:00.000Z'
         '400':
@@ -400,8 +560,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: HTTP body must be valid JSON'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -411,8 +577,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -422,13 +594,36 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Request unprocessable: A split test requires exactly one alternate variant'
+                hint: null
     delete:
       tags:
       - Emails::Broadcast
       summary: Delete Email Broadcast
-      description: Delete an email broadcast. Only broadcasts in draft status can be deleted. When accessing the API through an OAuth connection from a third-party platform, this endpoint is restricted to trusted developer platforms. If you are using your own API key, you can send emails directly from your account.
+      description: Delete an email broadcast. Only broadcasts in draft status can be deleted.
       operationId: removeEmailsBroadcast
       parameters:
       - $ref: '#/components/parameters/id'
@@ -444,8 +639,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden
           content:
@@ -455,8 +656,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
-                error: 'Forbidden: This endpoint is restricted to trusted developer platforms. Apply for trusted platform access at https://developers.myclickfunnels.com or contact support.'
+                error: 'Forbidden: This access token''s scopes do not grant write access to Emails. Granted scopes: emails:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
         '404':
           description: Not Found
           content:
@@ -466,27 +673,227 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+  /emails/broadcasts/{broadcast_id}/stats:
+    get:
+      tags:
+      - Emails::Broadcast
+      summary: Fetch Email Broadcast Stats
+      description: 'Delivery progress, engagement and revenue for one email broadcast, the same numbers as
+
+        the broadcast''s page in the ClickFunnels dashboard.
+
+
+        The numbers cover the broadcast''s send window, returned as `timerange`: from when
+
+        sending began until two weeks after it completed, or until now while it has not
+
+        completed, capped at 90 days after sending began. A broadcast that has not started
+
+        sending reports the last 90 days, with every number zero. There are no timerange parameters;
+
+        the `timerange_start` and `timerange_end` parameters of the funnel and page stats
+
+        endpoints are refused with a 422 rather than silently ignored.
+
+
+        Counts are unique contacts, except `opened` and `clicked`, which count every event.
+
+        Rates are whole percentages (0-100) of the audience (`progress.total`), rounded to the
+
+        nearest integer, so a share under 0.5% reads 0 next to a non-zero count; the counts are
+
+        authoritative. `click_to_open_rate` is unique clicks over unique opens. Revenue is
+
+        attributed to the broadcast when the buyer reached the order through one of its links,
+
+        summed across every send of the broadcast. Only live-mode transactions in the workspace
+
+        currency are counted (a workspace with no currency set has nothing to filter on, so
+
+        `currency` is `null` and every currency is summed); test-mode orders are excluded.
+
+
+        `progress.total` is the audience size recorded when the broadcast sent, summed over every
+
+        send of the broadcast, and is `null` before the first send has run. Stats are cached for a
+
+        few minutes while a broadcast is sending and longer once it has completed.
+
+
+        The split-test variants and the winner are on the broadcast record itself
+
+        (`GET /api/v2/emails/broadcasts/{id}`), not here.'
+      operationId: getEmailsBroadcastStats
+      parameters:
+      - name: broadcast_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailsBroadcastStatsAttributes'
+              example:
+                broadcast:
+                  id: 1
+                  public_id: GhIjKl
+                  name: Weekly Newsletter
+                currency: USD
+                timerange:
+                  from: '2026-08-01T10:00:00Z'
+                  to: '2026-08-15T12:00:00Z'
+                progress:
+                  total: 1000
+                  queued: 0
+                  processing: 0
+                  sent: 985
+                  failed: 3
+                performance:
+                  delivered: 985
+                  bounced: 12
+                  opened: 610
+                  unique_opens: 402
+                  clicked: 95
+                  unique_clicks: 81
+                  unsubscribed: 4
+                  spam_complaints: 1
+                  open_rate: 40
+                  click_rate: 8
+                  click_to_open_rate: 20
+                  bounce_rate: 1
+                  unsubscribe_rate: 0
+                revenue:
+                  total: '1234.50'
+                  orders_count: 17
+                  per_recipient: '1.23'
+                  per_unique_open: '3.07'
+                  per_unique_click: '15.24'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          description: Forbidden — the token's scopes don't grant read access to emails. Not retryable.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Forbidden: This access token''s scopes do not grant read access to Emails. Granted scopes: contacts:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
+        '404':
+          description: Not Found — broadcast not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Not found: Record missing'
+                hint: null
+        '422':
+          description: 'Unprocessable Entity — a `timerange_start` or `timerange_end` parameter was given. Broadcast
+
+            stats always cover the broadcast''s own send window (returned as `timerange`), so the parameter
+
+            is refused rather than silently ignored. Remove it and read `timerange` from the response.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Request unprocessable: timerange_start not supported: broadcast stats always cover the broadcast''s own send window, which the response returns as timerange.'
+                hint: null
+        '503':
+          description: 'Service Unavailable — a stats query exceeded the database timeout, or a dependency was
+
+            briefly unavailable. Retryable; the numbers are cached once a query completes, so a retry
+
+            shortly after is usually cheap.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Service unavailable: Transient service issue: Please try again shortly.'
+                hint: null
 components:
   parameters:
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    sort_order:
-      name: sort_order
+    per_page:
+      name: per_page
       in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
       required: false
+      description: Records per page. Defaults to 20; raise it up to 100 for bulk reads. A larger value returns 100 records. Zero, a negative or a non-integer value is a 422. The `Link` next-page URL keeps the value, so a client following it keeps the page size. More [in our guides](https://developers.myclickfunnels.com/docs/pagination).
       schema:
-        type: string
-        enum:
-        - asc
-        - desc
+        type: integer
+        minimum: 1
+        default: 20
     sort_property:
       name: sort_property
       in: query
@@ -501,12 +908,41 @@ components:
         enum:
         - id
         - updated_at
-    id:
-      name: id
-      in: path
-      required: true
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
       schema:
         type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  responses:
+    InvalidPageSize:
+      description: Unprocessable Entity - `per_page` must be a positive integer.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: Next step for the caller, or null when no additional guidance applies.
+          example:
+            error: 'Request unprocessable: per_page must be a positive integer, capped at 100 (got "0")'
+            hint: null
   schemas:
     EmailsBroadcastParametersUpdate:
       type: object
@@ -556,6 +992,56 @@ components:
           description: 'Contact filter for the broadcast audience. Accepts any of three forms: the numeric `id` or the public id (string) of a saved contact filter (`Refine::StoredFilter`) in this workspace, or a serialized contact filter. The supplied filter is copied onto the broadcast — the broadcast points at its own copy, so later edits to (or deletion of) the saved filter never change this broadcast''s audience. Saved contact filters can be created/listed via the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md). See [Applying filters to email broadcasts](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-email-broadcasts).
 
             '
+        split_test:
+          type: boolean
+          description: Enable or disable the subject-line split test. Disabling preserves variant B and the stored test settings for later editing. Must be a JSON boolean - string spellings such as `"true"` return 422.
+        split_test_percentage:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Whole-number share of the audience used for the test sends. Omit to preserve the stored value.
+        split_test_wait_time:
+          type: integer
+          minimum: 0
+          description: Whole hours to wait before choosing the subject-line winner. Omit to preserve the stored value.
+        variants:
+          type: array
+          maxItems: 1
+          description: Omit to preserve variant B, send one entry to replace B, or send an empty array to remove B while split_test is false. The top-level subject and preheadline remain variant A.
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - subject
+            properties:
+              subject:
+                type: string
+                minLength: 1
+                maxLength: 150
+                description: Replacement subject line for variant B.
+              preheadline:
+                type:
+                - string
+                - 'null'
+                maxLength: 150
+                description: Replacement preview text for variant B. Omit or send null to clear it.
+        smart_sending:
+          type: boolean
+          description: 'Smart Sending. When true the broadcast is delivered gradually across a window rather than all at once, which protects deliverability. A broadcast is created with this on, so send `false` to deliver the whole audience in one go. Above 5,000 recipients Smart Sending is mandatory: sending `false` is accepted and may be stored as `true`. The send batches at that size regardless of the stored value.'
+        smart_sending_time:
+          type:
+          - number
+          - 'null'
+          description: How many `smart_sending_unit`s the delivery window spans, for example `2` with `hour`. Must be between 0.5 and 100, and must be sent together with `smart_sending_unit`. Send both as `null` to go back to sizing the window from the audience.
+        smart_sending_unit:
+          type:
+          - string
+          - 'null'
+          enum:
+          - hour
+          - day
+          - null
+          description: The unit of the Smart Sending delivery window. Must be sent together with `smart_sending_time`. Send both as `null` to go back to sizing the window from the audience.
         send_at:
           type:
           - string
@@ -582,128 +1068,14 @@ components:
             type: integer
           description: Topic IDs to associate
       example:
-        emails_broadcast:
-          name: Updated Newsletter
-          subject: Updated Subject
-    EmailsBroadcastParameters:
-      type: object
-      title: Email Broadcasts
-      description: Email Broadcasts
-      required:
-      - name
-      - from_email
-      properties:
-        name:
-          type: string
-          description: Internal name for the broadcast (required)
-        subject:
-          type: string
-          description: Email subject line seen by recipients
-        preheadline:
-          type:
-          - string
-          - 'null'
-          description: Preview text shown in email clients before opening. Maximum 150 characters.
-        from_email:
-          type: string
-          description: 'Sender email address. Required on create. Must be an email address that belongs to the workspace, and it must have `usable_as_sender: true` or the send is rejected with 422. Do not pick by the sending domain''s `verified` flag: that covers email transport only. See GET /workspaces/{workspace_id}/emails/addresses, where a shared workspace-default address is usable only while the workspace has no ready custom sender.'
-        reply_to_email:
-          type:
-          - string
-          - 'null'
-          description: Reply-to email address. Must be an address in the workspace if provided. Pick one whose `usable_as_sender` is `true`.
-        html_body:
-          type:
-          - string
-          - 'null'
-          description: HTML email body. If provided without a template_id, a template is automatically created from this content.
-        text_body:
-          type:
-          - string
-          - 'null'
-          description: Plain text email body
-        template_id:
-          type:
-          - integer
-          - 'null'
-          description: Numeric id of an existing email template in this workspace to use. Alternative to providing html_body/text_body directly; takes precedence when both are given. The broadcast references this template (it is not copied).
-        filter_id:
-          type:
-          - string
-          - integer
-          - 'null'
-          description: 'Contact filter for the broadcast audience. Accepts any of three forms: the numeric `id` or the public id (string) of a saved contact filter (`Refine::StoredFilter`) in this workspace, or a serialized contact filter. The supplied filter is copied onto the broadcast — the broadcast points at its own copy, so later edits to (or deletion of) the saved filter never change this broadcast''s audience. Saved contact filters can be created/listed via the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md). If `recipients` are provided instead, a filter is created automatically from them and takes precedence over `filter_id`. See [Applying filters to email broadcasts](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-email-broadcasts).
-
-            '
-        send_immediately:
-          type: boolean
-          description: Set to true to send the broadcast immediately upon creation. If false, use send_at, send_at_local_time, and time_zone to schedule.
-        send_at:
-          type:
-          - string
-          - 'null'
-          description: Scheduled send date. Required when send_immediately is false.
-        send_at_local_time:
-          type:
-          - string
-          - 'null'
-          description: Scheduled send time in HH:MM:SS format. Defaults to 18:00:00.
-        time_zone:
-          type:
-          - string
-          - 'null'
-          description: Time zone for scheduling (defaults to workspace time zone)
-        external_id:
-          type:
-          - string
-          - 'null'
-          description: An optional external identifier for your own tracking
-        topic_ids:
-          type: array
-          items:
-            type: integer
-          description: Topic IDs to associate. Only topics belonging to the workspace are accepted.
-        recipients:
-          type: array
-          items:
-            type: object
-            required:
-            - email
-            properties:
-              email:
-                type: string
-                description: Recipient email address (required)
-              first_name:
-                type:
-                - string
-                - 'null'
-                description: Recipient first name
-              last_name:
-                type:
-                - string
-                - 'null'
-                description: Recipient last name
-          description: List of recipients (maximum 1,000). Contacts are created or matched by email address.
-      example:
-        emails_broadcast:
-          name: Weekly Newsletter
-          subject: This Week's Updates
-          preheadline: Check out what's new
-          from_email: marketing@example.com
-          reply_to_email: replies@example.com
-          html_body: <h1>Hello World</h1>
-          text_body: Hello World
-          send_immediately: false
-          send_at: '2025-06-01'
-          send_at_local_time: '18:00:00'
-          time_zone: Pacific Time (US & Canada)
-          topic_ids:
-          - 1
-          - 2
-          recipients:
-          - email: user@example.com
-            first_name: Jane
-            last_name: Doe
+        name: Updated Newsletter
+        subject: Updated Subject
+        split_test: true
+        split_test_percentage: 20
+        split_test_wait_time: 4
+        variants:
+        - subject: Alternate subject
+          preheadline: Alternate preview
     EmailsBroadcastAttributes:
       type: object
       title: Email Broadcasts
@@ -786,6 +1158,23 @@ components:
         send_immediately:
           type: boolean
           description: Whether the broadcast sends immediately upon creation
+        smart_sending:
+          type: boolean
+          description: 'Whether Smart Sending is on. When on, the broadcast is delivered gradually across a window instead of all at once, which protects deliverability. Defaults to `true`, so a broadcast batches unless you explicitly send `smart_sending: false`. Above 5,000 recipients Smart Sending is mandatory: the API may coerce `false` to `true`, and the send batches at that size regardless of the stored value.'
+        smart_sending_time:
+          type:
+          - number
+          - 'null'
+          description: How many `smart_sending_unit`s the delivery window spans. `null` means no override is stored and the window is sized from the audience instead.
+        smart_sending_unit:
+          type:
+          - string
+          - 'null'
+          enum:
+          - hour
+          - day
+          - null
+          description: The unit of the Smart Sending delivery window. `null` means no override is stored and the window is sized from the audience instead.
         sending_at:
           type:
           - string
@@ -835,6 +1224,51 @@ components:
           items:
             type: integer
           description: IDs of topics associated with this broadcast
+        split_test:
+          type: boolean
+          description: Whether this broadcast is a subject-line split test. When true, a `split_test_percentage` share of the audience is split evenly across the `variants`; after `split_test_wait_time` hours the variant with the most opens wins and the rest of the audience receives it.
+        split_test_percentage:
+          type:
+          - integer
+          - 'null'
+          description: Share of the audience (0-100) used for the test sends. This can remain populated while a configured test is disabled, and is `null` when no percentage has been configured.
+        split_test_wait_time:
+          type:
+          - integer
+          - 'null'
+          description: Hours to wait after the test sends before the winner is picked. This can remain populated while a configured test is disabled, and is `null` when no wait time has been configured.
+        variants:
+          type: array
+          description: The subject-line variants, oldest first. The main variant mirrors the broadcast's own subject and preheadline. A disabled test can retain an inactive alternate for later editing. A broadcast created before subject-line split tests existed and already sent has none, so the array can be empty; its subject line is then only on the broadcast's own `subject` and `preheadline`.
+          items:
+            type: object
+            properties:
+              subject:
+                type:
+                - string
+                - 'null'
+                description: Subject line sent to this variant's share of the audience
+              preheadline:
+                type:
+                - string
+                - 'null'
+                description: Preview text sent to this variant's share of the audience
+              send_percentage:
+                type:
+                - number
+                - 'null'
+                description: Share of the audience (0-100) this variant is sent to during the test. Only meaningful when `split_test` is true. Until a `split_test_percentage` is set, the whole audience is split evenly across the variants, as the dashboard reports it.
+              main:
+                type: boolean
+                description: Whether this is the main variant, the one that mirrors the broadcast's subject and preheadline. It wins ties.
+              open_count:
+                type: integer
+                description: Opens counted for this variant while the test was running. Frozen when the winner is picked, so it is not the broadcast's overall open count.
+              winner:
+                type:
+                - boolean
+                - 'null'
+                description: '`null` while the test is still running, and for a broadcast that is not a split test. Once the test closes, `true` for the variant with the most opens (the main variant on a tie) and `false` for the others.'
         created_at:
           type:
           - string
@@ -863,6 +1297,9 @@ components:
         send_at_local_time: null
         time_zone: Pacific Time (US & Canada)
         send_immediately: false
+        smart_sending: true
+        smart_sending_time: 0.5
+        smart_sending_unit: hour
         sending_at: null
         complete_at: null
         from_email: marketing@example.com
@@ -875,33 +1312,352 @@ components:
         topic_ids:
         - 1
         - 2
+        split_test: false
+        split_test_percentage: null
+        split_test_wait_time: null
+        variants:
+        - subject: This Week's Updates
+          preheadline: Check out what's new
+          send_percentage: 100.0
+          main: true
+          open_count: 0
+          winner: null
         created_at: '2025-01-01T00:00:00.000Z'
         updated_at: '2025-01-01T00:00:00.000Z'
+    EmailsBroadcastParameters:
+      type: object
+      title: Email Broadcasts
+      description: Email Broadcasts
       required:
-      - complete_at
-      - created_at
-      - external_id
-      - filter_id
-      - from_email
-      - from_name
-      - id
       - name
-      - origination_channel_id
-      - origination_channel_type
-      - preheadline
-      - public_id
-      - reply_to_email
-      - send_at
-      - send_at_local_time
-      - send_immediately
-      - sending_at
-      - status
-      - subject
-      - template
-      - time_zone
-      - topic_ids
-      - updated_at
-      - workspace_id
+      - from_email
+      properties:
+        name:
+          type: string
+          description: Internal name for the broadcast (required)
+        subject:
+          type: string
+          description: Email subject line seen by recipients
+        preheadline:
+          type:
+          - string
+          - 'null'
+          description: Preview text shown in email clients before opening. Maximum 150 characters.
+        from_email:
+          type: string
+          description: 'Sender email address. Required on create. Must be an email address that belongs to the workspace, and it must have `usable_as_sender: true` or the send is rejected with 422. Do not pick by the sending domain''s `verified` flag: that covers email transport only. See GET /workspaces/{workspace_id}/emails/addresses, where a shared workspace-default address is usable only while the workspace has no ready custom sender.'
+        reply_to_email:
+          type:
+          - string
+          - 'null'
+          description: Reply-to email address. Must be an address in the workspace if provided. Pick one whose `usable_as_sender` is `true`.
+        html_body:
+          type:
+          - string
+          - 'null'
+          description: HTML email body. If provided without a template_id, a template is automatically created from this content.
+        text_body:
+          type:
+          - string
+          - 'null'
+          description: Plain text email body
+        template_id:
+          type:
+          - integer
+          - 'null'
+          description: Numeric id of an existing email template in this workspace to use. Alternative to providing html_body/text_body directly; takes precedence when both are given. The broadcast references this template (it is not copied).
+        filter_id:
+          type:
+          - string
+          - integer
+          - 'null'
+          description: 'Contact filter for the broadcast audience. Accepts any of three forms: the numeric `id` or the public id (string) of a saved contact filter (`Refine::StoredFilter`) in this workspace, or a serialized contact filter. The supplied filter is copied onto the broadcast — the broadcast points at its own copy, so later edits to (or deletion of) the saved filter never change this broadcast''s audience. Saved contact filters can be created/listed via the [Refine Filters Skill](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md). If `recipients` are provided instead, a filter is created automatically from them and takes precedence over `filter_id`. See [Applying filters to email broadcasts](https://accounts.myclickfunnels.com/.well-known/refine-filters/skill.md#applying-filters-to-email-broadcasts).
+
+            '
+        send_immediately:
+          type: boolean
+          description: Set to true to send the broadcast immediately upon creation. If false, use send_at, send_at_local_time, and time_zone to schedule.
+        split_test:
+          type: boolean
+          description: Enable a subject-line split test. Requires exactly one alternate in `variants`. When enabled without stored settings, percentage defaults to 100 and wait time defaults to 0 hours. Must be a JSON boolean - string spellings such as `"true"` return 422.
+        split_test_percentage:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Whole-number share of the audience used for the test sends. The share is divided evenly between variant A and variant B.
+        split_test_wait_time:
+          type: integer
+          minimum: 0
+          description: Whole hours to wait before choosing the subject-line winner.
+        variants:
+          type: array
+          maxItems: 1
+          description: Zero or one alternate subject-line variant B. The top-level subject and preheadline are variant A. Supplying B does not enable testing by itself.
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - subject
+            properties:
+              subject:
+                type: string
+                minLength: 1
+                maxLength: 150
+                description: Subject line for variant B.
+              preheadline:
+                type:
+                - string
+                - 'null'
+                maxLength: 150
+                description: Preview text for variant B. Omit or send null to clear it.
+        smart_sending:
+          type: boolean
+          description: 'Smart Sending. When true the broadcast is delivered gradually across a window rather than all at once, which protects deliverability. **Defaults to `true`**: send `false` explicitly to deliver the whole audience in one go. Above 5,000 recipients Smart Sending is mandatory: sending `false` is accepted and may be stored as `true`. The send batches at that size regardless of the stored value.'
+        smart_sending_time:
+          type:
+          - number
+          - 'null'
+          description: How many `smart_sending_unit`s the delivery window spans, for example `2` with `hour`. Must be between 0.5 and 100, and must be sent together with `smart_sending_unit`. Omit both to size the window from the audience, which is the recommended default.
+        smart_sending_unit:
+          type:
+          - string
+          - 'null'
+          enum:
+          - hour
+          - day
+          - null
+          description: The unit of the Smart Sending delivery window. Must be sent together with `smart_sending_time`. Omit both to size the window from the audience, which is the recommended default.
+        send_at:
+          type:
+          - string
+          - 'null'
+          description: Scheduled send date. Required when send_immediately is false.
+        send_at_local_time:
+          type:
+          - string
+          - 'null'
+          description: Scheduled send time in HH:MM:SS format. Defaults to 18:00:00.
+        time_zone:
+          type:
+          - string
+          - 'null'
+          description: Time zone for scheduling (defaults to workspace time zone)
+        external_id:
+          type:
+          - string
+          - 'null'
+          description: An optional external identifier for your own tracking
+        topic_ids:
+          type: array
+          items:
+            type: integer
+          description: Topic IDs to associate. Only topics belonging to the workspace are accepted.
+        recipients:
+          type: array
+          items:
+            type: object
+            required:
+            - email
+            properties:
+              email:
+                type: string
+                description: Recipient email address (required)
+              first_name:
+                type:
+                - string
+                - 'null'
+                description: Recipient first name
+              last_name:
+                type:
+                - string
+                - 'null'
+                description: Recipient last name
+          description: List of recipients (maximum 1,000). Contacts are created or matched by email address.
+      example:
+        name: Weekly Newsletter
+        subject: This Week's Updates
+        preheadline: Check out what's new
+        from_email: marketing@example.com
+        reply_to_email: replies@example.com
+        html_body: <h1>Hello World</h1>
+        text_body: Hello World
+        send_immediately: false
+        split_test: true
+        split_test_percentage: 20
+        split_test_wait_time: 4
+        variants:
+        - subject: Don't miss this week's updates
+          preheadline: See what's new
+        smart_sending: false
+        send_at: '2025-06-01'
+        send_at_local_time: '18:00:00'
+        time_zone: Pacific Time (US & Canada)
+        topic_ids:
+        - 1
+        - 2
+        recipients:
+        - email: user@example.com
+          first_name: Jane
+          last_name: Doe
+    EmailsBroadcastStatsAttributes:
+      type: object
+      title: Email Broadcast Stats
+      description: Delivery progress, engagement and revenue for one email broadcast over its send window. Counts are unique contacts unless noted; rates are whole percentages (0-100); money is a decimal string in `currency`.
+      properties:
+        broadcast:
+          type: object
+          description: The broadcast these stats belong to
+          properties:
+            id:
+              type: integer
+              description: Broadcast ID
+            public_id:
+              type:
+              - string
+              - 'null'
+              description: Broadcast public ID
+            name:
+              type:
+              - string
+              - 'null'
+              description: Internal name for the broadcast
+        currency:
+          type:
+          - string
+          - 'null'
+          description: ISO 4217 currency code for all monetary values (e.g. USD, EUR). `null` when the workspace has no currency set; `revenue` then sums every currency the broadcast's orders were paid in.
+        timerange:
+          type: object
+          description: The send window the stats cover
+          properties:
+            from:
+              type:
+              - string
+              - 'null'
+              format: date-time
+              description: When sending began. For a broadcast that has not started sending, 90 days before `to`; every number is then zero.
+            to:
+              type: string
+              format: date-time
+              description: End of the window, two weeks after sending completed, or now while the broadcast has not completed, capped at 90 days after sending began.
+        progress:
+          type: object
+          description: How far delivery has got
+          properties:
+            total:
+              type:
+              - integer
+              - 'null'
+              description: Audience size recorded when the broadcast sent, summed over every send of the broadcast (a send in the contacts' time zones has one per zone). `null` until the first send has run.
+            queued:
+              type: integer
+              description: Contacts in batches that have not started sending yet (scheduled, waiting for the split-test winner, paused, or halted by a deliverability health check)
+            processing:
+              type: integer
+              description: Contacts in batches being sent right now
+            sent:
+              type: integer
+              description: Contacts the email was sent to
+            failed:
+              type: integer
+              description: Contacts whose delivery failed
+        performance:
+          type: object
+          description: Engagement over the send window. Rates are rounded to whole percentages, so a share under 0.5% reads 0 next to a non-zero count; the counts are authoritative.
+          properties:
+            delivered:
+              type: integer
+              description: Contacts the email was sent to (the same number as `progress.sent`)
+            bounced:
+              type: integer
+              description: Contacts whose address bounced
+            opened:
+              type: integer
+              description: Total opens, counting repeat opens by the same contact
+            unique_opens:
+              type: integer
+              description: Contacts who opened at least once
+            clicked:
+              type: integer
+              description: Total clicks, counting repeat clicks by the same contact
+            unique_clicks:
+              type: integer
+              description: Contacts who clicked at least once
+            unsubscribed:
+              type: integer
+              description: Contacts who unsubscribed from this email
+            spam_complaints:
+              type: integer
+              description: Contacts who reported this email as spam
+            open_rate:
+              type: integer
+              description: Unique opens as a whole percentage (0-100) of the audience
+            click_rate:
+              type: integer
+              description: Unique clicks as a whole percentage (0-100) of the audience
+            click_to_open_rate:
+              type: integer
+              description: Unique clicks as a whole percentage (0-100) of unique opens
+            bounce_rate:
+              type: integer
+              description: Bounces as a whole percentage (0-100) of the audience
+            unsubscribe_rate:
+              type: integer
+              description: Unsubscribes as a whole percentage (0-100) of the audience
+        revenue:
+          type: object
+          description: Orders attributed to the broadcast, meaning the buyer reached the order through one of its links, summed across every send of the broadcast. Only live-mode transactions in the workspace currency are counted; a workspace with no currency set (`currency` is `null`) has every currency summed.
+          properties:
+            total:
+              type: string
+              description: Revenue attributed to the broadcast (paid minus refunded), as a decimal string in `currency`
+            orders_count:
+              type: integer
+              description: Orders with at least one paid transaction attributed to the broadcast
+            per_recipient:
+              type: string
+              description: Revenue divided by the audience, as a decimal string in `currency`
+            per_unique_open:
+              type: string
+              description: Revenue divided by unique opens, as a decimal string in `currency`
+            per_unique_click:
+              type: string
+              description: Revenue divided by unique clicks, as a decimal string in `currency`
+      example:
+        broadcast:
+          id: 1
+          public_id: GhIjKl
+          name: Weekly Newsletter
+        currency: USD
+        timerange:
+          from: '2026-08-01T10:00:00Z'
+          to: '2026-08-15T12:00:00Z'
+        progress:
+          total: 1000
+          queued: 0
+          processing: 0
+          sent: 985
+          failed: 3
+        performance:
+          delivered: 985
+          bounced: 12
+          opened: 610
+          unique_opens: 402
+          clicked: 95
+          unique_clicks: 81
+          unsubscribed: 4
+          spam_complaints: 1
+          open_rate: 40
+          click_rate: 8
+          click_to_open_rate: 20
+          bounce_rate: 1
+          unsubscribe_rate: 0
+        revenue:
+          total: '1234.50'
+          orders_count: 17
+          per_recipient: '1.23'
+          per_unique_open: '3.07'
+          per_unique_click: '15.24'
   headers:
     PaginationNext:
       description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
@@ -915,6 +1671,88 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com

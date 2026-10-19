@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,9 +39,52 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Discount
-  description: '> A reusable, workspace-scoped discount the checkout applies on top of a price.'
+  description: '> A reusable, workspace-scoped discount the checkout applies on top of a price.
+
+
+    A Discount is the right tool for a coupon code, a percentage/amount off, or a
+
+    time-boxed sale - anything you would otherwise fake with a second "sale" price.
+
+    It is one reusable object applied on top of the price, so you can start, scope,
+
+    and expire it without touching the product''s prices.
+
+
+    A `code`-type discount (the default) needs a unique `code` that buyers redeem at
+
+    checkout - letters, numbers and hyphens only. `discount_method` decides which amount
+
+    field is required: `percentage` needs `percent` (0.01-100); `fixed` needs a positive
+
+    `amount`. `currency` defaults to the workspace currency and `apply_from` defaults to
+
+    now, so a discount is live immediately unless you schedule it with a future
+
+    `apply_from` and/or expire it with `apply_until`.
+
+
+    By default a discount applies to `all_products`. Set `applies_to` to
+
+    `specific_products` / `specific_variants` / `specific_collections` and pass the
+
+    matching `product_ids` / `variant_ids` / `products_collection_ids` array to scope it.
+
+
+    Two lock-out rules govern the end of a discount''s life. Once it has been redeemed on
+
+    an order its money-affecting fields are locked (422 on update) while renaming and
+
+    expiring still work. Once it has actually expired it is frozen completely - every
+
+    update returns 422 - so rename before you expire, not after. A discount attached to
+
+    an order cannot be deleted at all; `redemptions_count` does not predict that, since
+
+    it only counts redemptions on an invoice.'
 paths:
   /workspaces/{workspace_id}/discounts:
     get:
@@ -38,6 +100,7 @@ paths:
         schema:
           type: string
       - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/per_page'
       - $ref: '#/components/parameters/sort_order'
       - $ref: '#/components/parameters/sort_property'
       - name: filter
@@ -144,8 +207,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden - the access token's scopes do not cover this request
           content:
@@ -155,8 +224,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Forbidden: This access token''s scopes do not grant read access to Store. Granted scopes: contacts:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
         '404':
           description: Not Found
           content:
@@ -167,8 +242,16 @@ paths:
                   error:
                     type: string
                     description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          $ref: '#/components/responses/InvalidPageSize'
     post:
       tags:
       - Discount
@@ -246,8 +329,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden - the access token's scopes do not cover this request
           content:
@@ -257,8 +346,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Forbidden: This access token''s scopes do not grant write access to Store. Granted scopes: store:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
         '404':
           description: Not Found
           content:
@@ -268,8 +363,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity - validation failed
           content:
@@ -279,27 +380,37 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               examples:
                 code_taken:
                   summary: code already in use
                   value:
                     error: 'Request unprocessable: Coupon Code is already being used in another Discount or Coupon'
+                    hint: null
                 missing_percent:
                   summary: percentage method with no percent
                   value:
                     error: 'Request unprocessable: Percent must be greater than 0'
+                    hint: null
                 code_characters:
                   summary: code contains characters other than letters, numbers and hyphens
                   value:
                     error: 'Request unprocessable: Coupon Code only allows letters, numbers, and hyphens'
+                    hint: null
                 expired_on_create:
                   summary: '`expired` sent on create, at any value including `false`'
                   value:
                     error: 'Request unprocessable: `expired` is not a create field. Create the discount, then expire it with `PATCH { "discount": { "expired": true } }`.'
+                    hint: null
                 unknown_enum_value:
                   summary: a value outside an enum field's list
                   value:
                     error: 'Request unprocessable: `discount_type` must be one of: code, automatic, sale.'
+                    hint: null
   /discounts/{id}:
     get:
       tags:
@@ -352,8 +463,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden - the access token's scopes do not cover this request
           content:
@@ -363,8 +480,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Forbidden: This access token''s scopes do not grant read access to Store. Granted scopes: contacts:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
         '404':
           description: Not Found
           content:
@@ -374,8 +497,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     patch:
       tags:
       - Discount
@@ -441,8 +570,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden - the access token's scopes do not cover this request
           content:
@@ -452,8 +587,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Forbidden: This access token''s scopes do not grant write access to Store. Granted scopes: store:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
         '404':
           description: Not Found
           content:
@@ -463,8 +604,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity - validation failed, the discount is locked after redemption, or the discount is expired
           content:
@@ -474,31 +621,42 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               examples:
                 money_field_locked_after_redemption:
                   summary: a money-affecting field on a redeemed discount
                   value:
                     error: 'Request unprocessable: Percent cannot be changed because it has already been applied'
+                    hint: null
                 already_expired:
                   summary: 'a frozen field on an already-expired discount, including one sent alongside `expired: true`'
                   value:
                     error: 'Request unprocessable: Discount cannot be changed because it has expired'
+                    hint: null
                 cannot_unexpire_redeemed:
                   summary: '`expired: false` on a discount that has been redeemed'
                   value:
                     error: 'Request unprocessable: Apply until cannot be removed after it has been redeemed'
+                    hint: null
                 expired_not_boolean:
                   summary: an `expired` value that is neither true nor false
                   value:
                     error: 'Request unprocessable: `expired` must be true or false.'
+                    hint: null
                 unknown_enum_value:
                   summary: a value outside an enum field's list
                   value:
                     error: 'Request unprocessable: `discount_type` must be one of: code, automatic, sale.'
+                    hint: null
                 end_before_start:
                   summary: 'apply_until earlier than apply_from - use `expired: true` to expire now'
                   value:
                     error: 'Request unprocessable: Apply until scheduled end date must be after the scheduled start date'
+                    hint: null
     delete:
       tags:
       - Discount
@@ -522,8 +680,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '403':
           description: Forbidden - the access token's scopes do not cover this request
           content:
@@ -533,8 +697,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Forbidden: This access token''s scopes do not grant write access to Store. Granted scopes: store:read.'
+                hint: 'Scopes are granted per category as <category>:read or <category>:write; the `scope` parameter of WWW-Authenticate names the one this request needed. Grantable scopes: https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource'
         '404':
           description: Not Found
           content:
@@ -544,10 +714,16 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
-          description: Unprocessable Entity - the discount is attached to an order and cannot be deleted. `redemptions_count` does not predict this - it only counts completed sales, so a discount reporting zero redemptions can still be undeletable.
+          description: Unprocessable Entity - the discount is attached to an order and cannot be deleted. `redemptions_count` does not predict this - it only counts redemptions on an invoice, so a discount reporting zero redemptions can still be undeletable.
           content:
             application/json:
               schema:
@@ -555,27 +731,31 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Request unprocessable: Cannot delete a discount that has been applied to an order. Expire it instead with `expired: true`.'
+                hint: null
 components:
   parameters:
-    after:
-      name: after
-      in: query
-      required: false
+    id:
+      name: id
+      in: path
+      required: true
       schema:
         type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
-    sort_order:
-      name: sort_order
+    per_page:
+      name: per_page
       in: query
-      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
       required: false
+      description: Records per page. Defaults to 20; raise it up to 100 for bulk reads. A larger value returns 100 records. Zero, a negative or a non-integer value is a 422. The `Link` next-page URL keeps the value, so a client following it keeps the page size. More [in our guides](https://developers.myclickfunnels.com/docs/pagination).
       schema:
-        type: string
-        enum:
-        - asc
-        - desc
+        type: integer
+        minimum: 1
+        default: 20
     sort_property:
       name: sort_property
       in: query
@@ -590,13 +770,201 @@ components:
         enum:
         - id
         - updated_at
-    id:
-      name: id
-      in: path
-      required: true
+    sort_order:
+      name: sort_order
+      in: query
+      description: Sort order of a list response. Use 'desc' to reverse the default 'asc' (ascending) sort order. Examples [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      required: false
+      schema:
+        type: string
+        enum:
+        - asc
+        - desc
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  responses:
+    InvalidPageSize:
+      description: Unprocessable Entity - `per_page` must be a positive integer.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: Next step for the caller, or null when no additional guidance applies.
+          example:
+            error: 'Request unprocessable: per_page must be a positive integer, capped at 100 (got "0")'
+            hint: null
+  headers:
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
+      schema:
+        type: string
+    Link:
+      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
       schema:
         type: string
   schemas:
+    DiscountAttributes:
+      type: object
+      title: Discount
+      description: A reusable, workspace-scoped discount applied on top of a price.
+      properties:
+        id:
+          type: integer
+          description: Discount ID
+        public_id:
+          type:
+          - string
+          - 'null'
+          description: Discount public ID
+        workspace_id:
+          type: integer
+          description: Workspace ID
+        name:
+          type: string
+          description: Internal name for the discount.
+        code:
+          type: string
+          description: The code a buyer redeems at checkout. Uppercased on save; unique within the workspace (cannot collide with a coupon code).
+        discount_type:
+          type: string
+          enum:
+          - code
+          - automatic
+          - sale
+          description: '`code` (the default) is a redeemable coupon code. `automatic` and `sale` are deprecated.'
+        discount_method:
+          type: string
+          enum:
+          - percentage
+          - fixed
+          - shipping
+          - bogo
+          description: How the discount is calculated. `percentage` uses `percent`; `fixed` uses `amount`. `shipping` and `bogo` exist but are outside the simple flow.
+        amount:
+          type:
+          - string
+          - 'null'
+          description: Fixed amount off, as a decimal string (e.g. "10.00"). `null` for a percentage discount.
+        percent:
+          type:
+          - string
+          - 'null'
+          description: Percentage off between 0.01 and 100 (e.g. "20.0"). `null` for a fixed discount.
+        currency:
+          type: string
+          description: ISO currency code, lowercased. Defaults to the workspace currency.
+        applies_to:
+          type: string
+          enum:
+          - all_products
+          - specific_products
+          - specific_variants
+          - specific_collections
+          description: Scope of the discount. `all_products` (the default) applies workspace-wide; the `specific_*` values restrict it to the ids passed in `product_ids` / `variant_ids` / `products_collection_ids`.
+        apply_from:
+          type: string
+          format: date-time
+          description: When the discount becomes active. Defaults to the creation time.
+        apply_until:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the discount expires. `null` means it never expires.
+        limit_1_per_customer:
+          type: boolean
+          description: When true, each contact can redeem the discount only once.
+        require_minimum_spend:
+          type: boolean
+          description: When true, the order must meet `require_minimum_spend_amount` for the discount to apply.
+        require_minimum_spend_amount:
+          type:
+          - integer
+          - 'null'
+          description: Minimum order subtotal required, when `require_minimum_spend` is true. In whole currency units, not cents - `50` on a `usd` discount means $50.
+        discounts_per_redemption:
+          type:
+          - integer
+          - 'null'
+          description: Optional cap on how many line items a single redemption discounts.
+        redemptions_count:
+          type: integer
+          description: How many times the discount has been redeemed on an invoice. On Stripe every invoice counts, renewals included; on Payments AI each customer redemption counts once, however many renewal invoices it covers. This is not a deletability signal - a discount can report zero redemptions and still return 422 on DELETE because it is applied to an order that has no invoice yet.
+        product_ids:
+          type: array
+          items:
+            type: integer
+          description: The products the discount is scoped to (empty unless `applies_to` is `specific_products`).
+        variant_ids:
+          type: array
+          items:
+            type: integer
+          description: The variants the discount is scoped to (empty unless `applies_to` is `specific_variants`).
+        products_collection_ids:
+          type: array
+          items:
+            type: integer
+          description: The collections the discount is scoped to (empty unless `applies_to` is `specific_collections`).
+        active:
+          type: boolean
+          description: Derived - true when the discount is neither scheduled for the future nor expired.
+        expired:
+          type: boolean
+          description: Derived - true when `apply_until` is in the past. An expired discount is frozen - every further update returns 422, so rename before you expire.
+        scheduled:
+          type: boolean
+          description: Derived - true when `apply_from` is in the future.
+        created_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Added
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Updated
+      example:
+        id: 771
+        public_id: gBEDMo
+        workspace_id: 42000
+        name: Launch 20
+        code: LAUNCH20
+        discount_type: code
+        discount_method: percentage
+        amount: null
+        percent: '20.0'
+        currency: usd
+        applies_to: all_products
+        apply_from: '2025-01-01T00:00:00.000Z'
+        apply_until: null
+        limit_1_per_customer: false
+        require_minimum_spend: false
+        require_minimum_spend_amount: null
+        discounts_per_redemption: null
+        redemptions_count: 0
+        product_ids: []
+        variant_ids: []
+        products_collection_ids: []
+        active: true
+        expired: false
+        scheduled: false
+        created_at: '2025-01-01T00:00:00.000Z'
+        updated_at: '2025-01-01T00:00:00.000Z'
     DiscountParameters:
       type: object
       title: Discount
@@ -757,196 +1125,92 @@ components:
             type: integer
       example:
         expired: true
-    DiscountAttributes:
-      type: object
-      title: Discount
-      description: A reusable, workspace-scoped discount applied on top of a price.
-      properties:
-        id:
-          type: integer
-          description: Discount ID
-        public_id:
-          type:
-          - string
-          - 'null'
-          description: Discount public ID
-        workspace_id:
-          type: integer
-          description: Workspace ID
-        name:
-          type: string
-          description: Internal name for the discount.
-        code:
-          type: string
-          description: The code a buyer redeems at checkout. Uppercased on save; unique within the workspace (cannot collide with a coupon code).
-        discount_type:
-          type: string
-          enum:
-          - code
-          - automatic
-          - sale
-          description: '`code` (the default) is a redeemable coupon code. `automatic` and `sale` are deprecated.'
-        discount_method:
-          type: string
-          enum:
-          - percentage
-          - fixed
-          - shipping
-          - bogo
-          description: How the discount is calculated. `percentage` uses `percent`; `fixed` uses `amount`. `shipping` and `bogo` exist but are outside the simple flow.
-        amount:
-          type:
-          - string
-          - 'null'
-          description: Fixed amount off, as a decimal string (e.g. "10.00"). `null` for a percentage discount.
-        percent:
-          type:
-          - string
-          - 'null'
-          description: Percentage off between 0.01 and 100 (e.g. "20.0"). `null` for a fixed discount.
-        currency:
-          type: string
-          description: ISO currency code, lowercased. Defaults to the workspace currency.
-        applies_to:
-          type: string
-          enum:
-          - all_products
-          - specific_products
-          - specific_variants
-          - specific_collections
-          description: Scope of the discount. `all_products` (the default) applies workspace-wide; the `specific_*` values restrict it to the ids passed in `product_ids` / `variant_ids` / `products_collection_ids`.
-        apply_from:
-          type: string
-          format: date-time
-          description: When the discount becomes active. Defaults to the creation time.
-        apply_until:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: When the discount expires. `null` means it never expires.
-        limit_1_per_customer:
-          type: boolean
-          description: When true, each contact can redeem the discount only once.
-        require_minimum_spend:
-          type: boolean
-          description: When true, the order must meet `require_minimum_spend_amount` for the discount to apply.
-        require_minimum_spend_amount:
-          type:
-          - integer
-          - 'null'
-          description: Minimum order subtotal required, when `require_minimum_spend` is true. In whole currency units, not cents - `50` on a `usd` discount means $50.
-        discounts_per_redemption:
-          type:
-          - integer
-          - 'null'
-          description: Optional cap on how many line items a single redemption discounts.
-        redemptions_count:
-          type: integer
-          description: How many times the discount has been redeemed on a completed sale. This is not a deletability signal - a discount can report zero redemptions and still return 422 on DELETE because it is attached to an order.
-        product_ids:
-          type: array
-          items:
-            type: integer
-          description: The products the discount is scoped to (empty unless `applies_to` is `specific_products`).
-        variant_ids:
-          type: array
-          items:
-            type: integer
-          description: The variants the discount is scoped to (empty unless `applies_to` is `specific_variants`).
-        products_collection_ids:
-          type: array
-          items:
-            type: integer
-          description: The collections the discount is scoped to (empty unless `applies_to` is `specific_collections`).
-        active:
-          type: boolean
-          description: Derived - true when the discount is neither scheduled for the future nor expired.
-        expired:
-          type: boolean
-          description: Derived - true when `apply_until` is in the past. An expired discount is frozen - every further update returns 422, so rename before you expire.
-        scheduled:
-          type: boolean
-          description: Derived - true when `apply_from` is in the future.
-        created_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Added
-        updated_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Updated
-      example:
-        id: 771
-        public_id: gBEDMo
-        workspace_id: 42000
-        name: Launch 20
-        code: LAUNCH20
-        discount_type: code
-        discount_method: percentage
-        amount: null
-        percent: '20.0'
-        currency: usd
-        applies_to: all_products
-        apply_from: '2025-01-01T00:00:00.000Z'
-        apply_until: null
-        limit_1_per_customer: false
-        require_minimum_spend: false
-        require_minimum_spend_amount: null
-        discounts_per_redemption: null
-        redemptions_count: 0
-        product_ids: []
-        variant_ids: []
-        products_collection_ids: []
-        active: true
-        expired: false
-        scheduled: false
-        created_at: '2025-01-01T00:00:00.000Z'
-        updated_at: '2025-01-01T00:00:00.000Z'
-      required:
-      - active
-      - amount
-      - applies_to
-      - apply_from
-      - apply_until
-      - code
-      - created_at
-      - currency
-      - discount_method
-      - discount_type
-      - discounts_per_redemption
-      - expired
-      - id
-      - limit_1_per_customer
-      - name
-      - percent
-      - product_ids
-      - products_collection_ids
-      - public_id
-      - redemptions_count
-      - require_minimum_spend
-      - require_minimum_spend_amount
-      - scheduled
-      - updated_at
-      - variant_ids
-      - workspace_id
-  headers:
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
-    Link:
-      description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com

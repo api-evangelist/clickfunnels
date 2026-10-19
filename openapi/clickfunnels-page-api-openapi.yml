@@ -7,7 +7,26 @@ info:
     url: https://developers.myclickfunnels.com
   x-logo:
     url: https://statics.myclickfunnels.com/image/1126065/file/31edf05760fafe41a82f16a668ab251f.png
-  description: The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+  description: 'The ClickFunnels REST API that powers webhooks, native integrations, and Zapier lets you manage your ClickFunnels data, automate your workflows, and recreate ClickFunnels functionality in your own apps.
+
+
+    ### For AI agents
+
+
+    This document is the catalogue: every operation ClickFunnels exposes over REST is described here, with a unique operationId, typed schemas, and the scopes it needs. It is served from `/openapi.json`, `/openapi.yaml`, `/api/openapi.{json,yaml}`, and `/api/v2/openapi.{json,yaml}` on the accounts host.
+
+
+    Three things it does not describe, each one request away:
+
+
+    - MCP server: the app-native Model Context Protocol server (Streamable HTTP, OAuth 2.1 with PKCE). Prefer it over raw REST when your client supports MCP - it describes itself at runtime.
+
+    - Skill guides, also as an Agent Skills index: one task guide per job (pages, blogs, products, orders, workflows, emails, courses, stats, external SDK pages). Read the guide that matches your job before your first write. llms.txt covers when to use ClickFunnels at all, how to get credentials, and how to behave around rate limits.
+
+    - Protected resource metadata (RFC 9728) and authorization server metadata (RFC 8414): the scope vocabulary and the OAuth endpoints. Dynamic client registration is for MCP clients only.
+
+
+    On ClickFunnels-owned API hosts (`myclickfunnels.com` and its subdomains), the OpenAPI specification responses and API authentication failures (401, or 403 for insufficient scope) carry those links in an RFC 8288 `Link` header, so clients can discover the documentation and authentication metadata from those responses. Requests sent through a customer''s custom domain keep the Bearer challenge but omit those discovery pointers.'
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -20,9 +39,21 @@ servers:
       default: myworkspace
 security:
 - BearerAuth: []
+- OAuth2: []
 tags:
 - name: Page
-  description: '> Page offers extra information about ClickFunnels pages, like those that are part of funnels.'
+  description: '> Page offers extra information about ClickFunnels pages, like those that are part of funnels.
+
+
+    It''s the main element that the user modifies when editing a Page in the ClickFunnels editor.
+
+
+    You can also learn how to source Page name and public ID from your ClickFunnels UI
+
+    here.
+
+
+    See the Pages Skill for building a page and positioning it within a funnel; the page body is authored in PML — see the Page Markup Skill. For pages you host yourself, see Create an External Page and Add Checkout to an External Page. To move those externally-hosted pages to a new domain, see Migrate an External Page Domain.'
 paths:
   /workspaces/{workspace_id}/pages:
     get:
@@ -38,6 +69,7 @@ paths:
         schema:
           type: string
       - $ref: '#/components/parameters/after'
+      - $ref: '#/components/parameters/per_page'
       - $ref: '#/components/parameters/sort_order'
       - $ref: '#/components/parameters/sort_property'
       - name: filter
@@ -91,6 +123,7 @@ paths:
                 created_at: '2025-01-01T00:00:00.000Z'
                 updated_at: '2025-01-01T00:00:00.000Z'
                 type: funnel_page
+                custom_html_page: false
                 current_path: /great-page
                 url: https://myteam.myclickfunnels.com/funnel-great-page
                 show_page_step:
@@ -105,6 +138,9 @@ paths:
                   public_id: AbC789
                   name: Sales Funnel
                 sdk: null
+                block_ai_assistant: false
+                block_ai_crawler: false
+                block_ai_search: false
                 description: null
                 seo_description: null
                 seo_index: false
@@ -117,11 +153,15 @@ paths:
                 created_at: '2025-01-01T00:00:00.000Z'
                 updated_at: '2025-01-01T00:00:00.000Z'
                 type: landing_page
+                custom_html_page: false
                 current_path: /landing-page
                 url: https://myteam.myclickfunnels.com/landing-page
                 show_page_step: null
                 funnel: null
                 sdk: null
+                block_ai_assistant: false
+                block_ai_crawler: false
+                block_ai_search: false
                 description: null
                 seo_description: null
                 seo_index: false
@@ -135,8 +175,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -147,8 +193,16 @@ paths:
                   error:
                     type: string
                     description: Not found - This usually happens when you try to access a record that does not exist in your account. It can also happen when the provided parent record is missing, e.g. you have put in a non-existent Workspaces parent ID.
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          $ref: '#/components/responses/InvalidPageSize'
     post:
       tags:
       - Page
@@ -207,6 +261,9 @@ paths:
                 seo_title: New Product Launch - My Brand
                 seo_description: Discover our latest product offering
                 seo_index: true
+                block_ai_crawler: true
+                block_ai_search: false
+                block_ai_assistant: false
                 funnel:
                   funnel_id: xyz789
                 show_page_step:
@@ -231,6 +288,7 @@ paths:
                 created_at: '2025-01-01T00:00:00.000Z'
                 updated_at: '2025-01-01T00:00:00.000Z'
                 type: funnel_page
+                custom_html_page: false
                 current_path: /my-new-page-xyz123
                 url: https://myteam.myclickfunnels.com/my-new-page
                 show_page_step:
@@ -245,6 +303,9 @@ paths:
                   public_id: xyz789
                   name: Target Funnel
                 sdk: null
+                block_ai_assistant: false
+                block_ai_crawler: false
+                block_ai_search: false
                 description: null
                 seo_description: null
                 seo_index: false
@@ -258,31 +319,42 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               examples:
                 invalid_funnel_id:
                   summary: Invalid funnel_id
                   value:
                     error: 'Bad request: The funnel with the provided ID cannot be found.'
+                    hint: null
                 invalid_show_page_step_id:
                   summary: Invalid show_page_step_id
                   value:
                     error: 'Bad request: The step with the provided ID cannot be found.'
+                    hint: null
                 invalid_code_mode:
                   summary: Invalid code mode
                   value:
                     error: 'Bad request: Invalid code mode ''invalid''. Must be ''append'' or ''replace''.'
+                    hint: null
                 invalid_markup:
                   summary: Invalid PML markup
                   value:
                     error: 'Bad request: Markup is not valid PML: unknown top-level element(s) <foo>. Top-level elements must be one of: <section>, <row>, <column>, <flex>, <headline>, <subheadline>, <paragraph>, <image>, <input>, <button>, <list>, <video>, <divider>, <link>, <countdown>, <accordion>, <customhtml>, <product-carousel>, <order-summary>, <checkout>, <confirmation>, <product-name>, <product-description>, <product-price>, <product-image>, <product-link>, <saved-section>. (line 3)'
+                    hint: null
                 product_in_both_lists:
                   summary: a product is named as both a main product and an order bump
                   value:
                     error: 'Bad request: Product(s) cannot be listed in both product_ids and bumps: PrdBmp'
+                    hint: null
                 bumps_entry_without_product_id:
                   summary: a show_page_step.bumps entry is missing its product_id
                   value:
                     error: 'Bad request: Every show_page_step.bumps entry requires a product_id.'
+                    hint: null
         '401':
           description: Unauthorized
           content:
@@ -292,8 +364,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -303,8 +381,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity
           content:
@@ -314,28 +398,33 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               examples:
                 name_blank:
                   summary: Name is blank
                   value:
                     error: 'Request unprocessable: Name can''t be blank'
+                    hint: null
                 external_url_rejected:
                   summary: external_url is not allowed on this endpoint
                   value:
                     error: 'Request unprocessable: The following fields are not valid on this endpoint: external_url. Use POST /api/v2/workspaces/:workspace_id/pages/external to create externally-hosted (SDK) pages.'
+                    hint: null
                 out_of_bounds_sort_order:
                   summary: sort_order out of bounds
                   value:
                     error: 'Request unprocessable: sort_order 5 is out of bounds (funnel has 3 step(s)).'
+                    hint: null
   /workspaces/{workspace_id}/pages/external:
     post:
       tags:
       - Page
       summary: Create External Page
-      description: '> **Closed Alpha** — not yet enabled for all workspaces. Request access at https://developers.myclickfunnels.com/page/code-support.
-
-
-        Create an externally-hosted (SDK) page. Unlike internal pages, the visual content lives on your own domain and is registered with ClickFunnels via a lightweight SDK integration.
+      description: 'Create an externally-hosted (SDK) page. Unlike internal pages, the visual content lives on your own domain and is registered with ClickFunnels via a lightweight SDK integration.
 
 
         **Required fields:**
@@ -359,7 +448,7 @@ paths:
         - Positioning params without their funnel target return 422: `sort_order` requires `funnel.funnel_id`, and `funnel.after_show_page_step_id` requires `funnel.funnel_id`.
 
 
-        **Rejected fields** (returns 422 if present): `markup`, `theme_id`, `current_path`, `seo_title`, `seo_description`, `seo_index`, `head_code`, `footer_code`, `live_data_changes`, `show_page_step.product_ids`, `show_page_step.bumps`. Attach products and order bumps in a follow-up `PATCH /api/v2/pages/:id`.
+        **Rejected fields** (returns 422 if present): `markup`, `theme_id`, `current_path`, `seo_title`, `seo_description`, `seo_index`, `block_ai_crawler`, `block_ai_search`, `block_ai_assistant`, `head_code`, `footer_code`, `live_data_changes`, `show_page_step.product_ids`, `show_page_step.bumps`. Attach products and order bumps in a follow-up `PATCH /api/v2/pages/:id`.
 
 
         **SDK onboarding:** The response includes an `sdk` block with a `token` (prefixed `cfp_`). To register the page:
@@ -449,9 +538,13 @@ paths:
                 seo_title: null
                 seo_description: null
                 seo_index: false
+                block_ai_crawler: false
+                block_ai_search: false
+                block_ai_assistant: false
                 created_at: '2025-01-01T00:00:00.000Z'
                 updated_at: '2025-01-01T00:00:00.000Z'
                 type: funnel_page
+                custom_html_page: false
                 current_path: null
                 url: https://acme.example.com/my-page
                 show_page_step:
@@ -477,8 +570,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Bad request: The funnel or show_page_step with the provided ID cannot be found.'
+                hint: null
         '401':
           description: Unauthorized
           content:
@@ -488,19 +587,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
-        '403':
-          description: Forbidden — external (SDK) page access is not enabled for this workspace.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-              example:
-                error: 'Forbidden: External (SDK) pages are in Closed Alpha. Request access at https://developers.myclickfunnels.com/page/code-support.'
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -510,8 +604,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity
           content:
@@ -521,41 +621,290 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               examples:
                 missing_external_url:
                   summary: external_url is required
                   value:
                     error: 'Request unprocessable: external_url is required for external pages.'
+                    hint: null
                 unknown_funnel_keys:
                   summary: funnel block has unsupported keys
                   value:
                     error: 'Request unprocessable: page.funnel has unsupported keys: funnelId. Accepted keys: funnel_id, show_page_step_id, after_show_page_step_id.'
+                    hint: null
                 positioning_without_target:
                   summary: positioning param without funnel.funnel_id
                   value:
                     error: 'Request unprocessable: funnel.after_show_page_step_id requires funnel.funnel_id; omit the funnel block to create a standalone external page.'
+                    hint: null
                 rejected_fields:
                   summary: forbidden fields present
                   value:
                     error: 'Request unprocessable: The following fields are not valid for external pages: markup, theme_id.'
+                    hint: null
                 out_of_bounds_sort_order:
                   summary: sort_order out of bounds
                   value:
                     error: 'Request unprocessable: sort_order 5 is out of bounds (funnel has 3 step(s)).'
+                    hint: null
                 malformed_external_url:
                   summary: external_url is not a valid URL
                   value:
                     error: 'Request unprocessable: Validation failed: URL is not a valid URL (expected something like https://example.com/my-page)'
+                    hint: null
                 duplicate_url:
                   summary: external_url already in use
                   value:
                     error: 'Request unprocessable: Validation failed: URL is already in use by another external page in this workspace'
+                    hint: null
+  /workspaces/{workspace_id}/pages/custom_html:
+    post:
+      tags:
+      - Page
+      summary: Create Custom HTML Page
+      description: 'Create a ClickFunnels-hosted custom HTML page: you supply the complete HTML document and ClickFunnels serves it verbatim at a path on the funnel''s domain — no page editor, no PML. Ideal for AI-generated pages: generate the HTML, POST it here, and the page is live as a funnel step.
+
+
+        **Required fields:**
+
+        - `name`: The page name.
+
+        - `custom_html`: The complete HTML document (max 2MB). Served byte-for-byte — include your own CSS/JS inline.
+
+
+        **Making the page work with ClickFunnels (opt-ins, tracking):** the response includes an `sdk` block with a `token` (prefixed `cfp_`). The HTML should contain:
+
+        1. `">` inside ``.
+
+        2. The ClickFunnels SDK script tag (`/sdk.js" defer>`).
+
+        3. Form fields marked with `data-cf-element` attributes (`email`, `first-name`, `last-name`, `name`, `phone`, `custom-attribute:`) inside a plain ``.
+
+
+        Since the token is minted by this call, either create the page first and then PATCH the HTML with the token inserted, or create with placeholder HTML and swap it. The Create an External Page Skill documents the exact form markup convention (it applies to custom HTML pages too — the only difference is ClickFunnels hosts the file).
+
+
+        **Standalone vs in a funnel:** the `funnel` block is optional and behaves exactly like `POST /pages/external`:
+
+        - Omit it to create a **standalone** page.
+
+        - `funnel.funnel_id` + optional `sort_order` or `funnel.after_show_page_step_id`: create as a step in the funnel.
+
+        - `funnel.show_page_step_id`: swap an existing step onto this page.
+
+
+        **Path:** pass `current_path` (e.g. `/my-landing`) to choose the URL path on the funnel''s domain; omitted, the path derives from the name. Change it later via `PATCH /pages/{id}` with `current_path`.
+
+
+        **Limitation:** viewing a custom HTML page does not advance the visitor''s funnel run (form submissions do), so run-based view attribution treats un-submitted custom HTML steps as unvisited.
+
+
+        **Rejected fields** (returns 422 if present): `markup`, `theme_id`, `seo_title`, `seo_description`, `seo_index`, `block_ai_crawler`, `block_ai_search`, `block_ai_assistant`, `head_code`, `footer_code`, `custom_css`, `live_data_changes`, `external_url`, `show_page_step.product_ids`, `show_page_step.bumps`. To list the page in the domain''s `sitemap.xml` or opt it out of AI crawlers, set `seo_index` or the `block_ai_*` flags afterwards via `PATCH /pages/{id}`.'
+      operationId: createCustomHtmlPage
+      externalDocs:
+        description: SDK Skill - form markup convention (applies to custom HTML pages)
+        url: https://accounts.myclickfunnels.com/.well-known/sdk/create-external-page/skill.md#the-entire-public-surface
+      parameters:
+      - name: workspace_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Information about the custom HTML page to create
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - page
+              properties:
+                page:
+                  type: object
+                  required:
+                  - name
+                  - custom_html
+                  properties:
+                    name:
+                      type: string
+                      description: Page name.
+                    description:
+                      type:
+                      - string
+                      - 'null'
+                      description: A short description of the page (max 1000 characters).
+                    custom_html:
+                      type: string
+                      description: The complete HTML document to serve (max 2MB).
+                    current_path:
+                      type: string
+                      description: Optional URL path on the funnel's domain (e.g. `/my-landing`). Derived from the name when omitted.
+                    sort_order:
+                      type: integer
+                      description: Optional zero-based position within the funnel when using `funnel.funnel_id` (422 without it). `0` inserts before the first step; omit to append. Ignored when `funnel.show_page_step_id` is used.
+                    funnel:
+                      type: object
+                      description: Optional funnel association — provide either `funnel_id` or `show_page_step_id`. Omit the whole block to create a standalone page.
+                      properties:
+                        funnel_id:
+                          type:
+                          - integer
+                          - string
+                          description: The ID (or public ID) of the funnel to attach this page to.
+                        after_show_page_step_id:
+                          type:
+                          - integer
+                          - string
+                          description: 'With `funnel_id`: insert the new step right after this show page step. Alternative to `sort_order`.'
+                        show_page_step_id:
+                          type:
+                          - integer
+                          - string
+                          description: The ID of an existing show page step to swap this page onto.
+            example:
+              page:
+                name: AI Landing Page
+                custom_html: <!doctype html><html><head><title>Hi</title></head><body><h1>Hello</h1></body></html>
+                current_path: /ai-landing
+                funnel:
+                  funnel_id: xyz789
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageAttributes'
+              example:
+                id: 72
+                public_id: CstPgZ
+                workspace_id: 42000
+                name: AI Landing Page
+                description: null
+                theme_id: null
+                seo_title: null
+                seo_description: null
+                seo_index: false
+                block_ai_crawler: false
+                block_ai_search: false
+                block_ai_assistant: false
+                created_at: '2025-01-01T00:00:00.000Z'
+                updated_at: '2025-01-01T00:00:00.000Z'
+                type: funnel_page
+                custom_html_page: true
+                current_path: /ai-landing-page-page
+                url: https://myteam.myclickfunnels.com/ai-landing
+                show_page_step:
+                  id: 202
+                  public_id: StpCst
+                  name: AI Landing Page
+                  current_path: /ai-landing
+                  sort_order: 0
+                  products: []
+                funnel:
+                  id: 100
+                  public_id: xyz789
+                  name: Target Funnel
+                sdk:
+                  token: cfp_abc123def456
+        '400':
+          description: Bad Request — a referenced funnel or step id could not be resolved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Bad request: The funnel or show_page_step with the provided ID cannot be found.'
+                hint: null
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Not found: Record missing'
+                hint: null
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              examples:
+                missing_custom_html:
+                  summary: custom_html is required
+                  value:
+                    error: 'Request unprocessable: custom_html is required for custom HTML pages.'
+                    hint: null
+                rejected_fields:
+                  summary: forbidden fields present
+                  value:
+                    error: 'Request unprocessable: The following fields are not valid for custom HTML pages: markup, external_url.'
+                    hint: null
+                too_large:
+                  summary: HTML exceeds the 2MB cap
+                  value:
+                    error: 'Request unprocessable: custom_html is too large (max 2MB).'
+                    hint: null
+                positioning_without_target:
+                  summary: positioning param without funnel.funnel_id
+                  value:
+                    error: 'Request unprocessable: sort_order requires a funnel (provide funnel.funnel_id); omit it to create a standalone custom HTML page.'
+                    hint: null
   /pages/{id}:
     get:
       tags:
       - Page
       summary: Fetch Page
-      description: Page offers extra information about ClickFunnels pages, like those that are part of funnels.
+      description: Fetch a page by numeric id or public id. The unwrapped response includes its computed `url`, which is not a publish status or proof of public reachability. After an intentional content update, fetch the page again to confirm the saved resource; request `expand[]=markup` only if you need its lossy PML representation.
       operationId: getPages
       parameters:
       - $ref: '#/components/parameters/id'
@@ -576,6 +925,7 @@ paths:
                 created_at: '2025-01-01T00:00:00.000Z'
                 updated_at: '2025-01-01T00:00:00.000Z'
                 type: funnel_page
+                custom_html_page: false
                 current_path: /great-page-canonical
                 url: https://myteam.myclickfunnels.com/great-page
                 show_page_step:
@@ -590,6 +940,9 @@ paths:
                   public_id: FnlDef
                   name: Great Funnel
                 sdk: null
+                block_ai_assistant: false
+                block_ai_crawler: false
+                block_ai_search: false
                 description: null
                 seo_description: null
                 seo_index: false
@@ -603,8 +956,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -614,16 +973,25 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
     put:
       tags:
       - Page
       summary: Update Page
-      description: 'Update an existing page. Works for both internal and external (SDK) pages.
+      description: 'Update an existing internal, custom HTML, or external (SDK) page.
 
 
-        > **Closed Alpha note:** updating an **external** page requires external (SDK) page access — not yet enabled for all workspaces (403 otherwise). Request access at https://developers.myclickfunnels.com/page/code-support. Internal page updates are unaffected.
+        This existing write saves supported page content live; there is currently no separate public page publish or status operation. Read the page back with `GET /api/v2/pages/:id` to confirm the resource, then check its computed `url` separately when public delivery matters. A successful write requests cache invalidation but does not prove propagation or reachability. The path accepts a numeric id or public id, and the JSON body uses the `page` root. PATCH is also supported.
+
+
+        For internal pages, `markup` replaces live content; it does not promote a saved editor draft or promise deletion of an existing draft blob. For custom HTML pages, `custom_html` replaces the ClickFunnels-hosted HTML body. For external SDK pages, deploy content on your own host; `external_url` only changes its registration.
 
 
         Field availability depends on the page type — see `PageParametersUpdate` for the full breakdown. Sending an internal-only field on an external page (or `external_url` on an internal page) returns 422 with an explicit list of the rejected field names — never silently ignored.
@@ -641,7 +1009,7 @@ paths:
         **`show_page_step.product_ids` / `show_page_step.bumps`** (optional, both page types): Append products to the page''s checkout step as main products or as order bumps. Both are additive; `bumps` also promotes a product already attached to the step into a bump, which is how an existing attachment becomes one. Each `bumps` entry is `{product_id, preheadline}`, where `preheadline` is the optional copy shown above that bump''s offer. Requires the page to be part of a funnel (400 otherwise).
 
 
-        **`markup`** (internal pages only): Replaces the page''s entire tree. PML covers only a subset of what the ClickFunnels page editor can build, so if this page could have been created or edited in the editor, stop and get explicit approval from the user first: see the approval guardrail.
+        **`markup`** (internal pages only): Replaces live page content. PML covers only a subset of what the ClickFunnels page editor can build, so if this page could have been created or edited in the editor, stop and get explicit approval from the user first: see the approval guardrail. Never resubmit a lossy PML read merely to publish an editor page.
 
 
         To move externally-hosted pages to a new domain, see Patch one page at a time in the Migrate an External Page Domain Skill.'
@@ -670,6 +1038,9 @@ paths:
                 seo_title: Updated SEO Title
                 seo_description: Updated meta description
                 seo_index: true
+                block_ai_crawler: true
+                block_ai_search: true
+                block_ai_assistant: false
                 head_code: <script>console.log('updated');</script>
                 head_code_mode: append
                 markup: "<section>\n  <row cols=\"1\">\n    <column>\n      <headline>Welcome to our page</headline>\n      <subheadline>Start your journey here</subheadline>\n    </column>\n  </row>\n</section>\n"
@@ -692,6 +1063,7 @@ paths:
                 created_at: '2025-01-01T00:00:00.000Z'
                 updated_at: '2025-01-01T00:00:00.000Z'
                 type: funnel_page
+                custom_html_page: false
                 current_path: /updated-page-canonical
                 url: https://myteam.myclickfunnels.com/updated-page
                 show_page_step:
@@ -706,6 +1078,9 @@ paths:
                   public_id: FnlUpd
                   name: Updated Funnel
                 sdk: null
+                block_ai_assistant: false
+                block_ai_crawler: false
+                block_ai_search: false
                 description: null
                 seo_description: null
                 seo_index: false
@@ -719,27 +1094,37 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               examples:
                 invalid_code_mode:
                   summary: Invalid code mode
                   value:
                     error: 'Bad request: Invalid code mode ''invalid''. Must be ''append'' or ''replace''.'
+                    hint: null
                 invalid_markup:
                   summary: Invalid PML markup
                   value:
                     error: 'Bad request: Markup is not valid PML: unknown top-level element(s) <foo>. Top-level elements must be one of: <section>, <row>, <column>, <flex>, <headline>, <subheadline>, <paragraph>, <image>, <input>, <button>, <list>, <video>, <divider>, <link>, <countdown>, <accordion>, <customhtml>, <product-carousel>, <order-summary>, <checkout>, <confirmation>, <product-name>, <product-description>, <product-price>, <product-image>, <product-link>, <saved-section>. (line 3)'
+                    hint: null
                 swap_target_not_found:
                   summary: funnel.show_page_step_id does not resolve
                   value:
                     error: 'Bad request: The show_page_step with the provided ID cannot be found.'
+                    hint: null
                 product_in_both_lists:
                   summary: a product is named as both a main product and an order bump
                   value:
                     error: 'Bad request: Product(s) cannot be listed in both product_ids and bumps: PrdBmp'
+                    hint: null
                 bumps_entry_without_product_id:
                   summary: a show_page_step.bumps entry is missing its product_id
                   value:
                     error: 'Bad request: Every show_page_step.bumps entry requires a product_id.'
+                    hint: null
         '401':
           description: Unauthorized
           content:
@@ -749,19 +1134,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
-        '403':
-          description: Forbidden — the target page is external (SDK) and external page access is not enabled for this workspace.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-              example:
-                error: 'Forbidden: External (SDK) pages are in Closed Alpha. Request access at https://developers.myclickfunnels.com/page/code-support.'
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found
           content:
@@ -771,8 +1151,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity
           content:
@@ -782,19 +1168,27 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               examples:
                 validation_failed:
                   summary: Validation error
                   value:
                     error: 'Request unprocessable: Name can''t be blank'
+                    hint: null
                 internal_only_field_on_external:
                   summary: Internal-only field sent on an external page
                   value:
                     error: 'Request unprocessable: The following fields are not valid for external pages: markup, theme_id.'
+                    hint: null
                 external_only_field_on_internal:
                   summary: External-only field sent on an internal page
                   value:
                     error: 'Request unprocessable: The following fields are not valid for internal pages: external_url.'
+                    hint: null
     delete:
       tags:
       - Page
@@ -818,8 +1212,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: Not Found — the page does not exist or belongs to a different workspace.
           content:
@@ -829,8 +1229,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
         '422':
           description: Unprocessable Entity — the page could not be deleted.
           content:
@@ -840,8 +1246,82 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Request unprocessable: This page is required by the theme and cannot be deleted.'
+                hint: null
+  /pages/{id}/custom_html:
+    get:
+      tags:
+      - Page
+      summary: Fetch Custom HTML Page Body
+      description: Return the stored HTML body of a ClickFunnels-hosted custom HTML page. The body is kept off the standard page payload because it can be large — fetch it only when you need the source (e.g. to modify and PATCH it back via the `custom_html` field). Returns 404 for pages that are not custom HTML pages.
+      operationId: getPageCustomHtml
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Page ID
+                  public_id:
+                    type: string
+                    description: The public identifier of the page
+                  custom_html:
+                    type: string
+                    description: The complete stored HTML document, exactly as served.
+              example:
+                id: 72
+                public_id: CstPgZ
+                custom_html: <!doctype html><html><head><title>Hi</title></head><body><h1>Hello</h1></body></html>
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '404':
+          description: Not Found — the page does not exist, is not accessible, or is not a custom HTML page.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Not found: Record missing'
+                hint: null
   /pages/{id}/products:
     delete:
       tags:
@@ -911,19 +1391,27 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               examples:
                 missing_product_ids:
                   summary: product_ids missing
                   value:
                     error: 'Bad request: product_ids is required'
+                    hint: null
                 not_a_funnel_page:
                   summary: page is not part of a funnel
                   value:
                     error: 'Bad request: Cannot detach products from a page that isn''t part of a funnel.'
+                    hint: null
                 invalid_product:
                   summary: at least one id does not resolve to a workspace product
                   value:
                     error: 'Bad request: Product(s) not found: PrdXyz'
+                    hint: null
         '401':
           description: Unauthorized
           content:
@@ -933,8 +1421,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
         '404':
           description: 'Not Found — at least one product is not currently attached to the page''s step
 
@@ -948,8 +1442,14 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Product(s) not attached to this page: PrdXyz'
+                hint: null
   /pages/{page_id}/stats:
     get:
       tags:
@@ -1037,8 +1537,16 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: API key missing or invalid
+                hint: 'Send the token as `Authorization: Bearer <token>`. Create one under Account > Team > Platform Applications (a workspace API key), or obtain one with OAuth 2.1; both use the same scopes. See https://developers.myclickfunnels.com/docs/authentication, or append .md to that URL for markdown.'
+        '403':
+          $ref: '#/components/responses/WorkspaceGrantForbidden'
         '404':
           description: Not Found
           content:
@@ -1048,26 +1556,57 @@ paths:
                 properties:
                   error:
                     type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
               example:
                 error: 'Not found: Record missing'
+                hint: null
+        '422':
+          description: 'Unprocessable Entity — a timerange parameter is not a real date or time. Unparseable
+
+            values and calendar dates that do not exist (2026-02-31) are refused rather than
+
+            silently answered with a different window.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  hint:
+                    type:
+                    - string
+                    - 'null'
+                    description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+              example:
+                error: 'Request unprocessable: timerange_start ''2026-13-01'' is not a valid date or time. Use an ISO 8601 value, e.g. 2026-09-01T00:00:00Z.'
+                hint: null
 components:
   parameters:
-    after:
-      name: after
-      in: query
-      required: false
-      schema:
-        type: string
-      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
     StatsTimerangeStart:
       name: timerange_start
       in: query
-      description: Start of the stats timerange (ISO 8601 format). Defaults to 30 days before `timerange_end`. If the window between start and end exceeds 90 days, start is automatically clamped to 90 days before end. If start is after end, the window resets to the default 30 days ending at `timerange_end`. See [Timerange parameters (both endpoints)](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#timerange-parameters-both-endpoints) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for the clamping rules and how to cover longer windows.
+      description: Start of the stats timerange (ISO 8601 only; any other value is a 422. Send an offset's `+` as `%2B`, since an unencoded `+` arrives as a space). Defaults to 30 days before `timerange_end`. If the window between start and end exceeds 90 days, start is automatically clamped to 90 days before end. If start is after end, the window resets to the default 30 days ending at `timerange_end`. See [Timerange parameters (both endpoints)](https://accounts.myclickfunnels.com/.well-known/stats/skill.md#timerange-parameters-both-endpoints) in the [Stats Skill](https://accounts.myclickfunnels.com/.well-known/stats/skill.md) for the clamping rules and how to cover longer windows.
       required: false
       schema:
         type: string
         format: date-time
       example: '2026-01-01T00:00:00Z'
+    per_page:
+      name: per_page
+      in: query
+      required: false
+      description: Records per page. Defaults to 20; raise it up to 100 for bulk reads. A larger value returns 100 records. Zero, a negative or a non-integer value is a 422. The `Link` next-page URL keeps the value, so a client following it keeps the page size. More [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
     ExpandPageFields:
       name: expand[]
       in: query
@@ -1082,6 +1621,21 @@ components:
           - footer_code
           - custom_css
           - markup
+    StatsTimerangeEnd:
+      name: timerange_end
+      in: query
+      description: End of the stats timerange (ISO 8601 only; any other value is a 422. Send an offset's `+` as `%2B`, since an unencoded `+` arrives as a space). Defaults to the current time. Values in the future are automatically clamped to now.
+      required: false
+      schema:
+        type: string
+        format: date-time
+      example: '2026-01-31T23:59:59Z'
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
     sort_order:
       name: sort_order
       in: query
@@ -1092,15 +1646,6 @@ components:
         enum:
         - asc
         - desc
-    StatsTimerangeEnd:
-      name: timerange_end
-      in: query
-      description: End of the stats timerange (ISO 8601 format). Defaults to the current time. Values in the future are automatically clamped to now.
-      required: false
-      schema:
-        type: string
-        format: date-time
-      example: '2026-01-31T23:59:59Z'
     sort_property:
       name: sort_property
       in: query
@@ -1115,12 +1660,62 @@ components:
         enum:
         - id
         - updated_at
-    id:
-      name: id
-      in: path
-      required: true
+    after:
+      name: after
+      in: query
+      required: false
       schema:
         type: string
+      description: ID of item after which the collection should be returned. More examples and info about pagination [in our guides](https://developers.myclickfunnels.com/docs/pagination).
+  responses:
+    InvalidPageSize:
+      description: Unprocessable Entity - `per_page` must be a positive integer.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              hint:
+                type:
+                - string
+                - 'null'
+                description: Next step for the caller, or null when no additional guidance applies.
+          example:
+            error: 'Request unprocessable: per_page must be a positive integer, capped at 100 (got "0")'
+            hint: null
+    WorkspaceGrantForbidden:
+      description: "Forbidden — this request's workspace is closed to it.\n\nThree cases return this:\n\n* The access token is limited to specific workspaces (see the workspace selection made when\n  the key was provisioned, or the workspaces approved on the OAuth consent screen) and the\n  request acts on a workspace outside that set.\n* The access token is limited to specific workspaces and the request's workspace could not be\n  determined at all. The gate is fail-closed, so a workspace-limited token is denied rather\n  than allowed through when the target workspace is ambiguous.\n* The workspace's team has no active ClickFunnels subscription: it was canceled, is paused,\n  or is locked out after failed payments. Reads and writes are both refused until the\n  subscription is reactivated, and the body carries `\"code\": \"subscription_inactive\"`.\n\nA token with no workspace restriction never receives the first two."
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: string
+                description: A machine-readable cause, when there is one. `subscription_inactive` means the workspace's team has no active ClickFunnels subscription.
+                enum:
+                - subscription_inactive
+              hint:
+                type:
+                - string
+                - 'null'
+                description: 'The next step for the caller: how to authenticate, which scope was missing, or where the route list lives. Always present, and null when this error has no next step to offer.'
+          examples:
+            workspace_not_granted:
+              summary: Token not granted this workspace
+              value:
+                error: 'Forbidden: This access token is limited to specific workspaces and was not granted access to this one.'
+                hint: The token's workspace grant was chosen when it was provisioned (Platform Applications) or on the OAuth consent screen. Use GET /api/v2/teams/{team_id}/workspaces to list the workspaces this token can reach (GET /api/v2/teams lists the team ids).
+            subscription_inactive:
+              summary: Team subscription inactive
+              value:
+                error: 'Forbidden: This workspace''s team does not have an active ClickFunnels subscription, so API access to it is disabled until the subscription is reactivated.'
+                hint: null
+                code: subscription_inactive
   schemas:
     PageStatsAttributes:
       type: object
@@ -1184,12 +1779,170 @@ components:
           recurring_sales_value: '100.00'
           earnings_per_view: '5.00'
           earnings_per_unique_view: '6.25'
-      required:
-      - currency
-      - funnel
-      - page
-      - step
-      - timerange
+    PageParametersUpdate:
+      type: object
+      title: Pages
+      description: 'Update parameters for a page. Field availability depends on the page type:
+
+
+        **Shared (all page types):** `name`, `description`, `sort_order`, `funnel.show_page_step_id`, `show_page_step.product_ids`, `show_page_step.bumps`.
+
+
+        **Internal (editor) pages only** (returns 422 on external and custom HTML pages): `markup`, `theme_id`, `seo_title`, `seo_description`, `head_code`, `footer_code`, `custom_css`, `live_data_changes`.
+
+
+        **Internal and custom HTML pages** (returns 422 on external pages): `seo_index`, `block_ai_crawler`, `block_ai_search`, `block_ai_assistant`. These act on the page''s URL rather than its content (the domain''s `sitemap.xml` and `robots.txt`), so they apply to a custom HTML page too. A custom HTML page''s own HTML sets its title and meta tags, which is why `seo_title` and `seo_description` are not accepted there.
+
+
+        **External-only** (returns 422 on other page types): `external_url`.
+
+
+        **Custom HTML pages only** (returns 422 on other page types): `custom_html`. Custom HTML pages also accept `current_path` (like internal pages) — it moves the funnel step''s path when the page is a funnel step, or the page''s own path when standalone.
+
+
+        The three `block_ai_*` flags are accepted on any internal or custom HTML page. robots.txt expresses the block at every path ClickFunnels serves the page at on its domain: the page''s own URL, its funnel step paths, and `/` when it is the site''s home page. A page that is only served through another resource''s URL (a theme or template page other than the home page, a blog or course page) contributes no rules, so its preference is stored and read back but not enforced. A `200` is therefore not proof that a page is blocked; fetch the domain''s `/robots.txt` to confirm. See [Crawler access (AI opt-out)](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#crawler-access-ai-opt-out) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md).
+
+        '
+      required: []
+      properties:
+        name:
+          type: string
+          description: Page name of the editable page element.
+        description:
+          type:
+          - string
+          - 'null'
+          description: A short description of the page (max 1000 characters).
+        sort_order:
+          type: integer
+          description: Reposition the page within its funnel. Zero-based. `0` moves it to the first position. The page must belong to exactly one funnel step; pages with zero or multiple funnel steps return 422. Out-of-bounds values return 422. Ignored when `funnel.show_page_step_id` is also provided — the swap target's position takes precedence.
+        funnel:
+          type: object
+          description: Optional funnel mutation block. On update, only `show_page_step_id` is supported — swap the page onto an existing show page step.
+          properties:
+            show_page_step_id:
+              type:
+              - integer
+              - string
+              description: The ID of an existing show page step to attach this page to. The page previously linked to that step becomes an orphan (kept in the workspace, no longer linked to any step). Shared by both internal and external pages.
+        current_path:
+          type: string
+          description: Move the page's URL path (e.g. `/my-page`). Internal and custom HTML pages — returns 422 on external pages. For a custom HTML page that is a funnel step, this moves the STEP's path (the customer-facing URL); when standalone, the page's own path. Returns 422 when the page backs more than one funnel step — the target would be ambiguous.
+        custom_html:
+          type: string
+          minLength: 1
+          description: Replace the entire HTML body of a custom HTML page (max 2MB). An empty or whitespace-only string is rejected with a 422 (omit the field to leave the body unchanged). The stored HTML is served verbatim at the page's URL; the edge cache is purged on write. Custom HTML pages only — returns 422 on other page types. Read the current HTML via `GET /pages/{id}/custom_html`.
+        seo_title:
+          type:
+          - string
+          - 'null'
+          description: Custom title for search engine results. Internal pages only — returns 422 on external and custom HTML pages.
+        seo_description:
+          type:
+          - string
+          - 'null'
+          description: Custom meta description for search engine results. Internal pages only — returns 422 on external and custom HTML pages.
+        seo_index:
+          type: boolean
+          description: Whether search engines should index this page. An indexable funnel step page is listed in its domain's `sitemap.xml`. Internal and custom HTML pages — returns 422 on external pages.
+        block_ai_crawler:
+          type: boolean
+          description: Block AI training crawlers (GPTBot, ClaudeBot, Google-Extended and others) from using this page's content to train models. Internal and custom HTML pages — returns 422 on external pages. See [Crawler access (AI opt-out)](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#crawler-access-ai-opt-out) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md) for coverage limits.
+        block_ai_search:
+          type: boolean
+          description: Block AI answer engines (OAI-SearchBot, PerplexityBot and others) from indexing this page and citing it in answers. Internal and custom HTML pages — returns 422 on external pages. See [Crawler access (AI opt-out)](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#crawler-access-ai-opt-out) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md) for coverage limits.
+        block_ai_assistant:
+          type: boolean
+          description: Block AI assistants (ChatGPT-User, Claude-User and others) from opening this page when a person asks them to. Internal and custom HTML pages — returns 422 on external pages. See [Crawler access (AI opt-out)](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#crawler-access-ai-opt-out) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md) for coverage limits.
+        head_code:
+          type:
+          - string
+          - 'null'
+          description: Custom code to inject into the page's <head> section. Internal pages only — returns 422 on external pages. Set to null to clear existing code.
+        head_code_mode:
+          type: string
+          enum:
+          - append
+          - replace
+          description: How to handle head_code. 'append' adds to existing code (default), 'replace' overwrites. Internal pages only.
+        footer_code:
+          type:
+          - string
+          - 'null'
+          description: Custom code to inject before the closing </body> tag. Internal pages only — returns 422 on external pages. Set to null to clear existing code.
+        footer_code_mode:
+          type: string
+          enum:
+          - append
+          - replace
+          description: How to handle footer_code. 'append' adds to existing code (default), 'replace' overwrites. Internal pages only.
+        custom_css:
+          type:
+          - string
+          - 'null'
+          description: Raw CSS to apply at the page level (no <style> wrapper). Maps to the CSS tab in the page editor's Code Editor panel. Internal pages only — returns 422 on external pages. Set to null to clear existing CSS.
+        custom_css_mode:
+          type: string
+          enum:
+          - append
+          - replace
+          description: How to handle custom_css. 'append' adds to existing CSS (default), 'replace' overwrites. Internal pages only.
+        markup:
+          type: string
+          description: 'A valid PML (Page Markup Language) string that replaces live visual content; it is not a saved-draft promotion and does not promise deletion of an existing draft blob. PML covers only a subset of what the ClickFunnels page editor can build, so round-tripping an editor page through PML can silently drop content it cannot express. **If the page could have been created or edited in the ClickFunnels editor, stop and get explicit approval from the user before sending this** (a general instruction to update or publish the page does not count): see [the approval guardrail](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#stop-get-approval-before-overwriting-an-existing-page). Internal pages only — returns 422 on external pages. Markup that stops mid-construct (a tag, attribute value, comment or `<customhtml>` body that never closes, or elements still open at the end of the document) is rejected with a 400 and the page is left untouched — re-send the complete document rather than the missing tail. To add a tracking pixel or other custom code, use `head_code`/`footer_code` instead of rewriting the body; see [Add a tracking pixel or custom code](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#add-a-tracking-pixel-or-custom-code). See the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md) for the full DSL reference. The parser errors are listed under [Common Validation Errors](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#common-validation-errors).'
+        external_url:
+          type: string
+          description: Update the external URL for an SDK page. External pages only — returns 422 on internal pages. The SDK token is preserved across URL updates. To move external pages to a new origin, see the [Migrate an External Page Domain Skill](https://accounts.myclickfunnels.com/.well-known/sdk/migrate-external-page-domain/skill.md#4-patch-one-page-at-a-time).
+        show_page_step:
+          type: object
+          description: 'Optional. Mutates the show_page_step that this page is attached to. Only valid when the page is part of a funnel — passing `show_page_step.product_ids` or `show_page_step.bumps` for a page that isn''t linked to a funnel returns 400. Shared by both internal and external pages.
+
+            '
+          properties:
+            product_ids:
+              type: array
+              items:
+                type: string
+              description: 'List of product public IDs to append to the step''s checkout as regular (main) products. This is **additive** — products listed are appended; products already attached are skipped; no products are ever removed via this field, and an existing order bump is never demoted back to a main product by it. All-or-nothing — if any ID does not resolve to a workspace product, no changes are saved and a 400 is returned. To remove products, use `DELETE /api/v2/pages/:id/products`. See [Manage products on a checkout page](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#manage-products-on-a-checkout-page) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md).
+
+                '
+            bumps:
+              type: array
+              description: 'Products to attach to the step as **order bumps** — the optional add-ons offered next to the main products, served to `<checkout/>` and to the SDK as `bumpProducts`. One object per bump, each carrying its own copy. Same additive, all-or-nothing semantics as `product_ids`. A product already attached to the step as a main product is promoted to a bump in place (it keeps its position and its configured variants/prices), which is how you turn an existing attachment into a bump. A product named in both `product_ids` and `bumps` in the same request is a 400 — a product is either a main product or a bump on a given step, never both. To turn a bump back into a main product, detach it with `DELETE /api/v2/pages/:id/products` and re-attach it via `product_ids`.
+
+                '
+              items:
+                type: object
+                required:
+                - product_id
+                properties:
+                  product_id:
+                    type: string
+                    description: Public ID of the product to attach as an order bump. Required on every entry; an entry without one is a 400.
+                  preheadline:
+                    type: string
+                    description: 'Optional short line of copy shown above this bump''s offer (for example "One-time offer"). Sending it for a product that is already a bump replaces that bump''s copy, so this is also how you edit it; omit it to leave the current copy alone. Read it back under `show_page_step.products[].bump_preheadline`.
+
+                      '
+      example:
+        page:
+          name: Example Page
+          description: Updated page description
+          seo_title: Updated SEO Title
+          seo_description: Updated meta description
+          seo_index: true
+          block_ai_crawler: true
+          block_ai_search: true
+          block_ai_assistant: false
+          head_code: <script>console.log('updated');</script>
+          head_code_mode: append
+          markup: "<section>\n  <row cols=\"1\">\n    <column>\n      <headline>Welcome to our page</headline>\n      <subheadline>Start your journey here</subheadline>\n    </column>\n  </row>\n</section>\n"
+          show_page_step:
+            product_ids:
+            - PrdXyz
+            bumps:
+            - product_id: PrdBmp
+              preheadline: One-time offer
     PageParameters:
       type: object
       title: Pages
@@ -1224,6 +1977,15 @@ components:
         seo_index:
           type: boolean
           description: Whether search engines should index this page. Defaults to false.
+        block_ai_crawler:
+          type: boolean
+          description: Block AI training crawlers (GPTBot, ClaudeBot, Google-Extended and others) from using this page's content to train models. Defaults to false. Enforced via robots.txt — see [Crawler access (AI opt-out)](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#crawler-access-ai-opt-out) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md) for coverage limits.
+        block_ai_search:
+          type: boolean
+          description: Block AI answer engines (OAI-SearchBot, PerplexityBot and others) from indexing this page and citing it in answers. Defaults to false. See [Crawler access (AI opt-out)](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#crawler-access-ai-opt-out) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md) for coverage limits.
+        block_ai_assistant:
+          type: boolean
+          description: Block AI assistants (ChatGPT-User, Claude-User and others) from opening this page when a person asks them to. Defaults to false. See [Crawler access (AI opt-out)](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#crawler-access-ai-opt-out) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md) for coverage limits.
         sort_order:
           type: integer
           description: Optional zero-based position within the funnel when creating with `funnel.funnel_id`. `0` inserts before the first step; omit to append at the end. Ignored when `funnel.show_page_step_id` is provided. Out-of-bounds values return 422.
@@ -1327,6 +2089,9 @@ components:
           seo_title: New Product Launch - My Brand
           seo_description: Discover our latest product offering
           seo_index: true
+          block_ai_crawler: true
+          block_ai_search: false
+          block_ai_assistant: false
           funnel:
             funnel_id: xyz789
           show_page_step:
@@ -1338,6 +2103,116 @@ components:
           head_code: <script>console.log('hello');</script>
           head_code_mode: append
           markup: "<section>\n  <row cols=\"1\">\n    <column>\n      <headline>Welcome to our page</headline>\n      <subheadline>Start your journey here</subheadline>\n    </column>\n  </row>\n</section>\n"
+    FunnelStepStats:
+      type: object
+      title: Funnel Step Stats
+      description: Per-step statistics for a funnel step. Used in the `steps` array of the Funnel Stats response and as the `step` object in the Page Stats response.
+      properties:
+        page_id:
+          type:
+          - integer
+          - 'null'
+          description: The id of the page this step renders (when the step is a show-page step). `null` for non-page steps.
+        name:
+          type: string
+          description: The step name
+        current_path:
+          type: string
+          description: 'The workflow-level routing segment for this step (from the `Workflows::Step#current_path` attribute). Note: this is the workflow step path, not the page''s own `current_path` which is the page-level canonical path.'
+        views_all:
+          type: integer
+          description: Total pageviews for this step
+        views_unique:
+          type: integer
+          description: Unique pageviews for this step
+        optins:
+          type: integer
+          description: Number of opt-ins on this step
+        optin_rate:
+          type: number
+          format: float
+          description: Opt-in rate (optins / unique views)
+        sales_count:
+          type: integer
+          description: Number of sales on this step
+        sales_rate:
+          type: number
+          format: float
+          description: Sales conversion rate (sales / unique views)
+        sales_value:
+          type: string
+          description: Total sales value as a decimal string (see top-level currency field)
+        recurring_sales_count:
+          type: integer
+          description: Number of recurring sales
+        recurring_sales_value:
+          type: string
+          description: Total recurring sales value as a decimal string (see top-level currency field)
+        earnings_per_view:
+          type: string
+          description: Earnings per view as a decimal string (see top-level currency field)
+        earnings_per_unique_view:
+          type: string
+          description: Earnings per unique view as a decimal string (see top-level currency field)
+      example:
+        page_id: 100
+        name: Sign Up Page
+        current_path: /
+        views_all: 17
+        views_unique: 17
+        optins: 0
+        optin_rate: 0.0
+        sales_count: 0
+        sales_rate: 0.0
+        sales_value: '0.00'
+        recurring_sales_count: 0
+        recurring_sales_value: '0.00'
+        earnings_per_view: '0.00'
+        earnings_per_unique_view: '0.00'
+    PageSummary:
+      type: object
+      title: Page Summary
+      description: Lightweight page identifier used inside the Page Stats response.
+      properties:
+        id:
+          type: integer
+          description: The page ID
+        public_id:
+          type: string
+          description: The public identifier of the page
+        name:
+          type: string
+          description: The page name
+        current_path:
+          type: string
+          description: The canonical page-level path for this page
+        type:
+          type: string
+          description: The page type (e.g. `landing_page`, `site_page`, `funnel_page`, `theme_page`)
+      example:
+        id: 100
+        public_id: abc123
+        name: Order Page
+        current_path: /order-canonical
+        type: funnel_page
+    FunnelSummary:
+      type: object
+      title: Funnel Summary
+      description: Lightweight funnel identifier used inside stats responses.
+      properties:
+        id:
+          type: integer
+          description: The funnel ID
+        public_id:
+          type: string
+          description: The public identifier of the funnel
+        name:
+          type: string
+          description: The name of the funnel
+      example:
+        id: 1
+        public_id: gESyMv
+        name: My Sales Funnel
     PageAttributes:
       type: object
       title: Pages
@@ -1382,6 +2257,15 @@ components:
         seo_index:
           type: boolean
           description: Whether search engines should index this page. Defaults to false.
+        block_ai_crawler:
+          type: boolean
+          description: Whether AI training crawlers (GPTBot, ClaudeBot, Google-Extended, Applebot-Extended, CCBot and others) are blocked from using this page's content to train models. Defaults to false. Enforced by a `Disallow` rule in the domain's robots.txt — see [Crawler access (AI opt-out)](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#crawler-access-ai-opt-out) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md) for coverage limits. Independent of `seo_index` and of the other two AI flags.
+        block_ai_search:
+          type: boolean
+          description: Whether AI answer engines (OAI-SearchBot, Claude-SearchBot, PerplexityBot and others) are blocked from indexing this page and citing it when people ask questions. Defaults to false. Enforced via robots.txt. See [Crawler access (AI opt-out)](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#crawler-access-ai-opt-out) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md) for coverage limits.
+        block_ai_assistant:
+          type: boolean
+          description: Whether AI assistants (ChatGPT-User, Claude-User, Perplexity-User and others) are blocked from opening this page when a person asks them to — for example pasting the page's link into a chat. Defaults to false. Enforced via robots.txt. See [Crawler access (AI opt-out)](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#crawler-access-ai-opt-out) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md) for coverage limits.
         updated_at:
           type: string
           format: date-time
@@ -1397,6 +2281,9 @@ components:
           - theme_page
           - null
           description: The type of page. Can be one of `landing_page`, `site_page`, `funnel_page` or `theme_page`. May be `null` for a page that matches none of these categories.
+        custom_html_page:
+          type: boolean
+          description: Whether this is a ClickFunnels-hosted custom HTML page — a page whose entire body is author-supplied HTML served verbatim (no page editor, no PML). Read the HTML via `GET /pages/{id}/custom_html` and replace it by sending the write-only `custom_html` string on `PATCH /pages/{id}`. Create these via `POST /workspaces/{workspace_id}/pages/custom_html`. (Deliberately named differently from the `custom_html` request field so echoing a GET payload back into PATCH never collides.)
         current_path:
           type:
           - string
@@ -1472,14 +2359,14 @@ components:
           type:
           - object
           - 'null'
-          description: Present for externally-hosted (SDK) pages; `null` for internal pages. Contains the SDK integration token and the external URL where the page is hosted.
+          description: Present for SDK-enabled pages — externally-hosted (SDK) pages and ClickFunnels-hosted custom HTML pages; `null` for other pages. Contains the SDK integration token, plus the external URL for externally-hosted pages.
           properties:
             token:
               type: string
-              description: The SDK page token (prefixed `cfp_`). Embed this in the external page via a `<meta name="cf-page-token" content="<token>">` tag and include the SDK script tag to register the page with ClickFunnels. See [The entire public surface](https://accounts.myclickfunnels.com/.well-known/sdk/create-external-page/skill.md#the-entire-public-surface) in the [Create an External Page Skill](https://accounts.myclickfunnels.com/.well-known/sdk/create-external-page/skill.md) for the exact tags to paste.
+              description: The SDK page token (prefixed `cfp_`). Embed this in the page via a `<meta name="cf-page-token" content="<token>">` tag and include the SDK script tag to register the page with ClickFunnels. See [The entire public surface](https://accounts.myclickfunnels.com/.well-known/sdk/create-external-page/skill.md#the-entire-public-surface) in the [Create an External Page Skill](https://accounts.myclickfunnels.com/.well-known/sdk/create-external-page/skill.md) for the exact tags to paste.
             external_url:
               type: string
-              description: The fully-qualified URL of the externally-hosted page.
+              description: The fully-qualified URL of the externally-hosted page. Only present for externally-hosted pages (absent for custom HTML pages, which live on the funnel's own domain).
         head_code:
           type:
           - string
@@ -1508,9 +2395,13 @@ components:
         seo_title: Great Page - My Brand
         seo_description: Learn more about our amazing offer
         seo_index: true
+        block_ai_crawler: false
+        block_ai_search: false
+        block_ai_assistant: false
         created_at: '2025-01-01T00:00:00.000Z'
         updated_at: '2025-01-01T00:00:00.000Z'
         type: funnel_page
+        custom_html_page: false
         current_path: /my-page-canonical
         url: https://myteam.myclickfunnels.com/my-funnel-page
         show_page_step:
@@ -1526,283 +2417,101 @@ components:
           name: My Sales Funnel
         sdk: null
         markup: "<section>\n  <row cols=\"1\">\n    <column>\n      <headline>Great Page</headline>\n      <subheadline>Start your journey here</subheadline>\n    </column>\n  </row>\n</section>\n"
-      required:
-      - created_at
-      - current_path
-      - description
-      - funnel
-      - id
-      - name
-      - public_id
-      - sdk
-      - seo_description
-      - seo_index
-      - seo_title
-      - show_page_step
-      - theme_id
-      - type
-      - updated_at
-      - url
-      - workspace_id
-    FunnelStepStats:
-      type: object
-      title: Funnel Step Stats
-      description: Per-step statistics for a funnel step. Used in the `steps` array of the Funnel Stats response and as the `step` object in the Page Stats response.
-      properties:
-        page_id:
-          type:
-          - integer
-          - 'null'
-          description: The id of the page this step renders (when the step is a show-page step). `null` for non-page steps.
-        name:
-          type: string
-          description: The step name
-        current_path:
-          type: string
-          description: 'The workflow-level routing segment for this step (from the `Workflows::Step#current_path` attribute). Note: this is the workflow step path, not the page''s own `current_path` which is the page-level canonical path.'
-        views_all:
-          type: integer
-          description: Total pageviews for this step
-        views_unique:
-          type: integer
-          description: Unique pageviews for this step
-        optins:
-          type: integer
-          description: Number of opt-ins on this step
-        optin_rate:
-          type: number
-          format: float
-          description: Opt-in rate (optins / unique views)
-        sales_count:
-          type: integer
-          description: Number of sales on this step
-        sales_rate:
-          type: number
-          format: float
-          description: Sales conversion rate (sales / unique views)
-        sales_value:
-          type: string
-          description: Total sales value as a decimal string (see top-level currency field)
-        recurring_sales_count:
-          type: integer
-          description: Number of recurring sales
-        recurring_sales_value:
-          type: string
-          description: Total recurring sales value as a decimal string (see top-level currency field)
-        earnings_per_view:
-          type: string
-          description: Earnings per view as a decimal string (see top-level currency field)
-        earnings_per_unique_view:
-          type: string
-          description: Earnings per unique view as a decimal string (see top-level currency field)
-      example:
-        page_id: 100
-        name: Sign Up Page
-        current_path: /
-        views_all: 17
-        views_unique: 17
-        optins: 0
-        optin_rate: 0
-        sales_count: 0
-        sales_rate: 0
-        sales_value: '0.00'
-        recurring_sales_count: 0
-        recurring_sales_value: '0.00'
-        earnings_per_view: '0.00'
-        earnings_per_unique_view: '0.00'
-    FunnelSummary:
-      type: object
-      title: Funnel Summary
-      description: Lightweight funnel identifier used inside stats responses.
-      properties:
-        id:
-          type: integer
-          description: The funnel ID
-        public_id:
-          type: string
-          description: The public identifier of the funnel
-        name:
-          type: string
-          description: The name of the funnel
-      example:
-        id: 1
-        public_id: gESyMv
-        name: My Sales Funnel
-    PageSummary:
-      type: object
-      title: Page Summary
-      description: Lightweight page identifier used inside the Page Stats response.
-      properties:
-        id:
-          type: integer
-          description: The page ID
-        public_id:
-          type: string
-          description: The public identifier of the page
-        name:
-          type: string
-          description: The page name
-        current_path:
-          type: string
-          description: The canonical page-level path for this page
-        type:
-          type: string
-          description: The page type (e.g. `landing_page`, `site_page`, `funnel_page`, `theme_page`)
-      example:
-        id: 100
-        public_id: abc123
-        name: Order Page
-        current_path: /order-canonical
-        type: funnel_page
-    PageParametersUpdate:
-      type: object
-      title: Pages
-      description: 'Update parameters for a page. Field availability depends on the page type:
-
-
-        **Shared (both internal and external pages):** `name`, `description`, `sort_order`, `funnel.show_page_step_id`, `show_page_step.product_ids`, `show_page_step.bumps`.
-
-
-        **Internal-only** (returns 422 if sent on an external page): `markup`, `theme_id`, `current_path`, `seo_title`, `seo_description`, `seo_index`, `head_code`, `footer_code`, `custom_css`, `live_data_changes`.
-
-
-        **External-only** (returns 422 if sent on an internal page): `external_url`.
-
-        '
-      required: []
-      properties:
-        name:
-          type: string
-          description: Page name of the editable page element.
-        description:
-          type:
-          - string
-          - 'null'
-          description: A short description of the page (max 1000 characters).
-        sort_order:
-          type: integer
-          description: Reposition the page within its funnel. Zero-based. `0` moves it to the first position. The page must belong to exactly one funnel step; pages with zero or multiple funnel steps return 422. Out-of-bounds values return 422. Ignored when `funnel.show_page_step_id` is also provided — the swap target's position takes precedence.
-        funnel:
-          type: object
-          description: Optional funnel mutation block. On update, only `show_page_step_id` is supported — swap the page onto an existing show page step.
-          properties:
-            show_page_step_id:
-              type:
-              - integer
-              - string
-              description: The ID of an existing show page step to attach this page to. The page previously linked to that step becomes an orphan (kept in the workspace, no longer linked to any step). Shared by both internal and external pages.
-        seo_title:
-          type:
-          - string
-          - 'null'
-          description: Custom title for search engine results. Internal pages only — returns 422 on external pages.
-        seo_description:
-          type:
-          - string
-          - 'null'
-          description: Custom meta description for search engine results. Internal pages only — returns 422 on external pages.
-        seo_index:
-          type: boolean
-          description: Whether search engines should index this page. Internal pages only — returns 422 on external pages.
-        head_code:
-          type:
-          - string
-          - 'null'
-          description: Custom code to inject into the page's <head> section. Internal pages only — returns 422 on external pages. Set to null to clear existing code.
-        head_code_mode:
-          type: string
-          enum:
-          - append
-          - replace
-          description: How to handle head_code. 'append' adds to existing code (default), 'replace' overwrites. Internal pages only.
-        footer_code:
-          type:
-          - string
-          - 'null'
-          description: Custom code to inject before the closing </body> tag. Internal pages only — returns 422 on external pages. Set to null to clear existing code.
-        footer_code_mode:
-          type: string
-          enum:
-          - append
-          - replace
-          description: How to handle footer_code. 'append' adds to existing code (default), 'replace' overwrites. Internal pages only.
-        custom_css:
-          type:
-          - string
-          - 'null'
-          description: Raw CSS to apply at the page level (no <style> wrapper). Maps to the CSS tab in the page editor's Code Editor panel. Internal pages only — returns 422 on external pages. Set to null to clear existing CSS.
-        custom_css_mode:
-          type: string
-          enum:
-          - append
-          - replace
-          description: How to handle custom_css. 'append' adds to existing CSS (default), 'replace' overwrites. Internal pages only.
-        markup:
-          type: string
-          description: 'A valid PML (Page Markup Language) string that replaces the page''s visual tree, published version and editor draft alike. PML covers only a subset of what the ClickFunnels page editor can build, so this write silently drops editor-built content it cannot express. **If the page could have been created or edited in the ClickFunnels editor, stop and get explicit approval from the user before sending this** (a general instruction to update the page does not count): see [the approval guardrail](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#stop-get-approval-before-overwriting-an-existing-page). Internal pages only — returns 422 on external pages. Markup that stops mid-construct (a tag, attribute value, comment or `<customhtml>` body that never closes, or elements still open at the end of the document) is rejected with a 400 and the page is left untouched — re-send the complete document rather than the missing tail. To add a tracking pixel or other custom code, use `head_code`/`footer_code` instead of rewriting the body; see [Add a tracking pixel or custom code](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#add-a-tracking-pixel-or-custom-code). See the [Page Markup Skill](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md) for the full DSL reference. The parser errors are listed under [Common Validation Errors](https://accounts.myclickfunnels.com/.well-known/page-markup/skill.md#common-validation-errors).'
-        external_url:
-          type: string
-          description: Update the external URL for an SDK page. External pages only — returns 422 on internal pages. The SDK token is preserved across URL updates. To move external pages to a new origin, see the [Migrate an External Page Domain Skill](https://accounts.myclickfunnels.com/.well-known/sdk/migrate-external-page-domain/skill.md#4-patch-one-page-at-a-time).
-        show_page_step:
-          type: object
-          description: 'Optional. Mutates the show_page_step that this page is attached to. Only valid when the page is part of a funnel — passing `show_page_step.product_ids` or `show_page_step.bumps` for a page that isn''t linked to a funnel returns 400. Shared by both internal and external pages.
-
-            '
-          properties:
-            product_ids:
-              type: array
-              items:
-                type: string
-              description: 'List of product public IDs to append to the step''s checkout as regular (main) products. This is **additive** — products listed are appended; products already attached are skipped; no products are ever removed via this field, and an existing order bump is never demoted back to a main product by it. All-or-nothing — if any ID does not resolve to a workspace product, no changes are saved and a 400 is returned. To remove products, use `DELETE /api/v2/pages/:id/products`. See [Manage products on a checkout page](https://accounts.myclickfunnels.com/.well-known/pages/skill.md#manage-products-on-a-checkout-page) in the [Pages Skill](https://accounts.myclickfunnels.com/.well-known/pages/skill.md).
-
-                '
-            bumps:
-              type: array
-              description: 'Products to attach to the step as **order bumps** — the optional add-ons offered next to the main products, served to `<checkout/>` and to the SDK as `bumpProducts`. One object per bump, each carrying its own copy. Same additive, all-or-nothing semantics as `product_ids`. A product already attached to the step as a main product is promoted to a bump in place (it keeps its position and its configured variants/prices), which is how you turn an existing attachment into a bump. A product named in both `product_ids` and `bumps` in the same request is a 400 — a product is either a main product or a bump on a given step, never both. To turn a bump back into a main product, detach it with `DELETE /api/v2/pages/:id/products` and re-attach it via `product_ids`.
-
-                '
-              items:
-                type: object
-                required:
-                - product_id
-                properties:
-                  product_id:
-                    type: string
-                    description: Public ID of the product to attach as an order bump. Required on every entry; an entry without one is a 400.
-                  preheadline:
-                    type: string
-                    description: 'Optional short line of copy shown above this bump''s offer (for example "One-time offer"). Sending it for a product that is already a bump replaces that bump''s copy, so this is also how you edit it; omit it to leave the current copy alone. Read it back under `show_page_step.products[].bump_preheadline`.
-
-                      '
-      example:
-        page:
-          name: Example Page
-          description: Updated page description
-          seo_title: Updated SEO Title
-          seo_description: Updated meta description
-          seo_index: true
-          head_code: <script>console.log('updated');</script>
-          head_code_mode: append
-          markup: "<section>\n  <row cols=\"1\">\n    <column>\n      <headline>Welcome to our page</headline>\n      <subheadline>Start your journey here</subheadline>\n    </column>\n  </row>\n</section>\n"
-          show_page_step:
-            product_ids:
-            - PrdXyz
-            bumps:
-            - product_id: PrdBmp
-              preheadline: One-time offer
   headers:
-    PaginationNext:
-      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
-      schema:
-        type: string
     Link:
       description: A direct link to the next page for the cursor-based pagination. It includes the `after` and the Pagination-Next ID value.
+      schema:
+        type: string
+    PaginationNext:
+      description: ID of the last item in the current response after which more records exist. You can use it in an `after` query parameter for cursor-based pagination to get to the next page.
       schema:
         type: string
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
+      description: 'A workspace API key or an OAuth access token, sent as `Authorization: Bearer <token>`.
+
+
+        Both carry the same scope vocabulary as the `OAuth2` scheme below. Category-only
+
+        scopes restrict access to the categories they name. Coarse wildcards remain additive:
+
+        `read contacts:read` reads every category, while `write contacts:read` can write every
+
+        category. Omit coarse scopes when restricting access to specific categories.
+
+        Legacy tokens with only coarse scopes retain their existing unrestricted access;
+
+        a bare `read` scope alone does not enforce read-only access.
+
+        '
+    OAuth2:
+      type: oauth2
+      description: 'OAuth 2.0 authorization code flow for REST integrations. Create a Platform Application
+
+        and follow `https://developers.myclickfunnels.com/docs/oauth-20` to connect users.
+
+        Authorization server metadata is published at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-authorization-server`.
+
+        Dynamic client registration at `/oauth/register` is for MCP clients only; MCP-scoped
+
+        tokens must use `https://agents.myclickfunnels.com/mcp`, not the REST API.
+
+
+        Scopes are least-privilege by category. Ask for the two coarse wildcards (`read`,
+
+        `write`) only when an integration genuinely needs the whole workspace; otherwise ask
+
+        for the `<category>:read` / `<category>:write` pairs you use. `write` implies `read`
+
+        for the same category. Protected resource metadata (RFC 9728) for this API lives at
+
+        `https://accounts.myclickfunnels.com/.well-known/oauth-protected-resource`.
+
+        '
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.myclickfunnels.com/oauth/authorize
+          tokenUrl: https://accounts.myclickfunnels.com/oauth/token
+          refreshUrl: https://accounts.myclickfunnels.com/oauth/token
+          scopes:
+            read: Read any resource in the granted workspaces
+            write: Read and write any resource in the granted workspaces
+            contacts:read: Read Contacts
+            contacts:write: Read and write Contacts
+            workflows:read: Read Workflows (Automations)
+            workflows:write: Read and write Workflows (Automations)
+            funnels:read: Read Funnels
+            funnels:write: Read and write Funnels
+            sites:read: Read Sites & Design
+            sites:write: Read and write Sites & Design
+            courses:read: Read Courses
+            courses:write: Read and write Courses
+            emails:read: Read Emails
+            emails:write: Read and write Emails
+            blog:read: Read Blog
+            blog:write: Read and write Blog
+            community:read: Read Community
+            community:write: Read and write Community
+            appointments:read: Read Appointments
+            appointments:write: Read and write Appointments
+            opportunities:read: Read Opportunities
+            opportunities:write: Read and write Opportunities
+            store:read: Read Store
+            store:write: Read and write Store
+            forms:read: Read Forms
+            forms:write: Read and write Forms
+            media:read: Read Media
+            media:write: Read and write Media
+            webhooks:read: Read Webhooks
+            webhooks:write: Read and write Webhooks
+            account:read: Read Account
+            account:write: Read and write Account
+            reference:read: Read Reference Data
+            reference:write: Read and write Reference Data
 externalDocs:
   description: More in-depth guides and further resources
   url: https://developers.myclickfunnels.com
