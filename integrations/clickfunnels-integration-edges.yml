@@ -6,9 +6,16 @@ source:
 - https://composio.dev/toolkits/clickfunnels
 - https://monid.ai/tools/clickfunnels
 checked:
+- https://api.nuget.org/v3
 - https://composio.dev/toolkits/clickfunnels
+- https://crates.io/api/v1
 - https://monid.ai/tools/clickfunnels
 - https://n8n.io/integrations/clickfunnels/
+- https://proxy.golang.org
+- https://pypi.org/pypi
+- https://registry.npmjs.org
+- https://repo1.maven.org/maven2
+- https://rubygems.org/api/v1
 - https://zapier.com/api/v4/apps/
 - https://zapier.com/apps/clickfunnels/integrations
 - zoom/integrations/zoom-integration-edges.yml
@@ -57,4 +64,64 @@ edges:
   detected: '2026-10-18'
   detected_by: mirror-platform-listings.py
   category: Zoom app
+- partner_name: Go module proxy
+  partner: null
+  partner_match: null
+  type: register
+  direction: provider-built
+  category: official SDK (Go)
+  evidence: https://pkg.go.dev/github.com/clickfunnels/cli
+  channel: package-registry
+  relationship: distribution-channel
+  contract_reference:
+    register: Go module proxy (public registry JSON)
+    spec_file: null
+    language: Go
+    packages:
+    - name: github.com/clickfunnels/cli
+      version: v0.1.1
+      released: '2026-06-11'
+      released_field: Time
+      lapsed: false
+      page: https://pkg.go.dev/github.com/clickfunnels/cli
+      repo_leg: github-org:clickfunnels
+      publisher_leg: org:clickfunnels
+      matched_by: github-org
+    current: true
+    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
+      24 months'
+    detected_by: sweep-official-sdks.py
+    detected: '2026-10-18'
+  detected_by: sweep-official-sdks.py
+  first_seen: '2026-10-18'
+- partner_name: npm registry
+  partner: npm
+  partner_match: register
+  type: register
+  direction: provider-built
+  category: official SDK (JavaScript/TypeScript)
+  evidence: https://www.npmjs.com/package/@clickfunnels/refine-stimulus
+  channel: package-registry
+  relationship: distribution-channel
+  contract_reference:
+    register: npm registry (public registry JSON)
+    spec_file: null
+    language: JavaScript/TypeScript
+    packages:
+    - name: '@clickfunnels/refine-stimulus'
+      version: 2.15.0
+      released: '2026-08-21'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@clickfunnels/refine-stimulus
+      repo_leg: github-org:clickfunnels2
+      publisher_leg: email:clickfunnels.com
+      matched_by: domain
+    current: true
+    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
+      24 months'
+    detected_by: sweep-official-sdks.py
+    detected: '2026-10-18'
+  detected_by: sweep-official-sdks.py
+  first_seen: '2026-10-18'
 templates: []
